@@ -1,7 +1,9 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlin-parcelize'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdk 31
@@ -19,7 +21,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.0.5'
+        kotlinCompilerExtensionVersion '1.1.0-beta04'
     }
 
     buildFeatures {
@@ -33,13 +35,16 @@ android {
 }
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-maps:18.0.1'
-    implementation 'com.google.maps.android.gms:maps-ktx:3.3.0'
     implementation "androidx.compose.foundation:foundation:1.1.0-beta04"
-    implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.1'
     implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.google.maps.android:maps-ktx:3.3.0'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
