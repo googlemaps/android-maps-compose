@@ -37,6 +37,9 @@ data class Padding(
     @Px val bottomPx: Int = 0,
 ) : Parcelable
 
+/**
+ * State object for setting properties on the map.
+ */
 @Stable
 class MapPropertiesState(
     contentDescription: String? = "Google Map",

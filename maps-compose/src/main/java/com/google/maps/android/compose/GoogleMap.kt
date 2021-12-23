@@ -42,7 +42,7 @@ import kotlinx.coroutines.awaitCancellation
  *
  * @param modifier - Modifier to be applied to the GoogleMap
  * @param googleMapOptions - GoogleMapOptions to be applied to the MapView when instantiated
- * @param mapProperties - the [MapPropertiesState] to be used to set properties of the map
+ * @param mapPropertiesState - the [MapPropertiesState] to be used to set properties of the map
  * @param cameraPositionState - the [CameraPositionState] to be used to control or observe the map's
  * camera state
  * @param locationSource - the [LocationSource] to be used to provide location data
@@ -51,8 +51,9 @@ import kotlinx.coroutines.awaitCancellation
 @Composable
 fun GoogleMap(
     modifier: Modifier = Modifier,
-    googleMapOptions: GoogleMapOptions = GoogleMapOptions(),
-    mapProperties: MapPropertiesState = rememberMapPropertiesState(),
+    googleMapOptions: GoogleMapOptions = GoogleMapOptions(), // FIXME
+    uiSettingsState: UISettingsState = rememberUISettingsState(),
+    mapPropertiesState: MapPropertiesState = rememberMapPropertiesState(),
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     locationSource: LocationSource? = null,
     content: (@Composable GoogleMapScope.() -> Unit)? = null
@@ -68,7 +69,8 @@ fun GoogleMap(
     )
 
     MapLifecycle(mapView)
-    MapProperties(mapView, mapProperties, locationSource)
+    UISettings(mapView, uiSettingsState)
+    MapProperties(mapView, mapPropertiesState, locationSource)
     CameraEffect(mapView, cameraPositionState)
 
     if (content != null) {

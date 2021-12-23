@@ -20,16 +20,19 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the M
 Adding a map to your app looks like the following:
 
 ```kotlin
-val sydney = LatLng(-34, 151)
-val googleMapOptions = GoogleMapOptions()
-    .camera(CameraUpdateFactory.newLatLng(sydney))
+val sanFrancisco = LatLng(37.76, -122.47)
+val cameraPositionState = rememberCameraPositionState(
+    initialPosition = CameraPosition.fromLatLngZoom(sanFrancisco, 10f)
+)
 GoogleMap(
-    googleMapOptions = googleMapOptions
+    modifier = Modifier.fillMaxSize(),
+    cameraPositionState = cameraPositionState
 )
 ```
 
 ### Creating and configuring a map
 
+// FIXME
 Configuring the map can be done either by passing a `GoogleMapOptions` instance to initialize the map 
 (as shown in the snippet above), or by using `MapPropertiesState`—an object with stateful properties
 which trigger recomposition when changed.
@@ -61,8 +64,8 @@ Box(Modifier.fillMaxSize()) {
 
 ### Drawing on a map
 
-Drawing on the map, such as adding markers, can be accomplished by adding child composable elements
-to the content of the `GoogleMap`.
+Drawing on the map, such as adding markers, can be accomplished by adding child 
+composable elements to the content of the `GoogleMap`.
 
 ```kotlin
 GoogleMap(
@@ -72,6 +75,15 @@ GoogleMap(
     Marker(position = LatLng(35.66, 139.6), title = "Marker in Tokyo")
 }
 ```
+
+## Sample App
+
+This repository includes a [sample app](app).
+
+To run it, you'll have to:
+1. Get a [Maps API key][api-key]
+1. Add an entry in `local.properties` that looks like `MAPS_API_KEY=YOUR_KEY`
+1. Build and run
 
 ## Installation
 

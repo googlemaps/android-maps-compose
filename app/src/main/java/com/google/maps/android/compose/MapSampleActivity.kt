@@ -37,9 +37,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.VectorApplier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 
 class MapSampleActivity : ComponentActivity() {
@@ -47,28 +49,44 @@ class MapSampleActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         MapsInitializer.initialize(this)
         setContent {
-            val cameraPositionState = rememberCameraPositionState()
+            val sanFrancisco = LatLng(37.76, -122.47)
+
+            // Observing and controlling the camera's state can be done with a CameraPositionState
+            val cameraPositionState = rememberCameraPositionState(
+                initialPosition = CameraPosition.fromLatLngZoom(sanFrancisco, 10f)
+            )
+
+            // Setting and updating properties of the map can be done with a MapPropertiesState.
+            // All properties are MutableState so updates trigger recomposition
             val mapProperties = rememberMapPropertiesState()
+
+            // Settings UI-related properties of the map can be done with a UISettingsState.
+            val uiSettingsState = rememberUISettingsState()
+
             var shouldAnimateZoom by remember { mutableStateOf(true) }
             var ticker by remember { mutableStateOf(0) }
 
             Box(Modifier.fillMaxSize()) {
                 GoogleMap(
                     modifier = Modifier.matchParentSize(),
-                    mapProperties = mapProperties,
+                    mapPropertiesState = mapProperties,
                     cameraPositionState = cameraPositionState,
+                    uiSettingsState = uiSettingsState,
                 ) {
+                    // Drawing on the map is accomplished with a child-based API
                     Marker(
-                        position = LatLng(-34.0, 151.0),
+                        position = sanFrancisco,
                         title = "Zoom in has been tapped $ticker times.",
                         onClick = {
-                            println("Marker was clicked: $it")
+                            println("${it.title} was clicked")
                             false
                         }
                     )
                     Circle(
-                        center = LatLng(-34.1, 151.0),
-                        radius = 100.0,
+                        center = sanFrancisco,
+                        fillColor = ContextCompat.getColor(LocalContext.current, R.color.teal_200),
+                        strokeColor = ContextCompat.getColor(LocalContext.current, R.color.teal_700),
+                        radius = 1000.0,
                     )
                 }
 
@@ -78,16 +96,19 @@ class MapSampleActivity : ComponentActivity() {
                     })
                     ZoomControls(
                         shouldAnimateZoom,
+                        uiSettingsState.zoomGesturesEnabled,
                         onZoomOut = {
                             cameraPositionState.zoomOut(shouldAnimateZoom)
-                            ticker--
                         },
                         onZoomIn = {
                             cameraPositionState.zoomIn(shouldAnimateZoom)
                             ticker++
                         },
-                        onCheckChange = {
+                        onCameraAnimationCheckedChange = {
                             shouldAnimateZoom = it
+                        },
+                        onZoomGestureCheckedChange = {
+                            uiSettingsState.zoomGesturesEnabled = it
                         }
                     )
                     DebugView(cameraPositionState)
@@ -129,15 +150,26 @@ private fun MapTypeButton(type: MapType, onClick: () -> Unit) {
 
 @Composable
 private fun ZoomControls(
-    isChecked: Boolean,
+    isCameraAnimationChecked: Boolean,
+    isZoomGesturesEnabledChecked: Boolean,
     onZoomOut: () -> Unit,
     onZoomIn: () -> Unit,
-    onCheckChange: (Boolean) -> Unit
+    onCameraAnimationCheckedChange: (Boolean) -> Unit,
+    onZoomGestureCheckedChange: (Boolean) -> Unit,
 ) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         MapButton("-", onClick = { onZoomOut() })
         MapButton("+", onClick = { onZoomIn() })
-        Switch(isChecked, onCheckedChange = onCheckChange)
+        Column(verticalArrangement = Arrangement.Center) {
+            Row(horizontalArrangement = Arrangement.Center) {
+                Text(text = "Camera Animations On?")
+                Switch(isCameraAnimationChecked, onCheckedChange = onCameraAnimationCheckedChange)
+            }
+            Row(horizontalArrangement = Arrangement.Center) {
+                Text(text = "Zoom Gestures On?")
+                Switch(isZoomGesturesEnabledChecked, onCheckedChange = onZoomGestureCheckedChange)
+            }
+        }
     }
 }
 
