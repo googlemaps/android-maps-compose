@@ -31,9 +31,13 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.IndoorBuilding
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.awaitCancellation
 
@@ -46,6 +50,14 @@ import kotlinx.coroutines.awaitCancellation
  * @param cameraPositionState - the [CameraPositionState] to be used to control or observe the map's
  * camera state
  * @param locationSource - the [LocationSource] to be used to provide location data
+ * @param onIndoorBuildingFocused - lambda to be invoked when an indoor building is focused
+ * @param onIndoorLevelActivated - lambda to be invoked when an level is activated in an indoor
+ * building
+ * @param onMapClick - lambda invoked when the map is clicked
+ * @param onMapLoaded - lambda invoked when the map is finished loading
+ * @param onMyLocationButtonClick - lambda invoked when the my location button is clicked
+ * @param onMyLocationClick - lambda invoked when the my location dot is clicked
+ * @param onPOIClick - lambda invoked when a POI is clicked
  * @param content - the content of the map
  */
 @Composable
@@ -56,7 +68,15 @@ fun GoogleMap(
     mapPropertiesState: MapPropertiesState = rememberMapPropertiesState(),
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     locationSource: LocationSource? = null,
-    content: (@Composable GoogleMapScope.() -> Unit)? = null
+    onIndoorBuildingFocused: () -> Unit = {},
+    onIndoorLevelActivated: (IndoorBuilding) -> Unit = {},
+    onMapClick: (LatLng) -> Unit = {},
+    onMapLongClick: (LatLng) -> Unit = {},
+    onMapLoaded: () -> Unit = {},
+    onMyLocationButtonClick: () -> Boolean = { false },
+    onMyLocationClick: () -> Unit = {},
+    onPOIClick: (PointOfInterest) -> Unit = {},
+    content: (@Composable GoogleMapScope.() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val mapView = remember {
@@ -65,7 +85,9 @@ fun GoogleMap(
 
     AndroidView(
         modifier = modifier,
-        factory = { mapView }
+        factory = {
+            mapView
+        }
     )
 
     MapLifecycle(mapView)
@@ -73,6 +95,27 @@ fun GoogleMap(
     MapProperties(mapView, mapPropertiesState, locationSource)
     CameraEffect(mapView, cameraPositionState)
 
+    // Click handlers
+    LaunchedEffect(Unit) {
+        val map = mapView.awaitMap()
+        map.setOnMapClickListener { onMapClick(it) }
+        map.setOnMapLongClickListener { onMapLongClick(it) }
+        map.setOnMapLoadedCallback { onMapLoaded() }
+        map.setOnMyLocationButtonClickListener { onMyLocationButtonClick() }
+        map.setOnMyLocationClickListener { onMyLocationClick() }
+        map.setOnPoiClickListener { onPOIClick(it) }
+        map.setOnIndoorStateChangeListener(object : GoogleMap.OnIndoorStateChangeListener {
+            override fun onIndoorBuildingFocused() {
+                onIndoorBuildingFocused()
+            }
+
+            override fun onIndoorLevelActivated(building: IndoorBuilding) {
+                onIndoorLevelActivated(building)
+            }
+        })
+    }
+
+    // Child APIs
     if (content != null) {
         val compositionContext = rememberCompositionContext()
         val currentContent by rememberUpdatedState(content)

@@ -16,6 +16,11 @@ package com.google.maps.android.compose
 
 import androidx.compose.runtime.AbstractApplier
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.Circle
+import com.google.android.gms.maps.model.GroundOverlay
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.Polyline
 
 internal class MapApplier(
     val map: GoogleMap
@@ -24,18 +29,7 @@ internal class MapApplier(
     private val decorations = mutableListOf<Any?>()
 
     init {
-        map.setOnMarkerClickListener { marker ->
-            val node = decorations.first {
-                it is MarkerNode && it.marker == marker
-            } as? MarkerNode
-            node?.onMarkerClick?.invoke(marker) ?: false
-        }
-        map.setOnCircleClickListener { circle ->
-            val node = decorations.first {
-                it is CircleNode && it.circle == circle
-            } as? CircleNode
-            node?.onCircleClick?.invoke(circle)
-        }
+        attachClickListeners()
     }
 
     override fun onClear() {
@@ -63,5 +57,81 @@ internal class MapApplier(
         }
         decorations.remove(index, count)
     }
+
+    private fun attachClickListeners() {
+        map.setOnCircleClickListener {
+            decorations.nodeForCircle(it)
+                ?.onCircleClick
+                ?.invoke(it)
+        }
+        map.setOnGroundOverlayClickListener {
+            decorations.nodeForGroundOverlay(it)
+                ?.onGroundOverlayClick
+                ?.invoke(it)
+        }
+        map.setOnPolygonClickListener {
+            decorations.nodeForPolygon(it)
+                ?.onPolygonClick
+                ?.invoke(it)
+        }
+        map.setOnPolylineClickListener {
+            decorations.nodeForPolyline(it)
+                ?.onPolylineClick
+                ?.invoke(it)
+        }
+
+        // Marker
+        map.setOnMarkerClickListener { marker ->
+            decorations.nodeForMarker(marker)
+                ?.onMarkerClick
+                ?.invoke(marker)
+                ?: false
+        }
+        map.setOnInfoWindowClickListener { marker ->
+            decorations.nodeForMarker(marker)
+                ?.onInfoWindowClick
+                ?.invoke(marker)
+        }
+        map.setOnInfoWindowCloseListener { marker ->
+            decorations.nodeForMarker(marker)
+                ?.onInfoWindowClose
+                ?.invoke(marker)
+        }
+        map.setOnInfoWindowLongClickListener { marker ->
+            decorations.nodeForMarker(marker)
+                ?.onInfoWindowLongClick
+                ?.invoke(marker)
+        }
+        map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
+            override fun onMarkerDrag(marker: Marker) {
+                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
+                markerDragState?.dragState = DragState.DRAG
+            }
+
+            override fun onMarkerDragEnd(marker: Marker) {
+                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
+                markerDragState?.dragState = DragState.END
+            }
+
+            override fun onMarkerDragStart(marker: Marker) {
+                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
+                markerDragState?.dragState = DragState.START
+            }
+        })
+    }
 }
 
+private fun MutableList<Any?>.nodeForCircle(circle: Circle): CircleNode? =
+    first { it is CircleNode && it.circle == circle } as? CircleNode
+
+private fun MutableList<Any?>.nodeForMarker(marker: Marker): MarkerNode? =
+    first { it is MarkerNode && it.marker == marker } as? MarkerNode
+
+private fun MutableList<Any?>.nodeForPolygon(polygon: Polygon): PolygonNode? =
+    first { it is PolygonNode && it.polygon == polygon } as? PolygonNode
+
+private fun MutableList<Any?>.nodeForPolyline(polyline: Polyline): PolylineNode? =
+    first { it is PolylineNode && it.polyline == polyline } as? PolylineNode
+
+private fun MutableList<Any?>.nodeForGroundOverlay(groundOverlay: GroundOverlay): GroundOverlayNode? =
+    first { it is GroundOverlayNode && it.groundOverlay == groundOverlay } as? GroundOverlayNode

@@ -16,9 +16,15 @@ package com.google.maps.android.compose
 
 import android.graphics.PointF
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.currentComposer
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -27,8 +33,33 @@ import com.google.maps.android.ktx.addMarker
 @Stable
 internal data class MarkerNode(
     val marker: Marker,
-    var onMarkerClick: (Marker) -> Boolean
+    var markerDragState: MarkerDragState?,
+    var onMarkerClick: (Marker) -> Boolean,
+    var onInfoWindowClick: (Marker) -> Unit,
+    var onInfoWindowClose: (Marker) -> Unit,
+    var onInfoWindowLongClick: (Marker) -> Unit,
 )
+
+@Immutable
+enum class DragState {
+    START, DRAG, END
+}
+
+/**
+ * A state object for observing marker drag events.
+ */
+class MarkerDragState {
+    /**
+     * State of the marker drag.
+     */
+    var dragState: DragState by mutableStateOf(DragState.END)
+        internal set
+}
+
+@Composable
+fun rememberMarkerDragState(): MarkerDragState = remember {
+    MarkerDragState()
+}
 
 /**
  * A composable for a marker on the map.
@@ -45,7 +76,11 @@ internal data class MarkerNode(
  * @param title the title for the marker
  * @param visible the visibility of the marker
  * @param zIndex the z-index of the marker
- * @param onClick the z-index of the marker
+ * @param markerDragState a [MarkerDragState] to be used for observing marker drag events
+ * @param onClick a lambda invoked when the marker is clicked
+ * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
+ * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
+ * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
  */
 @Composable
 fun GoogleMapScope.Marker(
@@ -61,7 +96,11 @@ fun GoogleMapScope.Marker(
     title: String? = null,
     visible: Boolean = true,
     zIndex: Float = 0.0f,
-    onClick: (Marker) -> Boolean = { false }
+    markerDragState: MarkerDragState? = null,
+    onClick: (Marker) -> Boolean = { false },
+    onInfoWindowClick: (Marker) -> Unit = {},
+    onInfoWindowClose: (Marker) -> Unit = {},
+    onInfoWindowLongClick: (Marker) -> Unit = {},
 ) {
     if (currentComposer.applier !is MapApplier) error("Invalid Applier.")
     val mapApplier = currentComposer.applier as MapApplier
@@ -81,10 +120,21 @@ fun GoogleMapScope.Marker(
                 visible(visible)
                 zIndex(zIndex)
             } ?: error("Error adding marker")
-            MarkerNode(marker, onClick)
+            MarkerNode(
+                marker = marker,
+                markerDragState = markerDragState,
+                onMarkerClick = onClick,
+                onInfoWindowClick = onInfoWindowClick,
+                onInfoWindowClose = onInfoWindowClose,
+                onInfoWindowLongClick = onInfoWindowLongClick,
+            )
         },
         update = {
-            set(onClick) { this.onMarkerClick = it}
+            set(markerDragState) { this.markerDragState = it }
+            set(onClick) { this.onMarkerClick = it }
+            set(onInfoWindowClick) { this.onInfoWindowClick = it }
+            set(onInfoWindowClose) { this.onInfoWindowClose = it }
+            set(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
 
             set(alpha) { this.marker.alpha = it }
             set(anchor) { this.marker.setAnchor(it.x, it.y) }
@@ -95,9 +145,9 @@ fun GoogleMapScope.Marker(
             set(position) { this.marker.position = it }
             set(rotation) { this.marker.rotation = it }
             set(snippet) { this.marker.snippet = it }
-            set(title) { this.marker.title = it}
-            set(visible) { this.marker.isVisible = it}
-            set(zIndex) { this.marker.zIndex = it}
+            set(title) { this.marker.title = it }
+            set(visible) { this.marker.isVisible = it }
+            set(zIndex) { this.marker.zIndex = it }
         }
     )
 }
