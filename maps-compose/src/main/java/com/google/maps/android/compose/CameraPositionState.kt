@@ -39,6 +39,8 @@ enum class MapCameraState {
  * A state object that can be hoisted to control and observe the map's camera state.
  *
  * This should be created via [_root_ide_package_.com.google.maps.android.compose.rememberCameraPositionState()].
+ *
+ * @param initialPosition the initial camera position
  */
 class CameraPositionState(val initialPosition: CameraPosition) : ControllableCameraPositionState {
     /**

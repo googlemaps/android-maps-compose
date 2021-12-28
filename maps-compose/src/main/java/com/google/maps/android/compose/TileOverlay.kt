@@ -30,6 +30,13 @@ internal data class TileOverlayNode(
 
 /**
  * A composable for a tile overlay on the map.
+ *
+ * @param tileProvider the tile provider to use for this tile overlay
+ * @param fadeIn boolean indicating whether the tiles should fade in
+ * @param transparency the transparency of the tile overlay
+ * @param visible the visibility of the tile overlay
+ * @param zIndex the z-index of the tile overlay
+ * @param onClick a lambda invoked when the tile overlay is clicked
  */
 @Composable
 fun GoogleMapScope.TileOverlay(

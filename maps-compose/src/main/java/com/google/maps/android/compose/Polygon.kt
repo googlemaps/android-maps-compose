@@ -32,6 +32,22 @@ internal data class PolygonNode(
     var onPolygonClick: (Polygon) -> Unit
 )
 
+/**
+ * A composable for a polygon on the map.
+ *
+ * @param points the points comprising the vertices of the polygon
+ * @param clickable boolean indicating if the polygon is clickable or not
+ * @param fillColor a [ColorInt] for the fill color of the polygon
+ * @param geodesic specifies whether to draw each segment as a geodesic
+ * @param holes the holes for the polygon
+ * @param strokeColor a [ColorInt] for the stroke color of the polygon
+ * @param strokeJointType the joint type for all vertices of the polygon's outline
+ * @param strokePattern the stroke pattern for the polygon's outline
+ * @param strokeWidth specifies the polygon's stroke width, in display pixels
+ * @param visible the visibility of the polygon
+ * @param zIndex the z-index of the polygon
+ * @param onClick a lambda invoked when the polygon is clicked
+ */
 @Composable
 fun GoogleMapScope.Polygon(
     points: List<LatLng>,

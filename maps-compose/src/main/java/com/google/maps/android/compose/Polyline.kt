@@ -34,6 +34,23 @@ internal data class PolylineNode(
     var onPolylineClick: (Polyline) -> Unit
 )
 
+/**
+ * A composable for a polyline on the map.
+ *
+ * @param points the points comprising the polyline
+ * @param clickable boolean indicating if the polyline is clickable or not
+ * @param color a [ColorInt] for the color of the polyline
+ * @param endCap a cap at the end vertex of the polyline
+ * @param geodesic specifies whether to draw the polyline as a geodesic
+ * @param jointType the joint type for all vertices of the polyline except the start and end
+ * vertices
+ * @param pattern the pattern for the polyline
+ * @param startCap the cap at the start vertex of the polyline
+ * @param visible the visibility of the polyline
+ * @param width the width of the polyline in screen pixels
+ * @param zIndex the z-index of the polyline
+ * @param onClick a lambda invoked when the polyline is clicked
+ */
 @Composable
 fun GoogleMapScope.Polyline(
     points: List<LatLng>,

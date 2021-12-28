@@ -33,6 +33,11 @@ internal data class GroundOverlayNode(
     var onGroundOverlayClick: (GroundOverlay) -> Unit
 )
 
+/**
+ * The position of a [GroundOverlay].
+ *
+ * Use one of the [create] methods to construct an instance of this class.
+ */
 class GroundOverlayPosition private constructor(
     val latLngBounds: LatLngBounds? = null,
     val location: LatLng? = null,
@@ -56,6 +61,16 @@ class GroundOverlayPosition private constructor(
 
 /**
  * A composable for a ground overlay on the map.
+ *
+ * @param position the position of the ground overlay
+ * @param image the image of the ground overlay
+ * @param anchor the anchor of the ground overlay
+ * @param bearing the bearing of the ground overlay in degrees clockwise from north
+ * @param clickable boolean indicating if the ground overlay is clickable or not
+ * @param transparency the transparency of the ground overlay
+ * @param visible the visibility of the ground overlay
+ * @param zIndex the z-index of the ground overlay
+ * @param onClick a lambda invoked when the ground overlay is clicked
  */
 @Composable
 fun GoogleMapScope.GroundOverlay(

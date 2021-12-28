@@ -33,6 +33,18 @@ internal data class CircleNode(
 
 /**
  * A composable for a circle on the map.
+ *
+ * @param center the [LatLng] to use for the center of this circle
+ * @param clickable boolean indicating if the circle is clickable or not
+ * @param fillColor a [ColorInt] for the fill color of the circle
+ * @param radius the radius of the circle in meters.
+ * @param strokeColor a [ColorInt] for the stroke color of the circle
+ * @param strokePattern a sequence of [PatternItem] to be repeated along the circle's outline (null
+ * represents a solid line)
+ * @param strokeWidth the width of the circle's outline in screen pixels
+ * @param visible the visibility of the circle
+ * @param zIndex the z-index of the circle
+ * @param onClick a lambda invoked when the circle is clicked
  */
 @Composable
 fun GoogleMapScope.Circle(
