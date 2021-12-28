@@ -32,7 +32,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.IndoorBuilding
@@ -45,7 +44,7 @@ import kotlinx.coroutines.awaitCancellation
  * A compose container for a [MapView].
  *
  * @param modifier - Modifier to be applied to the GoogleMap
- * @param googleMapOptions - GoogleMapOptions to be applied to the MapView when instantiated
+ * @param mapOptions - the [MapOptions] to be applied to the MapView when instantiated
  * @param mapPropertiesState - the [MapPropertiesState] to be used to set properties of the map
  * @param cameraPositionState - the [CameraPositionState] to be used to control or observe the map's
  * camera state
@@ -63,7 +62,7 @@ import kotlinx.coroutines.awaitCancellation
 @Composable
 fun GoogleMap(
     modifier: Modifier = Modifier,
-    googleMapOptions: GoogleMapOptions = GoogleMapOptions(), // FIXME
+    mapOptions: MapOptions = MapOptions(),
     uiSettingsState: UISettingsState = rememberUISettingsState(),
     mapPropertiesState: MapPropertiesState = rememberMapPropertiesState(),
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
@@ -80,7 +79,7 @@ fun GoogleMap(
 ) {
     val context = LocalContext.current
     val mapView = remember {
-        MapView(context, googleMapOptions)
+        MapView(context, mapOptions.toGoogleMapOptions())
     }
 
     AndroidView(

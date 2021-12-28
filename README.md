@@ -32,15 +32,17 @@ GoogleMap(
 
 ### Creating and configuring a map
 
-// FIXME
-Configuring the map can be done either by passing a `GoogleMapOptions` instance to initialize the map 
-(as shown in the snippet above), or by using `MapPropertiesState`—an object with stateful properties
-which trigger recomposition when changed.
+Configuring the map can be done either by passing a `MapOptions` instance to 
+initialize the map (for properties that should only be set once), or by using 
+`MapPropertiesState`—an object with stateful properties which trigger 
+recomposition when changed.
 
 ```kotlin
-val mapProperties = rememberMapPropertiesState()
+val mapOptions = MapOptions(mapId = "MyMapId")
+val mapPropertiesState = rememberMapPropertiesState()
 GoogleMap(
-    mapProperties = mapProperties
+    mapOptions = mapOptions,
+    mapPropertiesState = mapPropertiesState,
 )
 
 // ...this triggers recomposition of the map
