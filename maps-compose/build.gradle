@@ -1,9 +1,7 @@
 plugins {
-    id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-parcelize'
 }
-apply plugin: 'kotlin-android'
 
 android {
     compileSdk 31

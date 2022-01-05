@@ -9,9 +9,120 @@ buildscript {
         classpath "com.android.tools.build:gradle:7.0.4"
         classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.5.0'
+    }
+}
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+plugins {
+    id 'org.jetbrains.dokka' version '1.5.0'
+}
+
+ext.projectArtifactId = { project ->
+    if (project.name == 'maps-compose') {
+        return project.name
+    } else {
+        return null
+    }
+}
+
+allprojects {
+    group = 'com.google.maps.android'
+    version = '1.0.0'
+    project.ext.artifactId = rootProject.ext.projectArtifactId(project)
+}
+
+/**
+ * Publishing and signing info
+ */
+subprojects { project ->
+    if (project.ext.artifactId == null) return
+
+    apply plugin: 'com.android.library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'org.jetbrains.dokka'
+    apply plugin: 'signing'
+
+    task sourcesJar(type: Jar) {
+        from android.sourceSets.main.java.source
+        archiveClassifier.set("sources")
+    }
+
+    task javadocJar(type: Jar) {
+        dependsOn(tasks.named("dokkaHtml"))
+        dependsOn(tasks.named("dokkaJavadoc"))
+        archiveClassifier.set("javadoc")
+        from new File(buildDir, "dokka/javadoc")
+    }
+
+    publishing {
+        publications {
+            aar(MavenPublication) {
+                groupId project.group
+                artifactId project.ext.artifactId
+                version project.version
+
+                pom {
+                    name = project.name
+                    description = "Jetpack Compose components for the Maps SDK for Android"
+                    url = "https://github.com/googlemaps/android-maps-compose"
+                    scm {
+                        connection = 'scm:git@github.com:googlemaps/android-maps-compose.git'
+                        developerConnection = 'scm:git@github.com:googlemaps/android-maps-compose.git'
+                        url = 'https://github.com/googlemaps/android-maps-compose'
+                    }
+
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
+                    }
+
+                    organization {
+                        name = 'Google Inc'
+                        url = 'http://developers.google.com/maps'
+                    }
+
+                    developers {
+                        developer {
+                            name = 'Google Inc.'
+                        }
+                    }
+                }
+
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+                    project.configurations.api.allDependencies.each { dependency ->
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', dependency.group)
+                        dependencyNode.appendNode('artifactId', dependency.name)
+                        dependencyNode.appendNode('version', dependency.version)
+                    }
+                }
+
+                afterEvaluate {
+                    artifact "$buildDir/outputs/aar/$project.name-release.aar"
+                    artifact javadocJar
+                    artifact sourcesJar
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "mavencentral"
+                url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+                credentials {
+                    username sonatypeUsername
+                    password sonatypePassword
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.aar
     }
 }
 
