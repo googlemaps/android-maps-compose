@@ -14,8 +14,6 @@
 
 package com.google.maps.android.compose
 
-import com.google.android.gms.maps.GoogleMap
-
 /**
  * Provides a scope for child elements within [_root_ide_package_.com.google.maps.android.compose.GoogleMap()]
  */

@@ -32,16 +32,16 @@ GoogleMap(
 
 ### Creating and configuring a map
 
-Configuring the map can be done either by passing a `MapOptions` instance to 
-initialize the map (for properties that should only be set once), or by using 
-`MapPropertiesState`—an object with stateful properties which trigger 
-recomposition when changed.
+Configuring the map can be done either by passing a `GoogleMapOptions` instance 
+to initialize the map, or by using `MapPropertiesState`—an object with stateful 
+properties which trigger recomposition when changed.
 
 ```kotlin
-val mapOptions = MapOptions(mapId = "MyMapId")
 val mapPropertiesState = rememberMapPropertiesState()
 GoogleMap(
-    mapOptions = mapOptions,
+    googleMapOptionsFactory = {
+        GoogleMapOptions().mapId("MyMapId")
+    },
     mapPropertiesState = mapPropertiesState,
 )
 
