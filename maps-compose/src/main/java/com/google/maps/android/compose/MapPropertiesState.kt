@@ -170,30 +170,15 @@ class MapPropertiesState(
     }
 }
 
+/**
+ * Remembers a [MapPropertiesState] that is remembered across compositions and configuration.
+ *
+ * @param init an optional lambda for providing initial values to the [MapPropertiesState]
+ */
 @Composable
 fun rememberMapPropertiesState(
-    initialContentDescription: String? = "Google Map",
-    initialIsBuildingEnabled: Boolean = false,
-    initialIsIndoorEnabled: Boolean = false,
-    initialLatLngBoundsForCameraTarget: LatLngBounds? = null,
-    initialMapType: MapType = MapType.NORMAL,
-    initialMapStyleOptions: MapStyleOptions? = null,
-    initialIsMyLocationEnabled: Boolean = false,
-    initialMaxZoomPreference: Float = 21.0f,
-    initialMinZoomPreference: Float = 3.0f,
-    initialPadding: Padding = Padding(),
+    init: MapPropertiesState.() -> Unit = {},
 ): MapPropertiesState =
     rememberSaveable(saver = MapPropertiesState.Saver) {
-        MapPropertiesState(
-            contentDescription = initialContentDescription,
-            isBuildingEnabled = initialIsBuildingEnabled,
-            isIndoorEnabled = initialIsIndoorEnabled,
-            isMyLocationEnabled = initialIsMyLocationEnabled,
-            latLngBoundsForCameraTarget = initialLatLngBoundsForCameraTarget,
-            mapStyleOptions = initialMapStyleOptions,
-            mapType = initialMapType,
-            maxZoomPreference = initialMaxZoomPreference,
-            minZoomPreference = initialMinZoomPreference,
-            padding = initialPadding,
-        )
+        MapPropertiesState().apply(init)
     }

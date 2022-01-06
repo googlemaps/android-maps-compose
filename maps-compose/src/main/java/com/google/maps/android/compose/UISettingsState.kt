@@ -27,16 +27,16 @@ import androidx.compose.runtime.setValue
  */
 @Stable
 class UISettingsState(
-    compassEnabled: Boolean,
-    indoorLevelPickerEnabled: Boolean,
-    mapToolbarEnabled: Boolean,
-    myLocationButtonEnabled: Boolean,
-    rotationGesturesEnabled: Boolean,
-    scrollGesturesEnabled: Boolean,
-    scrollGesturesEnabledDuringRotateOrZoom: Boolean,
-    tiltGesturesEnabled: Boolean,
-    zoomControlsEnabled: Boolean,
-    zoomGesturesEnabled: Boolean,
+    compassEnabled: Boolean = true,
+    indoorLevelPickerEnabled: Boolean = true,
+    mapToolbarEnabled: Boolean = true,
+    myLocationButtonEnabled: Boolean = true,
+    rotationGesturesEnabled: Boolean = true,
+    scrollGesturesEnabled: Boolean = true,
+    scrollGesturesEnabledDuringRotateOrZoom: Boolean = true,
+    tiltGesturesEnabled: Boolean = true,
+    zoomControlsEnabled: Boolean = true,
+    zoomGesturesEnabled: Boolean = true,
 ) {
     /**
      * Whether the compass should be enabled/disabled.
@@ -134,30 +134,15 @@ class UISettingsState(
     }
 }
 
+/**
+ * Creates a [UISettingsState] that is remembered across compositions and configurations.
+ *
+ * @param init an optional lambda for providing initial values to the [UISettingsState]
+ */
 @Composable
 fun rememberUISettingsState(
-    initialCompassEnabled: Boolean = true,
-    initialIndoorLevelPickerEnabled: Boolean = true,
-    initialMapToolbarEnabled: Boolean = true,
-    initialMyLocationButtonEnabled: Boolean = true,
-    initialRotationGesturesEnabled: Boolean = true,
-    initialScrollGesturesEnabled: Boolean = true,
-    initialScrollGesturesEnabledDuringRotateOrZoom: Boolean = true,
-    initialTiltGesturesEnabled: Boolean = true,
-    initialZoomControlsEnabled: Boolean = true,
-    initialZoomGesturesEnabled: Boolean = true,
+    init: UISettingsState.() -> Unit = {},
 ) : UISettingsState =
     rememberSaveable(saver = UISettingsState.Saver) {
-        UISettingsState(
-            compassEnabled =  initialCompassEnabled,
-            indoorLevelPickerEnabled = initialIndoorLevelPickerEnabled,
-            mapToolbarEnabled = initialMapToolbarEnabled,
-            myLocationButtonEnabled = initialMyLocationButtonEnabled,
-            rotationGesturesEnabled = initialRotationGesturesEnabled,
-            scrollGesturesEnabled = initialScrollGesturesEnabled,
-            scrollGesturesEnabledDuringRotateOrZoom = initialScrollGesturesEnabledDuringRotateOrZoom,
-            tiltGesturesEnabled = initialTiltGesturesEnabled,
-            zoomControlsEnabled = initialZoomControlsEnabled,
-            zoomGesturesEnabled = initialZoomGesturesEnabled,
-        )
+        UISettingsState().apply(init)
     }

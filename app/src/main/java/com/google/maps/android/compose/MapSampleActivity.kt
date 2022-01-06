@@ -52,16 +52,18 @@ class MapSampleActivity : ComponentActivity() {
             val sanFrancisco = LatLng(37.76, -122.47)
 
             // Observing and controlling the camera's state can be done with a CameraPositionState
-            val cameraPositionState = rememberCameraPositionState(
+            val cameraPositionState = rememberCameraPositionState {
                 initialPosition = CameraPosition.fromLatLngZoom(sanFrancisco, 10f)
-            )
+            }
 
             // Setting and updating properties of the map can be done with a MapPropertiesState.
             // All properties are MutableState so updates trigger recomposition
             val mapProperties = rememberMapPropertiesState()
 
             // Settings UI-related properties of the map can be done with a UISettingsState.
-            val uiSettingsState = rememberUISettingsState()
+            val uiSettingsState = rememberUISettingsState {
+                compassEnabled = false
+            }
 
             var shouldAnimateZoom by remember { mutableStateOf(true) }
             var ticker by remember { mutableStateOf(0) }

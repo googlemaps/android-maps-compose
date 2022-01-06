@@ -42,7 +42,9 @@ enum class MapCameraState {
  *
  * @param initialPosition the initial camera position
  */
-class CameraPositionState(val initialPosition: CameraPosition) : ControllableCameraPositionState {
+class CameraPositionState(
+    var initialPosition: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
+) : ControllableCameraPositionState {
     /**
      * State of the camera.
      */
@@ -169,13 +171,12 @@ interface ControllableCameraPositionState {
 /**
  * Creates a [CameraPositionState] that is remembered across compositions and configurations.
  *
- * @param initialPosition the initial position of the camera on the map.
+ * @param init an optional lambda for providing initial values to the [CameraPositionState]
  */
 @Composable
 fun rememberCameraPositionState(
-    initialPosition: CameraPosition =
-        CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
+    init: CameraPositionState.() -> Unit = {},
 ): CameraPositionState =
     rememberSaveable(saver = CameraPositionState.Saver) {
-        CameraPositionState(initialPosition = initialPosition)
+        CameraPositionState().apply(init)
     }
