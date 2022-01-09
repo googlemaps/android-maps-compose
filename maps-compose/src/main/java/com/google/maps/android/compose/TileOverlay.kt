@@ -17,10 +17,8 @@ package com.google.maps.android.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.currentComposer
-import com.google.android.gms.maps.model.GroundOverlay
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileProvider
-import com.google.maps.android.ktx.addGroundOverlay
 import com.google.maps.android.ktx.addTileOverlay
 
 internal data class TileOverlayNode(

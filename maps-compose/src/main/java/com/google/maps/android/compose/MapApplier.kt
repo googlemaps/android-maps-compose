@@ -56,6 +56,7 @@ internal class MapApplier(
                 is GroundOverlayNode -> decoration.groundOverlay.remove()
                 is PolygonNode -> decoration.polygon.remove()
                 is PolylineNode -> decoration.polyline.remove()
+                is TileOverlayNode -> decoration.tileOverlay.remove()
             }
         }
         decorations.remove(index, count)
