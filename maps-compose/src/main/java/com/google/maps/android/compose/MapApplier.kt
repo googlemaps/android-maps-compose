@@ -53,6 +53,9 @@ internal class MapApplier(
             when (val decoration = decorations[index + it]) {
                 is MarkerNode -> decoration.marker.remove()
                 is CircleNode -> decoration.circle.remove()
+                is GroundOverlayNode -> decoration.groundOverlay.remove()
+                is PolygonNode -> decoration.polygon.remove()
+                is PolylineNode -> decoration.polyline.remove()
             }
         }
         decorations.remove(index, count)
