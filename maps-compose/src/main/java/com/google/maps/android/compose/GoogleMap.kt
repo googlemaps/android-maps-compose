@@ -19,12 +19,15 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -40,6 +43,11 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 /**
  * A compose container for a [MapView].
@@ -77,7 +85,7 @@ fun GoogleMap(
     onMyLocationButtonClick: () -> Boolean = { false },
     onMyLocationClick: () -> Unit = {},
     onPOIClick: (PointOfInterest) -> Unit = {},
-    content: (@Composable GoogleMapScope.() -> Unit)? = null,
+    content: (@Composable () -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val mapView = remember {
@@ -92,48 +100,119 @@ fun GoogleMap(
     )
 
     MapLifecycle(mapView)
-    UISettings(mapView, uiSettingsState)
-    MapProperties(mapView, mapPropertiesState, locationSource)
-    CameraEffect(mapView, cameraPositionState)
 
-    // Click handlers
+    val currentOnMapClick by rememberUpdatedState(onMapClick)
+    val currentOnMapLongClick by rememberUpdatedState(onMapLongClick)
+    val currentOnMapLoaded by rememberUpdatedState(onMapLoaded)
+    val currentOnMyLocationButtonClick by rememberUpdatedState(onMyLocationButtonClick)
+    val currentOnMyLocationClick by rememberUpdatedState(onMyLocationClick)
+    val currentOnPOIClick by rememberUpdatedState(onPOIClick)
+    val currentOnIndoorBuildingFocused by rememberUpdatedState(onIndoorBuildingFocused)
+    val currentOnIndoorLevelActivated by rememberUpdatedState(onIndoorLevelActivated)
+    val currentUiSettingsState by rememberUpdatedState(uiSettingsState)
+    val currentMapPropertiesState by rememberUpdatedState(mapPropertiesState)
+    val currentLocationSource by rememberUpdatedState(locationSource)
+    val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     LaunchedEffect(Unit) {
         val map = mapView.awaitMap()
-        map.setOnMapClickListener { onMapClick(it) }
-        map.setOnMapLongClickListener { onMapLongClick(it) }
-        map.setOnMapLoadedCallback { onMapLoaded() }
-        map.setOnMyLocationButtonClickListener { onMyLocationButtonClick() }
-        map.setOnMyLocationClickListener { onMyLocationClick() }
-        map.setOnPoiClickListener { onPOIClick(it) }
-        map.setOnIndoorStateChangeListener(object : GoogleMap.OnIndoorStateChangeListener {
-            override fun onIndoorBuildingFocused() {
-                onIndoorBuildingFocused()
-            }
 
-            override fun onIndoorLevelActivated(building: IndoorBuilding) {
-                onIndoorLevelActivated(building)
-            }
-        })
+        // Event listeners
+        launch {
+            snapshotFlow {
+                map.setClickListeners(
+                    onIndoorBuildingFocused = currentOnIndoorBuildingFocused,
+                    onIndoorLevelActivated = currentOnIndoorLevelActivated,
+                    onMapClick = currentOnMapClick,
+                    onMapLongClick = currentOnMapLongClick,
+                    onMapLoaded = currentOnMapLoaded,
+                    onMyLocationButtonClick = currentOnMyLocationButtonClick,
+                    onMyLocationClick = currentOnMyLocationClick,
+                    onPOIClick = currentOnPOIClick
+                )
+            }.collect()
+        }
+
+        // UISettings
+        map.uiSettings.applyState(currentUiSettingsState)
+        launch {
+            snapshotFlow {
+                map.uiSettings.applyState(currentUiSettingsState)
+            }.collect()
+        }
+
+        // Map Properties
+        map.applyMapPropertiesState(currentMapPropertiesState, currentLocationSource)
+        launch {
+            snapshotFlow {
+                map.applyMapPropertiesState(currentMapPropertiesState, currentLocationSource)
+            }.collect()
+        }
+
+        // FIXME(chrisarriola): Rework camera position state API
+        map.applyCameraPositionState(currentCameraPositionState)
+        launch {
+            mutableSnapshotFlow {
+                map.applyCameraPositionState(currentCameraPositionState)
+            }.collect()
+        }
     }
 
     // Child APIs
     if (content != null) {
-        val compositionContext = rememberCompositionContext()
+        val parentComposition = rememberCompositionContext()
         val currentContent by rememberUpdatedState(content)
         LaunchedEffect(Unit) {
             val map = mapView.awaitMap()
-            val mapApplier = MapApplier(map)
-            val composition = Composition(mapApplier, compositionContext)
-            composition.setContent {
-                GoogleMapScopeImpl().currentContent()
-            }
-            try {
-                awaitCancellation()
-            } finally {
-                composition.dispose()
+            disposingComposition {
+                map.newComposition(parentComposition) {
+                    currentContent.invoke()
+                }
             }
         }
     }
+}
+
+private fun GoogleMap.setClickListeners(
+    onIndoorBuildingFocused: () -> Unit = {},
+    onIndoorLevelActivated: (IndoorBuilding) -> Unit = {},
+    onMapClick: (LatLng) -> Unit = {},
+    onMapLongClick: (LatLng) -> Unit = {},
+    onMapLoaded: () -> Unit = {},
+    onMyLocationButtonClick: () -> Boolean = { false },
+    onMyLocationClick: () -> Unit = {},
+    onPOIClick: (PointOfInterest) -> Unit = {},
+) {
+    setOnMapClickListener { onMapClick(it) }
+    setOnMapLongClickListener { onMapLongClick(it) }
+    setOnMapLoadedCallback { onMapLoaded() }
+    setOnMyLocationButtonClickListener { onMyLocationButtonClick() }
+    setOnMyLocationClickListener { onMyLocationClick() }
+    setOnPoiClickListener { onPOIClick(it) }
+    setOnIndoorStateChangeListener(object : GoogleMap.OnIndoorStateChangeListener {
+        override fun onIndoorBuildingFocused() {
+            onIndoorBuildingFocused()
+        }
+
+        override fun onIndoorLevelActivated(building: IndoorBuilding) {
+            onIndoorLevelActivated(building)
+        }
+    })
+}
+
+private suspend inline fun disposingComposition(factory: () -> Composition) {
+    val composition = factory()
+    try {
+        awaitCancellation()
+    } finally {
+        composition.dispose()
+    }
+}
+
+private fun GoogleMap.newComposition(
+    parent: CompositionContext,
+    content: @Composable () -> Unit
+): Composition = Composition(MapApplier(this), parent).apply {
+    setContent(content)
 }
 
 /**
@@ -178,3 +257,72 @@ private fun MapView.componentCallbacks(): ComponentCallbacks =
             this@componentCallbacks.onLowMemory()
         }
     }
+
+/**
+ * Same implementation as [snapshotFlow] with the exception of mutable snapshots taken.
+ *
+ * @see androidx.compose.runtime.snapshotFlow
+ */
+internal fun <T> mutableSnapshotFlow(
+    block: () -> T
+): Flow<T> = flow {
+    // Objects read the last time block was run
+    val readSet = mutableSetOf<Any>()
+    val readObserver: (Any) -> Unit = { readSet.add(it) }
+
+    // This channel may not block or lose data on a trySend call.
+    val appliedChanges = Channel<Set<Any>>(Channel.UNLIMITED)
+
+    // Register the apply observer before running for the first time
+    // so that we don't miss updates.
+    val unregisterApplyObserver = Snapshot.registerApplyObserver { changed, _ ->
+        appliedChanges.trySend(changed)
+    }
+
+    try {
+        var lastValue = Snapshot.withMutableSnapshot(block)
+            Snapshot.takeMutableSnapshot(readObserver).run {
+            try {
+                enter(block).also { apply().check() }
+            } finally {
+                dispose()
+            }
+        }
+        emit(lastValue)
+
+        while (true) {
+            var found = false
+            var changedObjects = appliedChanges.receive()
+
+            // Poll for any other changes before running block to minimize the number of
+            // additional times it runs for the same data
+            while (true) {
+                // Assumption: readSet will typically be smaller than changed
+                found = found || readSet.intersects(changedObjects)
+                changedObjects = appliedChanges.tryReceive().getOrNull() ?: break
+            }
+
+            if (found) {
+                readSet.clear()
+                val newValue = Snapshot.takeMutableSnapshot(readObserver).run {
+                    try {
+                        enter(block).also { apply().check() }
+                    } finally {
+                        dispose()
+                    }
+                }
+
+                if (newValue != lastValue) {
+                    lastValue = newValue
+                    emit(newValue)
+                }
+            }
+        }
+    } finally {
+        unregisterApplyObserver.dispose()
+    }
+
+}
+
+private fun <T> Set<T>.intersects(other: Set<T>): Boolean =
+    if (size < other.size) any { it in other } else other.any { it in this }

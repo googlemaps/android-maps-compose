@@ -98,7 +98,7 @@ class MapSampleActivity : ComponentActivity() {
                     })
                     ZoomControls(
                         shouldAnimateZoom,
-                        uiSettingsState.zoomGesturesEnabled,
+                        uiSettingsState.zoomControlsEnabled,
                         onZoomOut = {
                             cameraPositionState.zoomOut(shouldAnimateZoom)
                         },
@@ -109,8 +109,8 @@ class MapSampleActivity : ComponentActivity() {
                         onCameraAnimationCheckedChange = {
                             shouldAnimateZoom = it
                         },
-                        onZoomGestureCheckedChange = {
-                            uiSettingsState.zoomGesturesEnabled = it
+                        onZoomControlsCheckedChange = {
+                            uiSettingsState.zoomControlsEnabled = it
                         }
                     )
                     DebugView(cameraPositionState)
@@ -153,11 +153,11 @@ private fun MapTypeButton(type: MapType, onClick: () -> Unit) {
 @Composable
 private fun ZoomControls(
     isCameraAnimationChecked: Boolean,
-    isZoomGesturesEnabledChecked: Boolean,
+    isZoomControlsEnabledChecked: Boolean,
     onZoomOut: () -> Unit,
     onZoomIn: () -> Unit,
     onCameraAnimationCheckedChange: (Boolean) -> Unit,
-    onZoomGestureCheckedChange: (Boolean) -> Unit,
+    onZoomControlsCheckedChange: (Boolean) -> Unit,
 ) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         MapButton("-", onClick = { onZoomOut() })
@@ -168,8 +168,8 @@ private fun ZoomControls(
                 Switch(isCameraAnimationChecked, onCheckedChange = onCameraAnimationCheckedChange)
             }
             Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = "Zoom Gestures On?")
-                Switch(isZoomGesturesEnabledChecked, onCheckedChange = onZoomGestureCheckedChange)
+                Text(text = "Zoom Controls On?")
+                Switch(isZoomControlsEnabledChecked, onCheckedChange = onZoomControlsCheckedChange)
             }
         }
     }

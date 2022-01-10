@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.google.android.gms.maps.UiSettings
 
 /**
  * State object for setting UI-related settings on the map.
@@ -146,3 +147,17 @@ fun rememberUISettingsState(
     rememberSaveable(saver = UISettingsState.Saver) {
         UISettingsState().apply(init)
     }
+
+internal fun UiSettings.applyState(state: UISettingsState) {
+    isCompassEnabled = state.compassEnabled
+    isIndoorLevelPickerEnabled = state.indoorLevelPickerEnabled
+    isMapToolbarEnabled = state.mapToolbarEnabled
+    isMyLocationButtonEnabled = state.myLocationButtonEnabled
+    isRotateGesturesEnabled = state.rotationGesturesEnabled
+    isScrollGesturesEnabled = state.scrollGesturesEnabled
+    isScrollGesturesEnabledDuringRotateOrZoom =
+        state.scrollGesturesEnabledDuringRotateOrZoom
+    isTiltGesturesEnabled = state.tiltGesturesEnabled
+    isZoomControlsEnabled = state.zoomControlsEnabled
+    isZoomGesturesEnabled = state.zoomGesturesEnabled
+}

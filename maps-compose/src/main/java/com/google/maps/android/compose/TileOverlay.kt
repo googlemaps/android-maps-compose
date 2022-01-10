@@ -37,7 +37,7 @@ internal data class TileOverlayNode(
  * @param onClick a lambda invoked when the tile overlay is clicked
  */
 @Composable
-fun GoogleMapScope.TileOverlay(
+fun TileOverlay(
     tileProvider: TileProvider,
     fadeIn: Boolean = true,
     transparency: Float = 0f,
@@ -45,17 +45,16 @@ fun GoogleMapScope.TileOverlay(
     zIndex: Float = 0f,
     onClick: (TileOverlay) -> Unit = {},
 ) {
-    if (currentComposer.applier !is MapApplier) error("Invalid Applier.")
-    val mapApplier = currentComposer.applier as MapApplier
+    val mapApplier = currentComposer.applier as MapApplier?
     ComposeNode<TileOverlayNode, MapApplier>(
         factory = {
-            val tileOverlay = mapApplier.map.addTileOverlay {
+            val tileOverlay = mapApplier?.map?.addTileOverlay {
                 tileProvider(tileProvider)
                 fadeIn(fadeIn)
                 transparency(transparency)
                 visible(visible)
                 zIndex(zIndex)
-            } ?: error("Could not add tile overlay")
+            } ?: error("Error adding tile overlay")
             TileOverlayNode(tileOverlay, onClick)
         },
         update = {
@@ -63,13 +62,13 @@ fun GoogleMapScope.TileOverlay(
 
             set(tileProvider) {
                 this.tileOverlay.remove()
-                this.tileOverlay = mapApplier.map.addTileOverlay {
+                this.tileOverlay = mapApplier?.map?.addTileOverlay {
                     tileProvider(tileProvider)
                     fadeIn(fadeIn)
                     transparency(transparency)
                     visible(visible)
                     zIndex(zIndex)
-                } ?: error("Could not add tile overlay")
+                } ?: error("Error adding tile overlay")
             }
             set(fadeIn) { this.tileOverlay.fadeIn = it }
             set(transparency) { this.tileOverlay.transparency = it }

@@ -83,7 +83,7 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
  */
 @Composable
-fun GoogleMapScope.Marker(
+fun Marker(
     position: LatLng,
     alpha: Float = 1.0f,
     anchor: PointF = PointF(0.5f, 1.0f),
@@ -102,11 +102,10 @@ fun GoogleMapScope.Marker(
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
 ) {
-    if (currentComposer.applier !is MapApplier) error("Invalid Applier.")
-    val mapApplier = currentComposer.applier as MapApplier
+    val mapApplier = currentComposer.applier as? MapApplier
     ComposeNode<MarkerNode, MapApplier>(
         factory = {
-            val marker = mapApplier.map.addMarker {
+            val marker = mapApplier?.map?.addMarker {
                 alpha(alpha)
                 anchor(anchor.x, anchor.y)
                 draggable(draggable)

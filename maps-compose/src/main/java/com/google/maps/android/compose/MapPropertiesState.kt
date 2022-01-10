@@ -14,6 +14,7 @@
 
 package com.google.maps.android.compose
 
+import android.annotation.SuppressLint
 import android.os.Parcelable
 import androidx.annotation.Px
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +26,8 @@ import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import kotlinx.parcelize.Parcelize
@@ -182,3 +185,27 @@ fun rememberMapPropertiesState(
     rememberSaveable(saver = MapPropertiesState.Saver) {
         MapPropertiesState().apply(init)
     }
+
+@SuppressLint("MissingPermission")
+internal fun GoogleMap.applyMapPropertiesState(
+    mapPropertiesState: MapPropertiesState,
+    locationSource: LocationSource?
+) {
+    setLocationSource(locationSource)
+    setContentDescription(mapPropertiesState.contentDescription)
+    isBuildingsEnabled = mapPropertiesState.isBuildingEnabled
+    isIndoorEnabled = mapPropertiesState.isIndoorEnabled
+    isMyLocationEnabled = mapPropertiesState.isMyLocationEnabled
+    isTrafficEnabled = mapPropertiesState.isTrafficEnabled
+    setLatLngBoundsForCameraTarget(mapPropertiesState.latLngBoundsForCameraTarget)
+    setMapStyle(mapPropertiesState.mapStyleOptions)
+    mapType = mapPropertiesState.mapType.value
+    setMaxZoomPreference(mapPropertiesState.maxZoomPreference)
+    setMinZoomPreference(mapPropertiesState.minZoomPreference)
+    setPadding(
+        mapPropertiesState.padding.leftPx,
+        mapPropertiesState.padding.topPx,
+        mapPropertiesState.padding.rightPx,
+        mapPropertiesState.padding.bottomPx,
+    )
+}

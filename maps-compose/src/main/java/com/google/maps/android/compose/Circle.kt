@@ -47,7 +47,7 @@ internal data class CircleNode(
  * @param onClick a lambda invoked when the circle is clicked
  */
 @Composable
-fun GoogleMapScope.Circle(
+fun Circle(
     center: LatLng,
     clickable: Boolean = false,
     @ColorInt fillColor: Int = Color.TRANSPARENT,
@@ -59,11 +59,10 @@ fun GoogleMapScope.Circle(
     zIndex: Float = 0f,
     onClick: (Circle) -> Unit = {},
 ) {
-    if (currentComposer.applier !is MapApplier) error("Invalid Applier.")
-    val mapApplier = currentComposer.applier as MapApplier
+    val mapApplier = currentComposer.applier as? MapApplier
     ComposeNode<CircleNode, MapApplier>(
         factory = {
-            val circle = mapApplier.map.addCircle {
+            val circle = mapApplier?.map?.addCircle {
                 center(center)
                 clickable(clickable)
                 fillColor(fillColor)
@@ -73,7 +72,7 @@ fun GoogleMapScope.Circle(
                 strokeWidth(strokeWidth)
                 visible(visible)
                 zIndex(zIndex)
-            }
+            } ?: error("Error adding circle")
             CircleNode(circle, onClick)
         },
         update = {

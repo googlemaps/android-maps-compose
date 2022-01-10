@@ -26,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -180,3 +181,31 @@ fun rememberCameraPositionState(
     rememberSaveable(saver = CameraPositionState.Saver) {
         CameraPositionState().apply(init)
     }
+
+internal fun GoogleMap.applyCameraPositionState(
+    cameraPositionState: CameraPositionState
+) {
+    val cameraUpdate = cameraPositionState.internalCameraUpdate
+    if (cameraPositionState.animated) {
+        animateCamera(cameraUpdate)
+    } else {
+        moveCamera(cameraUpdate)
+    }
+
+    setOnCameraIdleListener {
+        cameraPositionState.cameraState = MapCameraState.IDLE
+        cameraPositionState.cameraPosition = cameraPosition
+    }
+    setOnCameraMoveCanceledListener {
+        cameraPositionState.cameraState = MapCameraState.MOVE_CANCELED
+        cameraPositionState.cameraPosition = cameraPosition
+    }
+    setOnCameraMoveStartedListener {
+        cameraPositionState.cameraState = MapCameraState.MOVE_STARTED
+        cameraPositionState.cameraPosition = cameraPosition
+    }
+    setOnCameraMoveListener {
+        cameraPositionState.cameraState = MapCameraState.MOVING
+        cameraPositionState.cameraPosition = cameraPosition
+    }
+}

@@ -73,7 +73,7 @@ class GroundOverlayPosition private constructor(
  * @param onClick a lambda invoked when the ground overlay is clicked
  */
 @Composable
-fun GoogleMapScope.GroundOverlay(
+fun GroundOverlay(
     position: GroundOverlayPosition,
     image: BitmapDescriptor,
     anchor: PointF = PointF(0.5f, 0.5f),
@@ -84,11 +84,10 @@ fun GoogleMapScope.GroundOverlay(
     zIndex: Float = 0f,
     onClick: (GroundOverlay) -> Unit = {},
 ) {
-    if (currentComposer.applier !is MapApplier) error("Invalid Applier.")
-    val mapApplier = currentComposer.applier as MapApplier
+    val mapApplier = currentComposer.applier as? MapApplier
     ComposeNode<GroundOverlayNode, MapApplier>(
         factory = {
-            val groundOverlay = mapApplier.map.addGroundOverlay {
+            val groundOverlay = mapApplier?.map?.addGroundOverlay {
                 anchor(anchor.x, anchor.y)
                 bearing(bearing)
                 clickable(clickable)
@@ -97,7 +96,7 @@ fun GoogleMapScope.GroundOverlay(
                 transparency(transparency)
                 visible(visible)
                 zIndex(zIndex)
-            } ?: error("Could not add ground overlay")
+            } ?: error("Error adding ground overlay")
             GroundOverlayNode(groundOverlay, onClick)
         },
         update = {

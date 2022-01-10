@@ -52,7 +52,7 @@ internal data class PolylineNode(
  * @param onClick a lambda invoked when the polyline is clicked
  */
 @Composable
-fun GoogleMapScope.Polyline(
+fun Polyline(
     points: List<LatLng>,
     clickable: Boolean = false,
     @ColorInt color: Int = Color.BLACK,
@@ -66,11 +66,10 @@ fun GoogleMapScope.Polyline(
     zIndex: Float = 0f,
     onClick: (Polyline) -> Unit = {}
 ) {
-    if (currentComposer.applier !is MapApplier) error("Invalid Applier.")
-    val mapApplier = currentComposer.applier as MapApplier
+    val mapApplier = currentComposer.applier as MapApplier?
     ComposeNode<PolylineNode, MapApplier>(
         factory = {
-            val polyline = mapApplier.map.addPolyline {
+            val polyline = mapApplier?.map?.addPolyline {
                 addAll(points)
                 clickable(clickable)
                 color(color)
@@ -82,7 +81,7 @@ fun GoogleMapScope.Polyline(
                 visible(visible)
                 width(width)
                 zIndex(zIndex)
-            }
+            } ?: error("Error adding Polyline")
             PolylineNode(polyline, onClick)
         },
         update = {

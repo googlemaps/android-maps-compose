@@ -49,7 +49,7 @@ internal data class PolygonNode(
  * @param onClick a lambda invoked when the polygon is clicked
  */
 @Composable
-fun GoogleMapScope.Polygon(
+fun Polygon(
     points: List<LatLng>,
     clickable: Boolean = false,
     @ColorInt fillColor: Int = Color.BLACK,
@@ -63,11 +63,10 @@ fun GoogleMapScope.Polygon(
     zIndex: Float = 0f,
     onClick: (Polygon) -> Unit = {}
 ) {
-    if (currentComposer.applier !is MapApplier) error("Invalid Applier.")
-    val mapApplier = currentComposer.applier as MapApplier
+    val mapApplier = currentComposer.applier as MapApplier?
     ComposeNode<PolygonNode, MapApplier>(
         factory = {
-            val polygon = mapApplier.map.addPolygon {
+            val polygon = mapApplier?.map?.addPolygon {
                 addAll(points)
                 clickable(clickable)
                 fillColor(fillColor)
@@ -81,7 +80,7 @@ fun GoogleMapScope.Polygon(
                 strokeWidth(strokeWidth)
                 visible(visible)
                 zIndex(zIndex)
-            }
+            } ?: error("Error adding polygon")
             PolygonNode(polygon, onClick)
         },
         update = {
