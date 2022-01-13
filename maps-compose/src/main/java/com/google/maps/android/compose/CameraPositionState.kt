@@ -14,14 +14,11 @@
 
 package com.google.maps.android.compose
 
-import android.graphics.Point
-import android.util.Size
-import androidx.annotation.Px
+import androidx.annotation.UiThread
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.mapSaver
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.google.android.gms.maps.CameraUpdate
@@ -29,98 +26,246 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
-@Immutable
-enum class MapCameraState {
-    IDLE, MOVE_CANCELED, MOVING, MOVE_STARTED
+/**
+ * Create and [rememberSaveable] a [CameraPositionState] using [CameraPositionState.Saver].
+ * [init] will be called when the [CameraPositionState] is first created to configure its
+ * initial state.
+ */
+@Composable
+inline fun rememberCameraPositionState(
+    key: String? = null,
+    crossinline init: CameraPositionState.() -> Unit = {}
+): CameraPositionState = rememberSaveable(key = key, saver = CameraPositionState.Saver) {
+    CameraPositionState().apply(init)
 }
 
 /**
  * A state object that can be hoisted to control and observe the map's camera state.
+ * A [CameraPositionState] may only be used by a single [GoogleMap] composable at a time
+ * as it reflects instance state for a single view of a map.
  *
- * This should be created via [_root_ide_package_.com.google.maps.android.compose.rememberCameraPositionState()].
- *
- * @param initialPosition the initial camera position
+ * @param position the initial camera position
  */
 class CameraPositionState(
-    var initialPosition: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
-) : ControllableCameraPositionState {
+    position: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
+) {
     /**
-     * State of the camera.
+     * Whether the camera is currently moving or not. This includes any kind of movement:
+     * panning, zooming, or rotation.
      */
-    var cameraState: MapCameraState by mutableStateOf(MapCameraState.IDLE)
+    var isMoving by mutableStateOf(false)
         internal set
+
+    /**
+     * Local source of truth for the current camera position.
+     * While [map] is non-null this reflects the current position of [map] as it changes.
+     * While [map] is null it reflects the last known map position, or the last value set by
+     * explicitly setting [position].
+     */
+    internal var rawPosition by mutableStateOf(position)
 
     /**
      * Current position of the camera on the map.
      */
-    var cameraPosition: CameraPosition by mutableStateOf(initialPosition)
-        internal set
+    var position: CameraPosition
+        get() = rawPosition
+        set(value) {
+            synchronized(lock) {
+                val map = map
+                if (map == null) {
+                    rawPosition = value
+                } else {
+                    map.moveCamera(CameraUpdateFactory.newCameraPosition(value))
+                }
+            }
+        }
 
-    internal var animated: Boolean = true
+    // Used to perform side effects thread-safely.
+    // Guards all mutable properties that are not `by mutableStateOf`.
+    private val lock = Any()
 
-    // This camera update is modified only internally and is used for performing camera movements
-    // and animations
-    internal var internalCameraUpdate: CameraUpdate by mutableStateOf(
-        CameraUpdateFactory.newCameraPosition(initialPosition)
-    )
+    // The map currently associated with this CameraPositionState.
+    // Guarded by `lock`.
+    private var map: GoogleMap? = null
 
-    override fun zoomIn(animated: Boolean) {
-        this.animated = animated
-        internalCameraUpdate = CameraUpdateFactory.zoomIn()
+    // An action to run when the map becomes available or unavailable.
+    // represents a mutually exclusive mutation to perform while holding `lock`.
+    // Guarded by `lock`.
+    private var onMapChanged: OnMapChangedCallback? = null
+
+    /**
+     * Set [onMapChanged] to [callback], invoking the current callback's
+     * [OnMapChangedCallback.onCancelLocked] if one is present.
+     */
+    private fun doOnMapChangedLocked(callback: OnMapChangedCallback) {
+        onMapChanged?.onCancelLocked()
+        onMapChanged = callback
     }
 
-    override fun zoomOut(animated: Boolean) {
-        this.animated = animated
-        internalCameraUpdate = CameraUpdateFactory.zoomOut()
+    // A token representing the current owner of any ongoing motion in progress.
+    // Used to determine if map animation should stop when calls to animate end.
+    // Guarded by `lock`.
+    private var movementOwner: Any? = null
+
+    /**
+     * Used with [onMapChangedLocked] to execute one-time actions when a map becomes available
+     * or is made unavailable. Cancellation is provided in order to resume suspended coroutines
+     * that are awaiting the execution of one of these callbacks that will never come.
+     */
+    private fun interface OnMapChangedCallback {
+        fun onMapChangedLocked(newMap: GoogleMap?)
+        fun onCancelLocked() {}
     }
 
-    override fun zoomTo(zoom: Float, animated: Boolean) {
-        this.animated = animated
-        internalCameraUpdate = CameraUpdateFactory.zoomTo(zoom)
-    }
-
-    override fun zoomBy(amount: Float, focus: Point?, animated: Boolean) {
-        this.animated = animated
-        internalCameraUpdate = if (focus == null) {
-            CameraUpdateFactory.zoomBy(amount)
-        } else {
-            CameraUpdateFactory.zoomBy(amount, focus)
+    // The current map is set and cleared by side effect.
+    // There can be only one associated at a time.
+    internal fun setMap(map: GoogleMap?) {
+        synchronized(lock) {
+            if (this.map == null && map == null) return
+            if (this.map != null && map != null) {
+                error("CameraPositionState may only be associated with one GoogleMap at a time")
+            }
+            this.map = map
+            if (map == null) {
+                isMoving = false
+            } else {
+                map.moveCamera(CameraUpdateFactory.newCameraPosition(position))
+            }
+            onMapChanged?.let {
+                // Clear this first since the callback itself might set it again for later
+                onMapChanged = null
+                it.onMapChangedLocked(map)
+            }
         }
     }
 
-    override fun scrollBy(@Px xPx: Float, @Px yPx: Float, animated: Boolean) {
-        this.animated = animated
-        internalCameraUpdate = CameraUpdateFactory.scrollBy(xPx, yPx)
+    /**
+     * Animate the camera position as specified by [update], returning once the animation has
+     * completed. [position] will reflect the position of the camera as the animation proceeds.
+     *
+     * [animate] will throw [CancellationException] if the animation does not fully complete.
+     * This can happen if:
+     *
+     * * The user manipulates the map directly
+     * * [position] is set explicitly, e.g. `state.position = CameraPosition(...)`
+     * * [animate] is called again before an earlier call to [animate] returns
+     * * [move] is called
+     * * The calling job is [cancelled][kotlinx.coroutines.Job.cancel] externally
+     *
+     * If this [CameraPositionState] is not currently bound to a [GoogleMap] this call will
+     * suspend until a map is bound and animation will begin.
+     *
+     * This method should only be called from a dispatcher bound to the map's UI thread.
+     */
+    @UiThread
+    suspend fun animate(update: CameraUpdate) {
+        val myJob = currentCoroutineContext()[Job]
+        try {
+            suspendCancellableCoroutine<Unit> { continuation ->
+                synchronized(lock) {
+                    movementOwner = myJob
+                    val map = map
+                    if (map == null) {
+                        // Do it later
+                        val animateOnMapAvailable = object : OnMapChangedCallback {
+                            override fun onMapChangedLocked(newMap: GoogleMap?) {
+                                if (newMap == null) {
+                                    // Cancel the animate caller and crash the map setter
+                                    @Suppress("ThrowableNotThrown")
+                                    continuation.resumeWithException(CancellationException(
+                                            "internal error; no GoogleMap available"))
+                                    error(
+                                        "internal error; no GoogleMap available to animate position"
+                                    )
+                                }
+                                performAnimateCameraLocked(newMap, update, continuation)
+                            }
+
+                            override fun onCancelLocked() {
+                                continuation.resumeWithException(
+                                    CancellationException("Animation cancelled")
+                                )
+                            }
+                        }
+                        doOnMapChangedLocked(animateOnMapAvailable)
+                        continuation.invokeOnCancellation {
+                            synchronized(lock) {
+                                if (onMapChanged === animateOnMapAvailable) {
+                                    // External cancellation shouldn't invoke onCancel
+                                    // so we set this to null directly instead of going through
+                                    // doOnMapChangedLocked(null).
+                                    onMapChanged = null
+                                }
+                            }
+                        }
+                    } else {
+                        performAnimateCameraLocked(map, update, continuation)
+                    }
+                }
+            }
+        } finally {
+            // continuation.invokeOnCancellation might be called from any thread, so stop the
+            // animation in progress here where we're guaranteed to be back on the right dispatcher.
+            synchronized(lock) {
+                if (myJob != null && movementOwner === myJob) {
+                    movementOwner = null
+                    map?.stopAnimation()
+                }
+            }
+        }
     }
 
-    override fun newCameraPosition(cameraPosition: CameraPosition, animated: Boolean) {
-        this.animated = animated
-        internalCameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition)
-    }
-
-    override fun newLatLng(latLng: LatLng, animated: Boolean) {
-        this.animated = animated
-        internalCameraUpdate = CameraUpdateFactory.newLatLng(latLng)
-    }
-
-    override fun newLatLngBounds(
-        bounds: LatLngBounds,
-        @Px paddingPx: Int,
-        boundingBoxPx: Size?,
-        animated: Boolean
+    private fun performAnimateCameraLocked(
+        map: GoogleMap,
+        update: CameraUpdate,
+        continuation: CancellableContinuation<Unit>
     ) {
-        this.animated = animated
-        internalCameraUpdate = if (boundingBoxPx == null) {
-            CameraUpdateFactory.newLatLngBounds(bounds, paddingPx)
-        } else {
-            CameraUpdateFactory.newLatLngBounds(
-                bounds,
-                boundingBoxPx.width,
-                boundingBoxPx.height,
-                paddingPx
-            )
+        map.animateCamera(update, object : GoogleMap.CancelableCallback {
+            override fun onCancel() {
+                continuation.resumeWithException(CancellationException("Animation cancelled"))
+            }
+
+            override fun onFinish() {
+                continuation.resume(Unit)
+            }
+        })
+        doOnMapChangedLocked {
+            check(it == null) {
+                "New GoogleMap unexpectedly set while an animation was still running"
+            }
+            map.stopAnimation()
+        }
+    }
+
+    /**
+     * Move the camera instantaneously as specified by [update]. Any calls to [animate] in progress
+     * will be cancelled. [position] will be updated when the bound map's position has been updated,
+     * or if the map is currently unbound, [update] will be applied when a map is next bound.
+     * Other calls to [move], [animate], or setting [position] will override an earlier pending
+     * call to [move].
+     *
+     * This method must be called from the map's UI thread.
+     */
+    @UiThread
+    fun move(update: CameraUpdate) {
+        synchronized(lock) {
+            val map = map
+            movementOwner = null
+            if (map == null) {
+                // Do it when we have a map available
+                doOnMapChangedLocked { it?.moveCamera(update) }
+            } else {
+                map.moveCamera(update)
+            }
         }
     }
 
@@ -128,84 +273,9 @@ class CameraPositionState(
         /**
          * The default saver implementation for [CameraPositionState]
          */
-        val Saver = run {
-            val cameraPositionKey = "CameraPosition"
-            mapSaver(
-                save = {
-                    mapOf(cameraPositionKey to it.cameraPosition)
-                },
-                restore = {
-                    CameraPositionState(it[cameraPositionKey] as CameraPosition)
-                }
-            )
-        }
-    }
-}
-
-/**
- * An interface definition for an object with a controllable camera. This acts as a proxy for
- * factory methods in [CameraUpdateFactory].
- */
-interface ControllableCameraPositionState {
-    fun zoomIn(animated: Boolean = true)
-
-    fun zoomOut(animated: Boolean = true)
-
-    fun zoomTo(zoom: Float, animated: Boolean = true)
-
-    fun zoomBy(amount: Float, focus: Point? = null, animated: Boolean = true)
-
-    fun scrollBy(@Px xPx: Float, @Px yPx: Float, animated: Boolean = true)
-
-    fun newCameraPosition(cameraPosition: CameraPosition, animated: Boolean = true)
-
-    fun newLatLng(latLng: LatLng, animated: Boolean = true)
-
-    fun newLatLngBounds(
-        bounds: LatLngBounds,
-        @Px paddingPx: Int,
-        boundingBoxPx: Size? = null,
-        animated: Boolean = true
-    )
-}
-
-/**
- * Creates a [CameraPositionState] that is remembered across compositions and configurations.
- *
- * @param init an optional lambda for providing initial values to the [CameraPositionState]
- */
-@Composable
-fun rememberCameraPositionState(
-    init: CameraPositionState.() -> Unit = {},
-): CameraPositionState =
-    rememberSaveable(saver = CameraPositionState.Saver) {
-        CameraPositionState().apply(init)
-    }
-
-internal fun GoogleMap.applyCameraPositionState(
-    cameraPositionState: CameraPositionState
-) {
-    val cameraUpdate = cameraPositionState.internalCameraUpdate
-    if (cameraPositionState.animated) {
-        animateCamera(cameraUpdate)
-    } else {
-        moveCamera(cameraUpdate)
-    }
-
-    setOnCameraIdleListener {
-        cameraPositionState.cameraState = MapCameraState.IDLE
-        cameraPositionState.cameraPosition = cameraPosition
-    }
-    setOnCameraMoveCanceledListener {
-        cameraPositionState.cameraState = MapCameraState.MOVE_CANCELED
-        cameraPositionState.cameraPosition = cameraPosition
-    }
-    setOnCameraMoveStartedListener {
-        cameraPositionState.cameraState = MapCameraState.MOVE_STARTED
-        cameraPositionState.cameraPosition = cameraPosition
-    }
-    setOnCameraMoveListener {
-        cameraPositionState.cameraState = MapCameraState.MOVING
-        cameraPositionState.cameraPosition = cameraPosition
+        val Saver = Saver<CameraPositionState, CameraPosition>(
+            save = { it.position },
+            restore = { CameraPositionState(it) }
+        )
     }
 }

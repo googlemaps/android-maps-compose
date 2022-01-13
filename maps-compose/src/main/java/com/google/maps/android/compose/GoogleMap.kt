@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -42,11 +41,10 @@ import com.google.android.gms.maps.model.IndoorBuilding
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -94,9 +92,7 @@ fun GoogleMap(
 
     AndroidView(
         modifier = modifier,
-        factory = {
-            mapView
-        }
+        factory = { mapView }
     )
 
     MapLifecycle(mapView)
@@ -114,10 +110,46 @@ fun GoogleMap(
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     LaunchedEffect(Unit) {
+        // Just about everything about a MapView can only be set after the GoogleMap instance
+        // is asynchronously made available. Under "normal" circumstances we would be able to
+        // do all of this in the AndroidView update block instead.
         val map = mapView.awaitMap()
 
+        // Camera listeners; bind currentCameraPositionState to this map and keep it up to date
+        // from the map's source of truth.
+        launch(start = CoroutineStart.UNDISPATCHED) {
+            try {
+                snapshotFlow { currentCameraPositionState }
+                    .collectLatest { cameraPositionState ->
+                        map.setOnCameraIdleListener {
+                            cameraPositionState.isMoving = false
+                        }
+                        map.setOnCameraMoveCanceledListener {
+                            cameraPositionState.isMoving = false
+                        }
+                        map.setOnCameraMoveStartedListener {
+                            cameraPositionState.isMoving = true
+                        }
+                        map.setOnCameraMoveListener {
+                            cameraPositionState.rawPosition = map.cameraPosition
+                        }
+                        cameraPositionState.setMap(map)
+                        try {
+                            awaitCancellation()
+                        } finally {
+                            cameraPositionState.setMap(null)
+                        }
+                    }
+            } finally {
+                map.setOnCameraIdleListener(null)
+                map.setOnCameraMoveListener(null)
+                map.setOnCameraMoveCanceledListener(null)
+                map.setOnCameraMoveStartedListener(null)
+            }
+        }
+
         // Event listeners
-        launch {
+        launch(start = CoroutineStart.UNDISPATCHED) {
             snapshotFlow {
                 map.setClickListeners(
                     onIndoorBuildingFocused = currentOnIndoorBuildingFocused,
@@ -133,26 +165,16 @@ fun GoogleMap(
         }
 
         // UISettings
-        map.uiSettings.applyState(currentUiSettingsState)
-        launch {
+        launch(start = CoroutineStart.UNDISPATCHED) {
             snapshotFlow {
                 map.uiSettings.applyState(currentUiSettingsState)
             }.collect()
         }
 
         // Map Properties
-        map.applyMapPropertiesState(currentMapPropertiesState, currentLocationSource)
-        launch {
+        launch(start = CoroutineStart.UNDISPATCHED) {
             snapshotFlow {
                 map.applyMapPropertiesState(currentMapPropertiesState, currentLocationSource)
-            }.collect()
-        }
-
-        // FIXME(chrisarriola): Rework camera position state API
-        map.applyCameraPositionState(currentCameraPositionState)
-        launch {
-            mutableSnapshotFlow {
-                map.applyCameraPositionState(currentCameraPositionState)
             }.collect()
         }
     }
@@ -257,72 +279,3 @@ private fun MapView.componentCallbacks(): ComponentCallbacks =
             this@componentCallbacks.onLowMemory()
         }
     }
-
-/**
- * Same implementation as [snapshotFlow] with the exception of mutable snapshots taken.
- *
- * @see androidx.compose.runtime.snapshotFlow
- */
-internal fun <T> mutableSnapshotFlow(
-    block: () -> T
-): Flow<T> = flow {
-    // Objects read the last time block was run
-    val readSet = mutableSetOf<Any>()
-    val readObserver: (Any) -> Unit = { readSet.add(it) }
-
-    // This channel may not block or lose data on a trySend call.
-    val appliedChanges = Channel<Set<Any>>(Channel.UNLIMITED)
-
-    // Register the apply observer before running for the first time
-    // so that we don't miss updates.
-    val unregisterApplyObserver = Snapshot.registerApplyObserver { changed, _ ->
-        appliedChanges.trySend(changed)
-    }
-
-    try {
-        var lastValue = Snapshot.withMutableSnapshot(block)
-            Snapshot.takeMutableSnapshot(readObserver).run {
-            try {
-                enter(block).also { apply().check() }
-            } finally {
-                dispose()
-            }
-        }
-        emit(lastValue)
-
-        while (true) {
-            var found = false
-            var changedObjects = appliedChanges.receive()
-
-            // Poll for any other changes before running block to minimize the number of
-            // additional times it runs for the same data
-            while (true) {
-                // Assumption: readSet will typically be smaller than changed
-                found = found || readSet.intersects(changedObjects)
-                changedObjects = appliedChanges.tryReceive().getOrNull() ?: break
-            }
-
-            if (found) {
-                readSet.clear()
-                val newValue = Snapshot.takeMutableSnapshot(readObserver).run {
-                    try {
-                        enter(block).also { apply().check() }
-                    } finally {
-                        dispose()
-                    }
-                }
-
-                if (newValue != lastValue) {
-                    lastValue = newValue
-                    emit(newValue)
-                }
-            }
-        }
-    } finally {
-        unregisterApplyObserver.dispose()
-    }
-
-}
-
-private fun <T> Set<T>.intersects(other: Set<T>): Boolean =
-    if (size < other.size) any { it in other } else other.any { it in this }
