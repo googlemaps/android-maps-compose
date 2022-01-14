@@ -21,10 +21,14 @@ import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileProvider
 import com.google.maps.android.ktx.addTileOverlay
 
-internal data class TileOverlayNode(
+private class TileOverlayNode(
     var tileOverlay: TileOverlay,
     var onTileOverlayClick: (TileOverlay) -> Unit
-)
+) : MapNode {
+    override fun onRemoved() {
+        tileOverlay.remove()
+    }
+}
 
 /**
  * A composable for a tile overlay on the map.

@@ -147,17 +147,3 @@ fun rememberUISettingsState(
     rememberSaveable(saver = UISettingsState.Saver) {
         UISettingsState().apply(init)
     }
-
-internal fun UiSettings.applyState(state: UISettingsState) {
-    isCompassEnabled = state.compassEnabled
-    isIndoorLevelPickerEnabled = state.indoorLevelPickerEnabled
-    isMapToolbarEnabled = state.mapToolbarEnabled
-    isMyLocationButtonEnabled = state.myLocationButtonEnabled
-    isRotateGesturesEnabled = state.rotationGesturesEnabled
-    isScrollGesturesEnabled = state.scrollGesturesEnabled
-    isScrollGesturesEnabledDuringRotateOrZoom =
-        state.scrollGesturesEnabledDuringRotateOrZoom
-    isTiltGesturesEnabled = state.tiltGesturesEnabled
-    isZoomControlsEnabled = state.zoomControlsEnabled
-    isZoomGesturesEnabled = state.zoomGesturesEnabled
-}

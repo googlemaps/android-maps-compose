@@ -22,11 +22,18 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.Polyline
 
+internal interface MapNode {
+    fun onAttached() {}
+    fun onRemoved() {}
+}
+
+private object MapNodeRoot : MapNode
+
 internal class MapApplier(
     val map: GoogleMap
-) : AbstractApplier<Any?>(null) {
+) : AbstractApplier<MapNode>(MapNodeRoot) {
 
-    private val decorations = mutableListOf<Any?>()
+    private val decorations = mutableListOf<MapNode>()
 
     init {
         attachClickListeners()
@@ -36,11 +43,12 @@ internal class MapApplier(
         map.clear()
     }
 
-    override fun insertBottomUp(index: Int, instance: Any?) {
+    override fun insertBottomUp(index: Int, instance: MapNode) {
         decorations.add(index, instance)
+        instance.onAttached()
     }
 
-    override fun insertTopDown(index: Int, instance: Any?) {
+    override fun insertTopDown(index: Int, instance: MapNode) {
         // insertBottomUp is preferred
     }
 
@@ -50,14 +58,7 @@ internal class MapApplier(
 
     override fun remove(index: Int, count: Int) {
         repeat(count) {
-            when (val decoration = decorations[index + it]) {
-                is MarkerNode -> decoration.marker.remove()
-                is CircleNode -> decoration.circle.remove()
-                is GroundOverlayNode -> decoration.groundOverlay.remove()
-                is PolygonNode -> decoration.polygon.remove()
-                is PolylineNode -> decoration.polyline.remove()
-                is TileOverlayNode -> decoration.tileOverlay.remove()
-            }
+            decorations[index + it].onRemoved()
         }
         decorations.remove(index, count)
     }
@@ -125,17 +126,19 @@ internal class MapApplier(
     }
 }
 
-private fun MutableList<Any?>.nodeForCircle(circle: Circle): CircleNode? =
+private fun MutableList<MapNode>.nodeForCircle(circle: Circle): CircleNode? =
     first { it is CircleNode && it.circle == circle } as? CircleNode
 
-private fun MutableList<Any?>.nodeForMarker(marker: Marker): MarkerNode? =
+private fun MutableList<MapNode>.nodeForMarker(marker: Marker): MarkerNode? =
     first { it is MarkerNode && it.marker == marker } as? MarkerNode
 
-private fun MutableList<Any?>.nodeForPolygon(polygon: Polygon): PolygonNode? =
+private fun MutableList<MapNode>.nodeForPolygon(polygon: Polygon): PolygonNode? =
     first { it is PolygonNode && it.polygon == polygon } as? PolygonNode
 
-private fun MutableList<Any?>.nodeForPolyline(polyline: Polyline): PolylineNode? =
+private fun MutableList<MapNode>.nodeForPolyline(polyline: Polyline): PolylineNode? =
     first { it is PolylineNode && it.polyline == polyline } as? PolylineNode
 
-private fun MutableList<Any?>.nodeForGroundOverlay(groundOverlay: GroundOverlay): GroundOverlayNode? =
+private fun MutableList<MapNode>.nodeForGroundOverlay(
+    groundOverlay: GroundOverlay
+): GroundOverlayNode? =
     first { it is GroundOverlayNode && it.groundOverlay == groundOverlay } as? GroundOverlayNode

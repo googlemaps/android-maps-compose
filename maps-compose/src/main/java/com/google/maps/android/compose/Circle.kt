@@ -25,11 +25,14 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
 import com.google.maps.android.ktx.addCircle
 
-@Stable
-internal data class CircleNode(
+internal class CircleNode(
     val circle: Circle,
     var onCircleClick: (Circle) -> Unit
-)
+) : MapNode {
+    override fun onRemoved() {
+        circle.remove()
+    }
+}
 
 /**
  * A composable for a circle on the map.

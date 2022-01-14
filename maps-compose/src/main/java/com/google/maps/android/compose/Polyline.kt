@@ -28,11 +28,14 @@ import com.google.android.gms.maps.model.PatternItem
 import com.google.android.gms.maps.model.Polyline
 import com.google.maps.android.ktx.addPolyline
 
-@Stable
-internal data class PolylineNode(
+internal class PolylineNode(
     val polyline: Polyline,
     var onPolylineClick: (Polyline) -> Unit
-)
+) : MapNode {
+    override fun onRemoved() {
+        polyline.remove()
+    }
+}
 
 /**
  * A composable for a polyline on the map.

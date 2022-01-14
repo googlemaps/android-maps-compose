@@ -26,11 +26,14 @@ import com.google.android.gms.maps.model.PatternItem
 import com.google.android.gms.maps.model.Polygon
 import com.google.maps.android.ktx.addPolygon
 
-@Stable
-internal data class PolygonNode(
+internal class PolygonNode(
     val polygon: Polygon,
     var onPolygonClick: (Polygon) -> Unit
-)
+) : MapNode {
+    override fun onRemoved() {
+        polygon.remove()
+    }
+}
 
 /**
  * A composable for a polygon on the map.

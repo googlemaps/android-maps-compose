@@ -185,27 +185,3 @@ fun rememberMapPropertiesState(
     rememberSaveable(saver = MapPropertiesState.Saver) {
         MapPropertiesState().apply(init)
     }
-
-@SuppressLint("MissingPermission")
-internal fun GoogleMap.applyMapPropertiesState(
-    mapPropertiesState: MapPropertiesState,
-    locationSource: LocationSource?
-) {
-    setLocationSource(locationSource)
-    setContentDescription(mapPropertiesState.contentDescription)
-    isBuildingsEnabled = mapPropertiesState.isBuildingEnabled
-    isIndoorEnabled = mapPropertiesState.isIndoorEnabled
-    isMyLocationEnabled = mapPropertiesState.isMyLocationEnabled
-    isTrafficEnabled = mapPropertiesState.isTrafficEnabled
-    setLatLngBoundsForCameraTarget(mapPropertiesState.latLngBoundsForCameraTarget)
-    setMapStyle(mapPropertiesState.mapStyleOptions)
-    mapType = mapPropertiesState.mapType.value
-    setMaxZoomPreference(mapPropertiesState.maxZoomPreference)
-    setMinZoomPreference(mapPropertiesState.minZoomPreference)
-    setPadding(
-        mapPropertiesState.padding.leftPx,
-        mapPropertiesState.padding.topPx,
-        mapPropertiesState.padding.rightPx,
-        mapPropertiesState.padding.bottomPx,
-    )
-}

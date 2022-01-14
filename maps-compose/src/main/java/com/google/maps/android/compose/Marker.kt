@@ -30,15 +30,18 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.ktx.addMarker
 
-@Stable
-internal data class MarkerNode(
+internal class MarkerNode(
     val marker: Marker,
     var markerDragState: MarkerDragState?,
     var onMarkerClick: (Marker) -> Boolean,
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
     var onInfoWindowLongClick: (Marker) -> Unit,
-)
+) : MapNode {
+    override fun onRemoved() {
+        marker.remove()
+    }
+}
 
 @Immutable
 enum class DragState {

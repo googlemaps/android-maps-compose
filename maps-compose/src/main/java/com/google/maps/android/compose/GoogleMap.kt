@@ -17,6 +17,7 @@ package com.google.maps.android.compose
 import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.os.Bundle
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
@@ -44,7 +45,6 @@ import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
@@ -83,142 +83,52 @@ fun GoogleMap(
     onMyLocationButtonClick: () -> Boolean = { false },
     onMyLocationClick: () -> Unit = {},
     onPOIClick: (PointOfInterest) -> Unit = {},
+    contentPadding: PaddingValues,
     content: (@Composable () -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    val mapView = remember {
-        MapView(context, googleMapOptionsFactory())
-    }
+    val mapView = remember { MapView(context, googleMapOptionsFactory()) }
 
-    AndroidView(
-        modifier = modifier,
-        factory = { mapView }
-    )
-
+    AndroidView(modifier = modifier, factory = { mapView })
     MapLifecycle(mapView)
 
-    val currentOnMapClick by rememberUpdatedState(onMapClick)
-    val currentOnMapLongClick by rememberUpdatedState(onMapLongClick)
-    val currentOnMapLoaded by rememberUpdatedState(onMapLoaded)
-    val currentOnMyLocationButtonClick by rememberUpdatedState(onMyLocationButtonClick)
-    val currentOnMyLocationClick by rememberUpdatedState(onMyLocationClick)
-    val currentOnPOIClick by rememberUpdatedState(onPOIClick)
-    val currentOnIndoorBuildingFocused by rememberUpdatedState(onIndoorBuildingFocused)
-    val currentOnIndoorLevelActivated by rememberUpdatedState(onIndoorLevelActivated)
+    // rememberUpdatedState and friends are used here to make these values observable to
+    // the subcomposition without providing a new content function each recomposition
+    val mapClickListeners = remember { MapClickListeners() }.also {
+        it.onIndoorBuildingFocused = onIndoorBuildingFocused
+        it.onIndoorLevelActivated = onIndoorLevelActivated
+        it.onMapClick = onMapClick
+        it.onMapLongClick = onMapLongClick
+        it.onMapLoaded = onMapLoaded
+        it.onMyLocationButtonClick = onMyLocationButtonClick
+        it.onMyLocationClick = onMyLocationClick
+        it.onPOIClick = onPOIClick
+    }
     val currentUiSettingsState by rememberUpdatedState(uiSettingsState)
     val currentMapPropertiesState by rememberUpdatedState(mapPropertiesState)
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
+    val currentContentPadding by rememberUpdatedState(contentPadding)
+
+    val parentComposition = rememberCompositionContext()
+    val currentContent by rememberUpdatedState(content)
     LaunchedEffect(Unit) {
-        // Just about everything about a MapView can only be set after the GoogleMap instance
-        // is asynchronously made available. Under "normal" circumstances we would be able to
-        // do all of this in the AndroidView update block instead.
         val map = mapView.awaitMap()
-
-        // Camera listeners; bind currentCameraPositionState to this map and keep it up to date
-        // from the map's source of truth.
-        launch(start = CoroutineStart.UNDISPATCHED) {
-            try {
-                snapshotFlow { currentCameraPositionState }
-                    .collectLatest { cameraPositionState ->
-                        map.setOnCameraIdleListener {
-                            cameraPositionState.isMoving = false
-                        }
-                        map.setOnCameraMoveCanceledListener {
-                            cameraPositionState.isMoving = false
-                        }
-                        map.setOnCameraMoveStartedListener {
-                            cameraPositionState.isMoving = true
-                        }
-                        map.setOnCameraMoveListener {
-                            cameraPositionState.rawPosition = map.cameraPosition
-                        }
-                        cameraPositionState.setMap(map)
-                        try {
-                            awaitCancellation()
-                        } finally {
-                            cameraPositionState.setMap(null)
-                        }
-                    }
-            } finally {
-                map.setOnCameraIdleListener(null)
-                map.setOnCameraMoveListener(null)
-                map.setOnCameraMoveCanceledListener(null)
-                map.setOnCameraMoveStartedListener(null)
-            }
-        }
-
-        // Event listeners
-        launch(start = CoroutineStart.UNDISPATCHED) {
-            snapshotFlow {
-                map.setClickListeners(
-                    onIndoorBuildingFocused = currentOnIndoorBuildingFocused,
-                    onIndoorLevelActivated = currentOnIndoorLevelActivated,
-                    onMapClick = currentOnMapClick,
-                    onMapLongClick = currentOnMapLongClick,
-                    onMapLoaded = currentOnMapLoaded,
-                    onMyLocationButtonClick = currentOnMyLocationButtonClick,
-                    onMyLocationClick = currentOnMyLocationClick,
-                    onPOIClick = currentOnPOIClick
+        disposingComposition {
+            map.newComposition(parentComposition) {
+                MapProperties(
+                    mapPropertiesState = currentMapPropertiesState,
+                    uiSettingsState = currentUiSettingsState,
+                    cameraPositionState = currentCameraPositionState,
+                    clickListeners = mapClickListeners,
+                    locationSource = currentLocationSource,
+                    contentPadding = currentContentPadding,
                 )
-            }.collect()
-        }
 
-        // UISettings
-        launch(start = CoroutineStart.UNDISPATCHED) {
-            snapshotFlow {
-                map.uiSettings.applyState(currentUiSettingsState)
-            }.collect()
-        }
-
-        // Map Properties
-        launch(start = CoroutineStart.UNDISPATCHED) {
-            snapshotFlow {
-                map.applyMapPropertiesState(currentMapPropertiesState, currentLocationSource)
-            }.collect()
-        }
-    }
-
-    // Child APIs
-    if (content != null) {
-        val parentComposition = rememberCompositionContext()
-        val currentContent by rememberUpdatedState(content)
-        LaunchedEffect(Unit) {
-            val map = mapView.awaitMap()
-            disposingComposition {
-                map.newComposition(parentComposition) {
-                    currentContent.invoke()
-                }
+                currentContent?.invoke()
             }
         }
     }
-}
-
-private fun GoogleMap.setClickListeners(
-    onIndoorBuildingFocused: () -> Unit = {},
-    onIndoorLevelActivated: (IndoorBuilding) -> Unit = {},
-    onMapClick: (LatLng) -> Unit = {},
-    onMapLongClick: (LatLng) -> Unit = {},
-    onMapLoaded: () -> Unit = {},
-    onMyLocationButtonClick: () -> Boolean = { false },
-    onMyLocationClick: () -> Unit = {},
-    onPOIClick: (PointOfInterest) -> Unit = {},
-) {
-    setOnMapClickListener { onMapClick(it) }
-    setOnMapLongClickListener { onMapLongClick(it) }
-    setOnMapLoadedCallback { onMapLoaded() }
-    setOnMyLocationButtonClickListener { onMyLocationButtonClick() }
-    setOnMyLocationClickListener { onMyLocationClick() }
-    setOnPoiClickListener { onPOIClick(it) }
-    setOnIndoorStateChangeListener(object : GoogleMap.OnIndoorStateChangeListener {
-        override fun onIndoorBuildingFocused() {
-            onIndoorBuildingFocused()
-        }
-
-        override fun onIndoorLevelActivated(building: IndoorBuilding) {
-            onIndoorLevelActivated(building)
-        }
-    })
 }
 
 private suspend inline fun disposingComposition(factory: () -> Composition) {

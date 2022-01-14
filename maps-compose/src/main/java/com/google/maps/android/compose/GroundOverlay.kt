@@ -27,11 +27,14 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.ktx.addGroundOverlay
 import kotlin.IllegalStateException
 
-@Stable
-internal data class GroundOverlayNode(
+internal class GroundOverlayNode(
     val groundOverlay: GroundOverlay,
     var onGroundOverlayClick: (GroundOverlay) -> Unit
-)
+) : MapNode {
+    override fun onRemoved() {
+        groundOverlay.remove()
+    }
+}
 
 /**
  * The position of a [GroundOverlay].
