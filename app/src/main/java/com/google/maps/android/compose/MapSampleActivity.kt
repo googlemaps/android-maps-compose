@@ -15,6 +15,7 @@
 package com.google.maps.android.compose
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ScrollState
@@ -59,24 +60,17 @@ class MapSampleActivity : ComponentActivity() {
                 position = CameraPosition.fromLatLngZoom(sanFrancisco, 10f)
             }
 
-            // Setting and updating properties of the map can be done with a MapPropertiesState.
-            // All properties are MutableState so updates trigger recomposition
-            val mapProperties = rememberMapPropertiesState()
-
-            // Settings UI-related properties of the map can be done with a UISettingsState.
-            val uiSettingsState = rememberUISettingsState {
-                compassEnabled = false
-            }
-
+            var mapType by remember { mutableStateOf(MapType.NORMAL) }
+            var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
             var shouldAnimateZoom by remember { mutableStateOf(true) }
             var ticker by remember { mutableStateOf(0) }
 
             Box(Modifier.fillMaxSize()) {
                 GoogleMap(
                     modifier = Modifier.matchParentSize(),
-                    mapPropertiesState = mapProperties,
+                    mapType = mapType,
                     cameraPositionState = cameraPositionState,
-                    uiSettingsState = uiSettingsState,
+                    uiSettings = uiSettings,
                 ) {
                     // Drawing on the map is accomplished with a child-based API
                     Marker(
@@ -97,12 +91,13 @@ class MapSampleActivity : ComponentActivity() {
 
                 Column {
                     MapTypeControls(onMapTypeClick = {
-                        mapProperties.mapType = it
+                        Log.d("GoogleMap", "Selected map type $it")
+                        mapType = it
                     })
                     val coroutineScope = rememberCoroutineScope()
                     ZoomControls(
                         shouldAnimateZoom,
-                        uiSettingsState.zoomControlsEnabled,
+                        uiSettings.zoomControlsEnabled,
                         onZoomOut = {
                             if (shouldAnimateZoom) {
                                 coroutineScope.launch {
@@ -126,7 +121,7 @@ class MapSampleActivity : ComponentActivity() {
                             shouldAnimateZoom = it
                         },
                         onZoomControlsCheckedChange = {
-                            uiSettingsState.zoomControlsEnabled = it
+                            uiSettings = uiSettings.copy(zoomControlsEnabled = it)
                         }
                     )
                     DebugView(cameraPositionState)

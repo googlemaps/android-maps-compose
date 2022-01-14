@@ -16,6 +16,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.IndoorBuilding
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.PointOfInterest
 
 internal class MapPropertiesNode(
@@ -73,7 +75,7 @@ internal class MapPropertiesNode(
     }
 }
 
-private val NoPadding = PaddingValues()
+internal val NoPadding = PaddingValues()
 
 /**
  * Used to keep the primary map properties up to date. This should never leave the map composition.
@@ -82,12 +84,12 @@ private val NoPadding = PaddingValues()
 @Suppress("NOTHING_TO_INLINE")
 @Composable
 internal inline fun MapProperties(
-    mapPropertiesState: MapPropertiesState,
-    uiSettingsState: UISettingsState,
     cameraPositionState: CameraPositionState,
     clickListeners: MapClickListeners,
+    contentPadding: PaddingValues = NoPadding,
     locationSource: LocationSource?,
-    contentPadding: PaddingValues = NoPadding
+    mapPropertiesHolder: MapPropertiesHolder,
+    mapUiSettings: MapUiSettings,
 ) {
     val map = (currentComposer.applier as MapApplier).map
     val density = LocalDensity.current
@@ -109,16 +111,16 @@ internal inline fun MapProperties(
         update(layoutDirection) { this.layoutDirection = it }
 
         set(locationSource) { map.setLocationSource(it) }
-        set(mapPropertiesState.contentDescription) { map.setContentDescription(it) }
-        set(mapPropertiesState.isBuildingEnabled) { map.isBuildingsEnabled = it }
-        set(mapPropertiesState.isIndoorEnabled) { map.isIndoorEnabled = it }
-        set(mapPropertiesState.isMyLocationEnabled) { map.isMyLocationEnabled = it }
-        set(mapPropertiesState.isTrafficEnabled) { map.isTrafficEnabled = it }
-        set(mapPropertiesState.latLngBoundsForCameraTarget) { map.setLatLngBoundsForCameraTarget(it) }
-        set(mapPropertiesState.mapStyleOptions) { map.setMapStyle(it) }
-        set(mapPropertiesState.mapType) { map.mapType = it.value }
-        set(mapPropertiesState.maxZoomPreference) { map.setMaxZoomPreference(it) }
-        set(mapPropertiesState.minZoomPreference) { map.setMinZoomPreference(it) }
+        set(mapPropertiesHolder.contentDescription) { map.setContentDescription(it) }
+        set(mapPropertiesHolder.isBuildingEnabled) { map.isBuildingsEnabled = it }
+        set(mapPropertiesHolder.isIndoorEnabled) { map.isIndoorEnabled = it }
+        set(mapPropertiesHolder.isMyLocationEnabled) { map.isMyLocationEnabled = it }
+        set(mapPropertiesHolder.isTrafficEnabled) { map.isTrafficEnabled = it }
+        set(mapPropertiesHolder.latLngBoundsForCameraTarget) { map.setLatLngBoundsForCameraTarget(it) }
+        set(mapPropertiesHolder.mapStyleOptions) { map.setMapStyle(it) }
+        set(mapPropertiesHolder.mapType) { map.mapType = it.value }
+        set(mapPropertiesHolder.maxZoomPreference) { map.setMaxZoomPreference(it) }
+        set(mapPropertiesHolder.minZoomPreference) { map.setMinZoomPreference(it) }
         set(contentPadding) {
             val node = this
             with(this.density) {
@@ -131,20 +133,44 @@ internal inline fun MapProperties(
             }
         }
 
-        set(uiSettingsState.compassEnabled) { map.uiSettings.isCompassEnabled = it }
-        set(uiSettingsState.indoorLevelPickerEnabled) { map.uiSettings.isIndoorLevelPickerEnabled = it }
-        set(uiSettingsState.mapToolbarEnabled) { map.uiSettings.isMapToolbarEnabled = it }
-        set(uiSettingsState.myLocationButtonEnabled) { map.uiSettings.isMyLocationButtonEnabled = it }
-        set(uiSettingsState.rotationGesturesEnabled) { map.uiSettings.isRotateGesturesEnabled = it }
-        set(uiSettingsState.scrollGesturesEnabled) { map.uiSettings.isScrollGesturesEnabled = it }
-        set(uiSettingsState.scrollGesturesEnabledDuringRotateOrZoom) { map.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = it }
-        set(uiSettingsState.tiltGesturesEnabled) { map.uiSettings.isTiltGesturesEnabled = it }
-        set(uiSettingsState.zoomControlsEnabled) { map.uiSettings.isZoomControlsEnabled = it }
-        set(uiSettingsState.zoomGesturesEnabled) { map.uiSettings.isZoomGesturesEnabled = it }
+        set(mapUiSettings.compassEnabled) { map.uiSettings.isCompassEnabled = it }
+        set(mapUiSettings.indoorLevelPickerEnabled) { map.uiSettings.isIndoorLevelPickerEnabled = it }
+        set(mapUiSettings.mapToolbarEnabled) { map.uiSettings.isMapToolbarEnabled = it }
+        set(mapUiSettings.myLocationButtonEnabled) { map.uiSettings.isMyLocationButtonEnabled = it }
+        set(mapUiSettings.rotationGesturesEnabled) { map.uiSettings.isRotateGesturesEnabled = it }
+        set(mapUiSettings.scrollGesturesEnabled) { map.uiSettings.isScrollGesturesEnabled = it }
+        set(mapUiSettings.scrollGesturesEnabledDuringRotateOrZoom) { map.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = it }
+        set(mapUiSettings.tiltGesturesEnabled) { map.uiSettings.isTiltGesturesEnabled = it }
+        set(mapUiSettings.zoomControlsEnabled) { map.uiSettings.isZoomControlsEnabled = it }
+        set(mapUiSettings.zoomGesturesEnabled) { map.uiSettings.isZoomGesturesEnabled = it }
 
         update(cameraPositionState) { this.cameraPositionState = it }
         update(clickListeners) { this.clickListeners = it }
     }
+}
+
+internal class MapPropertiesHolder(
+    contentDescription: String? = null,
+    isBuildingEnabled: Boolean = false,
+    isIndoorEnabled: Boolean = false,
+    isMyLocationEnabled: Boolean = false,
+    isTrafficEnabled: Boolean = false,
+    latLngBoundsForCameraTarget: LatLngBounds? = null,
+    mapStyleOptions: MapStyleOptions? = null,
+    mapType: MapType = MapType.NORMAL,
+    maxZoomPreference: Float = 21.0f,
+    minZoomPreference: Float = 3.0f,
+) {
+    var contentDescription: String? by mutableStateOf(contentDescription)
+    var isBuildingEnabled: Boolean by mutableStateOf(isBuildingEnabled)
+    var isIndoorEnabled: Boolean by mutableStateOf(isIndoorEnabled)
+    var isMyLocationEnabled: Boolean by mutableStateOf(isMyLocationEnabled)
+    var isTrafficEnabled: Boolean by mutableStateOf(isTrafficEnabled)
+    var latLngBoundsForCameraTarget: LatLngBounds? by mutableStateOf(latLngBoundsForCameraTarget)
+    var mapStyleOptions: MapStyleOptions? by mutableStateOf(mapStyleOptions)
+    var mapType: MapType by mutableStateOf(mapType)
+    var maxZoomPreference: Float by mutableStateOf(maxZoomPreference)
+    var minZoomPreference: Float by mutableStateOf(minZoomPreference)
 }
 
 /**

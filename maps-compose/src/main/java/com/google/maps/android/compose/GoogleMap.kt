@@ -40,6 +40,8 @@ import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.IndoorBuilding
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineStart
@@ -51,12 +53,25 @@ import kotlinx.coroutines.launch
  * A compose container for a [MapView].
  *
  * @param modifier - Modifier to be applied to the GoogleMap
- * @param googleMapOptionsFactory - The block for creating the [GoogleMapOptions] provided when the
- * map is created
- * @param mapPropertiesState - the [MapPropertiesState] to be used to set properties of the map
  * @param cameraPositionState - the [CameraPositionState] to be used to control or observe the map's
  * camera state
+ * @param contentDescription - the content description for the map used by accessibility services to
+ * describe the map.
+ * @param googleMapOptionsFactory - the block for creating the [GoogleMapOptions] provided when the
+ * map is created
+ * @param isBuildingEnabled - boolean indicating if buildings are enabled
+ * @param isIndoorEnabled - boolean indicating if indoor maps are enabled
+ * @param isMyLocationEnabled - boolean indicating if the my-location layer should be enabled. Before
+ * setting this property to 'true', ensure that `ACCESS_COARSE_LOCATION` or `ACCESS_FINE_LOCATION`
+ * permissions have been granted.
+ * @param isTrafficEnabled - boolean indicating if the traffic layer is on or off.
+ * @param latLngBoundsForCameraTarget - a [LatLngBounds] to constrain the camera target.
  * @param locationSource - the [LocationSource] to be used to provide location data
+ * @param mapStyleOptions - the styling options for the map
+ * @param mapType - the type of the map tiles that should be displayed
+ * @param maxZoomPreference - the preferred upper bound for the camera zoom.
+ * @param minZoomPreference - the preferred lower bound for the camera zoom.
+ * @param uiSettings - the [MapUiSettings] to be used for UI-specific settings on the map
  * @param onIndoorBuildingFocused - lambda to be invoked when an indoor building is focused
  * @param onIndoorLevelActivated - lambda to be invoked when an level is activated in an indoor
  * building
@@ -70,11 +85,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun GoogleMap(
     modifier: Modifier = Modifier,
-    googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
-    uiSettingsState: UISettingsState = rememberUISettingsState(),
-    mapPropertiesState: MapPropertiesState = rememberMapPropertiesState(),
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    contentDescription: String? = "Google Map",
+    googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
+    isBuildingEnabled: Boolean = false,
+    isIndoorEnabled: Boolean = false,
+    isMyLocationEnabled: Boolean = false,
+    isTrafficEnabled: Boolean = false,
+    latLngBoundsForCameraTarget: LatLngBounds? = null,
     locationSource: LocationSource? = null,
+    mapStyleOptions: MapStyleOptions? = null,
+    mapType: MapType = MapType.NORMAL,
+    maxZoomPreference: Float = 21.0f,
+    minZoomPreference: Float = 3.0f,
+    uiSettings: MapUiSettings = MapUiSettings(),
     onIndoorBuildingFocused: () -> Unit = {},
     onIndoorLevelActivated: (IndoorBuilding) -> Unit = {},
     onMapClick: (LatLng) -> Unit = {},
@@ -83,7 +107,7 @@ fun GoogleMap(
     onMyLocationButtonClick: () -> Boolean = { false },
     onMyLocationClick: () -> Unit = {},
     onPOIClick: (PointOfInterest) -> Unit = {},
-    contentPadding: PaddingValues,
+    contentPadding: PaddingValues = NoPadding,
     content: (@Composable () -> Unit)? = null,
 ) {
     val context = LocalContext.current
@@ -104,11 +128,22 @@ fun GoogleMap(
         it.onMyLocationClick = onMyLocationClick
         it.onPOIClick = onPOIClick
     }
-    val currentUiSettingsState by rememberUpdatedState(uiSettingsState)
-    val currentMapPropertiesState by rememberUpdatedState(mapPropertiesState)
+    val mapPropertiesHolder = remember { MapPropertiesHolder() }.also {
+        it.contentDescription = contentDescription
+        it.isBuildingEnabled = isBuildingEnabled
+        it.isIndoorEnabled = isIndoorEnabled
+        it.isMyLocationEnabled = isMyLocationEnabled
+        it.isTrafficEnabled = isTrafficEnabled
+        it.latLngBoundsForCameraTarget = latLngBoundsForCameraTarget
+        it.mapStyleOptions = mapStyleOptions
+        it.mapType = mapType
+        it.maxZoomPreference = maxZoomPreference
+        it.minZoomPreference = minZoomPreference
+    }
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
+    val currentUiSettings by rememberUpdatedState(uiSettings)
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
@@ -117,12 +152,12 @@ fun GoogleMap(
         disposingComposition {
             map.newComposition(parentComposition) {
                 MapProperties(
-                    mapPropertiesState = currentMapPropertiesState,
-                    uiSettingsState = currentUiSettingsState,
                     cameraPositionState = currentCameraPositionState,
                     clickListeners = mapClickListeners,
-                    locationSource = currentLocationSource,
                     contentPadding = currentContentPadding,
+                    locationSource = currentLocationSource,
+                    mapPropertiesHolder = mapPropertiesHolder,
+                    mapUiSettings = currentUiSettings,
                 )
 
                 currentContent?.invoke()
@@ -182,8 +217,8 @@ private fun MapView.lifecycleObserver(): LifecycleEventObserver =
     }
 
 private fun MapView.componentCallbacks(): ComponentCallbacks =
-    object: ComponentCallbacks {
-        override fun onConfigurationChanged(config: Configuration) { }
+    object : ComponentCallbacks {
+        override fun onConfigurationChanged(config: Configuration) {}
 
         override fun onLowMemory() {
             this@componentCallbacks.onLowMemory()
