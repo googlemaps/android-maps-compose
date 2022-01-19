@@ -64,6 +64,7 @@ fun Polyline(
     jointType: Int = JointType.DEFAULT,
     pattern: List<PatternItem>? = null,
     startCap: Cap = ButtCap(),
+    tag: Any? = null,
     visible: Boolean = true,
     width: Float = 10f,
     zIndex: Float = 0f,
@@ -85,10 +86,11 @@ fun Polyline(
                 width(width)
                 zIndex(zIndex)
             } ?: error("Error adding Polyline")
+            polyline.tag = tag
             PolylineNode(polyline, onClick)
         },
         update = {
-            set(onClick) { this.onPolylineClick = it }
+            update(onClick) { this.onPolylineClick = it }
 
             set(points) { this.polyline.points = it }
             set(clickable) { this.polyline.isClickable = it }
@@ -98,6 +100,7 @@ fun Polyline(
             set(jointType) { this.polyline.jointType = it }
             set(pattern) { this.polyline.pattern = it }
             set(startCap) { this.polyline.startCap = it }
+            set(tag) { this.polyline.tag = it }
             set(visible) { this.polyline.isVisible = it }
             set(width) { this.polyline.width = it }
             set(zIndex) { this.polyline.zIndex = it }

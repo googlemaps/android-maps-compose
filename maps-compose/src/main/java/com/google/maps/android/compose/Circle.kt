@@ -44,6 +44,7 @@ internal class CircleNode(
  * @param strokeColor a [ColorInt] for the stroke color of the circle
  * @param strokePattern a sequence of [PatternItem] to be repeated along the circle's outline (null
  * represents a solid line)
+ * @param tag optional tag to be associated with the circle
  * @param strokeWidth the width of the circle's outline in screen pixels
  * @param visible the visibility of the circle
  * @param zIndex the z-index of the circle
@@ -58,6 +59,7 @@ fun Circle(
     @ColorInt strokeColor: Int = Color.BLACK,
     strokePattern: List<PatternItem>? = null,
     strokeWidth: Float = 10f,
+    tag: Any? = null,
     visible: Boolean = true,
     zIndex: Float = 0f,
     onClick: (Circle) -> Unit = {},
@@ -76,10 +78,11 @@ fun Circle(
                 visible(visible)
                 zIndex(zIndex)
             } ?: error("Error adding circle")
+            circle.tag = tag
             CircleNode(circle, onClick)
         },
         update = {
-            set(onClick) { this.onCircleClick = it }
+            update(onClick) { this.onCircleClick = it }
 
             set(center) { this.circle.center = it }
             set(clickable) { this.circle.isClickable = it }
@@ -88,6 +91,7 @@ fun Circle(
             set(strokeColor) { this.circle.strokeColor = it }
             set(strokePattern) { this.circle.strokePattern = it }
             set(strokeWidth) { this.circle.strokeWidth = it }
+            set(tag) { this.circle.tag = it }
             set(visible) { this.circle.isVisible = it }
             set(zIndex) { this.circle.zIndex = it }
         }

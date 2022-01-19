@@ -62,7 +62,7 @@ fun TileOverlay(
             TileOverlayNode(tileOverlay, onClick)
         },
         update = {
-            set(onClick) { this.onTileOverlayClick = it }
+            update(onClick) { this.onTileOverlayClick = it }
 
             set(tileProvider) {
                 this.tileOverlay.remove()

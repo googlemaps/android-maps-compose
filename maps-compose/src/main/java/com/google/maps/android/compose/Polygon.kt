@@ -47,6 +47,7 @@ internal class PolygonNode(
  * @param strokeJointType the joint type for all vertices of the polygon's outline
  * @param strokePattern the stroke pattern for the polygon's outline
  * @param strokeWidth specifies the polygon's stroke width, in display pixels
+ * @param tag optional tag to associate wiht the polygon
  * @param visible the visibility of the polygon
  * @param zIndex the z-index of the polygon
  * @param onClick a lambda invoked when the polygon is clicked
@@ -62,6 +63,7 @@ fun Polygon(
     strokeJointType: Int = JointType.DEFAULT,
     strokePattern: List<PatternItem>? = null,
     strokeWidth: Float = 10f,
+    tag: Any? = null,
     visible: Boolean = true,
     zIndex: Float = 0f,
     onClick: (Polygon) -> Unit = {}
@@ -84,10 +86,11 @@ fun Polygon(
                 visible(visible)
                 zIndex(zIndex)
             } ?: error("Error adding polygon")
+            polygon.tag = tag
             PolygonNode(polygon, onClick)
         },
         update = {
-            set(onClick) { this.onPolygonClick = it }
+            update(onClick) { this.onPolygonClick = it }
 
             set(points) { this.polygon.points = it }
             set(clickable) { this.polygon.isClickable = it }
@@ -98,6 +101,7 @@ fun Polygon(
             set(strokeJointType) { this.polygon.strokeJointType = it }
             set(strokePattern) { this.polygon.strokePattern = it }
             set(strokeWidth) { this.polygon.strokeWidth = it }
+            set(tag) { this.polygon.tag = it }
             set(visible) { this.polygon.isVisible = it }
             set(zIndex) { this.polygon.zIndex = it }
         }

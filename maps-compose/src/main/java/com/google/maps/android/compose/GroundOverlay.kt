@@ -70,6 +70,7 @@ class GroundOverlayPosition private constructor(
  * @param anchor the anchor of the ground overlay
  * @param bearing the bearing of the ground overlay in degrees clockwise from north
  * @param clickable boolean indicating if the ground overlay is clickable or not
+ * @param tag optional tag to associate with the ground overlay
  * @param transparency the transparency of the ground overlay
  * @param visible the visibility of the ground overlay
  * @param zIndex the z-index of the ground overlay
@@ -82,6 +83,7 @@ fun GroundOverlay(
     anchor: PointF = PointF(0.5f, 0.5f),
     bearing: Float = 0f,
     clickable: Boolean = false,
+    tag: Any? = null,
     transparency: Float = 0f,
     visible: Boolean = true,
     zIndex: Float = 0f,
@@ -100,15 +102,17 @@ fun GroundOverlay(
                 visible(visible)
                 zIndex(zIndex)
             } ?: error("Error adding ground overlay")
+            groundOverlay.tag = tag
             GroundOverlayNode(groundOverlay, onClick)
         },
         update = {
-            set(onClick) { this.onGroundOverlayClick = it }
+            update(onClick) { this.onGroundOverlayClick = it }
 
             set(bearing) { this.groundOverlay.bearing = it }
             set(clickable) { this.groundOverlay.isClickable = it }
             set(image) { this.groundOverlay.setImage(it) }
             set(position) { this.groundOverlay.position(it) }
+            set(tag) { this.groundOverlay.tag = it }
             set(transparency) { this.groundOverlay.transparency = it }
             set(visible) { this.groundOverlay.isVisible = it }
             set(zIndex) { this.groundOverlay.zIndex = it }

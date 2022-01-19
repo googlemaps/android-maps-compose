@@ -59,6 +59,9 @@ class MarkerDragState {
         internal set
 }
 
+/**
+ * Creates and [remember] a [MarkerDragState].
+ */
 @Composable
 fun rememberMarkerDragState(): MarkerDragState = remember {
     MarkerDragState()
@@ -76,6 +79,7 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  * @param infoWindowAnchor the anchor point of the info window on the marker image
  * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
  * @param snippet the snippet for the marker
+ * @param tag optional tag to associate with the marker
  * @param title the title for the marker
  * @param visible the visibility of the marker
  * @param zIndex the z-index of the marker
@@ -96,6 +100,7 @@ fun Marker(
     infoWindowAnchor: PointF = PointF(0.5f, 0.0f),
     rotation: Float = 0.0f,
     snippet: String? = null,
+    tag: Any? = null,
     title: String? = null,
     visible: Boolean = true,
     zIndex: Float = 0.0f,
@@ -122,6 +127,7 @@ fun Marker(
                 visible(visible)
                 zIndex(zIndex)
             } ?: error("Error adding marker")
+            marker.tag = tag
             MarkerNode(
                 marker = marker,
                 markerDragState = markerDragState,
@@ -132,11 +138,11 @@ fun Marker(
             )
         },
         update = {
-            set(markerDragState) { this.markerDragState = it }
-            set(onClick) { this.onMarkerClick = it }
-            set(onInfoWindowClick) { this.onInfoWindowClick = it }
-            set(onInfoWindowClose) { this.onInfoWindowClose = it }
-            set(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
+            update(markerDragState) { this.markerDragState = it }
+            update(onClick) { this.onMarkerClick = it }
+            update(onInfoWindowClick) { this.onInfoWindowClick = it }
+            update(onInfoWindowClose) { this.onInfoWindowClose = it }
+            update(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
 
             set(alpha) { this.marker.alpha = it }
             set(anchor) { this.marker.setAnchor(it.x, it.y) }
@@ -147,6 +153,7 @@ fun Marker(
             set(position) { this.marker.position = it }
             set(rotation) { this.marker.rotation = it }
             set(snippet) { this.marker.snippet = it }
+            set(tag) { this.marker.tag = it }
             set(title) { this.marker.title = it }
             set(visible) { this.marker.isVisible = it }
             set(zIndex) { this.marker.zIndex = it }
