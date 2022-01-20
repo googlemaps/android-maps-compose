@@ -27,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -38,49 +37,38 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.IndoorBuilding
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 /**
  * A compose container for a [MapView].
  *
- * @param modifier - Modifier to be applied to the GoogleMap
- * @param cameraPositionState - the [CameraPositionState] to be used to control or observe the map's
+ * @param modifier Modifier to be applied to the GoogleMap
+ * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
  * camera state
- * @param contentDescription - the content description for the map used by accessibility services to
+ * @param contentDescription the content description for the map used by accessibility services to
  * describe the map.
- * @param googleMapOptionsFactory - the block for creating the [GoogleMapOptions] provided when the
+ * @param googleMapOptionsFactory the block for creating the [GoogleMapOptions] provided when the
  * map is created
- * @param isBuildingEnabled - boolean indicating if buildings are enabled
- * @param isIndoorEnabled - boolean indicating if indoor maps are enabled
- * @param isMyLocationEnabled - boolean indicating if the my-location layer should be enabled. Before
+ * @param isBuildingEnabled boolean indicating if buildings are enabled
+ * @param isIndoorEnabled boolean indicating if indoor maps are enabled
+ * @param isMyLocationEnabled boolean indicating if the my-location layer should be enabled. Before
  * setting this property to 'true', ensure that `ACCESS_COARSE_LOCATION` or `ACCESS_FINE_LOCATION`
  * permissions have been granted.
- * @param isTrafficEnabled - boolean indicating if the traffic layer is on or off.
- * @param latLngBoundsForCameraTarget - a [LatLngBounds] to constrain the camera target.
- * @param locationSource - the [LocationSource] to be used to provide location data
- * @param mapStyleOptions - the styling options for the map
- * @param mapType - the type of the map tiles that should be displayed
- * @param maxZoomPreference - the preferred upper bound for the camera zoom.
- * @param minZoomPreference - the preferred lower bound for the camera zoom.
- * @param uiSettings - the [MapUiSettings] to be used for UI-specific settings on the map
- * @param onIndoorBuildingFocused - lambda to be invoked when an indoor building is focused
- * @param onIndoorLevelActivated - lambda to be invoked when an level is activated in an indoor
- * building
- * @param onMapClick - lambda invoked when the map is clicked
- * @param onMapLoaded - lambda invoked when the map is finished loading
- * @param onMyLocationButtonClick - lambda invoked when the my location button is clicked
- * @param onMyLocationClick - lambda invoked when the my location dot is clicked
- * @param onPOIClick - lambda invoked when a POI is clicked
- * @param content - the content of the map
+ * @param isTrafficEnabled boolean indicating if the traffic layer is on or off.
+ * @param latLngBoundsForCameraTarget a [LatLngBounds] to constrain the camera target.
+ * @param locationSource the [LocationSource] to be used to provide location data
+ * @param mapStyleOptions the styling options for the map
+ * @param mapType the type of the map tiles that should be displayed
+ * @param maxZoomPreference the preferred upper bound for the camera zoom.
+ * @param minZoomPreference the preferred lower bound for the camera zoom.
+ * @param uiSettings the [MapUiSettings] to be used for UI-specific settings on the map
+ * @param mapEventListener optional listeners for map events (map clicks, etc.)
+ * @param indoorStateChangeListener optional listener for when state changes on
+ * an indoor level of a building
+ * @param content the content of the map
  */
 @Composable
 fun GoogleMap(
@@ -99,14 +87,8 @@ fun GoogleMap(
     maxZoomPreference: Float = 21.0f,
     minZoomPreference: Float = 3.0f,
     uiSettings: MapUiSettings = MapUiSettings(),
-    onIndoorBuildingFocused: () -> Unit = {},
-    onIndoorLevelActivated: (IndoorBuilding) -> Unit = {},
-    onMapClick: (LatLng) -> Unit = {},
-    onMapLongClick: (LatLng) -> Unit = {},
-    onMapLoaded: () -> Unit = {},
-    onMyLocationButtonClick: () -> Boolean = { false },
-    onMyLocationClick: () -> Unit = {},
-    onPOIClick: (PointOfInterest) -> Unit = {},
+    mapEventListener: MapEventListener = DefaultMapEventListeners,
+    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
     contentPadding: PaddingValues = NoPadding,
     content: (@Composable () -> Unit)? = null,
 ) {
@@ -119,14 +101,8 @@ fun GoogleMap(
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
     val mapClickListeners = remember { MapClickListeners() }.also {
-        it.onIndoorBuildingFocused = onIndoorBuildingFocused
-        it.onIndoorLevelActivated = onIndoorLevelActivated
-        it.onMapClick = onMapClick
-        it.onMapLongClick = onMapLongClick
-        it.onMapLoaded = onMapLoaded
-        it.onMyLocationButtonClick = onMyLocationButtonClick
-        it.onMyLocationClick = onMyLocationClick
-        it.onPOIClick = onPOIClick
+        it.indoorStateChangeListener = indoorStateChangeListener
+        it.mapEventListener = mapEventListener
     }
     val mapPropertiesHolder = remember { MapPropertiesHolder() }.also {
         it.contentDescription = contentDescription

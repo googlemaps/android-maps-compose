@@ -46,9 +46,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PointOfInterest
 import kotlinx.coroutines.launch
 
 class MapSampleActivity : ComponentActivity() {
+
+    private val TAG = MapSampleActivity::class.java.simpleName
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapsInitializer.initialize(this)
@@ -71,13 +75,18 @@ class MapSampleActivity : ComponentActivity() {
                     mapType = mapType,
                     cameraPositionState = cameraPositionState,
                     uiSettings = uiSettings,
+                    mapEventListener = object : MapEventListener {
+                        override fun onPOIClick(poi: PointOfInterest) {
+                            Log.d(TAG, "$poi was clicked")
+                        }
+                    }
                 ) {
                     // Drawing on the map is accomplished with a child-based API
                     Marker(
                         position = sanFrancisco,
                         title = "Zoom in has been tapped $ticker times.",
                         onClick = {
-                            println("${it.title} was clicked")
+                            Log.d(TAG, "${it.title} was clicked")
                             false
                         }
                     )

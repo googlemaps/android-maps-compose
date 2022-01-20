@@ -15,10 +15,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.model.IndoorBuilding
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.PointOfInterest
 
 internal class MapPropertiesNode(
     val map: GoogleMap,
@@ -53,19 +51,31 @@ internal class MapPropertiesNode(
         map.setOnCameraMoveListener {
             cameraPositionState.rawPosition = map.cameraPosition
         }
-        map.setOnMapClickListener { clickListeners.onMapClick(it) }
-        map.setOnMapLongClickListener { clickListeners.onMapLongClick(it) }
-        map.setOnMapLoadedCallback { clickListeners.onMapLoaded() }
-        map.setOnMyLocationButtonClickListener { clickListeners.onMyLocationButtonClick() }
-        map.setOnMyLocationClickListener { clickListeners.onMyLocationClick() }
-        map.setOnPoiClickListener { clickListeners.onPOIClick(it) }
+        map.setOnMapClickListener {
+            clickListeners.mapEventListener.onMapClick(it)
+        }
+        map.setOnMapLongClickListener {
+            clickListeners.mapEventListener.onMapLongClick(it)
+        }
+        map.setOnMapLoadedCallback {
+            clickListeners.mapEventListener.onMapLoaded()
+        }
+        map.setOnMyLocationButtonClickListener {
+            clickListeners.mapEventListener.onMyLocationButtonClick()
+        }
+        map.setOnMyLocationClickListener {
+            clickListeners.mapEventListener.onMyLocationClick()
+        }
+        map.setOnPoiClickListener {
+            clickListeners.mapEventListener.onPOIClick(it)
+        }
         map.setOnIndoorStateChangeListener(object : GoogleMap.OnIndoorStateChangeListener {
             override fun onIndoorBuildingFocused() {
-                clickListeners.onIndoorBuildingFocused()
+                clickListeners.indoorStateChangeListener.onIndoorBuildingFocused()
             }
 
             override fun onIndoorLevelActivated(building: IndoorBuilding) {
-                clickListeners.onIndoorLevelActivated(building)
+                clickListeners.indoorStateChangeListener.onIndoorLevelActivated(building)
             }
         })
     }
@@ -171,19 +181,4 @@ internal class MapPropertiesHolder(
     var mapType: MapType by mutableStateOf(mapType)
     var maxZoomPreference: Float by mutableStateOf(maxZoomPreference)
     var minZoomPreference: Float by mutableStateOf(minZoomPreference)
-}
-
-/**
- * Holder class for top-level click listeners.
- * TODO: Combine/group some of these
- */
-internal class MapClickListeners {
-    var onIndoorBuildingFocused: () -> Unit by mutableStateOf({})
-    var onIndoorLevelActivated: (IndoorBuilding) -> Unit by mutableStateOf({})
-    var onMapClick: (LatLng) -> Unit by mutableStateOf({})
-    var onMapLongClick: (LatLng) -> Unit by mutableStateOf({})
-    var onMapLoaded: () -> Unit by mutableStateOf({})
-    var onMyLocationButtonClick: () -> Boolean by mutableStateOf({ false })
-    var onMyLocationClick: () -> Unit by mutableStateOf({})
-    var onPOIClick: (PointOfInterest) -> Unit by mutableStateOf({})
 }

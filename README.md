@@ -22,7 +22,7 @@ Adding a map to your app looks like the following:
 ```kotlin
 val sanFrancisco = LatLng(37.76, -122.47)
 val cameraPositionState = rememberCameraPositionState(
-    initialPosition = CameraPosition.fromLatLngZoom(sanFrancisco, 10f)
+    position = CameraPosition.fromLatLngZoom(sanFrancisco, 10f)
 )
 GoogleMap(
     modifier = Modifier.fillMaxSize(),
@@ -33,20 +33,23 @@ GoogleMap(
 ### Creating and configuring a map
 
 Configuring the map can be done either by passing a `GoogleMapOptions` instance 
-to initialize the map, or by using `MapPropertiesState`—an object with stateful 
-properties which trigger recomposition when changed.
+to initialize the map, or by setting properties directly in the `GoogleMap` 
+composable.
 
 ```kotlin
-val mapPropertiesState = rememberMapPropertiesState()
+// Initialize map by providing a googleMapOptionsFactory
 GoogleMap(
     googleMapOptionsFactory = {
         GoogleMapOptions().mapId("MyMapId")
-    },
-    mapPropertiesState = mapPropertiesState,
+    }
 )
 
-// ...this triggers recomposition of the map
-mapProperties.isIndoorEnabled = true
+// ...or set properties which can trigger recomposition on the GoogleMap
+// composable directly
+GoogleMap(
+    maxZoomPreference = 10f,
+    minZoomPreference = 5f,
+)
 ```
 
 ### Controlling the map's camera
@@ -59,7 +62,7 @@ Box(Modifier.fillMaxSize()) {
   GoogleMap(cameraPositionState = cameraPositionState)
   Button(onClick = {
     // Move the camera to a new zoom level
-    cameraPositionState.moveCamera(CameraUpdateFactory.zoomIn())
+    cameraPositionState.move(update: CameraUpdateFactory.zoomIn())
   })
 }
 ```
