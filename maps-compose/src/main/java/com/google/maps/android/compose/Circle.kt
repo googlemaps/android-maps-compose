@@ -14,12 +14,11 @@
 
 package com.google.maps.android.compose
 
-import android.graphics.Color
-import androidx.annotation.ColorInt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.currentComposer
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
@@ -39,9 +38,9 @@ internal class CircleNode(
  *
  * @param center the [LatLng] to use for the center of this circle
  * @param clickable boolean indicating if the circle is clickable or not
- * @param fillColor a [ColorInt] for the fill color of the circle
+ * @param fillColor the fill color of the circle
  * @param radius the radius of the circle in meters.
- * @param strokeColor a [ColorInt] for the stroke color of the circle
+ * @param strokeColor the stroke color of the circle
  * @param strokePattern a sequence of [PatternItem] to be repeated along the circle's outline (null
  * represents a solid line)
  * @param tag optional tag to be associated with the circle
@@ -54,9 +53,9 @@ internal class CircleNode(
 fun Circle(
     center: LatLng,
     clickable: Boolean = false,
-    @ColorInt fillColor: Int = Color.TRANSPARENT,
+    fillColor: Color = Color.Transparent,
     radius: Double = 0.0,
-    @ColorInt strokeColor: Int = Color.BLACK,
+    strokeColor: Color = Color.Black,
     strokePattern: List<PatternItem>? = null,
     strokeWidth: Float = 10f,
     tag: Any? = null,
@@ -70,9 +69,9 @@ fun Circle(
             val circle = mapApplier?.map?.addCircle {
                 center(center)
                 clickable(clickable)
-                fillColor(fillColor)
+                fillColor(fillColor.toArgb())
                 radius(radius)
-                strokeColor(strokeColor)
+                strokeColor(strokeColor.toArgb())
                 strokePattern(strokePattern)
                 strokeWidth(strokeWidth)
                 visible(visible)
@@ -86,9 +85,9 @@ fun Circle(
 
             set(center) { this.circle.center = it }
             set(clickable) { this.circle.isClickable = it }
-            set(fillColor) { this.circle.fillColor = it }
+            set(fillColor) { this.circle.fillColor = it.toArgb() }
             set(radius) { this.circle.radius = it }
-            set(strokeColor) { this.circle.strokeColor = it }
+            set(strokeColor) { this.circle.strokeColor = it.toArgb() }
             set(strokePattern) { this.circle.strokePattern = it }
             set(strokeWidth) { this.circle.strokeWidth = it }
             set(tag) { this.circle.tag = it }

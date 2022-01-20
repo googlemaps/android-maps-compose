@@ -14,12 +14,11 @@
 
 package com.google.maps.android.compose
 
-import android.graphics.Color
-import androidx.annotation.ColorInt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.currentComposer
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.google.android.gms.maps.model.ButtCap
 import com.google.android.gms.maps.model.Cap
 import com.google.android.gms.maps.model.JointType
@@ -42,7 +41,7 @@ internal class PolylineNode(
  *
  * @param points the points comprising the polyline
  * @param clickable boolean indicating if the polyline is clickable or not
- * @param color a [ColorInt] for the color of the polyline
+ * @param color the color of the polyline
  * @param endCap a cap at the end vertex of the polyline
  * @param geodesic specifies whether to draw the polyline as a geodesic
  * @param jointType the joint type for all vertices of the polyline except the start and end
@@ -58,7 +57,7 @@ internal class PolylineNode(
 fun Polyline(
     points: List<LatLng>,
     clickable: Boolean = false,
-    @ColorInt color: Int = Color.BLACK,
+    color: Color = Color.Black,
     endCap: Cap = ButtCap(),
     geodesic: Boolean = false,
     jointType: Int = JointType.DEFAULT,
@@ -76,7 +75,7 @@ fun Polyline(
             val polyline = mapApplier?.map?.addPolyline {
                 addAll(points)
                 clickable(clickable)
-                color(color)
+                color(color.toArgb())
                 endCap(endCap)
                 geodesic(geodesic)
                 jointType(jointType)
@@ -94,7 +93,7 @@ fun Polyline(
 
             set(points) { this.polyline.points = it }
             set(clickable) { this.polyline.isClickable = it }
-            set(color) { this.polyline.color = it }
+            set(color) { this.polyline.color = it.toArgb() }
             set(endCap) { this.polyline.endCap = it }
             set(geodesic) { this.polyline.isGeodesic = it }
             set(jointType) { this.polyline.jointType = it }

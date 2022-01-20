@@ -14,11 +14,10 @@
 
 package com.google.maps.android.compose
 
-import android.graphics.PointF
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.currentComposer
+import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.GroundOverlay
 import com.google.android.gms.maps.model.GroundOverlayOptions
@@ -80,7 +79,7 @@ class GroundOverlayPosition private constructor(
 fun GroundOverlay(
     position: GroundOverlayPosition,
     image: BitmapDescriptor,
-    anchor: PointF = PointF(0.5f, 0.5f),
+    anchor: Offset = Offset(0.5f, 0.5f),
     bearing: Float = 0f,
     clickable: Boolean = false,
     tag: Any? = null,

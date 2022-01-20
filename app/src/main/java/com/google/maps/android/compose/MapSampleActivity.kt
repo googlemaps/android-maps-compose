@@ -92,8 +92,8 @@ class MapSampleActivity : ComponentActivity() {
                     )
                     Circle(
                         center = sanFrancisco,
-                        fillColor = ContextCompat.getColor(LocalContext.current, R.color.teal_200),
-                        strokeColor = ContextCompat.getColor(LocalContext.current, R.color.teal_700),
+                        fillColor = MaterialTheme.colors.secondary,
+                        strokeColor = MaterialTheme.colors.secondaryVariant,
                         radius = 1000.0,
                     )
                 }

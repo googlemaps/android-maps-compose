@@ -14,12 +14,11 @@
 
 package com.google.maps.android.compose
 
-import android.graphics.Color
-import androidx.annotation.ColorInt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.currentComposer
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
@@ -40,10 +39,10 @@ internal class PolygonNode(
  *
  * @param points the points comprising the vertices of the polygon
  * @param clickable boolean indicating if the polygon is clickable or not
- * @param fillColor a [ColorInt] for the fill color of the polygon
+ * @param fillColor the fill color of the polygon
  * @param geodesic specifies whether to draw each segment as a geodesic
  * @param holes the holes for the polygon
- * @param strokeColor a [ColorInt] for the stroke color of the polygon
+ * @param strokeColor the stroke color of the polygon
  * @param strokeJointType the joint type for all vertices of the polygon's outline
  * @param strokePattern the stroke pattern for the polygon's outline
  * @param strokeWidth specifies the polygon's stroke width, in display pixels
@@ -56,10 +55,10 @@ internal class PolygonNode(
 fun Polygon(
     points: List<LatLng>,
     clickable: Boolean = false,
-    @ColorInt fillColor: Int = Color.BLACK,
+    fillColor: Color = Color.Black,
     geodesic: Boolean = false,
     holes: List<List<LatLng>> = emptyList(),
-    @ColorInt strokeColor: Int = Color.BLACK,
+    strokeColor: Color = Color.Black,
     strokeJointType: Int = JointType.DEFAULT,
     strokePattern: List<PatternItem>? = null,
     strokeWidth: Float = 10f,
@@ -74,12 +73,12 @@ fun Polygon(
             val polygon = mapApplier?.map?.addPolygon {
                 addAll(points)
                 clickable(clickable)
-                fillColor(fillColor)
+                fillColor(fillColor.toArgb())
                 geodesic(geodesic)
                 holes.forEach {
                     addHole(it)
                 }
-                strokeColor(strokeColor)
+                strokeColor(strokeColor.toArgb())
                 strokeJointType(strokeJointType)
                 strokePattern(strokePattern)
                 strokeWidth(strokeWidth)
@@ -94,10 +93,10 @@ fun Polygon(
 
             set(points) { this.polygon.points = it }
             set(clickable) { this.polygon.isClickable = it }
-            set(fillColor) { this.polygon.fillColor = it }
+            set(fillColor) { this.polygon.fillColor = it.toArgb() }
             set(geodesic) { this.polygon.isGeodesic = it }
             set(holes) { this.polygon.holes = it }
-            set(strokeColor) { this.polygon.strokeColor = it }
+            set(strokeColor) { this.polygon.strokeColor = it.toArgb() }
             set(strokeJointType) { this.polygon.strokeJointType = it }
             set(strokePattern) { this.polygon.strokePattern = it }
             set(strokeWidth) { this.polygon.strokeWidth = it }

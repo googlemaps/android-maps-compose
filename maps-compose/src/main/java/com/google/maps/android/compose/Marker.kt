@@ -14,17 +14,15 @@
 
 package com.google.maps.android.compose
 
-import android.graphics.PointF
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -93,11 +91,11 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
 fun Marker(
     position: LatLng,
     alpha: Float = 1.0f,
-    anchor: PointF = PointF(0.5f, 1.0f),
+    anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
     flat: Boolean = false,
     icon: BitmapDescriptor? = null,
-    infoWindowAnchor: PointF = PointF(0.5f, 0.0f),
+    infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
     rotation: Float = 0.0f,
     snippet: String? = null,
     tag: Any? = null,
