@@ -39,11 +39,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
@@ -55,13 +52,12 @@ class MapSampleActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MapsInitializer.initialize(this)
         setContent {
-            val sanFrancisco = LatLng(37.76, -122.47)
+            val singapore = LatLng(1.35, 103.87)
 
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(sanFrancisco, 10f)
+                position = CameraPosition.fromLatLngZoom(singapore, 11f)
             }
 
             var mapType by remember { mutableStateOf(MapType.NORMAL) }
@@ -83,7 +79,7 @@ class MapSampleActivity : ComponentActivity() {
                 ) {
                     // Drawing on the map is accomplished with a child-based API
                     Marker(
-                        position = sanFrancisco,
+                        position = singapore,
                         title = "Zoom in has been tapped $ticker times.",
                         onClick = {
                             Log.d(TAG, "${it.title} was clicked")
@@ -91,7 +87,7 @@ class MapSampleActivity : ComponentActivity() {
                         }
                     )
                     Circle(
-                        center = sanFrancisco,
+                        center = singapore,
                         fillColor = MaterialTheme.colors.secondary,
                         strokeColor = MaterialTheme.colors.secondaryVariant,
                         radius = 1000.0,
