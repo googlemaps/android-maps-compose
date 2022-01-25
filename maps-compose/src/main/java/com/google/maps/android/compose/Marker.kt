@@ -150,9 +150,19 @@ fun Marker(
             set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
             set(position) { this.marker.position = it }
             set(rotation) { this.marker.rotation = it }
-            set(snippet) { this.marker.snippet = it }
+            set(snippet) {
+                this.marker.snippet = it
+                if (this.marker.isInfoWindowShown) {
+                    this.marker.showInfoWindow()
+                }
+            }
             set(tag) { this.marker.tag = it }
-            set(title) { this.marker.title = it }
+            set(title) {
+                this.marker.title = it
+                if (this.marker.isInfoWindowShown) {
+                    this.marker.showInfoWindow()
+                }
+            }
             set(visible) { this.marker.isVisible = it }
             set(zIndex) { this.marker.zIndex = it }
         }

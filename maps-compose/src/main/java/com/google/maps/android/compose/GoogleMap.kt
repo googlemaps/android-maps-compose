@@ -17,6 +17,7 @@ package com.google.maps.android.compose
 import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
@@ -37,8 +38,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.awaitCancellation
 
@@ -49,46 +50,36 @@ import kotlinx.coroutines.awaitCancellation
  * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
  * camera state
  * @param contentDescription the content description for the map used by accessibility services to
- * describe the map.
+ * describe the map. If none is specified, the default is "Google Map".
  * @param googleMapOptionsFactory the block for creating the [GoogleMapOptions] provided when the
  * map is created
- * @param isBuildingEnabled boolean indicating if buildings are enabled
- * @param isIndoorEnabled boolean indicating if indoor maps are enabled
- * @param isMyLocationEnabled boolean indicating if the my-location layer should be enabled. Before
- * setting this property to 'true', ensure that `ACCESS_COARSE_LOCATION` or `ACCESS_FINE_LOCATION`
- * permissions have been granted.
- * @param isTrafficEnabled boolean indicating if the traffic layer is on or off.
- * @param latLngBoundsForCameraTarget a [LatLngBounds] to constrain the camera target.
+ * @param mapProperties the properties for the map
  * @param locationSource the [LocationSource] to be used to provide location data
- * @param mapStyleOptions the styling options for the map
- * @param mapType the type of the map tiles that should be displayed
- * @param maxZoomPreference the preferred upper bound for the camera zoom.
- * @param minZoomPreference the preferred lower bound for the camera zoom.
  * @param uiSettings the [MapUiSettings] to be used for UI-specific settings on the map
- * @param mapEventListener optional listeners for map events (map clicks, etc.)
- * @param indoorStateChangeListener optional listener for when state changes on
- * an indoor level of a building
+ * @param indoorStateChangeListener listener for indoor building state changes
+ * @param onMapClick lambda invoked when the map is clicked
+ * @param onMapLoaded lambda invoked when the map is finished loading
+ * @param onMyLocationButtonClick lambda invoked when the my location button is clicked
+ * @param onMyLocationClick lambda invoked when the my location dot is clicked
+ * @param onPOIClick lambda invoked when a POI is clicked
  * @param content the content of the map
  */
 @Composable
 fun GoogleMap(
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
-    contentDescription: String? = "Google Map",
+    contentDescription: String? = null,
     googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
-    isBuildingEnabled: Boolean = false,
-    isIndoorEnabled: Boolean = false,
-    isMyLocationEnabled: Boolean = false,
-    isTrafficEnabled: Boolean = false,
-    latLngBoundsForCameraTarget: LatLngBounds? = null,
+    mapProperties: MapProperties = DefaultMapProperties,
     locationSource: LocationSource? = null,
-    mapStyleOptions: MapStyleOptions? = null,
-    mapType: MapType = MapType.NORMAL,
-    maxZoomPreference: Float = 21.0f,
-    minZoomPreference: Float = 3.0f,
-    uiSettings: MapUiSettings = MapUiSettings(),
-    mapEventListener: MapEventListener = DefaultMapEventListeners,
+    uiSettings: MapUiSettings = DefaultMapUiSettings,
     indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
+    onMapClick: (LatLng) -> Unit = {},
+    onMapLongClick: (LatLng) -> Unit = {},
+    onMapLoaded: () -> Unit = {},
+    onMyLocationButtonClick: () -> Boolean = { false },
+    onMyLocationClick: () -> Unit = {},
+    onPOIClick: (PointOfInterest) -> Unit = {},
     contentPadding: PaddingValues = NoPadding,
     content: (@Composable () -> Unit)? = null,
 ) {
@@ -102,37 +93,33 @@ fun GoogleMap(
     // the subcomposition without providing a new content function each recomposition
     val mapClickListeners = remember { MapClickListeners() }.also {
         it.indoorStateChangeListener = indoorStateChangeListener
-        it.mapEventListener = mapEventListener
-    }
-    val mapPropertiesHolder = remember { MapPropertiesHolder() }.also {
-        it.contentDescription = contentDescription
-        it.isBuildingEnabled = isBuildingEnabled
-        it.isIndoorEnabled = isIndoorEnabled
-        it.isMyLocationEnabled = isMyLocationEnabled
-        it.isTrafficEnabled = isTrafficEnabled
-        it.latLngBoundsForCameraTarget = latLngBoundsForCameraTarget
-        it.mapStyleOptions = mapStyleOptions
-        it.mapType = mapType
-        it.maxZoomPreference = maxZoomPreference
-        it.minZoomPreference = minZoomPreference
+        it.onMapClick = onMapClick
+        it.onMapLongClick = onMapLongClick
+        it.onMapLoaded = onMapLoaded
+        it.onMyLocationButtonClick = onMyLocationButtonClick
+        it.onMyLocationClick = onMyLocationClick
+        it.onPOIClick = onPOIClick
     }
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
     val currentUiSettings by rememberUpdatedState(uiSettings)
+    val currentMapProperties by rememberUpdatedState(mapProperties)
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
+
     LaunchedEffect(Unit) {
         val map = mapView.awaitMap()
         disposingComposition {
             map.newComposition(parentComposition) {
-                MapProperties(
+                MapUpdater(
+                    contentDescription = contentDescription,
                     cameraPositionState = currentCameraPositionState,
                     clickListeners = mapClickListeners,
                     contentPadding = currentContentPadding,
                     locationSource = currentLocationSource,
-                    mapPropertiesHolder = mapPropertiesHolder,
+                    mapProperties = currentMapProperties,
                     mapUiSettings = currentUiSettings,
                 )
 

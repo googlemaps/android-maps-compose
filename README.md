@@ -20,9 +20,9 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the M
 Adding a map to your app looks like the following:
 
 ```kotlin
-val sanFrancisco = LatLng(37.76, -122.47)
+val singapore = LatLng(1.35, 103.87)
 val cameraPositionState = rememberCameraPositionState(
-    position = CameraPosition.fromLatLngZoom(sanFrancisco, 10f)
+    position = CameraPosition.fromLatLngZoom(singapore, 10f)
 )
 GoogleMap(
     modifier = Modifier.fillMaxSize(),
