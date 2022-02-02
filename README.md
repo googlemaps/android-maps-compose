@@ -21,19 +21,18 @@ Adding a map to your app looks like the following:
 
 ```kotlin
 val singapore = LatLng(1.35, 103.87)
-val cameraPositionState = rememberCameraPositionState(
-    position = CameraPosition.fromLatLngZoom(singapore, 10f)
-)
 GoogleMap(
     modifier = Modifier.fillMaxSize(),
-    cameraPositionState = cameraPositionState
+    googleMapOptionsFactory = {
+        GoogleMapOptions().camera(CameraPosition.fromLatLngZoom(singapore, 10f))
+    }
 )
 ```
 
 ### Creating and configuring a map
 
 Configuring the map can be done either by passing a `GoogleMapOptions` instance 
-to initialize the map, or by setting properties directly in the `GoogleMap` 
+to initialize the map, or by passing a `MapProperties` object into the `GoogleMap`
 composable.
 
 ```kotlin
@@ -44,12 +43,22 @@ GoogleMap(
     }
 )
 
-// ...or set properties which can trigger recomposition on the GoogleMap
-// composable directly
-GoogleMap(
-    maxZoomPreference = 10f,
-    minZoomPreference = 5f,
-)
+// ...or set properties using MapProperties which you can use to recompose the map
+var mapProperties by remember {
+    mutableStateOf(
+        MapProperties(maxZoomPreference = 10f, minZoomPreference = 5f)
+    )
+}
+Box(Modifier.fillMaxSize()) {
+    GoogleMap(mapProperties = mapProperties)
+    Button(onClick = {
+        mapProperties = mapProperties.copy(
+            isBuildingEnabled = !mapProperties.isBuildingEnabled
+        )
+    }) {
+        Text(text = "Toggle isBuildingEnabled")
+    }
+}
 ```
 
 ### Controlling the map's camera
@@ -57,13 +66,18 @@ GoogleMap(
 Camera changes and updates can be observed and controlled via `CameraPositionState`.
 
 ```kotlin
-val cameraPositionState: CameraPositionState = rememberCameraPositionState()
+val singapore = LatLng(1.35, 103.87)
+val cameraPositionState: CameraPositionState = rememberCameraPositionState(
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+)
 Box(Modifier.fillMaxSize()) {
   GoogleMap(cameraPositionState = cameraPositionState)
   Button(onClick = {
     // Move the camera to a new zoom level
-    cameraPositionState.move(update: CameraUpdateFactory.zoomIn())
-  })
+    cameraPositionState.move(CameraUpdateFactory.zoomIn())
+  }) {
+      Text(text = "Zoom In")
+  }
 }
 ```
 

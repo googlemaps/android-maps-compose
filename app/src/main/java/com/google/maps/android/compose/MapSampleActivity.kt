@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
@@ -108,6 +109,9 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         mapProperties = mapProperties,
         uiSettings = uiSettings,
         onMapLoaded = onMapLoaded,
+        googleMapOptionsFactory = {
+            GoogleMapOptions().camera(CameraPosition.fromLatLngZoom(singapore, 11f))
+        },
         onPOIClick = {
             Log.d(TAG, "POI clicked: ${it.name}")
         }
