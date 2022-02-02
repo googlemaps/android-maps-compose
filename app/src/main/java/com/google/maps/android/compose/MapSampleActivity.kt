@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -106,7 +105,7 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
-        mapProperties = mapProperties,
+        properties = mapProperties,
         uiSettings = uiSettings,
         onMapLoaded = onMapLoaded,
         googleMapOptionsFactory = {

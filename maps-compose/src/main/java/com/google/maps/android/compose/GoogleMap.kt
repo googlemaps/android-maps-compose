@@ -17,7 +17,6 @@ package com.google.maps.android.compose
 import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
@@ -53,7 +52,7 @@ import kotlinx.coroutines.awaitCancellation
  * describe the map. If none is specified, the default is "Google Map".
  * @param googleMapOptionsFactory the block for creating the [GoogleMapOptions] provided when the
  * map is created
- * @param mapProperties the properties for the map
+ * @param properties the properties for the map
  * @param locationSource the [LocationSource] to be used to provide location data
  * @param uiSettings the [MapUiSettings] to be used for UI-specific settings on the map
  * @param indoorStateChangeListener listener for indoor building state changes
@@ -70,7 +69,7 @@ fun GoogleMap(
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
     googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
-    mapProperties: MapProperties = DefaultMapProperties,
+    properties: MapProperties = DefaultMapProperties,
     locationSource: LocationSource? = null,
     uiSettings: MapUiSettings = DefaultMapUiSettings,
     indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
@@ -104,7 +103,7 @@ fun GoogleMap(
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
     val currentUiSettings by rememberUpdatedState(uiSettings)
-    val currentMapProperties by rememberUpdatedState(mapProperties)
+    val currentMapProperties by rememberUpdatedState(properties)
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
