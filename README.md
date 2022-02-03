@@ -67,9 +67,9 @@ Camera changes and updates can be observed and controlled via `CameraPositionSta
 
 ```kotlin
 val singapore = LatLng(1.35, 103.87)
-val cameraPositionState: CameraPositionState = rememberCameraPositionState(
+val cameraPositionState: CameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(singapore, 11f)
-)
+}
 Box(Modifier.fillMaxSize()) {
   GoogleMap(cameraPositionState = cameraPositionState)
   Button(onClick = {
