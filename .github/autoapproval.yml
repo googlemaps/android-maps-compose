@@ -1,0 +1,15 @@
+
+from_owner:
+  - dependabot
+  - dependabot[bot]
+  - dependabot-preview[bot]
+  - googlemaps-bot
+
+required_labels:
+  - dependencies
+  - docs
+
+required_labels_mode: one_of
+
+apply_labels:
+  - merge
