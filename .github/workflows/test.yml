@@ -43,4 +43,4 @@ jobs:
         distribution: 'adopt'
 
     - name: Build modules
-      run: ./gradlew build --stacktrace
+      run: ./gradlew build jacocoTestReport --stacktrace
