@@ -50,7 +50,7 @@ var mapProperties by remember {
     )
 }
 Box(Modifier.fillMaxSize()) {
-    GoogleMap(mapProperties = mapProperties)
+    GoogleMap(properties = mapProperties)
     Button(onClick = {
         mapProperties = mapProperties.copy(
             isBuildingEnabled = !mapProperties.isBuildingEnabled
