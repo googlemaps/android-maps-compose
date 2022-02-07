@@ -10,6 +10,7 @@ buildscript {
         classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.5.0'
+        classpath 'com.hiya:jacoco-android:0.2'
     }
 }
 
@@ -38,9 +39,20 @@ subprojects { project ->
     if (project.ext.artifactId == null) return
 
     apply plugin: 'com.android.library'
+    apply plugin: 'com.hiya.jacoco-android'
     apply plugin: 'maven-publish'
     apply plugin: 'org.jetbrains.dokka'
     apply plugin: 'signing'
+
+    // Code coverage
+    jacoco {
+        toolVersion = "0.8.7"
+    }
+
+    tasks.withType(Test) {
+        jacoco.includeNoLocationClasses = true
+        jacoco.excludes = ['jdk.internal.*']
+    }
 
     task sourcesJar(type: Jar) {
         from android.sourceSets.main.java.source
