@@ -20,6 +20,9 @@ internal val DefaultMapUiSettings = MapUiSettings()
 
 /**
  * Data class for UI-related settings on the map.
+ *
+ * Note: This is intentionally a class and not a data class for binary
+ * compatibility on future changes.
  */
 class MapUiSettings(
     val compassEnabled: Boolean = true,
