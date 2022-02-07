@@ -11,6 +11,7 @@ internal val DefaultMapProperties = MapProperties()
  *
  * Note: This is intentionally a class and not a data class for binary
  * compatibility on future changes.
+ * See: https://jakewharton.com/public-api-challenges-in-kotlin/
  */
 class MapProperties(
     val isBuildingEnabled: Boolean = false,
