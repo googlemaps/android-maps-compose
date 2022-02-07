@@ -46,6 +46,11 @@ internal class MarkerNode(
 }
 
 @Immutable
+enum class InfoWindowVisibility {
+    SHOWN, HIDDEN
+}
+
+@Immutable
 enum class DragState {
     START, DRAG, END
 }
@@ -79,6 +84,7 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  * @param flat sets if the marker should be flat against the map
  * @param icon sets the icon for the marker
  * @param infoWindowAnchor the anchor point of the info window on the marker image
+ * @param infoWindowVisibility sets the visibility of the info window
  * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
  * @param snippet the snippet for the marker
  * @param tag optional tag to associate with the marker
@@ -102,6 +108,7 @@ fun Marker(
     flat: Boolean = false,
     icon: BitmapDescriptor? = null,
     infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
+    infoWindowVisibility: InfoWindowVisibility = InfoWindowVisibility.HIDDEN,
     rotation: Float = 0.0f,
     snippet: String? = null,
     tag: Any? = null,
@@ -159,6 +166,13 @@ fun Marker(
             set(flat) { this.marker.isFlat = it }
             set(icon) { this.marker.setIcon(it) }
             set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
+            set(infoWindowVisibility) {
+                if (it == InfoWindowVisibility.SHOWN) {
+                    this.marker.showInfoWindow()
+                } else {
+                    this.marker.hideInfoWindow()
+                }
+            }
             set(position) { this.marker.position = it }
             set(rotation) { this.marker.rotation = it }
             set(snippet) {
