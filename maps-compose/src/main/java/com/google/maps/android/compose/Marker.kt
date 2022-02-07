@@ -35,6 +35,8 @@ internal class MarkerNode(
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
     var onInfoWindowLongClick: (Marker) -> Unit,
+    var infoWindowContent: (@Composable (Marker) -> Unit)? = null,
+    var infoWindow: (@Composable (Marker) -> Unit)? = null
 ) : MapNode {
     override fun onRemoved() {
         marker.remove()
@@ -107,6 +109,8 @@ fun Marker(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
+    infoWindowContent: (@Composable (Marker) -> Unit)? = null,
+    infoWindow: (@Composable (Marker) -> Unit)? = null
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
     ComposeNode<MarkerNode, MapApplier>(
@@ -133,6 +137,8 @@ fun Marker(
                 onInfoWindowClick = onInfoWindowClick,
                 onInfoWindowClose = onInfoWindowClose,
                 onInfoWindowLongClick = onInfoWindowLongClick,
+                infoWindowContent = infoWindowContent,
+                infoWindow = infoWindow,
             )
         },
         update = {
@@ -141,6 +147,8 @@ fun Marker(
             update(onInfoWindowClick) { this.onInfoWindowClick = it }
             update(onInfoWindowClose) { this.onInfoWindowClose = it }
             update(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
+            update(infoWindowContent) { this.infoWindowContent = it }
+            update(infoWindow) { this.infoWindow = it }
 
             set(alpha) { this.marker.alpha = it }
             set(anchor) { this.marker.setAnchor(it.x, it.y) }

@@ -48,8 +48,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import kotlinx.coroutines.launch
 
 private const val TAG = "MapSampleActivity"
@@ -77,7 +79,8 @@ class MapSampleActivity : ComponentActivity() {
                         exit = fadeOut()
                     ) {
                         CircularProgressIndicator(
-                            modifier = Modifier.background(MaterialTheme.colors.background)
+                            modifier = Modifier
+                                .background(MaterialTheme.colors.background)
                                 .wrapContentSize()
                         )
                     }
@@ -90,6 +93,8 @@ class MapSampleActivity : ComponentActivity() {
 @Composable
 private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     val singapore = LatLng(1.35, 103.87)
+    val singapore2 = LatLng(1.40, 103.77)
+
     // Observing and controlling the camera's state can be done with a CameraPositionState
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(singapore, 11f)
@@ -116,13 +121,28 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         }
     ) {
         // Drawing on the map is accomplished with a child-based API
+        val markerClick: (Marker) -> Boolean = {
+            Log.d(TAG, "${it.title} was clicked")
+            false
+        }
+        val markerDragState = rememberMarkerDragState()
         Marker(
             position = singapore,
             title = "Zoom in has been tapped $ticker times.",
-            onClick = {
-                println("${it.title} was clicked")
-                false
-            }
+            onClick = markerClick
+        )
+        Marker(
+            draggable = true,
+            position = singapore2,
+            title = "Marker with custom info window",
+            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
+            infoWindowContent = { marker ->
+                Log.d(TAG, "Inside Info Window Content")
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(marker.title ?: "Title")
+                }
+            },
+            onClick = markerClick
         )
         Circle(
             center = singapore,
