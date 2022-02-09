@@ -45,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMapOptions
@@ -134,13 +135,10 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         Marker(
             draggable = true,
             position = singapore2,
-            title = "Marker with custom info window",
+            title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
             infoWindowContent = { marker ->
-                Log.d(TAG, "Inside Info Window Content")
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text(marker.title ?: "Title")
-                }
+                Text(marker.title ?: "Title", color = Color.Red)
             },
             onClick = markerClick
         )

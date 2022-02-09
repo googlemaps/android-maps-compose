@@ -16,11 +16,13 @@ package com.google.maps.android.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -29,6 +31,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.ktx.addMarker
 
 internal class MarkerNode(
+    val compositionContext: CompositionContext,
     val marker: Marker,
     var markerDragState: MarkerDragState?,
     var onMarkerClick: (Marker) -> Boolean,
@@ -113,6 +116,7 @@ fun Marker(
     infoWindow: (@Composable (Marker) -> Unit)? = null
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
+    val compositionContext = rememberCompositionContext()
     ComposeNode<MarkerNode, MapApplier>(
         factory = {
             val marker = mapApplier?.map?.addMarker {
@@ -131,6 +135,7 @@ fun Marker(
             } ?: error("Error adding marker")
             marker.tag = tag
             MarkerNode(
+                compositionContext = compositionContext,
                 marker = marker,
                 markerDragState = markerDragState,
                 onMarkerClick = onClick,
