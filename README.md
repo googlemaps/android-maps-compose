@@ -108,7 +108,7 @@ To run it, you'll have to:
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:1.0.0'
+    implementation 'com.google.maps.android:maps-compose:1.0.1'
     
     // Make sure to also include the latest version of the Maps SDK for Android 
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
