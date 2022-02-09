@@ -14,18 +14,10 @@
 
 package com.google.maps.android.compose
 
-import android.content.Context
-import android.util.AttributeSet
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.compose.runtime.AbstractApplier
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionContext
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.ComposeView
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.GroundOverlay
 import com.google.android.gms.maps.model.Marker
@@ -41,21 +33,10 @@ private object MapNodeRoot : MapNode
 
 internal class MapApplier(
     val map: GoogleMap,
-    private val context: Context,
-    private val parent: CompositionContext
+    private val mapView: MapView,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
     private val decorations = mutableListOf<MapNode>()
-    private val infoWindow by lazy {
-        ComposeView(context).apply {
-            setParentCompositionContext(this@MapApplier.parent)
-        }
-    }
-    private val infoWindowContents by lazy {
-        ComposeView(context).apply {
-            setParentCompositionContext(this@MapApplier.parent)
-        }
-    }
 
     init {
         attachClickListeners()
@@ -148,28 +129,12 @@ internal class MapApplier(
                 markerDragState?.dragState = DragState.START
             }
         })
-        map.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
-            override fun getInfoContents(marker: Marker): View? {
-                val content =
-                    decorations.nodeForMarker(marker)?.infoWindowContent
-                if (content == null) return null
-                return infoWindowContents.apply {
-                    setContent {
-                        content(marker)
-                    }
-                }
-            }
-
-            override fun getInfoWindow(marker: Marker): View? {
-                val content = decorations.nodeForMarker(marker)?.infoWindow
-                if (content == null) return null
-                return infoWindow.apply {
-                    setContent {
-                        content(marker)
-                    }
-                }
-            }
-        })
+        map.setInfoWindowAdapter(
+            ComposeInfoWindowAdapter(
+                mapView,
+                markerNodeFinder = { decorations.nodeForMarker(it) }
+            )
+        )
     }
 }
 
