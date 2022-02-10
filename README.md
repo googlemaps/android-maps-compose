@@ -119,6 +119,10 @@ dependencies {
 
 You can learn more about all the extensions provided by this library by reading the [reference documents][Javadoc].
 
+## Contributing
+
+Contributions are welcome and encouraged! See [contributing] for more info.
+
 ## Support
 
 Encounter an issue while using this library?
@@ -131,6 +135,7 @@ You can also reach us on our [Discord channel].
 [api-key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
 [Discord channel]: https://discord.gg/hYsWbmk
 [Javadoc]: https://googlemaps.github.io/android-maps-compose
+[contributing]: CONTRIBUTING.md
 [code of conduct]: CODE_OF_CONDUCT.md
 [file an issue]: https://github.com/googlemaps/android-maps-compose/issues/new/choose
 [pull request]: https://github.com/googlemaps/android-maps-compose/compare
