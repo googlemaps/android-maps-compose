@@ -38,8 +38,7 @@ internal class MarkerNode(
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
     var onInfoWindowLongClick: (Marker) -> Unit,
-    var infoWindowContent: (@Composable (Marker) -> Unit)? = null,
-    var infoWindow: (@Composable (Marker) -> Unit)? = null
+    var infoWindowComponent: ComposeInfoWindowComponent? = null,
 ) : MapNode {
     override fun onRemoved() {
         marker.remove()
@@ -70,6 +69,18 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
     MarkerDragState()
 }
 
+sealed class ComposeInfoWindowComponent(
+    val content: @Composable (Marker) -> Unit
+)
+
+class ComposeInfoWindow(
+    content: @Composable (Marker) -> Unit
+) : ComposeInfoWindowComponent(content)
+
+class ComposeInfoWindowContent(
+    content: @Composable (Marker) -> Unit
+): ComposeInfoWindowComponent(content)
+
 /**
  * A composable for a marker on the map.
  *
@@ -91,6 +102,8 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param infoWindowComponent optional [ComposeInfoWindowComponent] for customizing
+ *                            the marker's info window
  */
 @Composable
 fun Marker(
@@ -112,8 +125,7 @@ fun Marker(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    infoWindowContent: (@Composable (Marker) -> Unit)? = null,
-    infoWindow: (@Composable (Marker) -> Unit)? = null
+    infoWindowComponent: ComposeInfoWindowComponent? = null,
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
     val compositionContext = rememberCompositionContext()
@@ -142,8 +154,7 @@ fun Marker(
                 onInfoWindowClick = onInfoWindowClick,
                 onInfoWindowClose = onInfoWindowClose,
                 onInfoWindowLongClick = onInfoWindowLongClick,
-                infoWindowContent = infoWindowContent,
-                infoWindow = infoWindow,
+                infoWindowComponent = infoWindowComponent,
             )
         },
         update = {
@@ -152,8 +163,7 @@ fun Marker(
             update(onInfoWindowClick) { this.onInfoWindowClick = it }
             update(onInfoWindowClose) { this.onInfoWindowClose = it }
             update(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
-            update(infoWindowContent) { this.infoWindowContent = it }
-            update(infoWindow) { this.infoWindow = it }
+            update(infoWindowComponent) { this.infoWindowComponent = it }
 
             set(alpha) { this.marker.alpha = it }
             set(anchor) { this.marker.setAnchor(it.x, it.y) }
