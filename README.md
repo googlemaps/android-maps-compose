@@ -95,6 +95,22 @@ GoogleMap(
 }
 ```
 
+#### Customizing a marker's info window
+
+You can customize a marker's info window by providing a value to the 
+`infoWindowComponent` property. You can customize either just the content, via
+`ComposeInfoContent`, or the either window via `ComposeInfoWindowContent`.
+
+```kotlin
+Marker(
+    //...
+    infoWindowComponent = ComposeInfoWindowContent { marker ->
+        Text(marker.title ?: "Default Marker Title", color = Color.Red)
+    }
+)
+```
+
+
 ## Sample App
 
 This repository includes a [sample app](app).
