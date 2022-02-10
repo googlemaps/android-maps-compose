@@ -19,7 +19,7 @@ on:
   repository_dispatch:
     types: [test]
   push:
-    branches-ignore: ['gh-pages']
+    branches-ignore: ['gh-pages', 'googlemaps-bot/update_gh_pages']
   pull_request:
     branches-ignore: ['gh-pages']
   workflow_dispatch:
