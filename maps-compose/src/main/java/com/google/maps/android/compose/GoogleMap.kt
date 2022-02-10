@@ -17,6 +17,7 @@ package com.google.maps.android.compose
 import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
@@ -167,6 +168,7 @@ private fun MapLifecycle(mapView: MapView) {
 
 private fun MapView.lifecycleObserver(): LifecycleEventObserver =
     LifecycleEventObserver { _, event ->
+        Log.d("GoogleMap", "Lifecycle event $event")
         when (event) {
             Lifecycle.Event.ON_CREATE -> this.onCreate(Bundle())
             Lifecycle.Event.ON_START -> this.onStart()
