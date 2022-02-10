@@ -36,9 +36,9 @@ internal class MarkerNode(
     var markerDragState: MarkerDragState?,
     var onMarkerClick: (Marker) -> Boolean,
     var onInfoWindowClick: (Marker) -> Unit,
-    var onInfoWindowClose: (Marker) -> Unit,
     var onInfoWindowLongClick: (Marker) -> Unit,
     var infoWindowComponent: ComposeInfoWindowComponent? = null,
+    var infoWindowState: MarkerInfoWindowState?,
 ) : MapNode {
     override fun onRemoved() {
         marker.remove()
@@ -46,8 +46,42 @@ internal class MarkerNode(
 }
 
 @Immutable
-enum class InfoWindowVisibility {
+enum class InfoWindowState {
     SHOWN, HIDDEN
+}
+
+class MarkerInfoWindowState(
+    initialValue: InfoWindowState = InfoWindowState.HIDDEN
+) {
+    var marker: Marker? = null
+
+    private var _state: InfoWindowState by mutableStateOf(initialValue)
+
+    var state: InfoWindowState
+        get() = _state
+        set(value) {
+            _state = value
+            if (value == InfoWindowState.SHOWN) {
+                this.marker?.showInfoWindow()
+            } else {
+                this.marker?.hideInfoWindow()
+            }
+        }
+
+    fun show() {
+        this.state = InfoWindowState.SHOWN
+    }
+
+    fun hide() {
+        this.state = InfoWindowState.HIDDEN
+    }
+}
+
+@Composable
+fun rememberMarkerInfoWindowState(
+    initialValue: InfoWindowState = InfoWindowState.HIDDEN
+): MarkerInfoWindowState = remember {
+    MarkerInfoWindowState(initialValue)
 }
 
 @Immutable
@@ -84,7 +118,8 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  * @param flat sets if the marker should be flat against the map
  * @param icon sets the icon for the marker
  * @param infoWindowAnchor the anchor point of the info window on the marker image
- * @param infoWindowVisibility sets the visibility of the info window
+ * @param infoWindowState a [MarkerInfoWindowState] to be used for controlling and observing info
+ * window visibility
  * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
  * @param snippet the snippet for the marker
  * @param tag optional tag to associate with the marker
@@ -108,7 +143,7 @@ fun Marker(
     flat: Boolean = false,
     icon: BitmapDescriptor? = null,
     infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
-    infoWindowVisibility: InfoWindowVisibility = InfoWindowVisibility.HIDDEN,
+    infoWindowState: MarkerInfoWindowState = rememberMarkerInfoWindowState(),
     rotation: Float = 0.0f,
     snippet: String? = null,
     tag: Any? = null,
@@ -118,7 +153,6 @@ fun Marker(
     markerDragState: MarkerDragState? = null,
     onClick: (Marker) -> Boolean = { false },
     onInfoWindowClick: (Marker) -> Unit = {},
-    onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
     infoWindowComponent: ComposeInfoWindowComponent? = null,
 ) {
@@ -147,18 +181,18 @@ fun Marker(
                 markerDragState = markerDragState,
                 onMarkerClick = onClick,
                 onInfoWindowClick = onInfoWindowClick,
-                onInfoWindowClose = onInfoWindowClose,
                 onInfoWindowLongClick = onInfoWindowLongClick,
                 infoWindowComponent = infoWindowComponent,
+                infoWindowState = infoWindowState,
             )
         },
         update = {
             update(markerDragState) { this.markerDragState = it }
             update(onClick) { this.onMarkerClick = it }
             update(onInfoWindowClick) { this.onInfoWindowClick = it }
-            update(onInfoWindowClose) { this.onInfoWindowClose = it }
             update(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
             update(infoWindowComponent) { this.infoWindowComponent = it }
+            update(infoWindowState) { this.infoWindowState = it }
 
             set(alpha) { this.marker.alpha = it }
             set(anchor) { this.marker.setAnchor(it.x, it.y) }
@@ -166,12 +200,9 @@ fun Marker(
             set(flat) { this.marker.isFlat = it }
             set(icon) { this.marker.setIcon(it) }
             set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
-            set(infoWindowVisibility) {
-                if (it == InfoWindowVisibility.SHOWN) {
-                    this.marker.showInfoWindow()
-                } else {
-                    this.marker.hideInfoWindow()
-                }
+            set(infoWindowState) {
+                this.infoWindowState = it
+                this.infoWindowState?.marker = this.marker
             }
             set(position) { this.marker.position = it }
             set(rotation) { this.marker.rotation = it }

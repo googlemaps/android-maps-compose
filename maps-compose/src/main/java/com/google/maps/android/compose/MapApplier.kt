@@ -90,8 +90,9 @@ internal class MapApplier(
 
         // Marker
         map.setOnMarkerClickListener { marker ->
-            decorations.nodeForMarker(marker)
-                ?.onMarkerClick
+            val node = decorations.nodeForMarker(marker)
+            node?.infoWindowState?.state = InfoWindowState.SHOWN
+            node?.onMarkerClick
                 ?.invoke(marker)
                 ?: false
         }
@@ -102,8 +103,7 @@ internal class MapApplier(
         }
         map.setOnInfoWindowCloseListener { marker ->
             decorations.nodeForMarker(marker)
-                ?.onInfoWindowClose
-                ?.invoke(marker)
+                ?.infoWindowState?.state = InfoWindowState.HIDDEN
         }
         map.setOnInfoWindowLongClickListener { marker ->
             decorations.nodeForMarker(marker)
