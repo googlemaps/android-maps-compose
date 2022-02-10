@@ -22,6 +22,10 @@ use GitHub pull requests for this purpose. Consult
 [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
 information on using pull requests.
 
+## Compose API Guidelines
+
+Reviews will undergo strict enforcement of the [Jetpack Compose API guidelines](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md).
+
 ## Community Guidelines
 
 This project follows
