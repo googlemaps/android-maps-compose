@@ -126,7 +126,6 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             Log.d(TAG, "${it.title} was clicked")
             false
         }
-        val markerDragState = rememberMarkerDragState()
         Marker(
             position = singapore,
             title = "Zoom in has been tapped $ticker times.",
@@ -137,10 +136,10 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             position = singapore2,
             title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
-            infoWindowContent = { marker ->
-                Text(marker.title ?: "Title", color = Color.Red)
-            },
-            onClick = markerClick
+            onClick = markerClick,
+            infoWindowComponent = ComposeInfoWindowContent {
+                Text(it.title ?: "Title", color = Color.Red)
+            }
         )
         Circle(
             center = singapore,

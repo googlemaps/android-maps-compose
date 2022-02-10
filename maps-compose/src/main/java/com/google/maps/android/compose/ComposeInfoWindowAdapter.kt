@@ -28,53 +28,28 @@ internal class ComposeInfoWindowAdapter(
     private val markerNodeFinder: (Marker) -> MarkerNode?
 ) : GoogleMap.InfoWindowAdapter {
 
-    private val infoWindowContents by lazy {
-        val contents = ComposeView(mapView.context)
-        mapView.addView(contents)
-        contents
-    }
-    private val infoWindow by lazy {
+    private val infoWindowView by lazy {
         val window = ComposeView(mapView.context)
         mapView.addView(window)
         window
     }
 
-    override fun getInfoContents(marker: Marker): View? {
-        val markerNode = markerNodeFinder(marker)
-        val content = markerNode?.infoWindowContent
-        if (content == null) {
-            // No custom contents, use default
-            return null
-        }
+    override fun getInfoContents(marker: Marker): View? =
+        marker.infoWindowView<ComposeInfoWindowContent>()
 
-        return infoWindowContents.applyAndRemove(markerNode.compositionContext) {
-            content(marker)
-        }
-    }
+    override fun getInfoWindow(marker: Marker): View? =
+        marker.infoWindowView<ComposeInfoWindow>()
 
-    override fun getInfoWindow(marker: Marker): View? {
-        val markerNode = markerNodeFinder(marker)
-        val window = markerNode?.infoWindow
-
-        if (window == null) {
-            // No custom window, use default
-            return null
+    private inline fun <reified T : ComposeInfoWindowComponent> Marker.infoWindowView(): View? {
+        val markerNode = markerNodeFinder(this) ?: return null
+        val component = markerNode.infoWindowComponent as? T ?: return null
+        val infoWindowView = infoWindowView.apply {
+            setParentCompositionContext(markerNode.compositionContext)
+            setContent {
+                component.content(this@infoWindowView)
+            }
         }
-
-        return infoWindow.applyAndRemove(markerNode.compositionContext) {
-            window(marker)
-        }
-    }
-
-    private fun ComposeView.applyAndRemove(
-        parentContext: CompositionContext,
-        content: @Composable () -> Unit
-    ): ComposeView {
-        val result = this.apply {
-            setParentCompositionContext(parentContext)
-            setContent(content)
-        }
-        (this.parent as? MapView)?.removeView(this)
-        return result
+        (infoWindowView.parent as? MapView)?.removeView(infoWindowView)
+        return infoWindowView
     }
 }
