@@ -2,11 +2,31 @@ package com.google.maps.android.compose
 
 import android.view.View
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionContext
 import androidx.compose.ui.platform.ComposeView
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Marker
+
+/**
+ * A component of a marker info window that can be customized.
+ */
+sealed class ComposeInfoWindowComponent(
+    val content: @Composable (Marker) -> Unit
+)
+
+/**
+ * Class for customizing the entire info window in Compose.
+ */
+class ComposeInfoWindow(
+    content: @Composable (Marker) -> Unit
+) : ComposeInfoWindowComponent(content)
+
+/**
+ * Class for customizing the info window's contents in Compose.
+ */
+class ComposeInfoWindowContent(
+    content: @Composable (Marker) -> Unit
+): ComposeInfoWindowComponent(content)
 
 /**
  * An InfoWindowAdapter that returns a [ComposeView] for drawing an marker's

@@ -69,18 +69,6 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
     MarkerDragState()
 }
 
-sealed class ComposeInfoWindowComponent(
-    val content: @Composable (Marker) -> Unit
-)
-
-class ComposeInfoWindow(
-    content: @Composable (Marker) -> Unit
-) : ComposeInfoWindowComponent(content)
-
-class ComposeInfoWindowContent(
-    content: @Composable (Marker) -> Unit
-): ComposeInfoWindowComponent(content)
-
 /**
  * A composable for a marker on the map.
  *
