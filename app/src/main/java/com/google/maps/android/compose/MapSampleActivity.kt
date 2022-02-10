@@ -132,7 +132,6 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             onClick = markerClick
         )
         Marker(
-            draggable = true,
             position = singapore2,
             title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
