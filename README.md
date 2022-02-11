@@ -61,7 +61,7 @@ Box(Modifier.fillMaxSize()) {
 }
 ```
 
-### Controlling the map's camera
+### Controlling a map's camera
 
 Camera changes and updates can be observed and controlled via `CameraPositionState`.
 
@@ -97,11 +97,14 @@ GoogleMap(
 
 #### Customizing a marker's info window
 
-You can customize a marker's info window contents by providing a value to the 
-`content` property.
+You can customize a marker's info window contents by using the 
+`MarkerInfoWindowContent` element, or if you want to customize the entire info 
+window, use the `MarkerInfoWindow` element instead. Both of these elements
+accept a `content` parameter to provide your customization in a composable
+lambda expression.
 
 ```kotlin
-Marker(
+MarkerInfoWindowContent(
     //...
 ) { marker ->
     Text(marker.title ?: "Default Marker Title", color = Color.Red)
