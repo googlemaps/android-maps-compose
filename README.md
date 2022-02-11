@@ -103,7 +103,7 @@ You can customize a marker's info window contents by providing a value to the
 ```kotlin
 Marker(
     //...
-) {
+) { marker ->
     Text(marker.title ?: "Default Marker Title", color = Color.Red)
 }
 ```
@@ -122,7 +122,7 @@ MapMarker(
             Text(marker.snippet ?: "Default Marker Snippet", color = Color.Red)
         }
     }
-) {
+) { marker ->
     // Don't do this! This will be ignored
     Text(marker.title ?: "Default Marker Title", color = Color.Red)
 }
