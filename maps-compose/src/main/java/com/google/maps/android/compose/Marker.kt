@@ -18,10 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.currentComposer
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
@@ -30,11 +26,11 @@ import com.google.maps.android.ktx.addMarker
 
 internal class MarkerNode(
     val marker: Marker,
-    var markerDragState: MarkerDragState?,
     var onMarkerClick: (Marker) -> Boolean,
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
     var onInfoWindowLongClick: (Marker) -> Unit,
+    var onMarkerDrag: (Marker, DragState) -> Unit,
 ) : MapNode {
     override fun onRemoved() {
         marker.remove()
@@ -44,25 +40,6 @@ internal class MarkerNode(
 @Immutable
 enum class DragState {
     START, DRAG, END
-}
-
-/**
- * A state object for observing marker drag events.
- */
-class MarkerDragState {
-    /**
-     * State of the marker drag.
-     */
-    var dragState: DragState by mutableStateOf(DragState.END)
-        internal set
-}
-
-/**
- * Creates and [remember] a [MarkerDragState].
- */
-@Composable
-fun rememberMarkerDragState(): MarkerDragState = remember {
-    MarkerDragState()
 }
 
 /**
@@ -102,11 +79,11 @@ fun Marker(
     title: String? = null,
     visible: Boolean = true,
     zIndex: Float = 0.0f,
-    markerDragState: MarkerDragState? = null,
     onClick: (Marker) -> Boolean = { false },
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
+    onMarkerDrag: (Marker, DragState) -> Unit = { _, _ -> },
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
     ComposeNode<MarkerNode, MapApplier>(
@@ -128,19 +105,19 @@ fun Marker(
             marker.tag = tag
             MarkerNode(
                 marker = marker,
-                markerDragState = markerDragState,
                 onMarkerClick = onClick,
                 onInfoWindowClick = onInfoWindowClick,
                 onInfoWindowClose = onInfoWindowClose,
                 onInfoWindowLongClick = onInfoWindowLongClick,
+                onMarkerDrag = onMarkerDrag,
             )
         },
         update = {
-            update(markerDragState) { this.markerDragState = it }
             update(onClick) { this.onMarkerClick = it }
             update(onInfoWindowClick) { this.onInfoWindowClick = it }
             update(onInfoWindowClose) { this.onInfoWindowClose = it }
             update(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
+            update(onMarkerDrag) { this.onMarkerDrag = it }
 
             set(alpha) { this.marker.alpha = it }
             set(anchor) { this.marker.setAnchor(it.x, it.y) }

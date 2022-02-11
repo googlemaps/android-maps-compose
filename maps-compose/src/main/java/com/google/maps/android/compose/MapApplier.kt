@@ -109,18 +109,21 @@ internal class MapApplier(
         }
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDrag(marker: Marker) {
-                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
-                markerDragState?.dragState = DragState.DRAG
+                decorations.nodeForMarker(marker)
+                    ?.onMarkerDrag
+                    ?.invoke(marker, DragState.DRAG)
             }
 
             override fun onMarkerDragEnd(marker: Marker) {
-                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
-                markerDragState?.dragState = DragState.END
+                decorations.nodeForMarker(marker)
+                    ?.onMarkerDrag
+                    ?.invoke(marker, DragState.END)
             }
 
             override fun onMarkerDragStart(marker: Marker) {
-                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
-                markerDragState?.dragState = DragState.START
+                decorations.nodeForMarker(marker)
+                    ?.onMarkerDrag
+                    ?.invoke(marker, DragState.START)
             }
         })
     }
