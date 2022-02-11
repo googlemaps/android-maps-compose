@@ -9,11 +9,11 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Marker
 
 /**
- * An InfoWindowAdapter that returns a [ComposeView] for drawing an marker's
+ * An InfoWindowAdapter that returns a [ComposeView] for drawing a marker's
  * info window.
  *
  * Note: As of version 18.0.2 of the Maps SDK, info windows are drawn by
- * creating a bitmap of the [View]s return in the [GoogleMap.InfoWindowAdapter]
+ * creating a bitmap of the [View]s returned in the [GoogleMap.InfoWindowAdapter]
  * interface methods. The returned views are never attached to a window,
  * instead, they are drawn to a bitmap canvas. This breaks the assumption
  * [ComposeView] makes where it must eventually be attached to a window. As a
