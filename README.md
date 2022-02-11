@@ -112,7 +112,7 @@ If you want to customize the entire info window, use the `infoWindow` property
 in the `MapMarker` element instead. Note that if you provide a composable 
 function for `infoWindow`, `content` will be ignored.
 
-```koltin
+```kotlin
 MapMarker(
     //...
     infoWindow = { marker ->
