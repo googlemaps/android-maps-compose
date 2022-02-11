@@ -90,6 +90,8 @@ class MapSampleActivity : ComponentActivity() {
 @Composable
 private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     val singapore = LatLng(1.35, 103.87)
+    var markerPositionState by remember { mutableStateOf(singapore) }
+    var circlePositionState by remember { mutableStateOf(singapore) }
     // Observing and controlling the camera's state can be done with a CameraPositionState
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(singapore, 11f)
@@ -117,15 +119,22 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     ) {
         // Drawing on the map is accomplished with a child-based API
         Marker(
-            position = singapore,
+            position = markerPositionState,
             title = "Zoom in has been tapped $ticker times.",
+            draggable = true,
             onClick = {
                 println("${it.title} was clicked")
                 false
+            },
+            onMarkerDrag = { marker, dragState ->
+                markerPositionState = marker.position
+                if (dragState == DragState.END) {
+                    circlePositionState = marker.position
+                }
             }
         )
         Circle(
-            center = singapore,
+            center = circlePositionState,
             fillColor = MaterialTheme.colors.secondary,
             strokeColor = MaterialTheme.colors.secondaryVariant,
             radius = 1000.0,
