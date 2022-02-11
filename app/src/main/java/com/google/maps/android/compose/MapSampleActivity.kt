@@ -130,21 +130,17 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             position = singapore,
             title = "Zoom in has been tapped $ticker times.",
             onClick = markerClick,
-            infoContents = {
-                Log.d(TAG, "Info contents invoked")
-                Text(it.title ?: "Title", color = Color.Red)
-            }
-        )
+        ) {
+            Text(it.title ?: "Title", color = Color.Red)
+        }
         Marker(
             position = singapore2,
             title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
             onClick = markerClick,
-            infoContents = {
-                Log.d(TAG, "Info contents invoked")
-                Text(it.title ?: "Title", color = Color.Blue)
-            }
-        )
+        ) {
+            Text(it.title ?: "Title", color = Color.Blue)
+        }
         Circle(
             center = singapore,
             fillColor = MaterialTheme.colors.secondary,

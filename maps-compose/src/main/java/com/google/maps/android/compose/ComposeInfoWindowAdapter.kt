@@ -28,12 +28,6 @@ internal class ComposeInfoWindowAdapter(
     private val markerNodeFinder: (Marker) -> MarkerNode?
 ) : GoogleMap.InfoWindowAdapter {
 
-//    private val infoWindowView by lazy {
-//        val window = ComposeView(mapView.context)
-//        mapView.addView(window)
-//        window
-//    }
-
     private val infoWindowView: ComposeView
         get() = ComposeView(mapView.context).apply {
             mapView.addView(this)
@@ -41,12 +35,12 @@ internal class ComposeInfoWindowAdapter(
 
     override fun getInfoContents(marker: Marker): View? {
         val markerNode = markerNodeFinder(marker) ?: return null
-        val infoContents  = markerNode.infoContents
-        if (infoContents == null) {
+        val content  = markerNode.content
+        if (content == null) {
             return null
         }
         return infoWindowView.applyAndRemove(markerNode.compositionContext) {
-            infoContents(marker)
+            content(marker)
         }
     }
 

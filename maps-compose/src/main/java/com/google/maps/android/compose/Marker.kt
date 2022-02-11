@@ -38,8 +38,8 @@ internal class MarkerNode(
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
     var onInfoWindowLongClick: (Marker) -> Unit,
-    var infoContents: (@Composable (Marker) -> Unit)?,
     var infoWindow: (@Composable (Marker) -> Unit)?,
+    var content: (@Composable (Marker) -> Unit)?,
 ) : MapNode {
     override fun onRemoved() {
         marker.remove()
@@ -91,7 +91,7 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
- * @param infoContents optional composable lambda expression for customizing the
+ * @param content optional composable lambda expression for customizing the
  * info window's content
  */
 @Composable
@@ -114,7 +114,7 @@ fun Marker(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    infoContents: (@Composable (Marker) -> Unit)? = null
+    content: (@Composable (Marker) -> Unit)? = null
 ) {
     MapMarker(
         position = position,
@@ -135,7 +135,7 @@ fun Marker(
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
         onInfoWindowLongClick = onInfoWindowLongClick,
-        infoContents = infoContents,
+        content = content,
     )
 }
 
@@ -163,11 +163,11 @@ fun Marker(
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
- * @param infoContents optional composable lambda expression for customizing
- * the info window's content. If this value is non-null, [infoWindow] must be null.
  * @param infoWindow optional composable lambda expression for customizing
  * the entire info window. If this value is non-null, the value in
  * [infoContents] will be ignored.
+ * @param content optional composable lambda expression for customizing
+ * the info window's content. If this value is non-null, [infoWindow] must be null.
  */
 @Composable
 fun MapMarker(
@@ -189,8 +189,8 @@ fun MapMarker(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    infoContents: (@Composable (Marker) -> Unit)? = null,
     infoWindow: (@Composable (Marker) -> Unit)? = null,
+    content: (@Composable (Marker) -> Unit)? = null,
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
     val compositionContext = rememberCompositionContext()
@@ -219,7 +219,7 @@ fun MapMarker(
                 onInfoWindowClick = onInfoWindowClick,
                 onInfoWindowClose = onInfoWindowClose,
                 onInfoWindowLongClick = onInfoWindowLongClick,
-                infoContents = infoContents,
+                content = content,
                 infoWindow = infoWindow,
             )
         },
@@ -229,7 +229,7 @@ fun MapMarker(
             update(onInfoWindowClick) { this.onInfoWindowClick = it }
             update(onInfoWindowClose) { this.onInfoWindowClose = it }
             update(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
-            update(infoContents) { this.infoContents = it }
+            update(content) { this.content = it }
             update(infoWindow) { this.infoWindow = it }
 
             set(alpha) { this.marker.alpha = it }

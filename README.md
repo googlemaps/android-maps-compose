@@ -98,31 +98,34 @@ GoogleMap(
 #### Customizing a marker's info window
 
 You can customize a marker's info window contents by providing a value to the 
-`infoContents` property.
+`content` property.
 
 ```kotlin
 Marker(
     //...
-    infoContents = { marker ->
-        Text(marker.title ?: "Default Marker Title", color = Color.Red)
-    }
-)
+) {
+    Text(marker.title ?: "Default Marker Title", color = Color.Red)
+}
 ```
 
 If you want to customize the entire info window, use the `infoWindow` property
-in the `MapMarker` element instead.
-
+in the `MapMarker` element instead. Note that if you provide a composable 
+function for `infoWindow`, `content` will be ignored.
 
 ```koltin
 MapMarker(
     //...
     infoWindow = { marker ->
+        // Implement the custom info window here
         Column {
             Text(marker.title ?: "Default Marker Title", color = Color.Red)
             Text(marker.snippet ?: "Default Marker Snippet", color = Color.Red)
         }
     }
-)
+) {
+    // Don't do this! This will be ignored
+    Text(marker.title ?: "Default Marker Title", color = Color.Red)
+}
 ```
 
 ## Sample App
