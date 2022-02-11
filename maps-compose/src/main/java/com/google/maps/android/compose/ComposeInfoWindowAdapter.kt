@@ -2,31 +2,11 @@ package com.google.maps.android.compose
 
 import android.view.View
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.ui.platform.ComposeView
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Marker
-
-/**
- * A component of a marker info window that can be customized.
- */
-sealed class ComposeInfoWindowComponent(
-    val content: @Composable (Marker) -> Unit
-)
-
-/**
- * Class for customizing the entire info window in Compose.
- */
-class ComposeInfoWindow(
-    content: @Composable (Marker) -> Unit
-) : ComposeInfoWindowComponent(content)
-
-/**
- * Class for customizing the info window's contents in Compose.
- */
-class ComposeInfoWindowContent(
-    content: @Composable (Marker) -> Unit
-): ComposeInfoWindowComponent(content)
 
 /**
  * An InfoWindowAdapter that returns a [ComposeView] for drawing an marker's
@@ -48,28 +28,48 @@ internal class ComposeInfoWindowAdapter(
     private val markerNodeFinder: (Marker) -> MarkerNode?
 ) : GoogleMap.InfoWindowAdapter {
 
-    private val infoWindowView by lazy {
-        val window = ComposeView(mapView.context)
-        mapView.addView(window)
-        window
+//    private val infoWindowView by lazy {
+//        val window = ComposeView(mapView.context)
+//        mapView.addView(window)
+//        window
+//    }
+
+    private val infoWindowView: ComposeView
+        get() = ComposeView(mapView.context).apply {
+            mapView.addView(this)
+        }
+
+    override fun getInfoContents(marker: Marker): View? {
+        val markerNode = markerNodeFinder(marker) ?: return null
+        val infoContents  = markerNode.infoContents
+        if (infoContents == null) {
+            return null
+        }
+        return infoWindowView.applyAndRemove(markerNode.compositionContext) {
+            infoContents(marker)
+        }
     }
 
-    override fun getInfoContents(marker: Marker): View? =
-        marker.infoWindowView<ComposeInfoWindowContent>()
-
-    override fun getInfoWindow(marker: Marker): View? =
-        marker.infoWindowView<ComposeInfoWindow>()
-
-    private inline fun <reified T : ComposeInfoWindowComponent> Marker.infoWindowView(): View? {
-        val markerNode = markerNodeFinder(this) ?: return null
-        val component = markerNode.infoWindowComponent as? T ?: return null
-        val infoWindowView = infoWindowView.apply {
-            setParentCompositionContext(markerNode.compositionContext)
-            setContent {
-                component.content(this@infoWindowView)
-            }
+    override fun getInfoWindow(marker: Marker): View? {
+        val markerNode = markerNodeFinder(marker) ?: return null
+        val infoWindow  = markerNode.infoWindow
+        if (infoWindow == null) {
+            return null
         }
-        (infoWindowView.parent as? MapView)?.removeView(infoWindowView)
-        return infoWindowView
+        return infoWindowView.applyAndRemove(markerNode.compositionContext) {
+            infoWindow(marker)
+        }
+    }
+
+    private fun ComposeView.applyAndRemove(
+        parentContext: CompositionContext,
+        content: @Composable () -> Unit
+    ): ComposeView {
+        val result = this.apply {
+            setParentCompositionContext(parentContext)
+            setContent(content)
+        }
+        (this.parent as? MapView)?.removeView(this)
+        return result
     }
 }

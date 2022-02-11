@@ -38,7 +38,8 @@ internal class MarkerNode(
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
     var onInfoWindowLongClick: (Marker) -> Unit,
-    var infoWindowComponent: ComposeInfoWindowComponent? = null,
+    var infoContents: (@Composable (Marker) -> Unit)?,
+    var infoWindow: (@Composable (Marker) -> Unit)?,
 ) : MapNode {
     override fun onRemoved() {
         marker.remove()
@@ -90,8 +91,8 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
- * @param infoWindowComponent optional [ComposeInfoWindowComponent] for customizing
- *                            the marker's info window
+ * @param infoContents optional composable lambda expression for customizing the
+ * info window's content
  */
 @Composable
 fun Marker(
@@ -113,7 +114,83 @@ fun Marker(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    infoWindowComponent: ComposeInfoWindowComponent? = null,
+    infoContents: (@Composable (Marker) -> Unit)? = null
+) {
+    MapMarker(
+        position = position,
+        alpha = alpha,
+        anchor = anchor,
+        draggable = draggable,
+        flat = flat,
+        icon = icon,
+        infoWindowAnchor = infoWindowAnchor,
+        rotation = rotation,
+        snippet = snippet,
+        tag = tag,
+        title = title,
+        visible = visible,
+        zIndex = zIndex,
+        markerDragState = markerDragState,
+        onClick = onClick,
+        onInfoWindowClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose,
+        onInfoWindowLongClick = onInfoWindowLongClick,
+        infoContents = infoContents,
+    )
+}
+
+/**
+ * A marker on a Google map. Typically you will instead want to use
+ * [com.google.maps.android.compose.Marker], which is a higher level Marker
+ * element. However, if you want to customize the info window and not just its
+ * contents, use this composable element instead.
+ *
+ * @param position the position of the marker
+ * @param alpha the alpha (opacity) of the marker
+ * @param anchor the anchor for the marker image
+ * @param draggable sets the draggability for the marker
+ * @param flat sets if the marker should be flat against the map
+ * @param icon sets the icon for the marker
+ * @param infoWindowAnchor the anchor point of the info window on the marker image
+ * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
+ * @param snippet the snippet for the marker
+ * @param tag optional tag to associate with the marker
+ * @param title the title for the marker
+ * @param visible the visibility of the marker
+ * @param zIndex the z-index of the marker
+ * @param markerDragState a [MarkerDragState] to be used for observing marker drag events
+ * @param onClick a lambda invoked when the marker is clicked
+ * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
+ * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
+ * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param infoContents optional composable lambda expression for customizing
+ * the info window's content. If this value is non-null, [infoWindow] must be null.
+ * @param infoWindow optional composable lambda expression for customizing
+ * the entire info window. If this value is non-null, the value in
+ * [infoContents] will be ignored.
+ */
+@Composable
+fun MapMarker(
+    position: LatLng,
+    alpha: Float = 1.0f,
+    anchor: Offset = Offset(0.5f, 1.0f),
+    draggable: Boolean = false,
+    flat: Boolean = false,
+    icon: BitmapDescriptor? = null,
+    infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
+    rotation: Float = 0.0f,
+    snippet: String? = null,
+    tag: Any? = null,
+    title: String? = null,
+    visible: Boolean = true,
+    zIndex: Float = 0.0f,
+    markerDragState: MarkerDragState? = null,
+    onClick: (Marker) -> Boolean = { false },
+    onInfoWindowClick: (Marker) -> Unit = {},
+    onInfoWindowClose: (Marker) -> Unit = {},
+    onInfoWindowLongClick: (Marker) -> Unit = {},
+    infoContents: (@Composable (Marker) -> Unit)? = null,
+    infoWindow: (@Composable (Marker) -> Unit)? = null,
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
     val compositionContext = rememberCompositionContext()
@@ -142,7 +219,8 @@ fun Marker(
                 onInfoWindowClick = onInfoWindowClick,
                 onInfoWindowClose = onInfoWindowClose,
                 onInfoWindowLongClick = onInfoWindowLongClick,
-                infoWindowComponent = infoWindowComponent,
+                infoContents = infoContents,
+                infoWindow = infoWindow,
             )
         },
         update = {
@@ -151,7 +229,8 @@ fun Marker(
             update(onInfoWindowClick) { this.onInfoWindowClick = it }
             update(onInfoWindowClose) { this.onInfoWindowClose = it }
             update(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
-            update(infoWindowComponent) { this.infoWindowComponent = it }
+            update(infoContents) { this.infoContents = it }
+            update(infoWindow) { this.infoWindow = it }
 
             set(alpha) { this.marker.alpha = it }
             set(anchor) { this.marker.setAnchor(it.x, it.y) }
