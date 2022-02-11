@@ -35,7 +35,7 @@ internal class ComposeInfoWindowAdapter(
 
     override fun getInfoContents(marker: Marker): View? {
         val markerNode = markerNodeFinder(marker) ?: return null
-        val content  = markerNode.content
+        val content  = markerNode.infoContent
         if (content == null) {
             return null
         }
