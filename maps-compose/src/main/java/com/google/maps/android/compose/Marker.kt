@@ -58,11 +58,11 @@ enum class DragState {
  * @param title the title for the marker
  * @param visible the visibility of the marker
  * @param zIndex the z-index of the marker
- * @param markerDragState a [MarkerDragState] to be used for observing marker drag events
  * @param onClick a lambda invoked when the marker is clicked
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param onMarkerDrag a lambda invoked while the marker is dragged
  */
 @Composable
 fun Marker(
