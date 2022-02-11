@@ -109,25 +109,15 @@ MarkerInfoWindowContent(
 ) { marker ->
     Text(marker.title ?: "Default Marker Title", color = Color.Red)
 }
-```
 
-If you want to customize the entire info window, use the `infoWindow` property
-in the `MapMarker` element instead. Note that if you provide a composable 
-function for `infoWindow`, `content` will be ignored.
-
-```kotlin
-MapMarker(
+MarkerInfoWindow(
     //...
-    infoWindow = { marker ->
-        // Implement the custom info window here
-        Column {
-            Text(marker.title ?: "Default Marker Title", color = Color.Red)
-            Text(marker.snippet ?: "Default Marker Snippet", color = Color.Red)
-        }
-    }
 ) { marker ->
-    // Don't do this! This will be ignored
-    Text(marker.title ?: "Default Marker Title", color = Color.Red)
+    // Implement the custom info window here
+    Column {
+        Text(marker.title ?: "Default Marker Title", color = Color.Red)
+        Text(marker.snippet ?: "Default Marker Snippet", color = Color.Red)
+    }
 }
 ```
 

@@ -278,10 +278,7 @@ fun MarkerInfoWindowContent(
 }
 
 /**
- * A marker on a Google map. Typically you will instead want to use
- * [com.google.maps.android.compose.Marker], which is a higher level Marker
- * element. However, if you want to customize the info window and not just its
- * contents, use this composable element instead.
+ * Internal implementation for a marker on a Google map.
  *
  * @param position the position of the marker
  * @param alpha the alpha (opacity) of the marker
