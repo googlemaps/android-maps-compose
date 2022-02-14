@@ -15,8 +15,12 @@
 package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
@@ -109,9 +113,8 @@ fun GoogleMap(
     val currentContent by rememberUpdatedState(content)
 
     LaunchedEffect(Unit) {
-        val map = mapView.awaitMap()
         disposingComposition {
-            map.newComposition(parentComposition) {
+            mapView.newComposition(parentComposition) {
                 MapUpdater(
                     contentDescription = contentDescription,
                     cameraPositionState = currentCameraPositionState,
@@ -137,11 +140,16 @@ private suspend inline fun disposingComposition(factory: () -> Composition) {
     }
 }
 
-private fun GoogleMap.newComposition(
+private suspend inline fun MapView.newComposition(
     parent: CompositionContext,
-    content: @Composable () -> Unit
-): Composition = Composition(MapApplier(this), parent).apply {
-    setContent(content)
+    noinline content: @Composable () -> Unit
+): Composition {
+    val map = awaitMap()
+    return Composition(
+        MapApplier(map, this), parent
+    ).apply {
+        setContent(content)
+    }
 }
 
 /**
