@@ -108,6 +108,9 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     var shouldAnimateZoom by remember { mutableStateOf(true) }
     var ticker by remember { mutableStateOf(0) }
 
+    // Observing and controlling the info window visibility can be done with a MarkerInfoWindowState
+    val markerInfoWindowState = rememberMarkerInfoWindowState(initialValue = InfoWindowState.SHOWN)
+
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
@@ -130,6 +133,7 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             position = singapore,
             title = "Zoom in has been tapped $ticker times.",
             onClick = markerClick,
+            infoWindowState = markerInfoWindowState,
         ) {
             Text(it.title ?: "Title", color = Color.Red)
         }
@@ -158,6 +162,7 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         ZoomControls(
             shouldAnimateZoom,
             uiSettings.zoomControlsEnabled,
+            isInfoWindowShowingChecked = markerInfoWindowState.state == InfoWindowState.SHOWN,
             onZoomOut = {
                 if (shouldAnimateZoom) {
                     coroutineScope.launch {
@@ -182,6 +187,14 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             },
             onZoomControlsCheckedChange = {
                 uiSettings = uiSettings.copy(zoomControlsEnabled = it)
+            },
+            onInfoWindowShowingChange = { show ->
+                if (show) {
+                    markerInfoWindowState.show()
+                }
+                else {
+                    markerInfoWindowState.hide()
+                }
             }
         )
         DebugView(cameraPositionState)
@@ -222,10 +235,12 @@ private fun MapTypeButton(type: MapType, onClick: () -> Unit) {
 private fun ZoomControls(
     isCameraAnimationChecked: Boolean,
     isZoomControlsEnabledChecked: Boolean,
+    isInfoWindowShowingChecked: Boolean,
     onZoomOut: () -> Unit,
     onZoomIn: () -> Unit,
     onCameraAnimationCheckedChange: (Boolean) -> Unit,
     onZoomControlsCheckedChange: (Boolean) -> Unit,
+    onInfoWindowShowingChange: (Boolean) -> Unit,
 ) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
         MapButton("-", onClick = { onZoomOut() })
@@ -238,6 +253,10 @@ private fun ZoomControls(
             Row(horizontalArrangement = Arrangement.Center) {
                 Text(text = "Zoom Controls On?")
                 Switch(isZoomControlsEnabledChecked, onCheckedChange = onZoomControlsCheckedChange)
+            }
+            Row(horizontalArrangement = Arrangement.Center) {
+                Text(text = "Info Window showing?")
+                Switch(isInfoWindowShowingChecked, onCheckedChange = onInfoWindowShowingChange)
             }
         }
     }
