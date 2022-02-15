@@ -16,6 +16,7 @@ package com.google.maps.android.compose
 
 import androidx.compose.runtime.AbstractApplier
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.GroundOverlay
 import com.google.android.gms.maps.model.Marker
@@ -30,7 +31,8 @@ internal interface MapNode {
 private object MapNodeRoot : MapNode
 
 internal class MapApplier(
-    val map: GoogleMap
+    val map: GoogleMap,
+    private val mapView: MapView,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
     private val decorations = mutableListOf<MapNode>()
@@ -126,6 +128,12 @@ internal class MapApplier(
                     ?.invoke(marker, DragState.START)
             }
         })
+        map.setInfoWindowAdapter(
+            ComposeInfoWindowAdapter(
+                mapView,
+                markerNodeFinder = { decorations.nodeForMarker(it) }
+            )
+        )
     }
 }
 

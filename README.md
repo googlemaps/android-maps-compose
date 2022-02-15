@@ -61,7 +61,7 @@ Box(Modifier.fillMaxSize()) {
 }
 ```
 
-### Controlling the map's camera
+### Controlling a map's camera
 
 Camera changes and updates can be observed and controlled via `CameraPositionState`.
 
@@ -95,6 +95,32 @@ GoogleMap(
 }
 ```
 
+#### Customizing a marker's info window
+
+You can customize a marker's info window contents by using the 
+`MarkerInfoWindowContent` element, or if you want to customize the entire info 
+window, use the `MarkerInfoWindow` element instead. Both of these elements
+accept a `content` parameter to provide your customization in a composable
+lambda expression.
+
+```kotlin
+MarkerInfoWindowContent(
+    //...
+) { marker ->
+    Text(marker.title ?: "Default Marker Title", color = Color.Red)
+}
+
+MarkerInfoWindow(
+    //...
+) { marker ->
+    // Implement the custom info window here
+    Column {
+        Text(marker.title ?: "Default Marker Title", color = Color.Red)
+        Text(marker.snippet ?: "Default Marker Snippet", color = Color.Red)
+    }
+}
+```
+
 ## Sample App
 
 This repository includes a [sample app](app).
@@ -108,7 +134,7 @@ To run it, you'll have to:
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:1.0.1'
+    implementation 'com.google.maps.android:maps-compose:1.1.0'
     
     // Make sure to also include the latest version of the Maps SDK for Android 
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
@@ -118,6 +144,10 @@ dependencies {
 ## Documentation
 
 You can learn more about all the extensions provided by this library by reading the [reference documents][Javadoc].
+
+## Contributing
+
+Contributions are welcome and encouraged! See [contributing] for more info.
 
 ## Support
 
@@ -131,6 +161,7 @@ You can also reach us on our [Discord channel].
 [api-key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
 [Discord channel]: https://discord.gg/hYsWbmk
 [Javadoc]: https://googlemaps.github.io/android-maps-compose
+[contributing]: CONTRIBUTING.md
 [code of conduct]: CODE_OF_CONDUCT.md
 [file an issue]: https://github.com/googlemaps/android-maps-compose/issues/new/choose
 [pull request]: https://github.com/googlemaps/android-maps-compose/compare
