@@ -15,7 +15,9 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.AbstractApplier
+import androidx.compose.ui.platform.ComposeView
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.GroundOverlay
 import com.google.android.gms.maps.model.Marker
@@ -30,7 +32,8 @@ internal interface MapNode {
 private object MapNodeRoot : MapNode
 
 internal class MapApplier(
-    val map: GoogleMap
+    val map: GoogleMap,
+    private val mapView: MapView,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
     private val decorations = mutableListOf<MapNode>()
@@ -109,20 +112,29 @@ internal class MapApplier(
         }
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDrag(marker: Marker) {
-                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
+                val markerDragState =
+                    decorations.nodeForMarker(marker)?.markerDragState
                 markerDragState?.dragState = DragState.DRAG
             }
 
             override fun onMarkerDragEnd(marker: Marker) {
-                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
+                val markerDragState =
+                    decorations.nodeForMarker(marker)?.markerDragState
                 markerDragState?.dragState = DragState.END
             }
 
             override fun onMarkerDragStart(marker: Marker) {
-                val markerDragState = decorations.nodeForMarker(marker)?.markerDragState
+                val markerDragState =
+                    decorations.nodeForMarker(marker)?.markerDragState
                 markerDragState?.dragState = DragState.START
             }
         })
+        map.setInfoWindowAdapter(
+            ComposeInfoWindowAdapter(
+                mapView,
+                markerNodeFinder = { decorations.nodeForMarker(it) }
+            )
+        )
     }
 }
 
