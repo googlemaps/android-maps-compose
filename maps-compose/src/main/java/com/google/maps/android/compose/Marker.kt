@@ -19,8 +19,13 @@ import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.currentComposer
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -29,6 +34,7 @@ import com.google.maps.android.ktx.addMarker
 internal class MarkerNode(
     val compositionContext: CompositionContext,
     val marker: Marker,
+    val markerPositionState: MarkerPositionState,
     var onMarkerClick: (Marker) -> Boolean,
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
@@ -48,9 +54,36 @@ enum class DragState {
 }
 
 /**
+ * A state object that can be hoisted to control and observe the marker state.
+ *
+ * @param position the initial marker position
+ */
+@Immutable
+class MarkerPositionState(
+    position: LatLng = LatLng(0.0, 0.0)
+) {
+    /**
+     * Current position of the marker.
+     */
+    var position: LatLng by mutableStateOf(position)
+
+    /**
+     * Current [DragState] of the marker.
+     */
+    var dragState: DragState by mutableStateOf(DragState.END)
+        internal set
+}
+
+@Composable
+fun rememberMarkerPositionState(
+    position: LatLng = LatLng(0.0, 0.0)
+): MarkerPositionState = remember { MarkerPositionState(position) }
+
+/**
  * A composable for a marker on the map.
  *
- * @param position the position of the marker
+ * @param positionState the [MarkerPositionState] to be used to control or observe the marker
+ * position state
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -71,7 +104,7 @@ enum class DragState {
  */
 @Composable
 fun Marker(
-    position: LatLng,
+    positionState: MarkerPositionState = rememberMarkerPositionState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -91,7 +124,7 @@ fun Marker(
     onMarkerDrag: (Marker, DragState) -> Unit = { _, _ -> },
 ) {
     MarkerImpl(
-        position = position,
+        positionState = positionState,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -117,7 +150,8 @@ fun Marker(
  * customized. If this customization is not required, use
  * [com.google.maps.android.compose.Marker].
  *
- * @param position the position of the marker
+ * @param positionState the [MarkerPositionState] to be used to control or observe the marker
+ * position state
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -140,7 +174,7 @@ fun Marker(
  */
 @Composable
 fun MarkerInfoWindow(
-    position: LatLng,
+    positionState: MarkerPositionState = rememberMarkerPositionState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -161,7 +195,7 @@ fun MarkerInfoWindow(
     content: (@Composable (Marker) -> Unit)? = null
 ) {
     MarkerImpl(
-        position = position,
+        positionState = positionState,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -188,7 +222,8 @@ fun MarkerInfoWindow(
  * customized. If this customization is not required, use
  * [com.google.maps.android.compose.Marker].
  *
- * @param position the position of the marker
+ * @param positionState the [MarkerPositionState] to be used to control or observe the marker
+ * position state
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -211,7 +246,7 @@ fun MarkerInfoWindow(
  */
 @Composable
 fun MarkerInfoWindowContent(
-    position: LatLng,
+    positionState: MarkerPositionState = rememberMarkerPositionState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -232,7 +267,7 @@ fun MarkerInfoWindowContent(
     content: (@Composable (Marker) -> Unit)? = null
 ) {
     MarkerImpl(
-        position = position,
+        positionState = positionState,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -257,7 +292,8 @@ fun MarkerInfoWindowContent(
 /**
  * Internal implementation for a marker on a Google map.
  *
- * @param position the position of the marker
+ * @param positionState the [MarkerPositionState] to be used to control or observe the marker
+ * position state
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -283,7 +319,7 @@ fun MarkerInfoWindowContent(
  */
 @Composable
 private fun MarkerImpl(
-    position: LatLng,
+    positionState: MarkerPositionState = rememberMarkerPositionState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -315,7 +351,7 @@ private fun MarkerImpl(
                 flat(flat)
                 icon(icon)
                 infoWindowAnchor(infoWindowAnchor.x, infoWindowAnchor.y)
-                position(position)
+                position(positionState.position)
                 rotation(rotation)
                 snippet(snippet)
                 title(title)
@@ -326,6 +362,7 @@ private fun MarkerImpl(
             MarkerNode(
                 compositionContext = compositionContext,
                 marker = marker,
+                markerPositionState = positionState,
                 onMarkerClick = onClick,
                 onInfoWindowClick = onInfoWindowClick,
                 onInfoWindowClose = onInfoWindowClose,
@@ -350,7 +387,7 @@ private fun MarkerImpl(
             set(flat) { this.marker.isFlat = it }
             set(icon) { this.marker.setIcon(it) }
             set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
-            set(position) { this.marker.position = it }
+            set(positionState) { this.marker.position = it.position }
             set(rotation) { this.marker.rotation = it }
             set(snippet) {
                 this.marker.snippet = it

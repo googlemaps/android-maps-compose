@@ -111,21 +111,27 @@ internal class MapApplier(
         }
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDrag(marker: Marker) {
-                decorations.nodeForMarker(marker)
-                    ?.onMarkerDrag
-                    ?.invoke(marker, DragState.DRAG)
+                with(decorations.nodeForMarker(marker)) {
+                    this?.markerPositionState?.position = marker.position
+                    this?.markerPositionState?.dragState = DragState.DRAG
+                    this?.onMarkerDrag?.invoke(marker, DragState.DRAG)
+                }
             }
 
             override fun onMarkerDragEnd(marker: Marker) {
-                decorations.nodeForMarker(marker)
-                    ?.onMarkerDrag
-                    ?.invoke(marker, DragState.END)
+                with(decorations.nodeForMarker(marker)) {
+                    this?.markerPositionState?.position = marker.position
+                    this?.markerPositionState?.dragState = DragState.END
+                    this?.onMarkerDrag?.invoke(marker, DragState.END)
+                }
             }
 
             override fun onMarkerDragStart(marker: Marker) {
-                decorations.nodeForMarker(marker)
-                    ?.onMarkerDrag
-                    ?.invoke(marker, DragState.START)
+                with(decorations.nodeForMarker(marker)) {
+                    this?.markerPositionState?.position = marker.position
+                    this?.markerPositionState?.dragState = DragState.START
+                    this?.onMarkerDrag?.invoke(marker, DragState.START)
+                }
             }
         })
         map.setInfoWindowAdapter(
