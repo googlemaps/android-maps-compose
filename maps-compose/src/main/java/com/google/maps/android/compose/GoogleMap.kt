@@ -16,6 +16,7 @@ package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
 import android.content.res.Configuration
+import android.location.Location
 import android.os.Bundle
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -77,7 +78,7 @@ fun GoogleMap(
     onMapLongClick: (LatLng) -> Unit = {},
     onMapLoaded: () -> Unit = {},
     onMyLocationButtonClick: () -> Boolean = { false },
-    onMyLocationClick: () -> Unit = {},
+    onMyLocationClick: (Location) -> Unit = {},
     onPOIClick: (PointOfInterest) -> Unit = {},
     contentPadding: PaddingValues = NoPadding,
     content: (@Composable () -> Unit)? = null,
