@@ -118,14 +118,6 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         properties = mapProperties,
         uiSettings = uiSettings,
         onMapLoaded = onMapLoaded,
-        googleMapOptionsFactory = {
-            GoogleMapOptions().camera(
-                CameraPosition.fromLatLngZoom(
-                    singapore,
-                    11f
-                )
-            )
-        },
         onPOIClick = {
             Log.d(TAG, "POI clicked: ${it.name}")
         }
