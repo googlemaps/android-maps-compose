@@ -1,5 +1,6 @@
 package com.google.maps.android.compose
 
+import android.location.Location
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -38,6 +39,6 @@ internal class MapClickListeners {
     var onMapLongClick: (LatLng) -> Unit by mutableStateOf({})
     var onMapLoaded: () -> Unit by mutableStateOf({})
     var onMyLocationButtonClick: () -> Boolean by mutableStateOf({ false })
-    var onMyLocationClick: () -> Unit by mutableStateOf({})
+    var onMyLocationClick: (Location) -> Unit by mutableStateOf({})
     var onPOIClick: (PointOfInterest) -> Unit by mutableStateOf({})
 }

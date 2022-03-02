@@ -109,7 +109,11 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     var mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
-    var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+    var uiSettings by remember {
+        mutableStateOf(
+            MapUiSettings(compassEnabled = false)
+        )
+    }
     var shouldAnimateZoom by remember { mutableStateOf(true) }
     var ticker by remember { mutableStateOf(0) }
 
@@ -119,9 +123,6 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         properties = mapProperties,
         uiSettings = uiSettings,
         onMapLoaded = onMapLoaded,
-        googleMapOptionsFactory = {
-            GoogleMapOptions().camera(CameraPosition.fromLatLngZoom(singapore, 11f))
-        },
         onPOIClick = {
             Log.d(TAG, "POI clicked: ${it.name}")
         }
@@ -244,11 +245,17 @@ private fun ZoomControls(
         Column(verticalArrangement = Arrangement.Center) {
             Row(horizontalArrangement = Arrangement.Center) {
                 Text(text = "Camera Animations On?")
-                Switch(isCameraAnimationChecked, onCheckedChange = onCameraAnimationCheckedChange)
+                Switch(
+                    isCameraAnimationChecked,
+                    onCheckedChange = onCameraAnimationCheckedChange
+                )
             }
             Row(horizontalArrangement = Arrangement.Center) {
                 Text(text = "Zoom Controls On?")
-                Switch(isZoomControlsEnabledChecked, onCheckedChange = onZoomControlsCheckedChange)
+                Switch(
+                    isZoomControlsEnabledChecked,
+                    onCheckedChange = onZoomControlsCheckedChange
+                )
             }
         }
     }
@@ -278,7 +285,8 @@ private fun DebugView(
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Center
     ) {
-        val moving = if (cameraPositionState.isMoving) "moving" else "not moving"
+        val moving =
+            if (cameraPositionState.isMoving) "moving" else "not moving"
         Text(text = "Camera is $moving")
         Text(text = "Camera position is ${cameraPositionState.position}")
         Spacer(modifier = Modifier.height(4.dp))
