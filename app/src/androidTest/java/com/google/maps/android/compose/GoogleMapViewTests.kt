@@ -73,7 +73,6 @@ class GoogleMapViewTests {
                 !cameraPositionState.isMoving
             }
             assertFalse(cameraPositionState.isMoving)
-            assertTrue(false)
         }
     }
 
