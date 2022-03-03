@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class GoogleMapViewTests {
     @get:Rule
@@ -46,7 +47,8 @@ class GoogleMapViewTests {
                 }
             )
         }
-        countDownLatch.await()
+        val mapLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
+        assertTrue("Map loaded", mapLoaded)
     }
     @Test
     fun testStartingCameraPosition() {
