@@ -73,5 +73,5 @@ jobs:
         target: google_apis
         arch: x86
         disable-animations: true
-        script: ./gradlew connectedCheck --stacktrace
+        script: ./gradlew :app:connectedCheck --stacktrace
 
