@@ -75,3 +75,9 @@ jobs:
         disable-animations: true
         script: ./gradlew :app:connectedCheck --stacktrace
 
+    - name: Upload test reports
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-reports
+        path: ./app/build/reports
