@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CancellableContinuation
@@ -64,6 +65,13 @@ class CameraPositionState(
      */
     var isMoving by mutableStateOf(false)
         internal set
+
+    /**
+     * Returns the current [Projection] to be used for converting between screen
+     * coordinates and lat/lng.
+     */
+    val projection: Projection?
+        get() = map?.projection
 
     /**
      * Local source of truth for the current camera position.
