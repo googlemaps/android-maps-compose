@@ -44,8 +44,7 @@ jobs:
 
     - name: Inject Maps API Key
       run: |
-        echo "Current local.properties contents"
-        cat local.properties
+        touch local.properties
         echo "\nMAPS_API_KEY=$MAPS_API_KEY" >> local.properties
       env:
         MAPS_API_KEY: ${{ secrets.GMP_API_KEY }}
