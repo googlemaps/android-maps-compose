@@ -42,13 +42,6 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-    - name: Inject Maps API Key
-      run: |
-        touch local.properties
-        echo "\nMAPS_API_KEY=$MAPS_API_KEY" >> local.properties
-      env:
-        MAPS_API_KEY: ${{ secrets.GMP_API_KEY }}
-
     - name: Build modules
       run: ./gradlew build jacocoTestReport --stacktrace
 
@@ -73,6 +66,13 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
+    - name: Inject Maps API Key
+      run: |
+        touch local.properties
+        echo "\nMAPS_API_KEY=$MAPS_API_KEY" >> local.properties
+      env:
+        MAPS_API_KEY: ${{ secrets.GMP_API_KEY }}
+
     - name: Run instrumentation tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
@@ -80,7 +80,7 @@ jobs:
         target: google_apis
         arch: x86
         disable-animations: true
-        script: ./gradlew :app:connectedCheck --stacktrace
+        script: ./gradlew build :app:connectedCheck --stacktrace
 
     - name: Upload test reports
       if: always()
