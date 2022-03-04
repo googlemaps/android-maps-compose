@@ -19,17 +19,20 @@ on:
   repository_dispatch:
     types: [test]
   push:
-    branches: ['*']
+    branches-ignore: ['gh-pages']
   pull_request:
-    branches: ['*']
+    branches-ignore: ['gh-pages']
   workflow_dispatch:
 
 jobs:
-  run-unit-test:
-    runs-on: ubuntu-latest
+  run-instrumentation-test:
+    runs-on: macOS-latest # enables hardware acceleration in the virtual machine
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        api-level: [23, 26, 29]
 
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout Repo
       uses: actions/checkout@v2
 
@@ -42,5 +45,25 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-    - name: Build modules
-      run: ./gradlew build jacocoTestReport --stacktrace
+    - name: Inject Maps API Key
+      run: |
+        touch local.properties
+        echo "\nMAPS_API_KEY=$MAPS_API_KEY" >> local.properties
+      env:
+        MAPS_API_KEY: ${{ secrets.GMP_API_KEY }}
+
+    - name: Run instrumentation tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ matrix.api-level }}
+        target: google_apis
+        arch: x86
+        disable-animations: true
+        script: ./gradlew build :app:connectedCheck --stacktrace
+
+    - name: Upload test reports
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-reports
+        path: ./app/build/reports
