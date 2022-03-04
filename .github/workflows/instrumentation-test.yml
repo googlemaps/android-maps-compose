@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # A workflow that runs tests on every new pull request
-name: Run unit tests
+name: Run instrumentation tests
 
 on:
   repository_dispatch:
@@ -49,8 +49,14 @@ jobs:
       run: |
         touch local.properties
         echo "\nMAPS_API_KEY=$MAPS_API_KEY" >> local.properties
+        echo "------------------------------------------------"
+        ls
+        echo "------------------------------------------------"
       env:
         MAPS_API_KEY: ${{ secrets.GMP_API_KEY }}
+
+    - name: Build debug
+      run: rm -fr ./app/build ; ./gradlew assembleDebug
 
     - name: Run instrumentation tests
       uses: reactivecircus/android-emulator-runner@v2
@@ -59,7 +65,7 @@ jobs:
         target: google_apis
         arch: x86
         disable-animations: true
-        script: ./gradlew build :app:connectedCheck --stacktrace
+        script: ./gradlew :app:connectedCheck --stacktrace
 
     - name: Upload test reports
       if: always()

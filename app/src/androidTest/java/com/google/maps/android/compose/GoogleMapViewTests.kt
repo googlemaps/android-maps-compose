@@ -1,5 +1,6 @@
 package com.google.maps.android.compose
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
@@ -38,6 +39,7 @@ class GoogleMapViewTests {
         )
 
         val countDownLatch = CountDownLatch(1)
+        Log.i("GoogleMapViewTests", "API KEY is: ${BuildConfig.MAPS_API_KEY}")
         composeTestRule.setContent {
             GoogleMapView(
                 modifier = Modifier.fillMaxSize(),
