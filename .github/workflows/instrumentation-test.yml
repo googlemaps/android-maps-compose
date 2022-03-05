@@ -47,16 +47,14 @@ jobs:
 
     - name: Inject Maps API Key
       run: |
-        touch local.properties
-        echo "\nMAPS_API_KEY=$MAPS_API_KEY" >> local.properties
-        echo "------------------------------------------------"
-        ls
-        echo "------------------------------------------------"
+        # Injecting the key directly into the manifest as secrets-gradle-plugin
+        # isn't picking up the key when creating a local.properties file here
+        sed -i -e "s,\${MAPS_API_KEY},$MAPS_API_KEY,g" ./app/src/main/AndroidManifest.xml
       env:
         MAPS_API_KEY: ${{ secrets.GMP_API_KEY }}
 
     - name: Build debug
-      run: rm -fr ./app/build ; ./gradlew assembleDebug
+      run: ./gradlew assembleDebug
 
     - name: Run instrumentation tests
       uses: reactivecircus/android-emulator-runner@v2

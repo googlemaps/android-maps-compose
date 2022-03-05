@@ -39,7 +39,6 @@ class GoogleMapViewTests {
         )
 
         val countDownLatch = CountDownLatch(1)
-        Log.i("GoogleMapViewTests", "API KEY is: ${BuildConfig.MAPS_API_KEY}")
         composeTestRule.setContent {
             GoogleMapView(
                 modifier = Modifier.fillMaxSize(),
