@@ -48,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -58,19 +59,27 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "MapSampleActivity"
 
+val singapore = LatLng(1.35, 103.87)
+val singapore2 = LatLng(1.40, 103.77)
+
 class MapSampleActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             var isMapLoaded by remember { mutableStateOf(false) }
+            // Observing and controlling the camera's state can be done with a CameraPositionState
+            val cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(singapore, 11f)
+            }
 
             Box(Modifier.fillMaxSize()) {
                 GoogleMapView(
                     modifier = Modifier.matchParentSize(),
+                    cameraPositionState = cameraPositionState,
                     onMapLoaded = {
                         isMapLoaded = true
-                    }
+                    },
                 )
                 if (!isMapLoaded) {
                     AnimatedVisibility(
@@ -93,9 +102,11 @@ class MapSampleActivity : ComponentActivity() {
 }
 
 @Composable
-private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
-    val singapore = LatLng(1.35, 103.87)
-    val singapore2 = LatLng(1.40, 103.77)
+fun GoogleMapView(
+    modifier: Modifier,
+    cameraPositionState: CameraPositionState,
+    onMapLoaded: () -> Unit,
+) {
     val singaporePositionState = rememberMarkerPositionState(position = singapore)
     val singapore2PositionState = rememberMarkerPositionState(position = singapore2)
     var circlePositionState by remember { mutableStateOf(singapore) }
@@ -103,21 +114,12 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         circlePositionState = singaporePositionState.position
     }
 
-    // Observing and controlling the camera's state can be done with a CameraPositionState
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 11f)
-    }
-
+    var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+    var shouldAnimateZoom by remember { mutableStateOf(true) }
+    var ticker by remember { mutableStateOf(0) }
     var mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
-    var uiSettings by remember {
-        mutableStateOf(
-            MapUiSettings(compassEnabled = false)
-        )
-    }
-    var shouldAnimateZoom by remember { mutableStateOf(true) }
-    var ticker by remember { mutableStateOf(0) }
 
     GoogleMap(
         modifier = modifier,
@@ -254,20 +256,17 @@ private fun ZoomControls(
         MapButton("-", onClick = { onZoomOut() })
         MapButton("+", onClick = { onZoomIn() })
         Column(verticalArrangement = Arrangement.Center) {
-            Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = "Camera Animations On?")
-                Switch(
-                    isCameraAnimationChecked,
-                    onCheckedChange = onCameraAnimationCheckedChange
-                )
-            }
-            Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = "Zoom Controls On?")
-                Switch(
-                    isZoomControlsEnabledChecked,
-                    onCheckedChange = onZoomControlsCheckedChange
-                )
-            }
+            Text(text = "Camera Animations On?")
+            Switch(
+                isCameraAnimationChecked,
+                onCheckedChange = onCameraAnimationCheckedChange,
+                modifier = Modifier.testTag("cameraAnimations"),
+            )
+            Text(text = "Zoom Controls On?")
+            Switch(
+                isZoomControlsEnabledChecked,
+                onCheckedChange = onZoomControlsCheckedChange
+            )
         }
     }
 }
