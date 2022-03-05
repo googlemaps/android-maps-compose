@@ -28,10 +28,6 @@ jobs:
   run-instrumentation-test:
     runs-on: macOS-latest # enables hardware acceleration in the virtual machine
     timeout-minutes: 30
-    strategy:
-      matrix:
-        api-level: [23, 26, 29]
-
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
@@ -59,7 +55,7 @@ jobs:
     - name: Run instrumentation tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: ${{ matrix.api-level }}
+        api-level: 29
         target: google_apis
         arch: x86
         disable-animations: true
