@@ -24,7 +24,7 @@ class GoogleMapViewTests {
 
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)
-    private val assertRoundingError = 0.0000001
+    private val assertRoundingError = 0.01
 
     private lateinit var cameraPositionState: CameraPositionState
 
