@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -39,7 +38,6 @@ internal class MarkerNode(
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
     var onInfoWindowLongClick: (Marker) -> Unit,
-    var onMarkerDrag: (Marker, DragState) -> Unit,
     var infoWindow: (@Composable (Marker) -> Unit)?,
     var infoContent: (@Composable (Marker) -> Unit)?,
 ) : MapNode {
@@ -58,7 +56,6 @@ enum class DragState {
  *
  * @param position the initial marker position
  */
-@Immutable
 class MarkerPositionState(
     position: LatLng = LatLng(0.0, 0.0)
 ) {
@@ -100,7 +97,6 @@ fun rememberMarkerPositionState(
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
- * @param onMarkerDrag a lambda invoked while the marker is dragged
  */
 @Composable
 fun Marker(
@@ -121,7 +117,6 @@ fun Marker(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    onMarkerDrag: (Marker, DragState) -> Unit = { _, _ -> },
 ) {
     MarkerImpl(
         positionState = positionState,
@@ -141,7 +136,6 @@ fun Marker(
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
         onInfoWindowLongClick = onInfoWindowLongClick,
-        onMarkerDrag = onMarkerDrag,
     )
 }
 
@@ -168,7 +162,6 @@ fun Marker(
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
- * @param onMarkerDrag a lambda invoked while the marker is dragged
  * @param content optional composable lambda expression for customizing the
  * info window's content
  */
@@ -191,7 +184,6 @@ fun MarkerInfoWindow(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    onMarkerDrag: (Marker, DragState) -> Unit = { _,_ -> },
     content: (@Composable (Marker) -> Unit)? = null
 ) {
     MarkerImpl(
@@ -212,7 +204,6 @@ fun MarkerInfoWindow(
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
         onInfoWindowLongClick = onInfoWindowLongClick,
-        onMarkerDrag = onMarkerDrag,
         infoWindow = content,
     )
 }
@@ -240,7 +231,6 @@ fun MarkerInfoWindow(
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
- * @param onMarkerDrag a lambda invoked while the marker is dragged
  * @param content optional composable lambda expression for customizing the
  * info window's content
  */
@@ -263,7 +253,6 @@ fun MarkerInfoWindowContent(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    onMarkerDrag: (Marker, DragState) -> Unit = { _,_ -> },
     content: (@Composable (Marker) -> Unit)? = null
 ) {
     MarkerImpl(
@@ -284,7 +273,6 @@ fun MarkerInfoWindowContent(
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
         onInfoWindowLongClick = onInfoWindowLongClick,
-        onMarkerDrag = onMarkerDrag,
         infoContent = content,
     )
 }
@@ -310,7 +298,6 @@ fun MarkerInfoWindowContent(
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
- * @param onMarkerDrag a lambda invoked while the marker is dragged
  * @param infoWindow optional composable lambda expression for customizing
  * the entire info window. If this value is non-null, the value in infoContent]
  * will be ignored.
@@ -336,7 +323,6 @@ private fun MarkerImpl(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    onMarkerDrag: (Marker, DragState) -> Unit = { _,_ -> },
     infoWindow: (@Composable (Marker) -> Unit)? = null,
     infoContent: (@Composable (Marker) -> Unit)? = null,
 ) {
@@ -367,7 +353,6 @@ private fun MarkerImpl(
                 onInfoWindowClick = onInfoWindowClick,
                 onInfoWindowClose = onInfoWindowClose,
                 onInfoWindowLongClick = onInfoWindowLongClick,
-                onMarkerDrag = onMarkerDrag,
                 infoContent = infoContent,
                 infoWindow = infoWindow,
             )
@@ -377,7 +362,6 @@ private fun MarkerImpl(
             update(onInfoWindowClick) { this.onInfoWindowClick = it }
             update(onInfoWindowClose) { this.onInfoWindowClose = it }
             update(onInfoWindowLongClick) { this.onInfoWindowLongClick = it }
-            update(onMarkerDrag) { this.onMarkerDrag = it }
             update(infoContent) { this.infoContent = it }
             update(infoWindow) { this.infoWindow = it }
 
@@ -387,7 +371,7 @@ private fun MarkerImpl(
             set(flat) { this.marker.isFlat = it }
             set(icon) { this.marker.setIcon(it) }
             set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
-            set(positionState) { this.marker.position = it.position }
+            set(positionState.position) { this.marker.position = it }
             set(rotation) { this.marker.rotation = it }
             set(snippet) {
                 this.marker.snippet = it

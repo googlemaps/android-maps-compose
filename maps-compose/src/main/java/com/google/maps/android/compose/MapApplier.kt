@@ -114,7 +114,6 @@ internal class MapApplier(
                 with(decorations.nodeForMarker(marker)) {
                     this?.markerPositionState?.position = marker.position
                     this?.markerPositionState?.dragState = DragState.DRAG
-                    this?.onMarkerDrag?.invoke(marker, DragState.DRAG)
                 }
             }
 
@@ -122,7 +121,6 @@ internal class MapApplier(
                 with(decorations.nodeForMarker(marker)) {
                     this?.markerPositionState?.position = marker.position
                     this?.markerPositionState?.dragState = DragState.END
-                    this?.onMarkerDrag?.invoke(marker, DragState.END)
                 }
             }
 
@@ -130,7 +128,6 @@ internal class MapApplier(
                 with(decorations.nodeForMarker(marker)) {
                     this?.markerPositionState?.position = marker.position
                     this?.markerPositionState?.dragState = DragState.START
-                    this?.onMarkerDrag?.invoke(marker, DragState.START)
                 }
             }
         })

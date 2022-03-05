@@ -50,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -100,6 +99,9 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
     val singaporePositionState = rememberMarkerPositionState(position = singapore)
     val singapore2PositionState = rememberMarkerPositionState(position = singapore2)
     var circlePositionState by remember { mutableStateOf(singapore) }
+    if (singaporePositionState.dragState == DragState.END) {
+        circlePositionState = singaporePositionState.position
+    }
 
     // Observing and controlling the camera's state can be done with a CameraPositionState
     val cameraPositionState = rememberCameraPositionState {
@@ -137,11 +139,6 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             title = "Zoom in has been tapped $ticker times.",
             onClick = markerClick,
             draggable = true,
-            onMarkerDrag = { marker, dragState ->
-                if (dragState == DragState.END) {
-                    circlePositionState = marker.position
-                }
-            }
         ) {
             Text(it.title ?: "Title", color = Color.Red)
         }
@@ -166,6 +163,20 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
             Log.d("GoogleMap", "Selected map type $it")
             mapProperties = mapProperties.copy(mapType = it)
         })
+        Button(
+            modifier = Modifier.padding(4.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.onPrimary,
+                contentColor = MaterialTheme.colors.primary
+            ),
+            onClick = {
+                mapProperties = mapProperties.copy(mapType = MapType.NORMAL)
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(singapore, 11f)
+                singaporePositionState.position = singapore
+            }
+        ) {
+            Text(text = "RESET MAP", style = MaterialTheme.typography.body1)
+        }
         val coroutineScope = rememberCoroutineScope()
         ZoomControls(
             shouldAnimateZoom,
