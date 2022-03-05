@@ -241,21 +241,17 @@ private fun ZoomControls(
         MapButton("-", onClick = { onZoomOut() })
         MapButton("+", onClick = { onZoomIn() })
         Column(verticalArrangement = Arrangement.Center) {
-            Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = "Camera Animations On?")
-                Switch(
-                    isCameraAnimationChecked,
-                    onCheckedChange = onCameraAnimationCheckedChange,
-                    modifier = Modifier.testTag("cameraAnimations"),
-                )
-            }
-            Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = "Zoom Controls On?")
-                Switch(
-                    isZoomControlsEnabledChecked,
-                    onCheckedChange = onZoomControlsCheckedChange
-                )
-            }
+            Text(text = "Camera Animations On?")
+            Switch(
+                isCameraAnimationChecked,
+                onCheckedChange = onCameraAnimationCheckedChange,
+                modifier = Modifier.testTag("cameraAnimations"),
+            )
+            Text(text = "Zoom Controls On?")
+            Switch(
+                isZoomControlsEnabledChecked,
+                onCheckedChange = onZoomControlsCheckedChange
+            )
         }
     }
 }

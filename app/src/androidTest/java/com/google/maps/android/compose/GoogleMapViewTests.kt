@@ -1,6 +1,5 @@
 package com.google.maps.android.compose
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
@@ -51,6 +50,7 @@ class GoogleMapViewTests {
         val mapLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
         assertTrue("Map loaded", mapLoaded)
     }
+
     @Test
     fun testStartingCameraPosition() {
         startingPosition.assertEquals(cameraPositionState.position.target)
