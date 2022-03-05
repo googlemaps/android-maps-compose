@@ -61,6 +61,7 @@ private const val TAG = "MapSampleActivity"
 
 val singapore = LatLng(1.35, 103.87)
 val singapore2 = LatLng(1.40, 103.77)
+val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
 
 class MapSampleActivity : ComponentActivity() {
 
@@ -70,7 +71,7 @@ class MapSampleActivity : ComponentActivity() {
             var isMapLoaded by remember { mutableStateOf(false) }
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(singapore, 11f)
+                position = defaultCameraPosition
             }
 
             Box(Modifier.fillMaxSize()) {
@@ -173,7 +174,7 @@ fun GoogleMapView(
             ),
             onClick = {
                 mapProperties = mapProperties.copy(mapType = MapType.NORMAL)
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(singapore, 11f)
+                cameraPositionState.position = defaultCameraPosition
                 singaporePositionState.position = singapore
             }
         ) {
