@@ -82,7 +82,12 @@ class GoogleMapViewTests {
     @Test
     fun testCameraZoomInAnimation() {
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitForIdle()
+            composeTestRule.waitUntil(1000) {
+                cameraPositionState.isMoving
+            }
+            composeTestRule.waitUntil(1000) {
+                !cameraPositionState.isMoving
+            }
             assertEquals(
                 startingZoom + 1f,
                 cameraPositionState.position.zoom,
@@ -94,7 +99,12 @@ class GoogleMapViewTests {
     @Test
     fun testCameraZoomIn() {
         zoom(shouldAnimate = false, zoomIn = true) {
-            composeTestRule.waitForIdle()
+            composeTestRule.waitUntil(1000) {
+                cameraPositionState.isMoving
+            }
+            composeTestRule.waitUntil(1000) {
+                !cameraPositionState.isMoving
+            }
             assertEquals(
                 startingZoom + 1f,
                 cameraPositionState.position.zoom,
@@ -106,7 +116,12 @@ class GoogleMapViewTests {
     @Test
     fun testCameraZoomOut() {
         zoom(shouldAnimate = false, zoomIn = false) {
-            composeTestRule.waitForIdle()
+            composeTestRule.waitUntil(1000) {
+                cameraPositionState.isMoving
+            }
+            composeTestRule.waitUntil(1000) {
+                !cameraPositionState.isMoving
+            }
             assertEquals(
                 startingZoom - 1f,
                 cameraPositionState.position.zoom,
@@ -118,7 +133,12 @@ class GoogleMapViewTests {
     @Test
     fun testCameraZoomOutAnimation() {
         zoom(shouldAnimate = true, zoomIn = false) {
-            composeTestRule.waitForIdle()
+            composeTestRule.waitUntil(1000) {
+                cameraPositionState.isMoving
+            }
+            composeTestRule.waitUntil(1000) {
+                !cameraPositionState.isMoving
+            }
             assertEquals(
                 startingZoom - 1f,
                 cameraPositionState.position.zoom,
