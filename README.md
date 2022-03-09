@@ -33,9 +33,12 @@ GoogleMap(
 ### Creating and configuring a map
 
 Configuring the map can be done by passing a `MapProperties` object into the 
-`GoogleMap` composable. For anything not available in `MapProperties` (typically 
-anything that can only be provided once - like map ID), provide a 
-`GoogleMapOptions` instance in the `googleMapOptionsFactory` properties instead.
+`GoogleMap` composable, or for UI-related configurations, use `MapUiSettings`.
+`MapProperties` and `MapUiSettings` should be your first go-to for configuring
+the map. For any other configuration not present in those two classes, use
+`googleMapOptionsFactory` to provide a `GoogleMapOptions` instance instead. 
+Typically, anything that can only be provided once (i.e. when the map is 
+created)—like map ID—should be provided via `googleMapOptionsFactory`.
 
 ```kotlin
 // Set properties using MapProperties which you can use to recompose the map
@@ -44,14 +47,28 @@ var mapProperties by remember {
         MapProperties(maxZoomPreference = 10f, minZoomPreference = 5f)
     )
 }
+var mapUiSettings by remember {
+    mutableStateOf(
+        MapUiSettings(mapToolbarEnabled = false)
+    )
+}
 Box(Modifier.fillMaxSize()) {
-    GoogleMap(properties = mapProperties)
-    Button(onClick = {
-        mapProperties = mapProperties.copy(
-            isBuildingEnabled = !mapProperties.isBuildingEnabled
-        )
-    }) {
-        Text(text = "Toggle isBuildingEnabled")
+    GoogleMap(properties = mapProperties, uiSettings = mapUiSettings)
+    Column {
+        Button(onClick = {
+            mapProperties = mapProperties.copy(
+                isBuildingEnabled = !mapProperties.isBuildingEnabled
+            )
+        }) {
+            Text(text = "Toggle isBuildingEnabled")
+        }
+        Button(onClick = {
+            mapUiSettings = mapUiSettings.copy(
+                mapToolbarEnabled = !mapUiSettings.mapToolbarEnabled
+            )
+        }) {
+            Text(text = "Toggle mapToolbarEnabled")
+        }
     }
 }
 
