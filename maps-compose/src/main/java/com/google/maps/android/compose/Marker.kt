@@ -21,8 +21,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -69,12 +70,25 @@ class MarkerPositionState(
      */
     var dragState: DragState by mutableStateOf(DragState.END)
         internal set
+
+    companion object {
+        /**
+         * The default saver implementation for [MarkerPositionState]
+         */
+        val Saver = Saver<MarkerPositionState, LatLng>(
+            save = { it.position },
+            restore = { MarkerPositionState(it) }
+        )
+    }
 }
 
 @Composable
 fun rememberMarkerPositionState(
+    key: String? = null,
     position: LatLng = LatLng(0.0, 0.0)
-): MarkerPositionState = remember { MarkerPositionState(position) }
+): MarkerPositionState = rememberSaveable(key = key, saver = MarkerPositionState.Saver) {
+    MarkerPositionState(position)
+}
 
 /**
  * A composable for a marker on the map.
