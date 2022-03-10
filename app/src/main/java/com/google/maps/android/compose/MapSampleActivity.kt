@@ -49,7 +49,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -60,6 +59,7 @@ private const val TAG = "MapSampleActivity"
 
 val singapore = LatLng(1.35, 103.87)
 val singapore2 = LatLng(1.40, 103.77)
+val singapore3 = LatLng(1.45, 103.77)
 
 class MapSampleActivity : ComponentActivity() {
 
@@ -126,6 +126,9 @@ fun GoogleMapView(
         // Drawing on the map is accomplished with a child-based API
         val markerClick: (Marker) -> Boolean = {
             Log.d(TAG, "${it.title} was clicked")
+            cameraPositionState.projection?.let { projection ->
+                Log.d(TAG, "The current projection is: $projection")
+            }
             false
         }
         MarkerInfoWindowContent(
@@ -143,6 +146,11 @@ fun GoogleMapView(
         ) {
             Text(it.title ?: "Title", color = Color.Blue)
         }
+        Marker(
+            position = singapore3,
+            title = "Marker in Singapore",
+            onClick = markerClick
+        )
         Circle(
             center = singapore,
             fillColor = MaterialTheme.colors.secondary,
