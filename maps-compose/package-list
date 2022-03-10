@@ -20,6 +20,7 @@ $dokka.location:com.google.maps.android.compose/CameraPositionState/animate/#com
 $dokka.location:com.google.maps.android.compose/CameraPositionState/isMoving/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/is-moving.html
 $dokka.location:com.google.maps.android.compose/CameraPositionState/move/#com.google.android.gms.maps.CameraUpdate/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/move.html
 $dokka.location:com.google.maps.android.compose/CameraPositionState/position/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/position.html
+$dokka.location:com.google.maps.android.compose/CameraPositionState/projection/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/projection.html
 $dokka.location:com.google.maps.android.compose/DefaultIndoorStateChangeListener///PointingToDeclaration/maps-compose/com.google.maps.android.compose/-default-indoor-state-change-listener/index.html
 $dokka.location:com.google.maps.android.compose/DragState.DRAG///PointingToDeclaration/maps-compose/com.google.maps.android.compose/-drag-state/-d-r-a-g/index.html
 $dokka.location:com.google.maps.android.compose/DragState.DRAG/name/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-drag-state/-d-r-a-g/name.html
