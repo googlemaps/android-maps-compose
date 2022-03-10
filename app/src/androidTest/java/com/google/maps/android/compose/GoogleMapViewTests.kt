@@ -88,7 +88,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(3000) {
                 !cameraPositionState.isMoving
             }
             assertFalse(cameraPositionState.isMoving)
@@ -152,7 +152,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(3000) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
