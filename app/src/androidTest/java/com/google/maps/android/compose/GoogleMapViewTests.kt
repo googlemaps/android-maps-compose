@@ -21,10 +21,12 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.annotation.UiThreadTest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -161,7 +163,32 @@ class GoogleMapViewTests {
         }
     }
 
-    private fun zoom(shouldAnimate: Boolean, zoomIn: Boolean, assertionBlock: () -> Unit) {
+    @Test
+    @UiThreadTest
+    fun testLatLngInVisibleRegion() {
+        val projection = cameraPositionState.projection
+        assertNotNull(projection)
+        assertTrue(
+            projection!!.visibleRegion.latLngBounds.contains(startingPosition)
+        )
+    }
+
+    @Test
+    @UiThreadTest
+    fun testLatLngNotInVisibleRegion() {
+        val projection = cameraPositionState.projection
+        assertNotNull(projection)
+        val latLng = LatLng(23.4, 25.6)
+        assertFalse(
+            projection!!.visibleRegion.latLngBounds.contains(latLng)
+        )
+    }
+
+    private fun zoom(
+        shouldAnimate: Boolean,
+        zoomIn: Boolean,
+        assertionBlock: () -> Unit
+    ) {
         if (!shouldAnimate) {
             composeTestRule.onNodeWithTag("cameraAnimations")
                 .assertIsDisplayed()
