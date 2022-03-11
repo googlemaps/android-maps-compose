@@ -21,49 +21,75 @@ Adding a map to your app looks like the following:
 
 ```kotlin
 val singapore = LatLng(1.35, 103.87)
+val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 10f)
+}
 GoogleMap(
     modifier = Modifier.fillMaxSize(),
-    googleMapOptionsFactory = {
-        GoogleMapOptions().camera(CameraPosition.fromLatLngZoom(singapore, 10f))
-    }
+    cameraPositionState = cameraPositionState
 )
 ```
 
 ### Creating and configuring a map
 
-Configuring the map can be done either by passing a `GoogleMapOptions` instance 
-to initialize the map, or by passing a `MapProperties` object into the `GoogleMap`
-composable.
+Configuring the map can be done by passing a `MapProperties` object into the 
+`GoogleMap` composable, or for UI-related configurations, use `MapUiSettings`.
+`MapProperties` and `MapUiSettings` should be your first go-to for configuring
+the map. For any other configuration not present in those two classes, use
+`googleMapOptionsFactory` to provide a `GoogleMapOptions` instance instead. 
+Typically, anything that can only be provided once (i.e. when the map is 
+created)—like map ID—should be provided via `googleMapOptionsFactory`.
 
 ```kotlin
-// Initialize map by providing a googleMapOptionsFactory
+// Set properties using MapProperties which you can use to recompose the map
+var mapProperties by remember {
+    mutableStateOf(
+        MapProperties(maxZoomPreference = 10f, minZoomPreference = 5f)
+    )
+}
+var mapUiSettings by remember {
+    mutableStateOf(
+        MapUiSettings(mapToolbarEnabled = false)
+    )
+}
+Box(Modifier.fillMaxSize()) {
+    GoogleMap(properties = mapProperties, uiSettings = mapUiSettings)
+    Column {
+        Button(onClick = {
+            mapProperties = mapProperties.copy(
+                isBuildingEnabled = !mapProperties.isBuildingEnabled
+            )
+        }) {
+            Text(text = "Toggle isBuildingEnabled")
+        }
+        Button(onClick = {
+            mapUiSettings = mapUiSettings.copy(
+                mapToolbarEnabled = !mapUiSettings.mapToolbarEnabled
+            )
+        }) {
+            Text(text = "Toggle mapToolbarEnabled")
+        }
+    }
+}
+
+// ...or initialize the map by providing a googleMapOptionsFactory
+// This should only be used for values that do not recompose the map such as
+// map ID.
 GoogleMap(
     googleMapOptionsFactory = {
         GoogleMapOptions().mapId("MyMapId")
     }
 )
 
-// ...or set properties using MapProperties which you can use to recompose the map
-var mapProperties by remember {
-    mutableStateOf(
-        MapProperties(maxZoomPreference = 10f, minZoomPreference = 5f)
-    )
-}
-Box(Modifier.fillMaxSize()) {
-    GoogleMap(properties = mapProperties)
-    Button(onClick = {
-        mapProperties = mapProperties.copy(
-            isBuildingEnabled = !mapProperties.isBuildingEnabled
-        )
-    }) {
-        Text(text = "Toggle isBuildingEnabled")
-    }
-}
 ```
 
 ### Controlling a map's camera
 
 Camera changes and updates can be observed and controlled via `CameraPositionState`.
+
+**Note**: `CameraPositionState` is the source of truth for anything camera 
+related. So, providing a camera position in `GoogleMapOptions` will be 
+overridden by `CameraPosition`.
 
 ```kotlin
 val singapore = LatLng(1.35, 103.87)
@@ -134,7 +160,7 @@ To run it, you'll have to:
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:1.2.0'
+    implementation 'com.google.maps.android:maps-compose:1.3.0'
     
     // Make sure to also include the latest version of the Maps SDK for Android 
     implementation 'com.google.android.gms:play-services-maps:18.0.2'

@@ -46,9 +46,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -57,19 +57,28 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "MapSampleActivity"
 
+val singapore = LatLng(1.35, 103.87)
+val singapore2 = LatLng(1.40, 103.77)
+val singapore3 = LatLng(1.45, 103.77)
+
 class MapSampleActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             var isMapLoaded by remember { mutableStateOf(false) }
+            // Observing and controlling the camera's state can be done with a CameraPositionState
+            val cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(singapore, 11f)
+            }
 
             Box(Modifier.fillMaxSize()) {
                 GoogleMapView(
                     modifier = Modifier.matchParentSize(),
+                    cameraPositionState = cameraPositionState,
                     onMapLoaded = {
                         isMapLoaded = true
-                    }
+                    },
                 )
                 if (!isMapLoaded) {
                     AnimatedVisibility(
@@ -92,25 +101,17 @@ class MapSampleActivity : ComponentActivity() {
 }
 
 @Composable
-private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
-    val singapore = LatLng(1.35, 103.87)
-    val singapore2 = LatLng(1.40, 103.77)
-
-    // Observing and controlling the camera's state can be done with a CameraPositionState
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 11f)
-    }
-
+fun GoogleMapView(
+    modifier: Modifier,
+    cameraPositionState: CameraPositionState,
+    onMapLoaded: () -> Unit,
+) {
+    var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+    var shouldAnimateZoom by remember { mutableStateOf(true) }
+    var ticker by remember { mutableStateOf(0) }
     var mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
-    var uiSettings by remember {
-        mutableStateOf(
-            MapUiSettings(compassEnabled = false)
-        )
-    }
-    var shouldAnimateZoom by remember { mutableStateOf(true) }
-    var ticker by remember { mutableStateOf(0) }
 
     GoogleMap(
         modifier = modifier,
@@ -118,14 +119,6 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         properties = mapProperties,
         uiSettings = uiSettings,
         onMapLoaded = onMapLoaded,
-        googleMapOptionsFactory = {
-            GoogleMapOptions().camera(
-                CameraPosition.fromLatLngZoom(
-                    singapore,
-                    11f
-                )
-            )
-        },
         onPOIClick = {
             Log.d(TAG, "POI clicked: ${it.name}")
         }
@@ -133,6 +126,9 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         // Drawing on the map is accomplished with a child-based API
         val markerClick: (Marker) -> Boolean = {
             Log.d(TAG, "${it.title} was clicked")
+            cameraPositionState.projection?.let { projection ->
+                Log.d(TAG, "The current projection is: $projection")
+            }
             false
         }
         MarkerInfoWindowContent(
@@ -150,6 +146,11 @@ private fun GoogleMapView(modifier: Modifier, onMapLoaded: () -> Unit) {
         ) {
             Text(it.title ?: "Title", color = Color.Blue)
         }
+        Marker(
+            position = singapore3,
+            title = "Marker in Singapore",
+            onClick = markerClick
+        )
         Circle(
             center = singapore,
             fillColor = MaterialTheme.colors.secondary,
@@ -240,20 +241,17 @@ private fun ZoomControls(
         MapButton("-", onClick = { onZoomOut() })
         MapButton("+", onClick = { onZoomIn() })
         Column(verticalArrangement = Arrangement.Center) {
-            Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = "Camera Animations On?")
-                Switch(
-                    isCameraAnimationChecked,
-                    onCheckedChange = onCameraAnimationCheckedChange
-                )
-            }
-            Row(horizontalArrangement = Arrangement.Center) {
-                Text(text = "Zoom Controls On?")
-                Switch(
-                    isZoomControlsEnabledChecked,
-                    onCheckedChange = onZoomControlsCheckedChange
-                )
-            }
+            Text(text = "Camera Animations On?")
+            Switch(
+                isCameraAnimationChecked,
+                onCheckedChange = onCameraAnimationCheckedChange,
+                modifier = Modifier.testTag("cameraAnimations"),
+            )
+            Text(text = "Zoom Controls On?")
+            Switch(
+                isZoomControlsEnabledChecked,
+                onCheckedChange = onZoomControlsCheckedChange
+            )
         }
     }
 }
