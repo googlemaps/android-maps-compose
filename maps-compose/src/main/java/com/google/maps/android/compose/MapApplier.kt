@@ -17,7 +17,11 @@ package com.google.maps.android.compose
 import androidx.compose.runtime.AbstractApplier
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.Circle
+import com.google.android.gms.maps.model.GroundOverlay
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polygon
+import com.google.android.gms.maps.model.Polyline
 
 internal interface MapNode {
     fun onAttached() {}
@@ -148,4 +152,4 @@ private fun MutableList<MapNode>.nodeForPolyline(polyline: Polyline): PolylineNo
 private fun MutableList<MapNode>.nodeForGroundOverlay(
     groundOverlay: GroundOverlay
 ): GroundOverlayNode? =
-    first { it is GroundOverlayNode && it.groundOverlay == groundOverlay } as? GroundOverlayNode
+    firstOrNull { it is GroundOverlayNode && it.groundOverlay == groundOverlay } as? GroundOverlayNode
