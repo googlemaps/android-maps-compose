@@ -15,7 +15,6 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.AbstractApplier
-import androidx.compose.ui.platform.ComposeView
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Circle
@@ -139,18 +138,18 @@ internal class MapApplier(
 }
 
 private fun MutableList<MapNode>.nodeForCircle(circle: Circle): CircleNode? =
-    first { it is CircleNode && it.circle == circle } as? CircleNode
+    firstOrNull { it is CircleNode && it.circle == circle } as? CircleNode
 
 private fun MutableList<MapNode>.nodeForMarker(marker: Marker): MarkerNode? =
-    first { it is MarkerNode && it.marker == marker } as? MarkerNode
+    firstOrNull { it is MarkerNode && it.marker == marker } as? MarkerNode
 
 private fun MutableList<MapNode>.nodeForPolygon(polygon: Polygon): PolygonNode? =
-    first { it is PolygonNode && it.polygon == polygon } as? PolygonNode
+    firstOrNull { it is PolygonNode && it.polygon == polygon } as? PolygonNode
 
 private fun MutableList<MapNode>.nodeForPolyline(polyline: Polyline): PolylineNode? =
-    first { it is PolylineNode && it.polyline == polyline } as? PolylineNode
+    firstOrNull { it is PolylineNode && it.polyline == polyline } as? PolylineNode
 
 private fun MutableList<MapNode>.nodeForGroundOverlay(
     groundOverlay: GroundOverlay
 ): GroundOverlayNode? =
-    first { it is GroundOverlayNode && it.groundOverlay == groundOverlay } as? GroundOverlayNode
+    firstOrNull { it is GroundOverlayNode && it.groundOverlay == groundOverlay } as? GroundOverlayNode
