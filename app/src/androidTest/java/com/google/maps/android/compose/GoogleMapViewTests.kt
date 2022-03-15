@@ -101,7 +101,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(3000) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -118,7 +118,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(3000) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -135,7 +135,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(3000) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -183,6 +183,10 @@ class GoogleMapViewTests {
             projection!!.visibleRegion.latLngBounds.contains(latLng)
         )
     }
+
+//    @Test
+//    fun testMarkerStateCannotBeReused() {
+//    }
 
     private fun zoom(
         shouldAnimate: Boolean,
