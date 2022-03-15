@@ -158,7 +158,7 @@ fun GoogleMapView(
             Text(it.title ?: "Title", color = Color.Blue)
         }
         Marker(
-            position = singapore3,
+            positionState = MarkerPositionState(position = singapore3),
             title = "Marker in Singapore",
             onClick = markerClick
         )
