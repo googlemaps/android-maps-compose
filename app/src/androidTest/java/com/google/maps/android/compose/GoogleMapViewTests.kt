@@ -184,9 +184,29 @@ class GoogleMapViewTests {
         )
     }
 
-//    @Test
-//    fun testMarkerStateCannotBeReused() {
-//    }
+    @Test(expected = IllegalStateException::class)
+    fun testMarkerStateCannotBeReused() {
+        val countDownLatch = CountDownLatch(1)
+        composeTestRule.setContent {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                onMapLoaded = {
+                    countDownLatch.countDown()
+                }
+            ) {
+                val markerState = rememberMarkerState()
+                Marker(
+                    state = markerState
+                )
+                Marker(
+                    state = markerState
+                )
+            }
+        }
+        val mapLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
+        assertTrue(mapLoaded)
+    }
 
     private fun zoom(
         shouldAnimate: Boolean,
