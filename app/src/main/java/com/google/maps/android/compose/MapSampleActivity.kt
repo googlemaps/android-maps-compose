@@ -109,11 +109,12 @@ fun GoogleMapView(
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
 ) {
-    val singaporePositionState = rememberMarkerPositionState(position = singapore)
-    val singapore2PositionState = rememberMarkerPositionState(position = singapore2)
-    var circlePositionState by remember { mutableStateOf(singapore) }
-    if (singaporePositionState.dragState == DragState.END) {
-        circlePositionState = singaporePositionState.position
+    val singaporeState = rememberMarkerState(position = singapore)
+    val singapore2State = rememberMarkerState(position = singapore2)
+    val singapore3State = rememberMarkerState(position = singapore3)
+    var circleCenter by remember { mutableStateOf(singapore) }
+    if (singaporeState.dragState == DragState.END) {
+        circleCenter = singaporeState.position
     }
 
     var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
@@ -142,7 +143,7 @@ fun GoogleMapView(
             false
         }
         MarkerInfoWindowContent(
-            positionState = singaporePositionState,
+            state = singaporeState,
             title = "Zoom in has been tapped $ticker times.",
             onClick = markerClick,
             draggable = true,
@@ -150,7 +151,7 @@ fun GoogleMapView(
             Text(it.title ?: "Title", color = Color.Red)
         }
         MarkerInfoWindowContent(
-            positionState = singapore2PositionState,
+            state = singapore2State,
             title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
             onClick = markerClick,
@@ -158,12 +159,12 @@ fun GoogleMapView(
             Text(it.title ?: "Title", color = Color.Blue)
         }
         Marker(
-            positionState = MarkerPositionState(position = singapore3),
+            state = singapore3State,
             title = "Marker in Singapore",
             onClick = markerClick
         )
         Circle(
-            center = circlePositionState,
+            center = circleCenter,
             fillColor = MaterialTheme.colors.secondary,
             strokeColor = MaterialTheme.colors.secondaryVariant,
             radius = 1000.0,
@@ -184,7 +185,8 @@ fun GoogleMapView(
             onClick = {
                 mapProperties = mapProperties.copy(mapType = MapType.NORMAL)
                 cameraPositionState.position = defaultCameraPosition
-                singaporePositionState.position = singapore
+                singaporeState.position = singapore
+                singaporeState.hideInfoWindow()
             }
         ) {
             Text(text = "RESET MAP", style = MaterialTheme.typography.body1)
@@ -219,7 +221,7 @@ fun GoogleMapView(
                 uiSettings = uiSettings.copy(zoomControlsEnabled = it)
             }
         )
-        DebugView(cameraPositionState, singaporePositionState)
+        DebugView(cameraPositionState, singaporeState)
     }
 }
 
@@ -298,7 +300,7 @@ private fun MapButton(text: String, onClick: () -> Unit) {
 @Composable
 private fun DebugView(
     cameraPositionState: CameraPositionState,
-    markerPositionState: MarkerPositionState
+    markerState: MarkerState
 ) {
     Column(
         Modifier
@@ -311,8 +313,8 @@ private fun DebugView(
         Text(text = "Camera position is ${cameraPositionState.position}")
         Spacer(modifier = Modifier.height(4.dp))
         val dragging =
-            if (markerPositionState.dragState == DragState.DRAG) "dragging" else "not dragging"
+            if (markerState.dragState == DragState.DRAG) "dragging" else "not dragging"
         Text(text = "Marker is $dragging")
-        Text(text = "Marker position is ${markerPositionState.position}")
+        Text(text = "Marker position is ${markerState.position}")
     }
 }
