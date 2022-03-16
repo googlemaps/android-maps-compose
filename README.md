@@ -116,8 +116,14 @@ composable elements to the content of the `GoogleMap`.
 GoogleMap(
   //...
 ) {
-    Marker(position = LatLng(-34, 151), title = "Marker in Sydney")
-    Marker(position = LatLng(35.66, 139.6), title = "Marker in Tokyo")
+    Marker(
+        state = MarkerState(position = LatLng(-34, 151)),
+        title = "Marker in Sydney"
+    )
+    Marker(
+        state = MarkerState(position = LatLng(35.66, 139.6)),
+        title = "Marker in Tokyo"
+    )
 }
 ```
 
