@@ -112,22 +112,22 @@ internal class MapApplier(
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDrag(marker: Marker) {
                 with(decorations.nodeForMarker(marker)) {
-                    this?.markerPositionState?.position = marker.position
-                    this?.markerPositionState?.dragState = DragState.DRAG
+                    this?.markerState?.position = marker.position
+                    this?.markerState?.dragState = DragState.DRAG
                 }
             }
 
             override fun onMarkerDragEnd(marker: Marker) {
                 with(decorations.nodeForMarker(marker)) {
-                    this?.markerPositionState?.position = marker.position
-                    this?.markerPositionState?.dragState = DragState.END
+                    this?.markerState?.position = marker.position
+                    this?.markerState?.dragState = DragState.END
                 }
             }
 
             override fun onMarkerDragStart(marker: Marker) {
                 with(decorations.nodeForMarker(marker)) {
-                    this?.markerPositionState?.position = marker.position
-                    this?.markerPositionState?.dragState = DragState.START
+                    this?.markerState?.position = marker.position
+                    this?.markerState?.dragState = DragState.START
                 }
             }
         })
