@@ -28,8 +28,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Button
@@ -60,6 +62,7 @@ private const val TAG = "MapSampleActivity"
 val singapore = LatLng(1.35, 103.87)
 val singapore2 = LatLng(1.40, 103.77)
 val singapore3 = LatLng(1.45, 103.77)
+val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
 
 class MapSampleActivity : ComponentActivity() {
 
@@ -69,7 +72,7 @@ class MapSampleActivity : ComponentActivity() {
             var isMapLoaded by remember { mutableStateOf(false) }
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(singapore, 11f)
+                position = defaultCameraPosition
             }
 
             Box(Modifier.fillMaxSize()) {
@@ -106,6 +109,14 @@ fun GoogleMapView(
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
 ) {
+    val singaporeState = rememberMarkerState(position = singapore)
+    val singapore2State = rememberMarkerState(position = singapore2)
+    val singapore3State = rememberMarkerState(position = singapore3)
+    var circleCenter by remember { mutableStateOf(singapore) }
+    if (singaporeState.dragState == DragState.END) {
+        circleCenter = singaporeState.position
+    }
+
     var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
     var shouldAnimateZoom by remember { mutableStateOf(true) }
     var ticker by remember { mutableStateOf(0) }
@@ -132,14 +143,15 @@ fun GoogleMapView(
             false
         }
         MarkerInfoWindowContent(
-            position = singapore,
+            state = singaporeState,
             title = "Zoom in has been tapped $ticker times.",
             onClick = markerClick,
+            draggable = true,
         ) {
             Text(it.title ?: "Title", color = Color.Red)
         }
         MarkerInfoWindowContent(
-            position = singapore2,
+            state = singapore2State,
             title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
             onClick = markerClick,
@@ -147,12 +159,12 @@ fun GoogleMapView(
             Text(it.title ?: "Title", color = Color.Blue)
         }
         Marker(
-            position = singapore3,
+            state = singapore3State,
             title = "Marker in Singapore",
             onClick = markerClick
         )
         Circle(
-            center = singapore,
+            center = circleCenter,
             fillColor = MaterialTheme.colors.secondary,
             strokeColor = MaterialTheme.colors.secondaryVariant,
             radius = 1000.0,
@@ -164,6 +176,21 @@ fun GoogleMapView(
             Log.d("GoogleMap", "Selected map type $it")
             mapProperties = mapProperties.copy(mapType = it)
         })
+        Button(
+            modifier = Modifier.padding(4.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.colors.onPrimary,
+                contentColor = MaterialTheme.colors.primary
+            ),
+            onClick = {
+                mapProperties = mapProperties.copy(mapType = MapType.NORMAL)
+                cameraPositionState.position = defaultCameraPosition
+                singaporeState.position = singapore
+                singaporeState.hideInfoWindow()
+            }
+        ) {
+            Text(text = "RESET MAP", style = MaterialTheme.typography.body1)
+        }
         val coroutineScope = rememberCoroutineScope()
         ZoomControls(
             shouldAnimateZoom,
@@ -194,7 +221,7 @@ fun GoogleMapView(
                 uiSettings = uiSettings.copy(zoomControlsEnabled = it)
             }
         )
-        DebugView(cameraPositionState)
+        DebugView(cameraPositionState, singaporeState)
     }
 }
 
@@ -271,7 +298,10 @@ private fun MapButton(text: String, onClick: () -> Unit) {
 }
 
 @Composable
-private fun DebugView(cameraPositionState: CameraPositionState) {
+private fun DebugView(
+    cameraPositionState: CameraPositionState,
+    markerState: MarkerState
+) {
     Column(
         Modifier
             .fillMaxWidth(),
@@ -281,5 +311,10 @@ private fun DebugView(cameraPositionState: CameraPositionState) {
             if (cameraPositionState.isMoving) "moving" else "not moving"
         Text(text = "Camera is $moving")
         Text(text = "Camera position is ${cameraPositionState.position}")
+        Spacer(modifier = Modifier.height(4.dp))
+        val dragging =
+            if (markerState.dragState == DragState.DRAG) "dragging" else "not dragging"
+        Text(text = "Marker is $dragging")
+        Text(text = "Marker position is ${markerState.position}")
     }
 }

@@ -111,21 +111,24 @@ internal class MapApplier(
         }
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDrag(marker: Marker) {
-                val markerDragState =
-                    decorations.nodeForMarker(marker)?.markerDragState
-                markerDragState?.dragState = DragState.DRAG
+                with(decorations.nodeForMarker(marker)) {
+                    this?.markerState?.position = marker.position
+                    this?.markerState?.dragState = DragState.DRAG
+                }
             }
 
             override fun onMarkerDragEnd(marker: Marker) {
-                val markerDragState =
-                    decorations.nodeForMarker(marker)?.markerDragState
-                markerDragState?.dragState = DragState.END
+                with(decorations.nodeForMarker(marker)) {
+                    this?.markerState?.position = marker.position
+                    this?.markerState?.dragState = DragState.END
+                }
             }
 
             override fun onMarkerDragStart(marker: Marker) {
-                val markerDragState =
-                    decorations.nodeForMarker(marker)?.markerDragState
-                markerDragState?.dragState = DragState.START
+                with(decorations.nodeForMarker(marker)) {
+                    this?.markerState?.position = marker.position
+                    this?.markerState?.dragState = DragState.START
+                }
             }
         })
         map.setInfoWindowAdapter(

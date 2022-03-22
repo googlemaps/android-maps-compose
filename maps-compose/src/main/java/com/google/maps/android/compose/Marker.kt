@@ -21,8 +21,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -33,7 +34,7 @@ import com.google.maps.android.ktx.addMarker
 internal class MarkerNode(
     val compositionContext: CompositionContext,
     val marker: Marker,
-    var markerDragState: MarkerDragState?,
+    val markerState: MarkerState,
     var onMarkerClick: (Marker) -> Boolean,
     var onInfoWindowClick: (Marker) -> Unit,
     var onInfoWindowClose: (Marker) -> Unit,
@@ -41,7 +42,11 @@ internal class MarkerNode(
     var infoWindow: (@Composable (Marker) -> Unit)?,
     var infoContent: (@Composable (Marker) -> Unit)?,
 ) : MapNode {
+    override fun onAttached() {
+        markerState.marker = marker
+    }
     override fun onRemoved() {
+        markerState.marker = null
         marker.remove()
     }
 }
@@ -52,28 +57,72 @@ enum class DragState {
 }
 
 /**
- * A state object for observing marker drag events.
+ * A state object that can be hoisted to control and observe the marker state.
+ *
+ * @param position the initial marker position
  */
-class MarkerDragState {
+class MarkerState(
+    position: LatLng = LatLng(0.0, 0.0)
+) {
     /**
-     * State of the marker drag.
+     * Current position of the marker.
+     */
+    var position: LatLng by mutableStateOf(position)
+
+    /**
+     * Current [DragState] of the marker.
      */
     var dragState: DragState by mutableStateOf(DragState.END)
         internal set
+
+    // The marker associated with this MarkerState.
+    internal var marker: Marker? = null
+        set(value) {
+            if (field == null && value == null) return
+            if (field != null && value != null) {
+                error("MarkerState may only be associated with one Marker at a time.")
+            }
+            field = value
+        }
+
+    /**
+     * Shows the info window for the underlying marker
+     */
+    fun showInfoWindow() {
+        marker?.showInfoWindow()
+    }
+
+    /**
+     * Hides the info window for the underlying marker
+     */
+    fun hideInfoWindow() {
+        marker?.hideInfoWindow()
+    }
+
+    companion object {
+        /**
+         * The default saver implementation for [MarkerState]
+         */
+        val Saver = Saver<MarkerState, LatLng>(
+            save = { it.position },
+            restore = { MarkerState(it) }
+        )
+    }
 }
 
-/**
- * Creates and [remember] a [MarkerDragState].
- */
 @Composable
-fun rememberMarkerDragState(): MarkerDragState = remember {
-    MarkerDragState()
+fun rememberMarkerState(
+    key: String? = null,
+    position: LatLng = LatLng(0.0, 0.0)
+): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
+    MarkerState(position)
 }
 
 /**
  * A composable for a marker on the map.
  *
- * @param position the position of the marker
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -86,7 +135,6 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  * @param title the title for the marker
  * @param visible the visibility of the marker
  * @param zIndex the z-index of the marker
- * @param markerDragState a [MarkerDragState] to be used for observing marker drag events
  * @param onClick a lambda invoked when the marker is clicked
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
@@ -94,7 +142,7 @@ fun rememberMarkerDragState(): MarkerDragState = remember {
  */
 @Composable
 fun Marker(
-    position: LatLng,
+    state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -107,14 +155,13 @@ fun Marker(
     title: String? = null,
     visible: Boolean = true,
     zIndex: Float = 0.0f,
-    markerDragState: MarkerDragState? = null,
     onClick: (Marker) -> Boolean = { false },
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
 ) {
     MarkerImpl(
-        position = position,
+        state = state,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -127,7 +174,6 @@ fun Marker(
         title = title,
         visible = visible,
         zIndex = zIndex,
-        markerDragState = markerDragState,
         onClick = onClick,
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
@@ -140,7 +186,8 @@ fun Marker(
  * customized. If this customization is not required, use
  * [com.google.maps.android.compose.Marker].
  *
- * @param position the position of the marker
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -153,7 +200,6 @@ fun Marker(
  * @param title the title for the marker
  * @param visible the visibility of the marker
  * @param zIndex the z-index of the marker
- * @param markerDragState a [MarkerDragState] to be used for observing marker drag events
  * @param onClick a lambda invoked when the marker is clicked
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
@@ -163,7 +209,7 @@ fun Marker(
  */
 @Composable
 fun MarkerInfoWindow(
-    position: LatLng,
+    state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -176,7 +222,6 @@ fun MarkerInfoWindow(
     title: String? = null,
     visible: Boolean = true,
     zIndex: Float = 0.0f,
-    markerDragState: MarkerDragState? = null,
     onClick: (Marker) -> Boolean = { false },
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
@@ -184,7 +229,7 @@ fun MarkerInfoWindow(
     content: (@Composable (Marker) -> Unit)? = null
 ) {
     MarkerImpl(
-        position = position,
+        state = state,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -197,7 +242,6 @@ fun MarkerInfoWindow(
         title = title,
         visible = visible,
         zIndex = zIndex,
-        markerDragState = markerDragState,
         onClick = onClick,
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
@@ -211,7 +255,8 @@ fun MarkerInfoWindow(
  * customized. If this customization is not required, use
  * [com.google.maps.android.compose.Marker].
  *
- * @param position the position of the marker
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -224,7 +269,6 @@ fun MarkerInfoWindow(
  * @param title the title for the marker
  * @param visible the visibility of the marker
  * @param zIndex the z-index of the marker
- * @param markerDragState a [MarkerDragState] to be used for observing marker drag events
  * @param onClick a lambda invoked when the marker is clicked
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
@@ -234,7 +278,7 @@ fun MarkerInfoWindow(
  */
 @Composable
 fun MarkerInfoWindowContent(
-    position: LatLng,
+    state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -247,7 +291,6 @@ fun MarkerInfoWindowContent(
     title: String? = null,
     visible: Boolean = true,
     zIndex: Float = 0.0f,
-    markerDragState: MarkerDragState? = null,
     onClick: (Marker) -> Boolean = { false },
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
@@ -255,7 +298,7 @@ fun MarkerInfoWindowContent(
     content: (@Composable (Marker) -> Unit)? = null
 ) {
     MarkerImpl(
-        position = position,
+        state = state,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -268,7 +311,6 @@ fun MarkerInfoWindowContent(
         title = title,
         visible = visible,
         zIndex = zIndex,
-        markerDragState = markerDragState,
         onClick = onClick,
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
@@ -280,7 +322,8 @@ fun MarkerInfoWindowContent(
 /**
  * Internal implementation for a marker on a Google map.
  *
- * @param position the position of the marker
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -293,7 +336,6 @@ fun MarkerInfoWindowContent(
  * @param title the title for the marker
  * @param visible the visibility of the marker
  * @param zIndex the z-index of the marker
- * @param markerDragState a [MarkerDragState] to be used for observing marker drag events
  * @param onClick a lambda invoked when the marker is clicked
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
@@ -306,7 +348,7 @@ fun MarkerInfoWindowContent(
  */
 @Composable
 private fun MarkerImpl(
-    position: LatLng,
+    state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -319,7 +361,6 @@ private fun MarkerImpl(
     title: String? = null,
     visible: Boolean = true,
     zIndex: Float = 0.0f,
-    markerDragState: MarkerDragState? = null,
     onClick: (Marker) -> Boolean = { false },
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
@@ -338,7 +379,7 @@ private fun MarkerImpl(
                 flat(flat)
                 icon(icon)
                 infoWindowAnchor(infoWindowAnchor.x, infoWindowAnchor.y)
-                position(position)
+                position(state.position)
                 rotation(rotation)
                 snippet(snippet)
                 title(title)
@@ -349,7 +390,7 @@ private fun MarkerImpl(
             MarkerNode(
                 compositionContext = compositionContext,
                 marker = marker,
-                markerDragState = markerDragState,
+                markerState = state,
                 onMarkerClick = onClick,
                 onInfoWindowClick = onInfoWindowClick,
                 onInfoWindowClose = onInfoWindowClose,
@@ -359,7 +400,6 @@ private fun MarkerImpl(
             )
         },
         update = {
-            update(markerDragState) { this.markerDragState = it }
             update(onClick) { this.onMarkerClick = it }
             update(onInfoWindowClick) { this.onInfoWindowClick = it }
             update(onInfoWindowClose) { this.onInfoWindowClose = it }
@@ -373,7 +413,7 @@ private fun MarkerImpl(
             set(flat) { this.marker.isFlat = it }
             set(icon) { this.marker.setIcon(it) }
             set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
-            set(position) { this.marker.position = it }
+            set(state.position) { this.marker.position = it }
             set(rotation) { this.marker.rotation = it }
             set(snippet) {
                 this.marker.snippet = it
