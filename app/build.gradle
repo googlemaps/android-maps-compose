@@ -41,11 +41,9 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation "androidx.compose.foundation:foundation:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'com.google.maps.android:maps-ktx:3.3.0'
-    implementation "androidx.core:core-ktx:1.7.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     androidTestImplementation "androidx.test:core:$androidx_test_version"
