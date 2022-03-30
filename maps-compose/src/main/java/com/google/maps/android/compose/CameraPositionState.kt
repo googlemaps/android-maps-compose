@@ -173,9 +173,13 @@ class CameraPositionState(
      * suspend until a map is bound and animation will begin.
      *
      * This method should only be called from a dispatcher bound to the map's UI thread.
+     *
+     * @param update the change that should be applied to the camera
+     * @param durationMillis the duration of the animation in milliseconds. The default animation
+     * duration is used if a negative value is provided.
      */
     @UiThread
-    suspend fun animate(update: CameraUpdate) {
+    suspend fun animate(update: CameraUpdate, durationMillis: Int = -1) {
         val myJob = currentCoroutineContext()[Job]
         try {
             suspendCancellableCoroutine<Unit> { continuation ->
@@ -195,7 +199,7 @@ class CameraPositionState(
                                         "internal error; no GoogleMap available to animate position"
                                     )
                                 }
-                                performAnimateCameraLocked(newMap, update, continuation)
+                                performAnimateCameraLocked(newMap, update, durationMillis, continuation)
                             }
 
                             override fun onCancelLocked() {
@@ -216,7 +220,7 @@ class CameraPositionState(
                             }
                         }
                     } else {
-                        performAnimateCameraLocked(map, update, continuation)
+                        performAnimateCameraLocked(map, update, durationMillis, continuation)
                     }
                 }
             }
@@ -235,9 +239,10 @@ class CameraPositionState(
     private fun performAnimateCameraLocked(
         map: GoogleMap,
         update: CameraUpdate,
+        durationMillis: Int,
         continuation: CancellableContinuation<Unit>
     ) {
-        map.animateCamera(update, object : GoogleMap.CancelableCallback {
+        val cancelableCallback = object : GoogleMap.CancelableCallback {
             override fun onCancel() {
                 continuation.resumeWithException(CancellationException("Animation cancelled"))
             }
@@ -245,7 +250,12 @@ class CameraPositionState(
             override fun onFinish() {
                 continuation.resume(Unit)
             }
-        })
+        }
+        if (durationMillis < 0) {
+            map.animateCamera(update, cancelableCallback)
+        } else {
+            map.animateCamera(update, durationMillis, cancelableCallback)
+        }
         doOnMapChangedLocked {
             check(it == null) {
                 "New GoogleMap unexpectedly set while an animation was still running"
