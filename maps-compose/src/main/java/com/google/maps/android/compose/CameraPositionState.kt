@@ -175,11 +175,12 @@ class CameraPositionState(
      * This method should only be called from a dispatcher bound to the map's UI thread.
      *
      * @param update the change that should be applied to the camera
-     * @param durationMillis the duration of the animation in milliseconds. The default animation
-     * duration is used if a negative value is provided.
+     * @param durationMs The duration of the animation in milliseconds. If null is provided, the
+     * default animation duration will be used. Otherwise, the value provided must be strictly
+     * positive, otherwise an [IllegalArgumentException] will be thrown.
      */
     @UiThread
-    suspend fun animate(update: CameraUpdate, durationMillis: Int = -1) {
+    suspend fun animate(update: CameraUpdate, durationMs: Int? = null) {
         val myJob = currentCoroutineContext()[Job]
         try {
             suspendCancellableCoroutine<Unit> { continuation ->
@@ -199,7 +200,7 @@ class CameraPositionState(
                                         "internal error; no GoogleMap available to animate position"
                                     )
                                 }
-                                performAnimateCameraLocked(newMap, update, durationMillis, continuation)
+                                performAnimateCameraLocked(newMap, update, durationMs, continuation)
                             }
 
                             override fun onCancelLocked() {
@@ -220,7 +221,7 @@ class CameraPositionState(
                             }
                         }
                     } else {
-                        performAnimateCameraLocked(map, update, durationMillis, continuation)
+                        performAnimateCameraLocked(map, update, durationMs, continuation)
                     }
                 }
             }
@@ -239,7 +240,7 @@ class CameraPositionState(
     private fun performAnimateCameraLocked(
         map: GoogleMap,
         update: CameraUpdate,
-        durationMillis: Int,
+        durationMs: Int?,
         continuation: CancellableContinuation<Unit>
     ) {
         val cancelableCallback = object : GoogleMap.CancelableCallback {
@@ -251,10 +252,10 @@ class CameraPositionState(
                 continuation.resume(Unit)
             }
         }
-        if (durationMillis < 0) {
+        if (durationMs == null) {
             map.animateCamera(update, cancelableCallback)
         } else {
-            map.animateCamera(update, durationMillis, cancelableCallback)
+            map.animateCamera(update, durationMs, cancelableCallback)
         }
         doOnMapChangedLocked {
             check(it == null) {
