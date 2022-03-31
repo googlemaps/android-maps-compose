@@ -241,7 +241,7 @@ class CameraPositionState(
     private fun performAnimateCameraLocked(
         map: GoogleMap,
         update: CameraUpdate,
-        durationMs: Int?,
+        durationMs: Int,
         continuation: CancellableContinuation<Unit>
     ) {
         val cancelableCallback = object : GoogleMap.CancelableCallback {
@@ -253,7 +253,7 @@ class CameraPositionState(
                 continuation.resume(Unit)
             }
         }
-        if (durationMs == null) {
+        if (durationMs == MAX_VALUE) {
             map.animateCamera(update, cancelableCallback)
         } else {
             map.animateCamera(update, durationMs, cancelableCallback)
