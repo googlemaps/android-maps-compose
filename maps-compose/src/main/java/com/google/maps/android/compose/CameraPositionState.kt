@@ -33,6 +33,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.lang.Integer.MAX_VALUE
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -173,9 +174,14 @@ class CameraPositionState(
      * suspend until a map is bound and animation will begin.
      *
      * This method should only be called from a dispatcher bound to the map's UI thread.
+     *
+     * @param update the change that should be applied to the camera
+     * @param durationMs The duration of the animation in milliseconds. If [Int.MAX_VALUE] is
+     * provided, the default animation duration will be used. Otherwise, the value provided must be
+     * strictly positive, otherwise an [IllegalArgumentException] will be thrown.
      */
     @UiThread
-    suspend fun animate(update: CameraUpdate) {
+    suspend fun animate(update: CameraUpdate, durationMs: Int = MAX_VALUE) {
         val myJob = currentCoroutineContext()[Job]
         try {
             suspendCancellableCoroutine<Unit> { continuation ->
@@ -195,7 +201,7 @@ class CameraPositionState(
                                         "internal error; no GoogleMap available to animate position"
                                     )
                                 }
-                                performAnimateCameraLocked(newMap, update, continuation)
+                                performAnimateCameraLocked(newMap, update, durationMs, continuation)
                             }
 
                             override fun onCancelLocked() {
@@ -216,7 +222,7 @@ class CameraPositionState(
                             }
                         }
                     } else {
-                        performAnimateCameraLocked(map, update, continuation)
+                        performAnimateCameraLocked(map, update, durationMs, continuation)
                     }
                 }
             }
@@ -235,9 +241,10 @@ class CameraPositionState(
     private fun performAnimateCameraLocked(
         map: GoogleMap,
         update: CameraUpdate,
+        durationMs: Int,
         continuation: CancellableContinuation<Unit>
     ) {
-        map.animateCamera(update, object : GoogleMap.CancelableCallback {
+        val cancelableCallback = object : GoogleMap.CancelableCallback {
             override fun onCancel() {
                 continuation.resumeWithException(CancellationException("Animation cancelled"))
             }
@@ -245,7 +252,12 @@ class CameraPositionState(
             override fun onFinish() {
                 continuation.resume(Unit)
             }
-        })
+        }
+        if (durationMs == MAX_VALUE) {
+            map.animateCamera(update, cancelableCallback)
+        } else {
+            map.animateCamera(update, durationMs, cancelableCallback)
+        }
         doOnMapChangedLocked {
             check(it == null) {
                 "New GoogleMap unexpectedly set while an animation was still running"
