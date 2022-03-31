@@ -33,6 +33,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.lang.Integer.MAX_VALUE
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -175,12 +176,12 @@ class CameraPositionState(
      * This method should only be called from a dispatcher bound to the map's UI thread.
      *
      * @param update the change that should be applied to the camera
-     * @param durationMs The duration of the animation in milliseconds. If null is provided, the
-     * default animation duration will be used. Otherwise, the value provided must be strictly
-     * positive, otherwise an [IllegalArgumentException] will be thrown.
+     * @param durationMs The duration of the animation in milliseconds. If [Int.MAX_VALUE] is
+     * provided, the default animation duration will be used. Otherwise, the value provided must be
+     * strictly positive, otherwise an [IllegalArgumentException] will be thrown.
      */
     @UiThread
-    suspend fun animate(update: CameraUpdate, durationMs: Int? = null) {
+    suspend fun animate(update: CameraUpdate, durationMs: Int = MAX_VALUE) {
         val myJob = currentCoroutineContext()[Job]
         try {
             suspendCancellableCoroutine<Unit> { continuation ->
