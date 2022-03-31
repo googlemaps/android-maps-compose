@@ -16,7 +16,7 @@ $dokka.location:com.google.maps.android.compose/CameraPositionState.Companion///
 $dokka.location:com.google.maps.android.compose/CameraPositionState.Companion/Saver/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/-companion/-saver.html
 $dokka.location:com.google.maps.android.compose/CameraPositionState///PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/index.html
 $dokka.location:com.google.maps.android.compose/CameraPositionState/CameraPositionState/#com.google.android.gms.maps.model.CameraPosition/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/-camera-position-state.html
-$dokka.location:com.google.maps.android.compose/CameraPositionState/animate/#com.google.android.gms.maps.CameraUpdate/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/animate.html
+$dokka.location:com.google.maps.android.compose/CameraPositionState/animate/#com.google.android.gms.maps.CameraUpdate#kotlin.Int/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/animate.html
 $dokka.location:com.google.maps.android.compose/CameraPositionState/isMoving/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/is-moving.html
 $dokka.location:com.google.maps.android.compose/CameraPositionState/move/#com.google.android.gms.maps.CameraUpdate/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/move.html
 $dokka.location:com.google.maps.android.compose/CameraPositionState/position/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-camera-position-state/position.html
