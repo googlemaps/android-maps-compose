@@ -36,7 +36,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 
-private const val TAG = "BasicMapActivity"
+private const val TAG = "ScrollingMapActivity"
 
 private val singapore = LatLng(1.35, 103.87)
 private val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
@@ -69,7 +69,7 @@ class ScrollingMapActivity : ComponentActivity() {
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .height(150.dp)
+                        .height(200.dp)
                 ) {
                     GoogleMapView(
                         modifier = Modifier
@@ -117,7 +117,6 @@ private fun GoogleMapView(
     val singaporeState = rememberMarkerState(position = singapore)
 
     var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
-    var ticker by remember { mutableStateOf(0) }
     var mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
@@ -127,10 +126,7 @@ private fun GoogleMapView(
         cameraPositionState = cameraPositionState,
         properties = mapProperties,
         uiSettings = uiSettings,
-        onMapLoaded = onMapLoaded,
-        onPOIClick = {
-            Log.d(TAG, "POI clicked: ${it.name}")
-        }
+        onMapLoaded = onMapLoaded
     ) {
         // Drawing on the map is accomplished with a child-based API
         val markerClick: (Marker) -> Boolean = {
@@ -142,7 +138,7 @@ private fun GoogleMapView(
         }
         MarkerInfoWindowContent(
             state = singaporeState,
-            title = "Zoom in has been tapped $ticker times.",
+            title = "Singapore",
             onClick = markerClick,
             draggable = true,
         ) {
