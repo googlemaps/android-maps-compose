@@ -85,7 +85,7 @@ class BasicMapActivity : ComponentActivity() {
 }
 
 @Composable
-private fun GoogleMapView(
+fun GoogleMapView(
     modifier: Modifier,
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,

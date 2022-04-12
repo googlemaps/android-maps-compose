@@ -24,10 +24,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.annotation.UiThreadTest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,7 +33,7 @@ import java.util.concurrent.TimeUnit
 
 class GoogleMapViewTests {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<MapSampleActivity>()
+    val composeTestRule = createAndroidComposeRule<BasicMapActivity>()
 
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)
@@ -88,7 +85,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(5000) {
                 !cameraPositionState.isMoving
             }
             assertFalse(cameraPositionState.isMoving)

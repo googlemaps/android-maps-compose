@@ -75,7 +75,7 @@ class ScrollingMapActivity : ComponentActivity() {
                         .fillMaxWidth()
                         .height(200.dp)
                 ) {
-                    GoogleMapView(
+                    GoogleMapViewInColumn(
                         modifier = Modifier
                             .fillMaxSize(),
                         cameraPositionState = cameraPositionState,
@@ -113,7 +113,7 @@ class ScrollingMapActivity : ComponentActivity() {
 }
 
 @Composable
-private fun GoogleMapView(
+private fun GoogleMapViewInColumn(
     modifier: Modifier,
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
