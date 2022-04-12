@@ -55,7 +55,11 @@ class ScrollingMapActivity : ComponentActivity() {
             Column(
                 Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(
+                        rememberScrollState(),
+                        // FIXME - Below line doesn't fix vertical scrolling within column - see https://github.com/googlemaps/android-maps-compose/issues/78
+                        enabled = !cameraPositionState.isMoving
+                    ),
                 horizontalAlignment = Alignment.Start
             ) {
                 Spacer(modifier = Modifier.padding(10.dp))
