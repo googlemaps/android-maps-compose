@@ -16,4 +16,7 @@
 
 <resources>
   <string name="app_name">android-maps-compose</string>
+  <string name="main_activity_title">"Maps Compose Demos \uD83D\uDDFA"</string>
+  <string name="basic_map_activity">Basic Map Activity</string>
+  <string name="scrolling_map_activity">Scrolling Map Activity</string>
 </resources>
