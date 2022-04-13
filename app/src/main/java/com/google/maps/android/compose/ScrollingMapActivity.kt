@@ -26,6 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,67 +47,72 @@ class ScrollingMapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var isMapLoaded by remember { mutableStateOf(false) }
-            // Observing and controlling the camera's state can be done with a CameraPositionState
-            val cameraPositionState = rememberCameraPositionState {
-                position = defaultCameraPosition
-            }
-
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(
-                        rememberScrollState(),
-                        // FIXME - Below line doesn't fix vertical scrolling within column - see https://github.com/googlemaps/android-maps-compose/issues/78
-                        enabled = !cameraPositionState.isMoving
-                    ),
-                horizontalAlignment = Alignment.Start
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colors.background
             ) {
-                Spacer(modifier = Modifier.padding(10.dp))
-                for (i in 1..20) {
-                    Text(
-                        text = "Item $i",
-                        modifier = Modifier.padding(start = 10.dp)
-                    )
+                var isMapLoaded by remember { mutableStateOf(false) }
+                // Observing and controlling the camera's state can be done with a CameraPositionState
+                val cameraPositionState = rememberCameraPositionState {
+                    position = defaultCameraPosition
                 }
-                Spacer(modifier = Modifier.padding(10.dp))
-                Box(
+
+                Column(
                     Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
+                        .fillMaxSize()
+                        .verticalScroll(
+                            rememberScrollState(),
+                            // FIXME - Below line doesn't fix vertical scrolling within column - see https://github.com/googlemaps/android-maps-compose/issues/78
+                            enabled = !cameraPositionState.isMoving
+                        ),
+                    horizontalAlignment = Alignment.Start
                 ) {
-                    GoogleMapViewInColumn(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        cameraPositionState = cameraPositionState,
-                        onMapLoaded = {
-                            isMapLoaded = true
-                        },
-                    )
-                    if (!isMapLoaded) {
-                        androidx.compose.animation.AnimatedVisibility(
+                    Spacer(modifier = Modifier.padding(10.dp))
+                    for (i in 1..20) {
+                        Text(
+                            text = "Item $i",
+                            modifier = Modifier.padding(start = 10.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding(10.dp))
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                    ) {
+                        GoogleMapViewInColumn(
                             modifier = Modifier
                                 .fillMaxSize(),
-                            visible = !isMapLoaded,
-                            enter = EnterTransition.None,
-                            exit = fadeOut()
-                        ) {
-                            CircularProgressIndicator(
+                            cameraPositionState = cameraPositionState,
+                            onMapLoaded = {
+                                isMapLoaded = true
+                            },
+                        )
+                        if (!isMapLoaded) {
+                            androidx.compose.animation.AnimatedVisibility(
                                 modifier = Modifier
-                                    .background(MaterialTheme.colors.background)
-                                    .wrapContentSize()
-                            )
+                                    .fillMaxSize(),
+                                visible = !isMapLoaded,
+                                enter = EnterTransition.None,
+                                exit = fadeOut()
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier
+                                        .background(MaterialTheme.colors.background)
+                                        .wrapContentSize()
+                                )
+                            }
                         }
                     }
+                    Spacer(modifier = Modifier.padding(10.dp))
+                    for (i in 21..40) {
+                        Text(
+                            text = "Item $i",
+                            modifier = Modifier.padding(start = 10.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding(10.dp))
                 }
-                Spacer(modifier = Modifier.padding(10.dp))
-                for (i in 21..40) {
-                    Text(
-                        text = "Item $i",
-                        modifier = Modifier.padding(start = 10.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.padding(10.dp))
             }
         }
     }

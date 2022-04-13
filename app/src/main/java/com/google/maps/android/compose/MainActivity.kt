@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,31 +38,35 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
-            val context = LocalContext.current
-            Column(
-                Modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colors.background
             ) {
-                Spacer(modifier = Modifier.padding(10.dp))
-                Text(
-                    text = getString(R.string.main_activity_title),
-                    style = MaterialTheme.typography.h5
-                )
-                Spacer(modifier = Modifier.padding(10.dp))
-                Button(
-                    onClick = {
-                        context.startActivity(Intent(context, BasicMapActivity::class.java))
-                    }) {
-                    Text(getString(R.string.basic_map_activity))
-                }
-                Spacer(modifier = Modifier.padding(5.dp))
-                Button(
-                    onClick = {
-                        context.startActivity(Intent(context, ScrollingMapActivity::class.java))
-                    }) {
-                    Text(getString(R.string.scrolling_map_activity))
+                val context = LocalContext.current
+                Column(
+                    Modifier
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.padding(10.dp))
+                    Text(
+                        text = getString(R.string.main_activity_title),
+                        style = MaterialTheme.typography.h5
+                    )
+                    Spacer(modifier = Modifier.padding(10.dp))
+                    Button(
+                        onClick = {
+                            context.startActivity(Intent(context, BasicMapActivity::class.java))
+                        }) {
+                        Text(getString(R.string.basic_map_activity))
+                    }
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Button(
+                        onClick = {
+                            context.startActivity(Intent(context, ScrollingMapActivity::class.java))
+                        }) {
+                        Text(getString(R.string.scrolling_map_activity))
+                    }
                 }
             }
         }
