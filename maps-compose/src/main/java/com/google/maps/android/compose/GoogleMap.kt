@@ -69,7 +69,7 @@ import kotlinx.coroutines.awaitCancellation
  * @param content the content of the map
  */
 @Composable
-fun GoogleMap(
+public fun GoogleMap(
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,

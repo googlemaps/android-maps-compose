@@ -27,16 +27,16 @@ internal val DefaultMapProperties = MapProperties()
  * compatibility on future changes.
  * See: https://jakewharton.com/public-api-challenges-in-kotlin/
  */
-class MapProperties(
-    val isBuildingEnabled: Boolean = false,
-    val isIndoorEnabled: Boolean = false,
-    val isMyLocationEnabled: Boolean = false,
-    val isTrafficEnabled: Boolean = false,
-    val latLngBoundsForCameraTarget: LatLngBounds? = null,
-    val mapStyleOptions: MapStyleOptions? = null,
-    val mapType: MapType = MapType.NORMAL,
-    val maxZoomPreference: Float = 21.0f,
-    val minZoomPreference: Float = 3.0f,
+public class MapProperties(
+    public val isBuildingEnabled: Boolean = false,
+    public val isIndoorEnabled: Boolean = false,
+    public val isMyLocationEnabled: Boolean = false,
+    public val isTrafficEnabled: Boolean = false,
+    public val latLngBoundsForCameraTarget: LatLngBounds? = null,
+    public val mapStyleOptions: MapStyleOptions? = null,
+    public val mapType: MapType = MapType.NORMAL,
+    public val maxZoomPreference: Float = 21.0f,
+    public val minZoomPreference: Float = 3.0f,
 ) {
     override fun toString(): String = "MapProperties(" +
         "isBuildingEnabled=$isBuildingEnabled, isIndoorEnabled=$isIndoorEnabled, " +
@@ -68,7 +68,7 @@ class MapProperties(
         minZoomPreference
     )
 
-    fun copy(
+    public fun copy(
         isBuildingEnabled: Boolean = this.isBuildingEnabled,
         isIndoorEnabled: Boolean = this.isIndoorEnabled,
         isMyLocationEnabled: Boolean = this.isMyLocationEnabled,
@@ -78,7 +78,7 @@ class MapProperties(
         mapType: MapType = this.mapType,
         maxZoomPreference: Float = this.maxZoomPreference,
         minZoomPreference: Float = this.minZoomPreference,
-    ) = MapProperties(
+    ): MapProperties = MapProperties(
         isBuildingEnabled = isBuildingEnabled,
         isIndoorEnabled = isIndoorEnabled,
         isMyLocationEnabled = isMyLocationEnabled,

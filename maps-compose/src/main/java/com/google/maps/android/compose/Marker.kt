@@ -52,7 +52,7 @@ internal class MarkerNode(
 }
 
 @Immutable
-enum class DragState {
+public enum class DragState {
     START, DRAG, END
 }
 
@@ -61,18 +61,18 @@ enum class DragState {
  *
  * @param position the initial marker position
  */
-class MarkerState(
+public class MarkerState(
     position: LatLng = LatLng(0.0, 0.0)
 ) {
     /**
      * Current position of the marker.
      */
-    var position: LatLng by mutableStateOf(position)
+    public var position: LatLng by mutableStateOf(position)
 
     /**
      * Current [DragState] of the marker.
      */
-    var dragState: DragState by mutableStateOf(DragState.END)
+    public var dragState: DragState by mutableStateOf(DragState.END)
         internal set
 
     // The marker associated with this MarkerState.
@@ -88,22 +88,22 @@ class MarkerState(
     /**
      * Shows the info window for the underlying marker
      */
-    fun showInfoWindow() {
+    public fun showInfoWindow() {
         marker?.showInfoWindow()
     }
 
     /**
      * Hides the info window for the underlying marker
      */
-    fun hideInfoWindow() {
+    public fun hideInfoWindow() {
         marker?.hideInfoWindow()
     }
 
-    companion object {
+    public companion object {
         /**
          * The default saver implementation for [MarkerState]
          */
-        val Saver = Saver<MarkerState, LatLng>(
+        public val Saver: Saver<MarkerState, LatLng> = Saver(
             save = { it.position },
             restore = { MarkerState(it) }
         )
@@ -111,7 +111,7 @@ class MarkerState(
 }
 
 @Composable
-fun rememberMarkerState(
+public fun rememberMarkerState(
     key: String? = null,
     position: LatLng = LatLng(0.0, 0.0)
 ): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
@@ -141,7 +141,7 @@ fun rememberMarkerState(
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
  */
 @Composable
-fun Marker(
+public fun Marker(
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -208,7 +208,7 @@ fun Marker(
  * info window's content
  */
 @Composable
-fun MarkerInfoWindow(
+public fun MarkerInfoWindow(
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -277,7 +277,7 @@ fun MarkerInfoWindow(
  * info window's content
  */
 @Composable
-fun MarkerInfoWindowContent(
+public fun MarkerInfoWindowContent(
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),

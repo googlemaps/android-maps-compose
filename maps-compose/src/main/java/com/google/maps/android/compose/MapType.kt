@@ -20,7 +20,7 @@ import androidx.compose.runtime.Immutable
  * Enumerates the different types of map tiles.
  */
 @Immutable
-enum class MapType(val value: Int) {
+public enum class MapType(public val value: Int) {
     NONE(com.google.android.gms.maps.GoogleMap.MAP_TYPE_NONE),
     NORMAL(com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL),
     SATELLITE(com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE),
