@@ -63,7 +63,6 @@ dependencies {
     // the maven declaration of Maps Compose can be used as a snippet.
     // implementation project(':maps-compose')
     // [END_EXCLUDE silent]
-
     implementation  "com.google.maps.android:maps-compose:2.1.0"
 }
 // [END maps_android_compose_dependency]
