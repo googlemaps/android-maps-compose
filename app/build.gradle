@@ -36,8 +36,9 @@ android {
     }
 }
 
+// [START maps_android_compose_dependency]
 dependencies {
-    implementation project(':maps-compose')
+    // [START_EXCLUDE silent]
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation "androidx.compose.foundation:foundation:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
@@ -54,7 +55,18 @@ dependencies {
     androidTestImplementation 'junit:junit:4.13.2'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+
+    // For debugging purposes, uncomment the implementation project declaration
+    // so that the sample app can use the local state of the `maps-compose`
+    // module.
+    // However, this should remain uncommented on the `main` branch so that
+    // the maven declaration of Maps Compose can be used as a snippet.
+    // implementation project(':maps-compose')
+    // [END_EXCLUDE silent]
+
+    implementation  "com.google.maps.android:maps-compose:2.1.0"
 }
+// [END maps_android_compose_dependency]
 
 secrets {
     // To add your Maps API key to this project:
