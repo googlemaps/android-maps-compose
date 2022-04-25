@@ -172,7 +172,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     
     // Also include Compose version `1.2.0-alpha03` or higher - for example:
-     implementation "androidx.compose.foundation:foundation:1.2.0-alpha03"
+    implementation "androidx.compose.foundation:foundation:1.2.0-alpha03"
 }
 ```
 
