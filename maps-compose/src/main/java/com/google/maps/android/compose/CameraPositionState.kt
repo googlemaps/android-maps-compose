@@ -104,7 +104,7 @@ class CameraPositionState(
 
     // The map currently associated with this CameraPositionState.
     // Guarded by `lock`.
-    private var map: GoogleMap? = null
+    var map: GoogleMap? = null
 
     // An action to run when the map becomes available or unavailable.
     // represents a mutually exclusive mutation to perform while holding `lock`.
