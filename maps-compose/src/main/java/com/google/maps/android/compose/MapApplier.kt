@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.Polyline
 internal interface MapNode {
     fun onAttached() {}
     fun onRemoved() {}
+    fun onCleared() {}
 }
 
 private object MapNodeRoot : MapNode
@@ -43,6 +44,8 @@ internal class MapApplier(
 
     override fun onClear() {
         map.clear()
+        decorations.forEach { it.onCleared() }
+        decorations.clear()
     }
 
     override fun insertBottomUp(index: Int, instance: MapNode) {

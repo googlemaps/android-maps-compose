@@ -208,6 +208,14 @@ class GoogleMapViewTests {
         assertTrue(mapLoaded)
     }
 
+    @Test
+    fun testCameraPositionStateMapClears() {
+        // TODO(Complete)
+//        composeTestRule.setContent {
+//        }
+//        assertTrue(cameraPositionState.map)
+    }
+
     private fun zoom(
         shouldAnimate: Boolean,
         zoomIn: Boolean,
