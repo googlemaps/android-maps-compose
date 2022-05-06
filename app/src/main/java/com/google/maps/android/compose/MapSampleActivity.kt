@@ -181,25 +181,21 @@ fun GoogleMapView(
             Log.d("GoogleMap", "Selected map type $it")
             mapProperties = mapProperties.copy(mapType = it)
         })
-        Button(
-            modifier = Modifier.padding(4.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.onPrimary,
-                contentColor = MaterialTheme.colors.primary
-            ),
-            onClick = {
-                mapProperties = mapProperties.copy(mapType = MapType.NORMAL)
-                cameraPositionState.position = defaultCameraPosition
-                singaporeState.position = singapore
-                singaporeState.hideInfoWindow()
-            }
-        ) {
-            Text(text = "RESET MAP", style = MaterialTheme.typography.body1)
-        }
-        Button(
-            modifier = Modifier.testTag("toggleMapVisibility"),
-            onClick = { mapVisible = !mapVisible }) {
-            Text(text = "Toggle Map")
+        Row {
+            MapButton(
+                text = "Reset Map",
+                onClick = {
+                    mapProperties = mapProperties.copy(mapType = MapType.NORMAL)
+                    cameraPositionState.position = defaultCameraPosition
+                    singaporeState.position = singapore
+                    singaporeState.hideInfoWindow()
+                }
+            )
+            MapButton(
+                text = "Toggle Map",
+                onClick = { mapVisible = !mapVisible },
+                modifier = Modifier.testTag("toggleMapVisibility"),
+            )
         }
         val coroutineScope = rememberCoroutineScope()
         ZoomControls(
@@ -252,18 +248,8 @@ private fun MapTypeControls(
 }
 
 @Composable
-private fun MapTypeButton(type: MapType, onClick: () -> Unit) {
-    Button(
-        modifier = Modifier.padding(4.dp),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.onPrimary,
-            contentColor = MaterialTheme.colors.primary
-        ),
-        onClick = onClick
-    ) {
-        Text(text = type.toString(), style = MaterialTheme.typography.body1)
-    }
-}
+private fun MapTypeButton(type: MapType, onClick: () -> Unit) =
+    MapButton(text = type.toString(), onClick = onClick)
 
 @Composable
 private fun ZoomControls(
@@ -294,16 +280,16 @@ private fun ZoomControls(
 }
 
 @Composable
-private fun MapButton(text: String, onClick: () -> Unit) {
+private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
-        modifier = Modifier.padding(8.dp),
+        modifier = modifier.padding(4.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.onPrimary,
             contentColor = MaterialTheme.colors.primary
         ),
         onClick = onClick
     ) {
-        Text(text = text, style = MaterialTheme.typography.h5)
+        Text(text = text, style = MaterialTheme.typography.body1)
     }
 }
 
