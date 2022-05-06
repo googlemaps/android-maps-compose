@@ -16,6 +16,7 @@ package com.google.maps.android.compose
 
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.EnterTransition
@@ -30,8 +31,11 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.RequestDisallowInterceptTouchEvent
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -44,6 +48,7 @@ private val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f
 
 class ScrollingMapActivity : ComponentActivity() {
 
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -57,13 +62,13 @@ class ScrollingMapActivity : ComponentActivity() {
                     position = defaultCameraPosition
                 }
 
+                var scrollingEnabled by remember { mutableStateOf(true) }
                 Column(
                     Modifier
                         .fillMaxSize()
                         .verticalScroll(
                             rememberScrollState(),
-                            // FIXME - Below line doesn't fix vertical scrolling within column - see https://github.com/googlemaps/android-maps-compose/issues/78
-                            enabled = !cameraPositionState.isMoving
+                            scrollingEnabled
                         ),
                     horizontalAlignment = Alignment.Start
                 ) {
@@ -75,6 +80,9 @@ class ScrollingMapActivity : ComponentActivity() {
                         )
                     }
                     Spacer(modifier = Modifier.padding(10.dp))
+
+                    val disableTouch = remember { RequestDisallowInterceptTouchEvent() }
+
                     Box(
                         Modifier
                             .fillMaxWidth()
@@ -82,7 +90,25 @@ class ScrollingMapActivity : ComponentActivity() {
                     ) {
                         GoogleMapViewInColumn(
                             modifier = Modifier
-                                .fillMaxSize(),
+                                .fillMaxSize()
+                                .pointerInteropFilter(
+                                    onTouchEvent = { event ->
+                                        when (event.action) {
+                                            MotionEvent.ACTION_DOWN -> {
+                                                scrollingEnabled = false
+                                                Log.d(TAG, "down")
+                                                disableTouch.invoke(true)
+                                            }
+                                            MotionEvent.ACTION_UP -> {
+                                                scrollingEnabled = true
+                                                Log.d(TAG, "up")
+                                                disableTouch.invoke(false)
+                                            }
+                                        }
+                                        super.onTouchEvent(event)
+                                    },
+                                    requestDisallowInterceptTouchEvent = disableTouch
+                                ),
                             cameraPositionState = cameraPositionState,
                             onMapLoaded = {
                                 isMapLoaded = true
