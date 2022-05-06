@@ -108,6 +108,7 @@ fun GoogleMapView(
     modifier: Modifier,
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
+    content: @Composable () -> Unit = {}
 ) {
     val singaporeState = rememberMarkerState(position = singapore)
     val singapore2State = rememberMarkerState(position = singapore2)
@@ -123,73 +124,78 @@ fun GoogleMapView(
     var mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
+    var mapVisible by remember { mutableStateOf(true) }
 
-    GoogleMap(
-        modifier = modifier,
-        cameraPositionState = cameraPositionState,
-        properties = mapProperties,
-        uiSettings = uiSettings,
-        onMapLoaded = onMapLoaded,
-        onPOIClick = {
-            Log.d(TAG, "POI clicked: ${it.name}")
-        }
-    ) {
-        // Drawing on the map is accomplished with a child-based API
-        val markerClick: (Marker) -> Boolean = {
-            Log.d(TAG, "${it.title} was clicked")
-            cameraPositionState.projection?.let { projection ->
-                Log.d(TAG, "The current projection is: $projection")
+    if (mapVisible) {
+        GoogleMap(
+            modifier = modifier,
+            cameraPositionState = cameraPositionState,
+            properties = mapProperties,
+            uiSettings = uiSettings,
+            onMapLoaded = onMapLoaded,
+            onPOIClick = {
+                Log.d(TAG, "POI clicked: ${it.name}")
             }
-            false
-        }
-        MarkerInfoWindowContent(
-            state = singaporeState,
-            title = "Zoom in has been tapped $ticker times.",
-            onClick = markerClick,
-            draggable = true,
         ) {
-            Text(it.title ?: "Title", color = Color.Red)
+            // Drawing on the map is accomplished with a child-based API
+            val markerClick: (Marker) -> Boolean = {
+                Log.d(TAG, "${it.title} was clicked")
+                cameraPositionState.projection?.let { projection ->
+                    Log.d(TAG, "The current projection is: $projection")
+                }
+                false
+            }
+            MarkerInfoWindowContent(
+                state = singaporeState,
+                title = "Zoom in has been tapped $ticker times.",
+                onClick = markerClick,
+                draggable = true,
+            ) {
+                Text(it.title ?: "Title", color = Color.Red)
+            }
+            MarkerInfoWindowContent(
+                state = singapore2State,
+                title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
+                onClick = markerClick,
+            ) {
+                Text(it.title ?: "Title", color = Color.Blue)
+            }
+            Marker(
+                state = singapore3State,
+                title = "Marker in Singapore",
+                onClick = markerClick
+            )
+            Circle(
+                center = circleCenter,
+                fillColor = MaterialTheme.colors.secondary,
+                strokeColor = MaterialTheme.colors.secondaryVariant,
+                radius = 1000.0,
+            )
+            content()
         }
-        MarkerInfoWindowContent(
-            state = singapore2State,
-            title = "Marker with custom info window.\nZoom in has been tapped $ticker times.",
-            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
-            onClick = markerClick,
-        ) {
-            Text(it.title ?: "Title", color = Color.Blue)
-        }
-        Marker(
-            state = singapore3State,
-            title = "Marker in Singapore",
-            onClick = markerClick
-        )
-        Circle(
-            center = circleCenter,
-            fillColor = MaterialTheme.colors.secondary,
-            strokeColor = MaterialTheme.colors.secondaryVariant,
-            radius = 1000.0,
-        )
-    }
 
+    }
     Column {
         MapTypeControls(onMapTypeClick = {
             Log.d("GoogleMap", "Selected map type $it")
             mapProperties = mapProperties.copy(mapType = it)
         })
-        Button(
-            modifier = Modifier.padding(4.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.onPrimary,
-                contentColor = MaterialTheme.colors.primary
-            ),
-            onClick = {
-                mapProperties = mapProperties.copy(mapType = MapType.NORMAL)
-                cameraPositionState.position = defaultCameraPosition
-                singaporeState.position = singapore
-                singaporeState.hideInfoWindow()
-            }
-        ) {
-            Text(text = "RESET MAP", style = MaterialTheme.typography.body1)
+        Row {
+            MapButton(
+                text = "Reset Map",
+                onClick = {
+                    mapProperties = mapProperties.copy(mapType = MapType.NORMAL)
+                    cameraPositionState.position = defaultCameraPosition
+                    singaporeState.position = singapore
+                    singaporeState.hideInfoWindow()
+                }
+            )
+            MapButton(
+                text = "Toggle Map",
+                onClick = { mapVisible = !mapVisible },
+                modifier = Modifier.testTag("toggleMapVisibility"),
+            )
         }
         val coroutineScope = rememberCoroutineScope()
         ZoomControls(
@@ -242,18 +248,8 @@ private fun MapTypeControls(
 }
 
 @Composable
-private fun MapTypeButton(type: MapType, onClick: () -> Unit) {
-    Button(
-        modifier = Modifier.padding(4.dp),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.onPrimary,
-            contentColor = MaterialTheme.colors.primary
-        ),
-        onClick = onClick
-    ) {
-        Text(text = type.toString(), style = MaterialTheme.typography.body1)
-    }
-}
+private fun MapTypeButton(type: MapType, onClick: () -> Unit) =
+    MapButton(text = type.toString(), onClick = onClick)
 
 @Composable
 private fun ZoomControls(
@@ -284,16 +280,16 @@ private fun ZoomControls(
 }
 
 @Composable
-private fun MapButton(text: String, onClick: () -> Unit) {
+private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(
-        modifier = Modifier.padding(8.dp),
+        modifier = modifier.padding(4.dp),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.onPrimary,
             contentColor = MaterialTheme.colors.primary
         ),
         onClick = onClick
     ) {
-        Text(text = text, style = MaterialTheme.typography.h5)
+        Text(text = text, style = MaterialTheme.typography.body1)
     }
 }
 
