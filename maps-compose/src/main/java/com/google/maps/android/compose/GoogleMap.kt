@@ -66,6 +66,8 @@ import kotlinx.coroutines.awaitCancellation
  * @param onMyLocationButtonClick lambda invoked when the my location button is clicked
  * @param onMyLocationClick lambda invoked when the my location dot is clicked
  * @param onPOIClick lambda invoked when a POI is clicked
+ * @param contentPadding the padding values used to signal that portions of the map around the edges
+ * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
  * @param content the content of the map
  */
 @Composable
