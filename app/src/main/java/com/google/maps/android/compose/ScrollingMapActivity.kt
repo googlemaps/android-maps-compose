@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.RequestDisallowInterceptTouchEvent
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
@@ -57,12 +56,20 @@ class ScrollingMapActivity : ComponentActivity() {
                 color = MaterialTheme.colors.background
             ) {
                 var isMapLoaded by remember { mutableStateOf(false) }
+                var scrollingEnabled by remember { mutableStateOf(true) }
+
                 // Observing and controlling the camera's state can be done with a CameraPositionState
                 val cameraPositionState = rememberCameraPositionState {
                     position = defaultCameraPosition
                 }
 
-                var scrollingEnabled by remember { mutableStateOf(true) }
+                LaunchedEffect(cameraPositionState.isMoving) {
+                    if (!cameraPositionState.isMoving) {
+                        scrollingEnabled = true
+                        Log.d(TAG, "Map camera stopped moving - Enabling column scrolling...")
+                    }
+                }
+
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -81,8 +88,6 @@ class ScrollingMapActivity : ComponentActivity() {
                     }
                     Spacer(modifier = Modifier.padding(10.dp))
 
-                    val disableTouch = remember { RequestDisallowInterceptTouchEvent() }
-
                     Box(
                         Modifier
                             .fillMaxWidth()
@@ -90,29 +95,37 @@ class ScrollingMapActivity : ComponentActivity() {
                     ) {
                         GoogleMapViewInColumn(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .pointerInteropFilter(
-                                    onTouchEvent = { event ->
-                                        when (event.action) {
-                                            MotionEvent.ACTION_DOWN -> {
-                                                scrollingEnabled = false
-                                                Log.d(TAG, "down")
-                                                disableTouch.invoke(true)
-                                            }
-                                            MotionEvent.ACTION_UP -> {
-                                                scrollingEnabled = true
-                                                Log.d(TAG, "up")
-                                                disableTouch.invoke(false)
-                                            }
-                                        }
-                                        super.onTouchEvent(event)
-                                    },
-                                    requestDisallowInterceptTouchEvent = disableTouch
-                                ),
+                                .fillMaxSize(),
                             cameraPositionState = cameraPositionState,
                             onMapLoaded = {
                                 isMapLoaded = true
                             },
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .pointerInteropFilter(
+                                    onTouchEvent = {
+                                        when (it.action) {
+                                            MotionEvent.ACTION_DOWN -> {
+                                                scrollingEnabled = false
+                                                Log.d(
+                                                    TAG,
+                                                    "MotionEvent ${it.action} - Disabling column scrolling after user touched this Box..."
+                                                )
+                                                false
+                                            }
+                                            else -> {
+                                                Log.d(
+                                                    TAG,
+                                                    "MotionEvent ${it.action} - Enabling column scrolling..."
+                                                )
+                                                scrollingEnabled = true
+                                                true
+                                            }
+                                        }
+                                    }
+                                )
                         )
                         if (!isMapLoaded) {
                             androidx.compose.animation.AnimatedVisibility(
