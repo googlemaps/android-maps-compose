@@ -15,13 +15,13 @@
 package com.google.maps.android.compose
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.annotation.UiThreadTest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
@@ -41,15 +41,7 @@ class GoogleMapViewTests {
 
     private lateinit var cameraPositionState: CameraPositionState
 
-    @Before
-    fun setUp() {
-        cameraPositionState = CameraPositionState(
-            position = CameraPosition.fromLatLngZoom(
-                startingPosition,
-                startingZoom
-            )
-        )
-
+    private fun initMap(content: @Composable () -> Unit = {}) {
         val countDownLatch = CountDownLatch(1)
         composeTestRule.setContent {
             GoogleMapView(
@@ -58,19 +50,33 @@ class GoogleMapViewTests {
                 onMapLoaded = {
                     countDownLatch.countDown()
                 }
-            )
+            ) {
+                content.invoke()
+            }
         }
         val mapLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
         assertTrue("Map loaded", mapLoaded)
     }
 
+    @Before
+    fun setUp() {
+        cameraPositionState = CameraPositionState(
+            position = CameraPosition.fromLatLngZoom(
+                startingPosition,
+                startingZoom
+            )
+        )
+    }
+
     @Test
     fun testStartingCameraPosition() {
+        initMap()
         startingPosition.assertEquals(cameraPositionState.position.target)
     }
 
     @Test
     fun testCameraReportsMoving() {
+        initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
@@ -81,6 +87,7 @@ class GoogleMapViewTests {
 
     @Test
     fun testCameraReportsNotMoving() {
+        initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
@@ -94,6 +101,7 @@ class GoogleMapViewTests {
 
     @Test
     fun testCameraZoomInAnimation() {
+        initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
@@ -111,6 +119,7 @@ class GoogleMapViewTests {
 
     @Test
     fun testCameraZoomIn() {
+        initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
@@ -128,6 +137,7 @@ class GoogleMapViewTests {
 
     @Test
     fun testCameraZoomOut() {
+        initMap()
         zoom(shouldAnimate = false, zoomIn = false) {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
@@ -145,6 +155,7 @@ class GoogleMapViewTests {
 
     @Test
     fun testCameraZoomOutAnimation() {
+        initMap()
         zoom(shouldAnimate = true, zoomIn = false) {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
@@ -161,48 +172,49 @@ class GoogleMapViewTests {
     }
 
     @Test
-    @UiThreadTest
     fun testLatLngInVisibleRegion() {
-        val projection = cameraPositionState.projection
-        assertNotNull(projection)
-        assertTrue(
-            projection!!.visibleRegion.latLngBounds.contains(startingPosition)
-        )
+        initMap()
+        composeTestRule.runOnUiThread {
+            val projection = cameraPositionState.projection
+            assertNotNull(projection)
+            assertTrue(
+                projection!!.visibleRegion.latLngBounds.contains(startingPosition)
+            )
+        }
     }
 
     @Test
-    @UiThreadTest
     fun testLatLngNotInVisibleRegion() {
-        val projection = cameraPositionState.projection
-        assertNotNull(projection)
-        val latLng = LatLng(23.4, 25.6)
-        assertFalse(
-            projection!!.visibleRegion.latLngBounds.contains(latLng)
-        )
+        initMap()
+        composeTestRule.runOnUiThread {
+            val projection = cameraPositionState.projection
+            assertNotNull(projection)
+            val latLng = LatLng(23.4, 25.6)
+            assertFalse(
+                projection!!.visibleRegion.latLngBounds.contains(latLng)
+            )
+        }
     }
 
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateCannotBeReused() {
-        val countDownLatch = CountDownLatch(1)
-        composeTestRule.setContent {
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                onMapLoaded = {
-                    countDownLatch.countDown()
-                }
-            ) {
-                val markerState = rememberMarkerState()
-                Marker(
-                    state = markerState
-                )
-                Marker(
-                    state = markerState
-                )
-            }
+        initMap {
+            val markerState = rememberMarkerState()
+            Marker(
+                state = markerState
+            )
+            Marker(
+                state = markerState
+            )
         }
-        val mapLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
-        assertTrue(mapLoaded)
+    }
+
+    @Test
+    fun testCameraPositionStateMapClears() {
+        initMap()
+        composeTestRule.onNodeWithTag("toggleMapVisibility")
+            .performClick()
+            .performClick()
     }
 
     private fun zoom(

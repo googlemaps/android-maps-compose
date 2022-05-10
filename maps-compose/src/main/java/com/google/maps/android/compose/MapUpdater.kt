@@ -94,6 +94,10 @@ internal class MapPropertiesNode(
     override fun onRemoved() {
         cameraPositionState.setMap(null)
     }
+
+    override fun onCleared() {
+        cameraPositionState.setMap(null)
+    }
 }
 
 internal val NoPadding = PaddingValues()

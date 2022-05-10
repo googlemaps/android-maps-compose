@@ -49,6 +49,11 @@ internal class MarkerNode(
         markerState.marker = null
         marker.remove()
     }
+
+    override fun onCleared() {
+        markerState.marker = null
+        marker.remove()
+    }
 }
 
 @Immutable
