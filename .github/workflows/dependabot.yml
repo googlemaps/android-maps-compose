@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Dependabot auto-merge
+name: Dependabot
 on: pull_request
 
 permissions:
@@ -22,9 +22,15 @@ jobs:
   dependabot:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
+    env:
+      PR_URL: ${{github.event.pull_request.html_url}}
+      GITHUB_TOKEN: ${{secrets.SYNCED_GITHUB_TOKEN_REPO}}
     steps:
-      - name: Enable auto-merge for Dependabot PRs
+      - name: approve
+        run: gh pr review --comment -b "Automatically approved since dependabot is [configured](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#labels) with label `automatic`."
+        if: ${{ github.event.label.name == 'automatic' }}
+      - name: approve-instructions
+        run: echo "configure dependabot with label 'automatic' to have it automatically approved and merged. https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#labels"
+        if: ${{ github.event.label.name != 'automatic' }}
+      - name: merge
         run: gh pr merge --auto --squash --delete-branch "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
