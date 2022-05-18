@@ -51,108 +51,129 @@ class ScrollingMapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colors.background
-            ) {
-                var isMapLoaded by remember { mutableStateOf(false) }
-                var scrollingEnabled by remember { mutableStateOf(true) }
+            // Observing and controlling the camera's state can be done with a CameraPositionState
+            val cameraPositionState = rememberCameraPositionState {
+                position = defaultCameraPosition
+            }
+            var scrollingEnabled by remember { mutableStateOf(true) }
 
-                // Observing and controlling the camera's state can be done with a CameraPositionState
-                val cameraPositionState = rememberCameraPositionState {
-                    position = defaultCameraPosition
-                }
-
-                LaunchedEffect(cameraPositionState.isMoving) {
-                    if (!cameraPositionState.isMoving) {
-                        scrollingEnabled = true
-                        Log.d(TAG, "Map camera stopped moving - Enabling column scrolling...")
-                    }
-                }
-
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .verticalScroll(
-                            rememberScrollState(),
-                            scrollingEnabled
-                        ),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    for (i in 1..20) {
-                        Text(
-                            text = "Item $i",
-                            modifier = Modifier.padding(start = 10.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.padding(10.dp))
-
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    ) {
-                        GoogleMapViewInColumn(
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            cameraPositionState = cameraPositionState,
-                            onMapLoaded = {
-                                isMapLoaded = true
-                            },
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .pointerInteropFilter(
-                                    onTouchEvent = {
-                                        when (it.action) {
-                                            MotionEvent.ACTION_DOWN -> {
-                                                scrollingEnabled = false
-                                                Log.d(
-                                                    TAG,
-                                                    "MotionEvent ${it.action} - Disabling column scrolling after user touched this Box..."
-                                                )
-                                                false
-                                            }
-                                            else -> {
-                                                Log.d(
-                                                    TAG,
-                                                    "MotionEvent ${it.action} - Enabling column scrolling..."
-                                                )
-                                                scrollingEnabled = true
-                                                true
-                                            }
-                                        }
-                                    }
-                                )
-                        )
-                        if (!isMapLoaded) {
-                            androidx.compose.animation.AnimatedVisibility(
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                                visible = !isMapLoaded,
-                                enter = EnterTransition.None,
-                                exit = fadeOut()
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .background(MaterialTheme.colors.background)
-                                        .wrapContentSize()
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    for (i in 21..40) {
-                        Text(
-                            text = "Item $i",
-                            modifier = Modifier.padding(start = 10.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.padding(10.dp))
+            // Use a LaunchedEffect keyed on the camera moving state to enable scrolling when the camera stops moving
+            LaunchedEffect(cameraPositionState.isMoving) {
+                if (!cameraPositionState.isMoving) {
+                    scrollingEnabled = true
+                    Log.d(TAG, "Map camera stopped moving - Enabling column scrolling...")
                 }
             }
+
+            ColumnWithMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState,
+                scrollingEnabled = scrollingEnabled,
+                onMapTouched = {
+                    scrollingEnabled = false
+                    Log.d(
+                        TAG,
+                        "User touched map - Disabling column scrolling after user touched this Box..."
+                    )
+                },
+                onMapLoaded = { }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ColumnWithMap(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState,
+    scrollingEnabled: Boolean,
+    onMapTouched: () -> Unit,
+    onMapLoaded: () -> Unit,
+) {
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colors.background
+    ) {
+        var isMapLoaded by remember { mutableStateOf(false) }
+
+        Column(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(
+                    rememberScrollState(),
+                    scrollingEnabled
+                ),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Spacer(modifier = Modifier.padding(10.dp))
+            for (i in 1..20) {
+                Text(
+                    text = "Item $i",
+                    modifier = Modifier.padding(start = 10.dp)
+                )
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
+
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+            ) {
+                GoogleMapViewInColumn(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    onMapLoaded = {
+                        isMapLoaded = true
+                        onMapLoaded()
+                    },
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pointerInteropFilter(
+                            onTouchEvent = {
+                                when (it.action) {
+                                    MotionEvent.ACTION_DOWN -> {
+                                        onMapTouched()
+                                        false
+                                    }
+                                    else -> {
+                                        Log.d(
+                                            TAG,
+                                            "MotionEvent ${it.action} - this never triggers."
+                                        )
+                                        true
+                                    }
+                                }
+                            }
+                        )
+                )
+                if (!isMapLoaded) {
+                    androidx.compose.animation.AnimatedVisibility(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        visible = !isMapLoaded,
+                        enter = EnterTransition.None,
+                        exit = fadeOut()
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .background(MaterialTheme.colors.background)
+                                .wrapContentSize()
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
+            for (i in 21..40) {
+                Text(
+                    text = "Item $i",
+                    modifier = Modifier.padding(start = 10.dp)
+                )
+            }
+            Spacer(modifier = Modifier.padding(10.dp))
         }
     }
 }

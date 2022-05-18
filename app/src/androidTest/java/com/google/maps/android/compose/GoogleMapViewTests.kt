@@ -37,8 +37,6 @@ class GoogleMapViewTests {
 
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)
-    private val assertRoundingError = 0.01
-
     private lateinit var cameraPositionState: CameraPositionState
 
     private fun initMap(content: @Composable () -> Unit = {}) {
@@ -232,10 +230,5 @@ class GoogleMapViewTests {
             .performClick()
 
         assertionBlock()
-    }
-
-    private fun LatLng.assertEquals(other: LatLng) {
-        assertEquals(latitude, other.latitude, assertRoundingError)
-        assertEquals(longitude, other.longitude, assertRoundingError)
     }
 }
