@@ -26,22 +26,22 @@ import com.google.android.gms.maps.model.PointOfInterest
  * Default implementation of [IndoorStateChangeListener] with no-op
  * implementations.
  */
-object DefaultIndoorStateChangeListener : IndoorStateChangeListener
+public object DefaultIndoorStateChangeListener : IndoorStateChangeListener
 
 /**
  * Interface definition for building indoor level state changes.
  */
-interface IndoorStateChangeListener {
+public interface IndoorStateChangeListener {
     /**
      * Callback invoked when an indoor building comes to focus.
      */
-    fun onIndoorBuildingFocused() {}
+    public fun onIndoorBuildingFocused() {}
 
     /**
      * Callback invoked when a level for a building is activated.
      * @param building the activated building
      */
-    fun onIndoorLevelActivated(building: IndoorBuilding) {}
+    public fun onIndoorLevelActivated(building: IndoorBuilding) {}
 }
 
 /**

@@ -43,7 +43,7 @@ import kotlin.coroutines.resumeWithException
  * initial state.
  */
 @Composable
-inline fun rememberCameraPositionState(
+public inline fun rememberCameraPositionState(
     key: String? = null,
     crossinline init: CameraPositionState.() -> Unit = {}
 ): CameraPositionState = rememberSaveable(key = key, saver = CameraPositionState.Saver) {
@@ -57,21 +57,21 @@ inline fun rememberCameraPositionState(
  *
  * @param position the initial camera position
  */
-class CameraPositionState(
+public class CameraPositionState(
     position: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
 ) {
     /**
      * Whether the camera is currently moving or not. This includes any kind of movement:
      * panning, zooming, or rotation.
      */
-    var isMoving by mutableStateOf(false)
+    public var isMoving: Boolean by mutableStateOf(false)
         internal set
 
     /**
      * Returns the current [Projection] to be used for converting between screen
      * coordinates and lat/lng.
      */
-    val projection: Projection?
+    public val projection: Projection?
         get() = map?.projection
 
     /**
@@ -85,7 +85,7 @@ class CameraPositionState(
     /**
      * Current position of the camera on the map.
      */
-    var position: CameraPosition
+    public var position: CameraPosition
         get() = rawPosition
         set(value) {
             synchronized(lock) {
@@ -181,7 +181,7 @@ class CameraPositionState(
      * strictly positive, otherwise an [IllegalArgumentException] will be thrown.
      */
     @UiThread
-    suspend fun animate(update: CameraUpdate, durationMs: Int = MAX_VALUE) {
+    public suspend fun animate(update: CameraUpdate, durationMs: Int = MAX_VALUE) {
         val myJob = currentCoroutineContext()[Job]
         try {
             suspendCancellableCoroutine<Unit> { continuation ->
@@ -276,7 +276,7 @@ class CameraPositionState(
      * This method must be called from the map's UI thread.
      */
     @UiThread
-    fun move(update: CameraUpdate) {
+    public fun move(update: CameraUpdate) {
         synchronized(lock) {
             val map = map
             movementOwner = null
@@ -289,11 +289,11 @@ class CameraPositionState(
         }
     }
 
-    companion object {
+    public companion object {
         /**
          * The default saver implementation for [CameraPositionState]
          */
-        val Saver = Saver<CameraPositionState, CameraPosition>(
+        public val Saver: Saver<CameraPositionState, CameraPosition> = Saver(
             save = { it.position },
             restore = { CameraPositionState(it) }
         )

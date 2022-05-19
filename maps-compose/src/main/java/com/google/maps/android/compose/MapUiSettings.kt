@@ -25,17 +25,17 @@ internal val DefaultMapUiSettings = MapUiSettings()
  * compatibility on future changes.
  * See: https://jakewharton.com/public-api-challenges-in-kotlin/
  */
-class MapUiSettings(
-    val compassEnabled: Boolean = true,
-    val indoorLevelPickerEnabled: Boolean = true,
-    val mapToolbarEnabled: Boolean = true,
-    val myLocationButtonEnabled: Boolean = true,
-    val rotationGesturesEnabled: Boolean = true,
-    val scrollGesturesEnabled: Boolean = true,
-    val scrollGesturesEnabledDuringRotateOrZoom: Boolean = true,
-    val tiltGesturesEnabled: Boolean = true,
-    val zoomControlsEnabled: Boolean = true,
-    val zoomGesturesEnabled: Boolean = true,
+public class MapUiSettings(
+    public val compassEnabled: Boolean = true,
+    public val indoorLevelPickerEnabled: Boolean = true,
+    public val mapToolbarEnabled: Boolean = true,
+    public val myLocationButtonEnabled: Boolean = true,
+    public val rotationGesturesEnabled: Boolean = true,
+    public val scrollGesturesEnabled: Boolean = true,
+    public val scrollGesturesEnabledDuringRotateOrZoom: Boolean = true,
+    public val tiltGesturesEnabled: Boolean = true,
+    public val zoomControlsEnabled: Boolean = true,
+    public val zoomGesturesEnabled: Boolean = true,
 ) {
     override fun toString(): String = "MapUiSettings(" +
         "compassEnabled=$compassEnabled, indoorLevelPickerEnabled=$indoorLevelPickerEnabled, " +
@@ -70,7 +70,7 @@ class MapUiSettings(
         zoomGesturesEnabled
     )
 
-    fun copy(
+    public fun copy(
         compassEnabled: Boolean = this.compassEnabled,
         indoorLevelPickerEnabled: Boolean = this.indoorLevelPickerEnabled,
         mapToolbarEnabled: Boolean = this.mapToolbarEnabled,
@@ -81,7 +81,7 @@ class MapUiSettings(
         tiltGesturesEnabled: Boolean = this.tiltGesturesEnabled,
         zoomControlsEnabled: Boolean = this.zoomControlsEnabled,
         zoomGesturesEnabled: Boolean = this.zoomGesturesEnabled
-    ) = MapUiSettings(
+    ): MapUiSettings = MapUiSettings(
         compassEnabled = compassEnabled,
         indoorLevelPickerEnabled = indoorLevelPickerEnabled,
         mapToolbarEnabled = mapToolbarEnabled,

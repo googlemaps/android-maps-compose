@@ -50,7 +50,7 @@ internal class CircleNode(
  * @param onClick a lambda invoked when the circle is clicked
  */
 @Composable
-fun Circle(
+public fun Circle(
     center: LatLng,
     clickable: Boolean = false,
     fillColor: Color = Color.Transparent,
