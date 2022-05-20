@@ -122,6 +122,7 @@ fun ColumnWithMap(
                 Modifier
                     .fillMaxWidth()
                     .height(200.dp)
+                    .testTag("Map")
             ) {
                 GoogleMapViewInColumn(
                     modifier = Modifier

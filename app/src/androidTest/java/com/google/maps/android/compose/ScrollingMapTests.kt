@@ -113,7 +113,7 @@ class ScrollingMapTests {
     }
 
     @Test
-    fun testColumnScrollsAndMapCameraRemainsSame() {
+    fun testScrollColumn_MapCameraRemainsSame() {
         initMap()
         // Check that the column scrolls to the last item
         composeTestRule.onNodeWithTag("Item 40").performScrollTo()
@@ -122,5 +122,20 @@ class ScrollingMapTests {
 
         // Check that the map didn't change
         startingPosition.assertEquals(cameraPositionState.position.target)
+    }
+
+    @Test
+    fun testPanMapUp_MapCameraChangesColumnDoesNotScroll() {
+        initMap()
+        // Swipe the map up
+        // FIXME - for some reason this scrolls the entire column instead of just the map
+        composeTestRule.onNodeWithTag("Map").performTouchInput { swipeUp() }
+        composeTestRule.waitForIdle()
+
+        // Make sure that the map changed (i.e., we can scroll the map in the column)
+        startingPosition.assertNotEquals(cameraPositionState.position.target)
+
+        // Check to make sure column didn't scroll
+        composeTestRule.onNodeWithTag("Item 1").assertIsDisplayed()
     }
 }
