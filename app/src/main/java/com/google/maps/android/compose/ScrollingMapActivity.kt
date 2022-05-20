@@ -35,6 +35,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -110,7 +111,9 @@ fun ColumnWithMap(
             for (i in 1..20) {
                 Text(
                     text = "Item $i",
-                    modifier = Modifier.padding(start = 10.dp)
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .testTag("Item $i")
                 )
             }
             Spacer(modifier = Modifier.padding(10.dp))
@@ -170,7 +173,9 @@ fun ColumnWithMap(
             for (i in 21..40) {
                 Text(
                     text = "Item $i",
-                    modifier = Modifier.padding(start = 10.dp)
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .testTag("Item $i")
                 )
             }
             Spacer(modifier = Modifier.padding(10.dp))

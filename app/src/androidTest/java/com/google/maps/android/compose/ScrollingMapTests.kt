@@ -18,6 +18,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -109,5 +110,17 @@ class ScrollingMapTests {
                 projection!!.visibleRegion.latLngBounds.contains(latLng)
             )
         }
+    }
+
+    @Test
+    fun testColumnScrollsAndMapCameraRemainsSame() {
+        initMap()
+        // Check that the column scrolls to the last item
+        composeTestRule.onNodeWithTag("Item 40").performScrollTo()
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("Item 1").assertIsNotDisplayed()
+
+        // Check that the map didn't change
+        startingPosition.assertEquals(cameraPositionState.position.target)
     }
 }
