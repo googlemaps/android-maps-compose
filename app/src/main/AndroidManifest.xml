@@ -41,6 +41,9 @@
       </intent-filter>
     </activity>
 
+    <!-- Used by createComponentActivity() for unit testing -->
+    <activity android:name="androidx.activity.ComponentActivity" />
+
   </application>
 
 </manifest>
