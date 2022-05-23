@@ -116,7 +116,7 @@ class ScrollingMapTests {
     fun testScrollColumn_MapCameraRemainsSame() {
         initMap()
         // Check that the column scrolls to the last item
-        composeTestRule.onNodeWithTag("Item 40").performScrollTo()
+        composeTestRule.onRoot().performTouchInput { swipeUp() }
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("Item 1").assertIsNotDisplayed()
 
