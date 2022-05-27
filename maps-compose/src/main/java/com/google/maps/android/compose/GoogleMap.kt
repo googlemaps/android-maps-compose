@@ -87,7 +87,7 @@ public fun GoogleMap(
     onMyLocationClick: (Location) -> Unit = {},
     onPOIClick: (PointOfInterest) -> Unit = {},
     contentPadding: PaddingValues = NoPadding,
-    content: (@Composable () -> Unit)? = null,
+    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val mapView = remember { MapView(context, googleMapOptionsFactory()) }

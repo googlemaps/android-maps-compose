@@ -108,7 +108,7 @@ fun GoogleMapView(
     modifier: Modifier,
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
-    content: @Composable () -> Unit = {}
+    content: @Composable @GoogleMapComposable () -> Unit = {}
 ) {
     val singaporeState = rememberMarkerState(position = singapore)
     val singapore2State = rememberMarkerState(position = singapore2)

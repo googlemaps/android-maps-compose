@@ -54,6 +54,7 @@ internal class PolylineNode(
  * @param onClick a lambda invoked when the polyline is clicked
  */
 @Composable
+@GoogleMapComposable
 public fun Polyline(
     points: List<LatLng>,
     clickable: Boolean = false,
