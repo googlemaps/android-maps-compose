@@ -146,6 +146,7 @@ public fun rememberMarkerState(
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
  */
 @Composable
+@GoogleMapComposable
 public fun Marker(
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
@@ -213,6 +214,7 @@ public fun Marker(
  * info window's content
  */
 @Composable
+@GoogleMapComposable
 public fun MarkerInfoWindow(
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
@@ -282,6 +284,7 @@ public fun MarkerInfoWindow(
  * info window's content
  */
 @Composable
+@GoogleMapComposable
 public fun MarkerInfoWindowContent(
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
@@ -352,6 +355,7 @@ public fun MarkerInfoWindowContent(
  * the info window's content. If this value is non-null, [infoWindow] must be null.
  */
 @Composable
+@GoogleMapComposable
 private fun MarkerImpl(
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,

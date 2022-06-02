@@ -52,6 +52,7 @@ internal class PolygonNode(
  * @param onClick a lambda invoked when the polygon is clicked
  */
 @Composable
+@GoogleMapComposable
 public fun Polygon(
     points: List<LatLng>,
     clickable: Boolean = false,

@@ -76,6 +76,7 @@ public class GroundOverlayPosition private constructor(
  * @param onClick a lambda invoked when the ground overlay is clicked
  */
 @Composable
+@GoogleMapComposable
 public fun GroundOverlay(
     position: GroundOverlayPosition,
     image: BitmapDescriptor,
