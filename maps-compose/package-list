@@ -32,6 +32,8 @@ $dokka.location:com.google.maps.android.compose/DragState.START///PointingToDecl
 $dokka.location:com.google.maps.android.compose/DragState.START/name/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-drag-state/-s-t-a-r-t/name.html
 $dokka.location:com.google.maps.android.compose/DragState.START/ordinal/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-drag-state/-s-t-a-r-t/ordinal.html
 $dokka.location:com.google.maps.android.compose/DragState///PointingToDeclaration/maps-compose/com.google.maps.android.compose/-drag-state/index.html
+$dokka.location:com.google.maps.android.compose/GoogleMapComposable///PointingToDeclaration/maps-compose/com.google.maps.android.compose/-google-map-composable/index.html
+$dokka.location:com.google.maps.android.compose/GoogleMapComposable/GoogleMapComposable/#/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-google-map-composable/-google-map-composable.html
 $dokka.location:com.google.maps.android.compose/GroundOverlayPosition.Companion///PointingToDeclaration/maps-compose/com.google.maps.android.compose/-ground-overlay-position/-companion/index.html
 $dokka.location:com.google.maps.android.compose/GroundOverlayPosition.Companion/create/#com.google.android.gms.maps.model.LatLng#kotlin.Float#kotlin.Float?/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-ground-overlay-position/-companion/create.html
 $dokka.location:com.google.maps.android.compose/GroundOverlayPosition.Companion/create/#com.google.android.gms.maps.model.LatLngBounds/PointingToDeclaration/maps-compose/com.google.maps.android.compose/-ground-overlay-position/-companion/create.html
