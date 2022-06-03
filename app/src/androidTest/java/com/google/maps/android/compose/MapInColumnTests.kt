@@ -29,11 +29,11 @@ import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-private const val TAG = "ScrollingMapTests"
+private const val TAG = "MapInColumnTests"
 
-class ScrollingMapTests {
+class MapInColumnTests {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ScrollingMapActivity>()
+    val composeTestRule = createAndroidComposeRule<MapInColumnActivity>()
 
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)
@@ -51,10 +51,10 @@ class ScrollingMapTests {
                 }
             }
 
-            ColumnWithMap(
+            MapInColumn(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState,
-                scrollingEnabled = scrollingEnabled,
+                columnScrollingEnabled = scrollingEnabled,
                 onMapTouched = {
                     scrollingEnabled = false
                     Log.d(

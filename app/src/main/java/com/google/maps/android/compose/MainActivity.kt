@@ -63,9 +63,9 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.padding(5.dp))
                     Button(
                         onClick = {
-                            context.startActivity(Intent(context, ScrollingMapActivity::class.java))
+                            context.startActivity(Intent(context, MapInColumnActivity::class.java))
                         }) {
-                        Text(getString(R.string.scrolling_map_activity))
+                        Text(getString(R.string.map_in_column_activity))
                     }
                 }
             }

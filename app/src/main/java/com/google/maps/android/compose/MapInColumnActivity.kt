@@ -46,7 +46,7 @@ private const val TAG = "ScrollingMapActivity"
 private val singapore = LatLng(1.35, 103.87)
 private val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
 
-class ScrollingMapActivity : ComponentActivity() {
+class MapInColumnActivity : ComponentActivity() {
 
     @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,22 +56,22 @@ class ScrollingMapActivity : ComponentActivity() {
             val cameraPositionState = rememberCameraPositionState {
                 position = defaultCameraPosition
             }
-            var scrollingEnabled by remember { mutableStateOf(true) }
+            var columnScrollingEnabled by remember { mutableStateOf(true) }
 
-            // Use a LaunchedEffect keyed on the camera moving state to enable scrolling when the camera stops moving
+            // Use a LaunchedEffect keyed on the camera moving state to enable column scrolling when the camera stops moving
             LaunchedEffect(cameraPositionState.isMoving) {
                 if (!cameraPositionState.isMoving) {
-                    scrollingEnabled = true
+                    columnScrollingEnabled = true
                     Log.d(TAG, "Map camera stopped moving - Enabling column scrolling...")
                 }
             }
 
-            ColumnWithMap(
+            MapInColumn(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState,
-                scrollingEnabled = scrollingEnabled,
+                columnScrollingEnabled = columnScrollingEnabled,
                 onMapTouched = {
-                    scrollingEnabled = false
+                    columnScrollingEnabled = false
                     Log.d(
                         TAG,
                         "User touched map - Disabling column scrolling after user touched this Box..."
@@ -85,10 +85,10 @@ class ScrollingMapActivity : ComponentActivity() {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ColumnWithMap(
+fun MapInColumn(
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState,
-    scrollingEnabled: Boolean,
+    columnScrollingEnabled: Boolean,
     onMapTouched: () -> Unit,
     onMapLoaded: () -> Unit,
 ) {
@@ -103,7 +103,7 @@ fun ColumnWithMap(
                 .fillMaxSize()
                 .verticalScroll(
                     rememberScrollState(),
-                    scrollingEnabled
+                    columnScrollingEnabled
                 ),
             horizontalAlignment = Alignment.Start
         ) {
