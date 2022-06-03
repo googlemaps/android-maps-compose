@@ -122,20 +122,11 @@ fun MapInColumn(
                 Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .testTag("Map")
             ) {
                 GoogleMapViewInColumn(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    onMapLoaded = {
-                        isMapLoaded = true
-                        onMapLoaded()
-                    },
-                )
-                Box(
-                    modifier = Modifier
                         .fillMaxSize()
+                        .testTag("Map")
                         .pointerInteropFilter(
                             onTouchEvent = {
                                 when (it.action) {
@@ -152,7 +143,12 @@ fun MapInColumn(
                                     }
                                 }
                             }
-                        )
+                        ),
+                    cameraPositionState = cameraPositionState,
+                    onMapLoaded = {
+                        isMapLoaded = true
+                        onMapLoaded()
+                    },
                 )
                 if (!isMapLoaded) {
                     androidx.compose.animation.AnimatedVisibility(
