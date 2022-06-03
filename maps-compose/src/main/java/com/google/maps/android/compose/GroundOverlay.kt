@@ -40,18 +40,18 @@ internal class GroundOverlayNode(
  *
  * Use one of the [create] methods to construct an instance of this class.
  */
-class GroundOverlayPosition private constructor(
-    val latLngBounds: LatLngBounds? = null,
-    val location: LatLng? = null,
-    val width: Float? = null,
-    val height: Float? = null,
+public class GroundOverlayPosition private constructor(
+    public val latLngBounds: LatLngBounds? = null,
+    public val location: LatLng? = null,
+    public val width: Float? = null,
+    public val height: Float? = null,
 ) {
-    companion object {
-        fun create(latLngBounds: LatLngBounds) : GroundOverlayPosition {
+    public companion object {
+        public fun create(latLngBounds: LatLngBounds) : GroundOverlayPosition {
             return GroundOverlayPosition(latLngBounds = latLngBounds)
         }
 
-        fun create(location: LatLng, width: Float, height: Float? = null) : GroundOverlayPosition {
+        public fun create(location: LatLng, width: Float, height: Float? = null) : GroundOverlayPosition {
             return GroundOverlayPosition(
                 location = location,
                 width = width,
@@ -76,7 +76,8 @@ class GroundOverlayPosition private constructor(
  * @param onClick a lambda invoked when the ground overlay is clicked
  */
 @Composable
-fun GroundOverlay(
+@GoogleMapComposable
+public fun GroundOverlay(
     position: GroundOverlayPosition,
     image: BitmapDescriptor,
     anchor: Offset = Offset(0.5f, 0.5f),

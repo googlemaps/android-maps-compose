@@ -52,7 +52,8 @@ internal class PolygonNode(
  * @param onClick a lambda invoked when the polygon is clicked
  */
 @Composable
-fun Polygon(
+@GoogleMapComposable
+public fun Polygon(
     points: List<LatLng>,
     clickable: Boolean = false,
     fillColor: Color = Color.Black,

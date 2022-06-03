@@ -41,7 +41,8 @@ private class TileOverlayNode(
  * @param onClick a lambda invoked when the tile overlay is clicked
  */
 @Composable
-fun TileOverlay(
+@GoogleMapComposable
+public fun TileOverlay(
     tileProvider: TileProvider,
     fadeIn: Boolean = true,
     transparency: Float = 0f,

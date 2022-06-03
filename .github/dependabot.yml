@@ -17,14 +17,14 @@ updates:
 - package-ecosystem: gradle
   directory: "/./app"
   schedule:
-    interval: daily
+    interval: "weekly"
   open-pull-requests-limit: 10
   commit-message:
     prefix: chore(deps)
 - package-ecosystem: gradle
   directory: "/./maps-compose"
   schedule:
-    interval: daily
+    interval: "weekly"
   open-pull-requests-limit: 10
   commit-message:
     prefix: chore(deps)
