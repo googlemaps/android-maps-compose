@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
@@ -33,7 +33,7 @@ private const val TAG = "MapInColumnTests"
 
 class MapInColumnTests {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<MapInColumnActivity>()
+    val composeTestRule = createComposeRule()
 
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)

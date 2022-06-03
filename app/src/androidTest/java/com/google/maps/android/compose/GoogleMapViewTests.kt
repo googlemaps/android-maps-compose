@@ -14,12 +14,10 @@
 
 package com.google.maps.android.compose
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -35,7 +33,7 @@ import java.util.concurrent.TimeUnit
 
 class GoogleMapViewTests {
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<BasicMapActivity>()
+    val composeTestRule = createComposeRule()
 
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)
