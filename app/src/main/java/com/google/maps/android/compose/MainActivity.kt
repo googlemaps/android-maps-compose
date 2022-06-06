@@ -67,6 +67,13 @@ class MainActivity : ComponentActivity() {
                         }) {
                         Text(getString(R.string.map_in_column_activity))
                     }
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Button(
+                        onClick = {
+                            context.startActivity(Intent(context, MapClusteringActivity::class.java))
+                        }) {
+                        Text(getString(R.string.map_clustering_activity))
+                    }
                 }
             }
         }

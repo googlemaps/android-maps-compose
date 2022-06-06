@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
@@ -127,7 +128,6 @@ public fun GoogleMap(
                     mapProperties = currentMapProperties,
                     mapUiSettings = currentUiSettings,
                 )
-
                 currentContent?.invoke()
             }
         }
