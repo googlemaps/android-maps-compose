@@ -42,10 +42,13 @@
     </activity>
     <activity
         android:name=".BasicMapActivity"
-        android:exported="true" />
+        android:exported="false" />
     <activity
         android:name=".MapInColumnActivity"
-        android:exported="true"/>
+        android:exported="false"/>
+    <activity
+        android:name=".MapClusteringActivity"
+        android:exported="false"/>
 
     <!-- Used by createComponentActivity() for unit testing -->
     <activity android:name="androidx.activity.ComponentActivity" />

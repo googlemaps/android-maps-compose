@@ -153,6 +153,40 @@ MarkerInfoWindow(
 }
 ```
 
+#### Obtaining Access to the raw GoogleMap (Experimental)
+
+Certain use cases require extending the `GoogleMap` object to decorate / augment
+the map. For example, while marker clustering is not yet supported by Maps Compose
+(see [Issue #44](https://github.com/googlemaps/android-maps-compose/issues/44)),
+it is desirable to use the available [utility library](https://github.com/googlemaps/android-maps-utils)
+to perform clustering in the interim. Doing so requires access to the Maps SDK
+`GoogleMap` object which you can obtain with the `MapEffect` composable.
+
+```kotlin
+GoogleMap(
+    // ...
+) {
+    val context = LocalContext.current
+    var clusterManager by remember { mutableStateOf<ClusterManager<MyItem>?>(null) }
+    MapEffect(items) { map ->
+        if (clusterManager == null) {
+            clusterManager = ClusterManager<MyItem>(context, map)
+        }
+        clusterManager?.addItems(items)
+    }
+}
+```
+
+Note, however, that `MapEffect` is designed as an escape hatch and has certain
+gotchas. The `GoogleMap` composable provided by the Maps Compose library manages
+properties while the `GoogleMap` is in composition, and so, setting properties
+on the `GoogleMap` instance provided in the `MapEffect` composable may have
+unintended consequences. For instance, using the utility library to perform 
+clustering as shown in the example above will break `onClick` events from
+being propagated on `Marker` composables. So, if you are using clustering as
+shown above, stick with adding markers through the `ClusterManager` and don't 
+use `Marker` composables (unless you don't care about `onClick` events).
+
 ## Sample App
 
 This repository includes a [sample app](app).

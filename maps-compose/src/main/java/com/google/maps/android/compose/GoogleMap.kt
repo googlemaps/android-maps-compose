@@ -124,7 +124,6 @@ public fun GoogleMap(
                     mapProperties = currentMapProperties,
                     mapUiSettings = currentUiSettings,
                 )
-
                 currentContent?.invoke()
             }
         }
