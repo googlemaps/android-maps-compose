@@ -33,17 +33,22 @@
         android:value="${MAPS_API_KEY}" />
 
     <activity
-        android:name=".MapSampleActivity"
+        android:name=".MainActivity"
         android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+    <activity
+        android:name=".BasicMapActivity"
+        android:exported="true" />
+    <activity
+        android:name=".MapInColumnActivity"
+        android:exported="true"/>
 
     <!-- Used by createComponentActivity() for unit testing -->
     <activity android:name="androidx.activity.ComponentActivity" />
 
   </application>
-
 </manifest>

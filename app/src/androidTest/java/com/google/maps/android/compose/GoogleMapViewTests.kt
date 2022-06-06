@@ -14,22 +14,17 @@
 
 package com.google.maps.android.compose
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,8 +37,6 @@ class GoogleMapViewTests {
 
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)
-    private val assertRoundingError = 0.01
-
     private lateinit var cameraPositionState: CameraPositionState
 
     private fun initMap(content: @Composable () -> Unit = {}) {
@@ -97,7 +90,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(5000) {
                 !cameraPositionState.isMoving
             }
             assertFalse(cameraPositionState.isMoving)
@@ -237,10 +230,5 @@ class GoogleMapViewTests {
             .performClick()
 
         assertionBlock()
-    }
-
-    private fun LatLng.assertEquals(other: LatLng) {
-        assertEquals(latitude, other.latitude, assertRoundingError)
-        assertEquals(longitude, other.longitude, assertRoundingError)
     }
 }
