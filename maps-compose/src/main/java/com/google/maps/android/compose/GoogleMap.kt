@@ -15,20 +15,18 @@
 package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
-import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
@@ -38,7 +36,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
@@ -162,8 +159,9 @@ private suspend inline fun MapView.newComposition(
 private fun MapLifecycle(mapView: MapView) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val previousState = remember { mutableStateOf(Lifecycle.Event.ON_CREATE) }
     DisposableEffect(context, lifecycle, mapView) {
-        val mapLifecycleObserver = mapView.lifecycleObserver()
+        val mapLifecycleObserver = mapView.lifecycleObserver(previousState)
         val callbacks = mapView.componentCallbacks()
 
         lifecycle.addObserver(mapLifecycleObserver)
@@ -176,10 +174,18 @@ private fun MapLifecycle(mapView: MapView) {
     }
 }
 
-private fun MapView.lifecycleObserver(): LifecycleEventObserver =
+private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Event>): LifecycleEventObserver =
     LifecycleEventObserver { _, event ->
+        event.targetState
         when (event) {
-            Lifecycle.Event.ON_CREATE -> this.onCreate(Bundle())
+            Lifecycle.Event.ON_CREATE -> {
+                // Skip calling mapView.onCreate if the lifecycle did not go through onDestroy - in
+                // this case the GoogleMap composable also doesn't leave the composition. So,
+                // recreating the map does not restore state properly which must be avoided.
+                if (previousState.value != Lifecycle.Event.ON_STOP) {
+                    this.onCreate(Bundle())
+                }
+            }
             Lifecycle.Event.ON_START -> this.onStart()
             Lifecycle.Event.ON_RESUME -> this.onResume()
             Lifecycle.Event.ON_PAUSE -> this.onPause()
@@ -187,6 +193,7 @@ private fun MapView.lifecycleObserver(): LifecycleEventObserver =
             Lifecycle.Event.ON_DESTROY -> this.onDestroy()
             else -> throw IllegalStateException()
         }
+        previousState.value = event
     }
 
 private fun MapView.componentCallbacks(): ComponentCallbacks =
