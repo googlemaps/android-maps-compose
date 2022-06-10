@@ -67,6 +67,13 @@ class MainActivity : ComponentActivity() {
                         }) {
                         Text(getString(R.string.map_in_column_activity))
                     }
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Button(
+                        onClick = {
+                            context.startActivity(Intent(context, LocationTrackingActivity::class.java))
+                        }) {
+                        Text(getString(R.string.location_tracking_activity))
+                    }
                 }
             }
         }

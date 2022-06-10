@@ -19,4 +19,5 @@
   <string name="main_activity_title">"Maps Compose Demos \uD83D\uDDFA"</string>
   <string name="basic_map_activity">Basic Map Activity</string>
   <string name="map_in_column_activity">Map In Column Activity</string>
+  <string name="location_tracking_activity">Location Tracking Activity</string>
 </resources>
