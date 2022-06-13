@@ -42,16 +42,16 @@ class LocationTrackingActivity : AppCompatActivity() {
     private val locationSource = MyLocationSource()
     private var counter = 0
 
-    // Generates "fake" locations randomly every 2 seconds. 
+    // Generates "fake" locations randomly every 2 seconds.
     // Normally you'd request location updates:
     // https://developer.android.com/training/location/request-updates
     private val locationFlow = callbackFlow {
         while (true) {
             ++counter
 
-            val lastLocation = newLocation()
-            Log.d(TAG, "Location $counter: $lastLocation")
-            trySend(lastLocation)
+            val location = newLocation()
+            Log.d(TAG, "Location $counter: $location")
+            trySend(location)
 
             delay(2_000)
         }
