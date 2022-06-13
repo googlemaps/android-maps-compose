@@ -34,7 +34,8 @@ private val singapore = LatLng(1.35, 103.87)
 private val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, zoom)
 
 /**
- * This shows how to use a custom location source.
+ * This shows how to use a custom location source to show a blue dot on the map based on your own
+ * locations.
  */
 class LocationTrackingActivity : AppCompatActivity() {
 
