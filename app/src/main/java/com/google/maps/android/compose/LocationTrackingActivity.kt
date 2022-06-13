@@ -61,9 +61,12 @@ class LocationTrackingActivity : AppCompatActivity() {
 
         setContent {
             var isMapLoaded by remember { mutableStateOf(false) }
+            // To control the map camera
             val cameraPositionState = rememberCameraPositionState {
                 position = defaultCameraPosition
             }
+            // To show blue dot on map
+            val mapProperties by remember { mutableStateOf(MapProperties(isMyLocationEnabled = true)) }
 
             // Collect location updates - normally you'd request location updates
             // https://developer.android.com/training/location/request-updates
@@ -86,7 +89,8 @@ class LocationTrackingActivity : AppCompatActivity() {
                     onMapLoaded = {
                         isMapLoaded = true
                     },
-                    locationSource = locationSource
+                    locationSource = locationSource,
+                    mapProperties = mapProperties
                 )
                 if (!isMapLoaded) {
                     AnimatedVisibility(
@@ -114,6 +118,7 @@ fun GoogleMapViewTracking(
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
     locationSource: LocationSource,
+    mapProperties: MapProperties,
     content: @Composable () -> Unit = {}
 ) {
     var mapVisible by remember { mutableStateOf(true) }
@@ -123,7 +128,8 @@ fun GoogleMapViewTracking(
             modifier = modifier,
             cameraPositionState = cameraPositionState,
             onMapLoaded = onMapLoaded,
-            locationSource = locationSource
+            locationSource = locationSource,
+            properties = mapProperties
         ) {
             content()
         }
