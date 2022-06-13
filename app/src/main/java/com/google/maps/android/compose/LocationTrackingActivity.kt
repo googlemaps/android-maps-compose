@@ -43,6 +43,8 @@ class LocationTrackingActivity : AppCompatActivity() {
     private lateinit var lastLocation: Location
 
     // A "fake" location provider that generates random locations every 2 seconds
+    // Normally you'd request location updates:
+    // https://developer.android.com/training/location/request-updates
     private val locationFlow = callbackFlow {
         while (true) {
             delay(2_000)
@@ -62,15 +64,16 @@ class LocationTrackingActivity : AppCompatActivity() {
 
         setContent {
             var isMapLoaded by remember { mutableStateOf(false) }
+
             // To control the map camera
             val cameraPositionState = rememberCameraPositionState {
                 position = defaultCameraPosition
             }
+
             // To show blue dot on map
             val mapProperties by remember { mutableStateOf(MapProperties(isMyLocationEnabled = true)) }
 
-            // Collect location updates - normally you'd request location updates
-            // https://developer.android.com/training/location/request-updates
+            // Collect location updates
             val locationState = locationFlow.collectAsState(initial = newLocation())
 
             // Update blue dot and camera when the location changes
@@ -84,14 +87,14 @@ class LocationTrackingActivity : AppCompatActivity() {
             }
 
             Box(Modifier.fillMaxSize()) {
-                GoogleMapViewTracking(
+                GoogleMap(
                     modifier = Modifier.matchParentSize(),
                     cameraPositionState = cameraPositionState,
                     onMapLoaded = {
                         isMapLoaded = true
                     },
                     locationSource = locationSource,
-                    mapProperties = mapProperties
+                    properties = mapProperties
                 )
                 if (!isMapLoaded) {
                     AnimatedVisibility(
@@ -109,30 +112,6 @@ class LocationTrackingActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun GoogleMapViewTracking(
-    modifier: Modifier,
-    cameraPositionState: CameraPositionState,
-    onMapLoaded: () -> Unit,
-    locationSource: LocationSource,
-    mapProperties: MapProperties,
-    content: @Composable () -> Unit = {}
-) {
-    var mapVisible by remember { mutableStateOf(true) }
-
-    if (mapVisible) {
-        GoogleMap(
-            modifier = modifier,
-            cameraPositionState = cameraPositionState,
-            onMapLoaded = onMapLoaded,
-            locationSource = locationSource,
-            properties = mapProperties
-        ) {
-            content()
         }
     }
 }
