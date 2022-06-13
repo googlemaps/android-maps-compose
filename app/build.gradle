@@ -62,9 +62,9 @@ dependencies {
     // module.
     // However, this should remain uncommented on the `main` branch so that
     // the maven declaration of Maps Compose can be used as a snippet.
-    implementation project(':maps-compose')
+    // implementation project(':maps-compose')
     // [END_EXCLUDE]
-    //implementation  "com.google.maps.android:maps-compose:2.2.0"
+    implementation  "com.google.maps.android:maps-compose:2.2.1"
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
 }
 // [END maps_android_compose_dependency]

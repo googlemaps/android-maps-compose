@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
@@ -68,7 +69,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
         }
         LaunchedEffect(key1 = cameraPositionState.isMoving) {
             if (!cameraPositionState.isMoving) {
-                clusterManager?.cluster()
+                clusterManager?.onCameraIdle()
             }
         }
         MarkerInfoWindow(

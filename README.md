@@ -174,6 +174,16 @@ GoogleMap(
         }
         clusterManager?.addItems(items)
     }
+    
+    MarkerInfoWindow(
+        state = rememberMarkerState(position = LatLng(1.35, 103.87)),
+        onClick = {
+            // This won't work :(
+            Log.d("MapEffect", "I cannot be clicked :( $it")
+            true
+        }
+    )
+
 }
 ```
 
@@ -183,9 +193,11 @@ properties while the `GoogleMap` is in composition, and so, setting properties
 on the `GoogleMap` instance provided in the `MapEffect` composable may have
 unintended consequences. For instance, using the utility library to perform 
 clustering as shown in the example above will break `onClick` events from
-being propagated on `Marker` composables. So, if you are using clustering as
-shown above, stick with adding markers through the `ClusterManager` and don't 
-use `Marker` composables (unless you don't care about `onClick` events).
+being propagated on `Marker` composables as shown in the comment above. So, if 
+you are using clustering, stick with adding markers through the `ClusterManager`
+and don't use `Marker` composables (unless you don't care about `onClick` 
+events). Clustering is the only use-case tested with `MapEffect`, there may be
+gotchas depending on what features you use in the utility library.
 
 ## Sample App
 
