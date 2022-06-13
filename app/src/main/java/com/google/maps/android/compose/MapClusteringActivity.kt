@@ -75,7 +75,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
             state = rememberMarkerState(position = singapore),
             onClick = {
                 // This won't work :(
-                Log.d(TAG, "I was clicked $it")
+                Log.d(TAG, "I cannot be clicked :( $it")
                 true
             }
         )
