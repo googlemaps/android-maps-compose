@@ -42,6 +42,7 @@ class LocationTrackingActivity : AppCompatActivity() {
     private var counter = 0
     private lateinit var lastLocation: Location
 
+    // A "fake" location provider that generates random locations every 2 seconds
     private val locationFlow = callbackFlow {
         while (true) {
             delay(2_000)
