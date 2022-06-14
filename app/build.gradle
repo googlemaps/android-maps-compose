@@ -33,6 +33,7 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
+        freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
     }
 }
 
@@ -45,6 +46,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'com.google.maps.android:maps-ktx:3.3.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.google.maps.android:android-maps-utils:2.3.0'
 
     androidTestImplementation "androidx.test:core:$androidx_test_version"
     androidTestImplementation "androidx.test:rules:$androidx_test_version"
@@ -62,7 +64,7 @@ dependencies {
     // the maven declaration of Maps Compose can be used as a snippet.
     // implementation project(':maps-compose')
     // [END_EXCLUDE]
-    implementation  "com.google.maps.android:maps-compose:2.2.0"
+    implementation  "com.google.maps.android:maps-compose:2.2.1"
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
 }
 // [END maps_android_compose_dependency]
