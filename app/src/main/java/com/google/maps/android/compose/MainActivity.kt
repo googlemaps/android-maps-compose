@@ -70,6 +70,13 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.padding(5.dp))
                     Button(
                         onClick = {
+                            context.startActivity(Intent(context, MapClusteringActivity::class.java))
+                        }) {
+                        Text(getString(R.string.map_clustering_activity))
+                    }
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Button(
+                        onClick = {
                             context.startActivity(Intent(context, LocationTrackingActivity::class.java))
                         }) {
                         Text(getString(R.string.location_tracking_activity))

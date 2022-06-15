@@ -48,7 +48,6 @@ private val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f
 
 class MapInColumnActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
