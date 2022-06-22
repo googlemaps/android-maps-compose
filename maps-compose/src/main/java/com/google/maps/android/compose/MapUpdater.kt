@@ -69,6 +69,7 @@ internal class MapPropertiesNode(
             cameraPositionState.isMoving = false
         }
         map.setOnCameraMoveStartedListener {
+            cameraPositionState.cameraMoveStartedReason = it
             cameraPositionState.isMoving = true
         }
         map.setOnCameraMoveListener {

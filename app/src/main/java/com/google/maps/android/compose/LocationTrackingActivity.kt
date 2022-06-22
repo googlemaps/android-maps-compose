@@ -67,7 +67,7 @@ class LocationTrackingActivity : AppCompatActivity() {
         setContent {
             var isMapLoaded by remember { mutableStateOf(false) }
 
-            // To control the map camera
+            // To control and observe the map camera
             val cameraPositionState = rememberCameraPositionState {
                 position = defaultCameraPosition
             }
@@ -86,6 +86,21 @@ class LocationTrackingActivity : AppCompatActivity() {
                 Log.d(TAG, "Updating camera position...")
                 val cameraPosition = CameraPosition.fromLatLngZoom(LatLng(locationState.value.latitude, locationState.value.longitude), zoom)
                 cameraPositionState.animate(CameraUpdateFactory.newCameraPosition(cameraPosition), 1_000)
+            }
+
+            // Detect when the map starts moving and print the reason
+            LaunchedEffect(cameraPositionState.isMoving) {
+                if (cameraPositionState.isMoving) {
+                    val reason = when(cameraPositionState.cameraMoveStartedReason) {
+                        // See https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener#constants
+                        -1 -> "DEFAULT_NO_MOVEMENT_YET"
+                        1 -> "REASON_GESTURE"
+                        2 -> "REASON_API_ANIMATION"
+                        3 -> "REASON_DEVELOPER_ANIMATION"
+                        else -> "UNKNOWN"
+                    }
+                    Log.d(TAG, "Map camera started moving due to $reason")
+                }
             }
 
             Box(Modifier.fillMaxSize()) {

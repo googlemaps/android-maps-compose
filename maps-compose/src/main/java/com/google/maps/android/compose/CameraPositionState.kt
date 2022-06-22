@@ -27,12 +27,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.CancellableContinuation
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.*
 import java.lang.Integer.MAX_VALUE
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -65,6 +60,13 @@ public class CameraPositionState(
      * panning, zooming, or rotation.
      */
     public var isMoving: Boolean by mutableStateOf(false)
+        internal set
+
+    /**
+     * The reason for the start of the most recent camera moment, or -1 if the camera hasn't moved
+     * yet. See constant definitions at https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener#constants.
+     */
+    public var cameraMoveStartedReason: Int by mutableStateOf(-1)
         internal set
 
     /**
