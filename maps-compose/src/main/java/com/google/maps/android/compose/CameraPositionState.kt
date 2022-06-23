@@ -68,6 +68,16 @@ public class CameraPositionState(
         internal set
 
     /**
+     * The reason for the start of the most recent camera moment, or
+     * [CameraMoveStartedReason.NO_MOVEMENT_YET] if the camera hasn't moved yet or
+     * [CameraMoveStartedReason.UNKNOWN] if an unknown constant is received from the Maps SDK.
+     */
+    public var cameraMoveStartedReason: CameraMoveStartedReason by mutableStateOf(
+        CameraMoveStartedReason.NO_MOVEMENT_YET
+    )
+        internal set
+
+    /**
      * Returns the current [Projection] to be used for converting between screen
      * coordinates and lat/lng.
      */

@@ -75,11 +75,13 @@ class GoogleMapViewTests {
     @Test
     fun testCameraReportsMoving() {
         initMap()
+        assertEquals(CameraMoveStartedReason.NO_MOVEMENT_YET, cameraPositionState.cameraMoveStartedReason)
         zoom(shouldAnimate = true, zoomIn = true) {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
             assertTrue(cameraPositionState.isMoving)
+            assertEquals(CameraMoveStartedReason.DEVELOPER_ANIMATION, cameraPositionState.cameraMoveStartedReason)
         }
     }
 
