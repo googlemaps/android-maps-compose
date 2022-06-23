@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.lang.Integer.MAX_VALUE
