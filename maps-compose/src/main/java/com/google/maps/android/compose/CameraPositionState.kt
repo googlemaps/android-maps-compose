@@ -63,10 +63,13 @@ public class CameraPositionState(
         internal set
 
     /**
-     * The reason for the start of the most recent camera moment, or -1 if the camera hasn't moved
-     * yet. See constant definitions at https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener#constants.
+     * The reason for the start of the most recent camera moment, or
+     * [CameraMoveStartedReason.NO_MOVEMENT_YET] if the camera hasn't moved yet or
+     * [CameraMoveStartedReason.UNKNOWN] if an unknown constant is received from the Maps SDK.
      */
-    public var cameraMoveStartedReason: Int by mutableStateOf(-1)
+    public var cameraMoveStartedReason: CameraMoveStartedReason by mutableStateOf(
+        CameraMoveStartedReason.NO_MOVEMENT_YET
+    )
         internal set
 
     /**

@@ -22,7 +22,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.*
@@ -76,13 +75,13 @@ class GoogleMapViewTests {
     @Test
     fun testCameraReportsMoving() {
         initMap()
-        assertEquals(-1, cameraPositionState.cameraMoveStartedReason)
+        assertEquals(CameraMoveStartedReason.NO_MOVEMENT_YET, cameraPositionState.cameraMoveStartedReason)
         zoom(shouldAnimate = true, zoomIn = true) {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
             assertTrue(cameraPositionState.isMoving)
-            assertEquals(REASON_DEVELOPER_ANIMATION, cameraPositionState.cameraMoveStartedReason)
+            assertEquals(CameraMoveStartedReason.DEVELOPER_ANIMATION, cameraPositionState.cameraMoveStartedReason)
         }
     }
 

@@ -91,15 +91,7 @@ class LocationTrackingActivity : AppCompatActivity() {
             // Detect when the map starts moving and print the reason
             LaunchedEffect(cameraPositionState.isMoving) {
                 if (cameraPositionState.isMoving) {
-                    val reason = when(cameraPositionState.cameraMoveStartedReason) {
-                        // See https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener#constants
-                        -1 -> "DEFAULT_NO_MOVEMENT_YET"
-                        1 -> "REASON_GESTURE"
-                        2 -> "REASON_API_ANIMATION"
-                        3 -> "REASON_DEVELOPER_ANIMATION"
-                        else -> "UNKNOWN"
-                    }
-                    Log.d(TAG, "Map camera started moving due to $reason")
+                    Log.d(TAG, "Map camera started moving due to ${cameraPositionState.cameraMoveStartedReason.name}")
                 }
             }
 
