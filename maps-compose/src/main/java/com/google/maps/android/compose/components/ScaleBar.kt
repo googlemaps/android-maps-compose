@@ -53,7 +53,7 @@ private val DarkGray = Color(0xFF3a3c3b)
 
 /**
  * A scale bar composable that shows the current scale of the map in feet and meters when zoomed in
- * to map, changing to miles and kilometers, respectively, when zooming out.
+ * to the map, changing to miles and kilometers, respectively, when zooming out.
  *
  * Implement your own observer on camera move events using [CameraPositionState] and pass it in
  * as [cameraPositionState].
