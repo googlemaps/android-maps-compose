@@ -229,7 +229,7 @@ DisappearingScaleBar(
 )
 ```
 
-The colors of the text, line, and shadow are also all configurable (e.g., if you want to configure based on `isSystemInDarkTheme()`). Similarly, the `DisappearingScaleBar` animations can be configured.
+The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
 
 ## Sample App
 
