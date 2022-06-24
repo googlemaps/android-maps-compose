@@ -49,7 +49,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.ktx.utils.sphericalDistance
 import kotlinx.coroutines.delay
 
-private val DarkGray = Color(0xFF3a3c3b)
+public val DarkGray: Color = Color(0xFF3a3c3b)
 
 /**
  * A scale bar composable that shows the current scale of the map in feet and meters when zoomed in
