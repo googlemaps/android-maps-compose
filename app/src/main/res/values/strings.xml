@@ -21,4 +21,5 @@
   <string name="map_in_column_activity">Map In Column</string>
   <string name="map_clustering_activity">Map Clustering</string>
   <string name="location_tracking_activity">Location Tracking</string>
+  <string name="scale_bar_activity">Scale Bar</string>
 </resources>
