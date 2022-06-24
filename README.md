@@ -199,6 +199,40 @@ and don't use `Marker` composables (unless you don't care about `onClick`
 events). Clustering is the only use-case tested with `MapEffect`, there may be
 gotchas depending on what features you use in the utility library.
 
+## Components
+
+This library also provides composable components that you can use alongside the `GoogleMap` composable.
+
+### ScaleBar
+
+This composable shows the current scale of the map in feet and meters when zoomed into the map, changing to miles and kilometers, respectively, when zooming out. A `DisappearingScaleBar` is also included, which appears when the zoom level of the map changes, and then disappears after a configurable timeout period.
+
+A new `ScaleBarActivity` demonstrates both of these, with the `DisappearingScaleBar` in the upper left corner and the normal base `ScaleBar` in the upper right:
+
+![maps-compose-scale-bar-cropped](https://user-images.githubusercontent.com/928045/175665891-a0635004-2201-4392-83b3-0c6553b96926.gif)
+
+Both components leverage the `CameraPositionState` in maps-compose and therefore are very simple to configure with their defaults:
+
+```kotlin
+ScaleBar(
+    modifier = Modifier
+            .padding(top = 5.dp, end = 15.dp)
+            .align(Alignment.TopEnd),
+    cameraPositionState = cameraPositionState
+)
+
+DisappearingScaleBar(
+    modifier = Modifier
+            .padding(top = 5.dp, end = 15.dp)
+            .align(Alignment.TopStart),
+    cameraPositionState = cameraPositionState
+)
+```
+
+The colors of the text, line, and shadow are also all configurable (e.g., if you want to configure based on `isSystemInDarkTheme()`). Similarly, the `DisappearingScaleBar` animations can be configured.
+
+See [ScaleBarActivity](app/src/main/java/com/google/maps/android/compose/ScaleBarActivity.kt) in the demo app for an example.
+
 ## Sample App
 
 This repository includes a [sample app](app).
