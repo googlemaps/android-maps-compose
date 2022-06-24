@@ -207,7 +207,7 @@ This library also provides composable components that you can use alongside the 
 
 This composable shows the current scale of the map in feet and meters when zoomed into the map, changing to miles and kilometers, respectively, when zooming out. A `DisappearingScaleBar` is also included, which appears when the zoom level of the map changes, and then disappears after a configurable timeout period.
 
-A new [ScaleBarActivity](app/src/main/java/com/google/maps/android/compose/ScaleBarActivity.kt) demonstrates both of these, with the `DisappearingScaleBar` in the upper left corner and the normal base `ScaleBar` in the upper right:
+The [ScaleBarActivity](app/src/main/java/com/google/maps/android/compose/ScaleBarActivity.kt) demonstrates both of these, with the `DisappearingScaleBar` in the upper left corner and the normal base `ScaleBar` in the upper right:
 
 ![maps-compose-scale-bar-cropped](https://user-images.githubusercontent.com/928045/175665891-a0635004-2201-4392-83b3-0c6553b96926.gif)
 
