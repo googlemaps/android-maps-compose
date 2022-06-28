@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.maps.android.compose.components
+package com.google.maps.android.compose.widgets
 
 import android.graphics.Point
 import androidx.compose.animation.AnimatedVisibility

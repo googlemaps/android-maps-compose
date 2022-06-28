@@ -36,8 +36,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.components.DisappearingScaleBar
-import com.google.maps.android.compose.components.ScaleBar
+import com.google.maps.android.compose.widgets.DisappearingScaleBar
+import com.google.maps.android.compose.widgets.ScaleBar
 
 private const val TAG = "ScaleBarActivity"
 
