@@ -165,11 +165,11 @@ public fun ScaleBar(
             }
 
             var imperialUnits = "ft"
-            var imperialDistance = toFeet(horizontalLineWidthMeters.toDouble())
+            var imperialDistance = horizontalLineWidthMeters.toDouble().toFeet()
             if (imperialDistance > FEET_IN_MILE) {
                 // Switch from ft to miles as unit
                 imperialUnits = "mi"
-                imperialDistance = toMiles(imperialDistance)
+                imperialDistance = imperialDistance.toMiles()
             }
 
             ScaleText(
@@ -264,21 +264,19 @@ private fun ScaleText(
 }
 
 /**
- * Converts the provide value in meters to the corresponding value in feet
- * @param meters value in meters to convert to feet
- * @return the provided meters value converted to feet
+ * Converts [this] value in meters to the corresponding value in feet
+ * @return [this] meters value converted to feet
  */
-internal fun toFeet(meters: Double): Double {
-    return meters * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
+internal fun Double.toFeet(): Double {
+    return this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
 }
 
 /**
- * Converts the provide value in feet to the corresponding value in miles
- * @param feet value in feet to convert to miles
- * @return the provided feet value converted to miles
+ * Converts [this] value in feet to the corresponding value in miles
+ * @return [this] feet value converted to miles
  */
-internal fun toMiles(feet: Double): Double {
-    return feet / FEET_IN_MILE
+internal fun Double.toMiles(): Double {
+    return this / FEET_IN_MILE
 }
 
 private const val CENTIMETERS_IN_METER: Double = 100.0
