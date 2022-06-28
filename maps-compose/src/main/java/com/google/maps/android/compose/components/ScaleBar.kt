@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.model.LatLng
@@ -50,6 +51,8 @@ import com.google.maps.android.ktx.utils.sphericalDistance
 import kotlinx.coroutines.delay
 
 public val DarkGray: Color = Color(0xFF3a3c3b)
+private val defaultWidth: Dp = 65.dp
+private val defaultHeight: Dp = 50.dp
 
 /**
  * A scale bar composable that shows the current scale of the map in feet and meters when zoomed in
@@ -61,6 +64,8 @@ public val DarkGray: Color = Color(0xFF3a3c3b)
 @Composable
 public fun ScaleBar(
     modifier: Modifier = Modifier,
+    width: Dp = defaultWidth,
+    height: Dp = defaultHeight,
     cameraPositionState: CameraPositionState,
     textColor: Color = DarkGray,
     lineColor: Color = DarkGray,
@@ -68,7 +73,7 @@ public fun ScaleBar(
 ) {
     Box(
         modifier = modifier
-            .size(width = 65.dp, height = 50.dp)
+            .size(width = width, height = height)
     ) {
         var horizontalLineWidthMeters by remember {
             mutableStateOf(0)
@@ -193,6 +198,8 @@ public fun ScaleBar(
 @Composable
 public fun DisappearingScaleBar(
     modifier: Modifier = Modifier,
+    width: Dp = defaultWidth,
+    height: Dp = defaultHeight,
     cameraPositionState: CameraPositionState,
     textColor: Color = DarkGray,
     lineColor: Color = DarkGray,
@@ -223,6 +230,8 @@ public fun DisappearingScaleBar(
     ) {
         ScaleBar(
             modifier = modifier,
+            width = width,
+            height = height,
             cameraPositionState = cameraPositionState,
             textColor = textColor,
             lineColor = lineColor,
