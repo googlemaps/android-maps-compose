@@ -1,0 +1,8 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.google.maps.android.compose.widgets////PointingToDeclaration/maps-compose-widgets/com.google.maps.android.compose.widgets/index.html
+$dokka.location:com.google.maps.android.compose.widgets//DarkGray/#/PointingToDeclaration/maps-compose-widgets/com.google.maps.android.compose.widgets/-dark-gray.html
+$dokka.location:com.google.maps.android.compose.widgets//DisappearingScaleBar/#androidx.compose.ui.Modifier#androidx.compose.ui.unit.Dp#androidx.compose.ui.unit.Dp#com.google.maps.android.compose.CameraPositionState#androidx.compose.ui.graphics.Color#androidx.compose.ui.graphics.Color#androidx.compose.ui.graphics.Color#kotlin.Int#androidx.compose.animation.EnterTransition#androidx.compose.animation.ExitTransition/PointingToDeclaration/maps-compose-widgets/com.google.maps.android.compose.widgets/-disappearing-scale-bar.html
+$dokka.location:com.google.maps.android.compose.widgets//ScaleBar/#androidx.compose.ui.Modifier#androidx.compose.ui.unit.Dp#androidx.compose.ui.unit.Dp#com.google.maps.android.compose.CameraPositionState#androidx.compose.ui.graphics.Color#androidx.compose.ui.graphics.Color#androidx.compose.ui.graphics.Color/PointingToDeclaration/maps-compose-widgets/com.google.maps.android.compose.widgets/-scale-bar.html
+com.google.maps.android.compose.widgets
+
