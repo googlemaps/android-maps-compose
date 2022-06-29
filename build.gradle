@@ -21,7 +21,7 @@ plugins {
 }
 
 ext.projectArtifactId = { project ->
-    if (project.name == 'maps-compose') {
+    if (project.name == 'maps-compose' || project.name == 'maps-compose-widgets') {
         return project.name
     } else {
         return null

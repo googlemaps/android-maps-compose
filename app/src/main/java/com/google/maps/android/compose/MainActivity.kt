@@ -81,6 +81,13 @@ class MainActivity : ComponentActivity() {
                         }) {
                         Text(getString(R.string.location_tracking_activity))
                     }
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Button(
+                        onClick = {
+                            context.startActivity(Intent(context, ScaleBarActivity::class.java))
+                        }) {
+                        Text(getString(R.string.scale_bar_activity))
+                    }
                 }
             }
         }
