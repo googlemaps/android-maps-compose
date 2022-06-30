@@ -1,0 +1,1 @@
+sourceset_dependencies='{":maps-compose-widgets:dokkaHtml/androidTestRelease":[],":maps-compose-widgets:dokkaHtml/debug":[],":maps-compose-widgets:dokkaHtml/main":[],":maps-compose-widgets:dokkaHtml/release":[]}'

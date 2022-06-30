@@ -1,0 +1,25 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml:18:1-20:12
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml:18:1-20:12
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml:18:1-20:12
+	package
+		ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml:18:11-60
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml:18:1-20:12
+uses-sdk
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+		ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+		ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/src/main/AndroidManifest.xml
