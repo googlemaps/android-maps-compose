@@ -57,7 +57,7 @@ dependencies {
 
     // Uncomment the implementation 'com.google...` declaration and comment out the project
     // declaration if you want to test the sample app with a Maven Central release of the library.
-    //implementation  "com.google.maps.android:maps-compose:2.2.1"
+    // implementation  "com.google.maps.android:maps-compose:2.2.1"
     implementation project(':maps-compose')
     //implementation  "com.google.maps.android:maps-compose-widgets:1.0.0"
     implementation project(':maps-compose-widgets')
