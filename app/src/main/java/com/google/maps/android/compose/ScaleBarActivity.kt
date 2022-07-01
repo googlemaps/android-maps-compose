@@ -68,7 +68,7 @@ class ScaleBarActivity : ComponentActivity() {
                 )
                 DisappearingScaleBar(
                     modifier = Modifier
-                        .padding(top = 5.dp, end = 15.dp)
+                        .padding(top = 5.dp, start = 10.dp)
                         .align(Alignment.TopStart),
                     cameraPositionState = cameraPositionState
                 )
