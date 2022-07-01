@@ -213,14 +213,11 @@ public fun DisappearingScaleBar(
     }
 
     LaunchedEffect(key1 = cameraPositionState.position.zoom) {
-        if (visible.isIdle && !visible.currentState) {
-            // Show ScaleBar
-            visible.targetState = true
-        } else if (visible.isIdle && visible.currentState) {
-            // Hide ScaleBar after timeout period
-            delay(visibilityDurationMillis.toLong())
-            visible.targetState = false
-        }
+        // Show ScaleBar
+        visible.targetState = true
+        delay(visibilityDurationMillis.toLong())
+        // Hide ScaleBar after timeout period
+        visible.targetState = false
     }
 
     AnimatedVisibility(
