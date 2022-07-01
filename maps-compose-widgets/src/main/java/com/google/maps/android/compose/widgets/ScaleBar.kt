@@ -225,11 +225,11 @@ public fun DisappearingScaleBar(
 
     AnimatedVisibility(
         visibleState = visible,
+        modifier = modifier,
         enter = enterTransition,
         exit = exitTransition
     ) {
         ScaleBar(
-            modifier = modifier,
             width = width,
             height = height,
             cameraPositionState = cameraPositionState,
