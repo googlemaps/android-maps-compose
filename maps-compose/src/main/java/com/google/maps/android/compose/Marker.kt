@@ -14,17 +14,7 @@
 
 package com.google.maps.android.compose
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeNode
-import androidx.compose.runtime.CompositionContext
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.currentComposer
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCompositionContext
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
@@ -62,22 +52,13 @@ public enum class DragState {
 }
 
 /**
- * A state object that can be hoisted to control and observe the marker state.
- *
- * @param position the initial marker position
+ * A state object that can be hoisted to observe the marker state.
  */
-public class MarkerState(
-    position: LatLng = LatLng(0.0, 0.0)
-) {
+public class MarkerState {
     /**
-     * Current position of the marker.
+     * Current dragging state of the marker.
      */
-    public var position: LatLng by mutableStateOf(position)
-
-    /**
-     * Current [DragState] of the marker.
-     */
-    public var dragState: DragState by mutableStateOf(DragState.END)
+    public var dragging: Boolean by mutableStateOf(false)
         internal set
 
     // The marker associated with this MarkerState.
@@ -103,25 +84,10 @@ public class MarkerState(
     public fun hideInfoWindow() {
         marker?.hideInfoWindow()
     }
-
-    public companion object {
-        /**
-         * The default saver implementation for [MarkerState]
-         */
-        public val Saver: Saver<MarkerState, LatLng> = Saver(
-            save = { it.position },
-            restore = { MarkerState(it) }
-        )
-    }
 }
 
 @Composable
-public fun rememberMarkerState(
-    key: String? = null,
-    position: LatLng = LatLng(0.0, 0.0)
-): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
-    MarkerState(position)
-}
+internal fun rememberMarkerState(): MarkerState = remember { MarkerState() }
 
 /**
  * A composable for a marker on the map.
@@ -148,10 +114,10 @@ public fun rememberMarkerState(
 @Composable
 @GoogleMapComposable
 public fun Marker(
+    position: LatLng,
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
-    draggable: Boolean = false,
     flat: Boolean = false,
     icon: BitmapDescriptor? = null,
     infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
@@ -161,16 +127,17 @@ public fun Marker(
     title: String? = null,
     visible: Boolean = true,
     zIndex: Float = 0.0f,
+    onDragEvent: ((DragState, LatLng) -> Unit)? = null,
     onClick: (Marker) -> Boolean = { false },
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
 ) {
     MarkerImpl(
+        position = position,
         state = state,
         alpha = alpha,
         anchor = anchor,
-        draggable = draggable,
         flat = flat,
         icon = icon,
         infoWindowAnchor = infoWindowAnchor,
@@ -181,6 +148,7 @@ public fun Marker(
         visible = visible,
         zIndex = zIndex,
         onClick = onClick,
+        onDragEvent = onDragEvent,
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
         onInfoWindowLongClick = onInfoWindowLongClick,
