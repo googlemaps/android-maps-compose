@@ -76,8 +76,8 @@ public fun Polygon(
                 clickable(clickable)
                 fillColor(fillColor.toArgb())
                 geodesic(geodesic)
-                holes.forEach {
-                    addHole(it)
+                for (hole in holes) {
+                    addHole(hole)
                 }
                 strokeColor(strokeColor.toArgb())
                 strokeJointType(strokeJointType)
