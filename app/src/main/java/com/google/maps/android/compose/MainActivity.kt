@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 
 private const val TAG = "MapSampleActivity"
 
@@ -38,55 +39,72 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colors.background
-            ) {
-                val context = LocalContext.current
-                Column(
-                    Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+            MapsComposeSampleTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
                 ) {
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    Text(
-                        text = getString(R.string.main_activity_title),
-                        style = MaterialTheme.typography.h5
-                    )
-                    Spacer(modifier = Modifier.padding(10.dp))
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(context, BasicMapActivity::class.java))
-                        }) {
-                        Text(getString(R.string.basic_map_activity))
-                    }
-                    Spacer(modifier = Modifier.padding(5.dp))
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(context, MapInColumnActivity::class.java))
-                        }) {
-                        Text(getString(R.string.map_in_column_activity))
-                    }
-                    Spacer(modifier = Modifier.padding(5.dp))
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(context, MapClusteringActivity::class.java))
-                        }) {
-                        Text(getString(R.string.map_clustering_activity))
-                    }
-                    Spacer(modifier = Modifier.padding(5.dp))
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(context, LocationTrackingActivity::class.java))
-                        }) {
-                        Text(getString(R.string.location_tracking_activity))
-                    }
-                    Spacer(modifier = Modifier.padding(5.dp))
-                    Button(
-                        onClick = {
-                            context.startActivity(Intent(context, ScaleBarActivity::class.java))
-                        }) {
-                        Text(getString(R.string.scale_bar_activity))
+                    val context = LocalContext.current
+                    Column(
+                        Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        Text(
+                            text = getString(R.string.main_activity_title),
+                            style = MaterialTheme.typography.h5
+                        )
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, BasicMapActivity::class.java))
+                            }) {
+                            Text(getString(R.string.basic_map_activity))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        MapInColumnActivity::class.java
+                                    )
+                                )
+                            }) {
+                            Text(getString(R.string.map_in_column_activity))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        MapClusteringActivity::class.java
+                                    )
+                                )
+                            }) {
+                            Text(getString(R.string.map_clustering_activity))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        LocationTrackingActivity::class.java
+                                    )
+                                )
+                            }) {
+                            Text(getString(R.string.location_tracking_activity))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, ScaleBarActivity::class.java))
+                            }) {
+                            Text(getString(R.string.scale_bar_activity))
+                        }
                     }
                 }
             }
