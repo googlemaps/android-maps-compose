@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -86,6 +87,11 @@ public fun GoogleMap(
     contentPadding: PaddingValues = NoPadding,
     content: (@Composable @GoogleMapComposable () -> Unit)? = null,
 ) {
+    // Early return if in preview
+    if (LocalInspectionMode.current) {
+        return
+    }
+
     val context = LocalContext.current
     val mapView = remember { MapView(context, googleMapOptionsFactory()) }
 
