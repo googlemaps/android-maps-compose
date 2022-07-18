@@ -22,8 +22,6 @@ on:
     branches-ignore: ['gh-pages']
   pull_request:
     branches-ignore: ['gh-pages']
-  pull_request_target:
-    branches-ignore: ['gh-pages']
   workflow_dispatch:
 
 jobs:
