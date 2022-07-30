@@ -23,7 +23,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "$compose_compiler_version"
+        kotlinCompilerExtensionVersion libs.versions.composecompiler.get()
     }
 
     buildFeatures {
@@ -38,24 +38,24 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.activity:activity-compose:1.4.0'
-    implementation "androidx.compose.foundation:foundation:$compose_version"
-    implementation "androidx.compose.material:material:$compose_version"
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'com.google.maps.android:maps-ktx:3.3.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.maps.android:android-maps-utils:2.3.0'
-    implementation 'androidx.compose.ui:ui-tooling-preview:1.1.1'
-    debugImplementation 'androidx.compose.ui:ui-tooling:1.1.1'
+    implementation libs.androidx.compose.activity
+    implementation libs.androidx.compose.foundation
+    implementation libs.androidx.compose.material
+    implementation libs.kotlin
+    implementation libs.material
+    implementation libs.maps.ktx.std
+    implementation libs.maps.utils
+    implementation libs.androidx.compose.ui.preview.tooling
+    debugImplementation libs.androidx.compose.ui.tooling
 
-    androidTestImplementation "androidx.test:core:$androidx_test_version"
-    androidTestImplementation "androidx.test:rules:$androidx_test_version"
-    androidTestImplementation "androidx.test:runner:$androidx_test_version"
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.3'
-    androidTestImplementation 'junit:junit:4.13.2'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+    androidTestImplementation libs.androidx.test.core
+    androidTestImplementation libs.androidx.test.rules
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.test.espresso
+    androidTestImplementation libs.androidx.test.junit.ktx
+    androidTestImplementation libs.test.junit
+    androidTestImplementation libs.androidx.test.compose.ui
+    androidTestImplementation libs.coroutines
 
     // Uncomment the implementation 'com.google...` declaration and comment out the project
     // declaration if you want to test the sample app with a Maven Central release of the library.
@@ -63,7 +63,7 @@ dependencies {
     implementation project(':maps-compose')
     //implementation  "com.google.maps.android:maps-compose-widgets:1.0.0"
     implementation project(':maps-compose-widgets')
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation libs.maps.playservice
 }
 
 secrets {
