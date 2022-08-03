@@ -9,16 +9,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
-        classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.5.0'
-        classpath 'com.hiya:jacoco-android:0.2'
+        classpath libs.android.gradle.plugin
+        classpath libs.maps.secrets.plugin
+        classpath libs.kotlin.gradle.plugin
+        classpath libs.dokka.plugin
+        classpath libs.jacoco.android.plugin
     }
 }
 
 plugins {
-    id 'org.jetbrains.dokka' version '1.5.0'
+    alias libs.plugins.dokka apply false
 }
 
 ext.projectArtifactId = { project ->
@@ -49,7 +49,7 @@ subprojects { project ->
 
     // Code coverage
     jacoco {
-        toolVersion = "0.8.7"
+        toolVersion = libs.versions.jacoco.tool.plugin.get()
     }
 
     tasks.withType(Test) {
