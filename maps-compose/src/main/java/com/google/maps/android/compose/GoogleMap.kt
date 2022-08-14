@@ -175,6 +175,8 @@ private fun MapLifecycle(mapView: MapView) {
         onDispose {
             lifecycle.removeObserver(mapLifecycleObserver)
             context.unregisterComponentCallbacks(callbacks)
+            mapView.onDestroy()
+            mapView.removeAllViews()
         }
     }
 }
@@ -195,7 +197,9 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
             Lifecycle.Event.ON_RESUME -> this.onResume()
             Lifecycle.Event.ON_PAUSE -> this.onPause()
             Lifecycle.Event.ON_STOP -> this.onStop()
-            Lifecycle.Event.ON_DESTROY -> this.onDestroy()
+            Lifecycle.Event.ON_DESTROY -> {
+                //handled in onDispose
+            }
             else -> throw IllegalStateException()
         }
         previousState.value = event
