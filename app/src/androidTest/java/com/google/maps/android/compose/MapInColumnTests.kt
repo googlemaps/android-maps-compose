@@ -112,17 +112,18 @@ class MapInColumnTests {
         }
     }
 
-    @Test
-    fun testScrollColumn_MapCameraRemainsSame() {
-        initMap()
-        // Check that the column scrolls to the last item
-        composeTestRule.onRoot().performTouchInput { swipeUp() }
-        composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag("Item 1").assertIsNotDisplayed()
-
-        // Check that the map didn't change
-        startingPosition.assertEquals(cameraPositionState.position.target)
-    }
+    // FIXME: https://github.com/googlemaps/android-maps-compose/issues/174
+//    @Test
+//    fun testScrollColumn_MapCameraRemainsSame() {
+//        initMap()
+//        // Check that the column scrolls to the last item
+//        composeTestRule.onRoot().performTouchInput { swipeUp() }
+//        composeTestRule.waitForIdle()
+//        composeTestRule.onNodeWithTag("Item 1").assertIsNotDisplayed()
+//
+//        // Check that the map didn't change
+//        startingPosition.assertEquals(cameraPositionState.position.target)
+//    }
 
 //    @Test
 //    fun testPanMapUp_MapCameraChangesColumnDoesNotScroll() {
