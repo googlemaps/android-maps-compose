@@ -1,14 +1,19 @@
-package com.google.maps.android.compose
+package com.google.maps.android.compose.streetview
 
 import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCompositionContext
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -17,23 +22,57 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.StreetViewPanoramaView
-import com.google.android.gms.maps.model.StreetViewPanoramaLocation
+import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
+import com.google.maps.android.compose.MapApplier
+import com.google.maps.android.compose.disposingComposition
+import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.awaitStreetViewPanorama
+import kotlinx.coroutines.NonDisposableHandle.parent
 
 @Composable
 public fun StreetView(
     modifier: Modifier = Modifier,
-    //isZoomGesturesEnabled: Boolean = true
+    // TODO check that these defaults are correct
+    isPanningGesturesEnabled: Boolean = false,
+    isStreetNamesEnabled: Boolean = false,
+    isUserNavigationEnabled: Boolean = false,
+    isZoomGesturesEnabled: Boolean = true,
+    onClick: (StreetViewPanoramaOrientation) -> Unit = {},
+    onLongClick: (StreetViewPanoramaOrientation) -> Unit = {},
 ) {
     val context = LocalContext.current
     val streetView = remember { StreetViewPanoramaView(context) }
+
     AndroidView(modifier = modifier, factory = { streetView }) {}
     StreetViewLifecycle(streetView)
+
+    val clickListeners by rememberUpdatedState(StreetViewPanoramaClickListeners().also {
+        it.onClick = onClick
+        it.onLongClick = onLongClick
+    })
+    val parentComposition = rememberCompositionContext()
+
     LaunchedEffect(Unit) {
-        val streetViewPanorama = streetView.awaitStreetViewPanorama()
-        //streetViewPanorama.setPosition
-        //streetViewPanorama.location = StreetViewPanoramaLocation()
+        disposingComposition {
+            streetView.newComposition(parentComposition) {
+                StreetViewUpdater(clickListeners = clickListeners)
+            }
+        }
     }
+//    LaunchedEffect(
+//        isPanningGesturesEnabled,
+//        isStreetNamesEnabled,
+//        isUserNavigationEnabled,
+//        isZoomGesturesEnabled
+//    ) {
+//        val streetViewPanorama = streetView.awaitStreetViewPanorama()
+//        streetViewPanorama.isPanningGesturesEnabled = isPanningGesturesEnabled
+//        streetViewPanorama.isStreetNamesEnabled = isStreetNamesEnabled
+//        streetViewPanorama.isUserNavigationEnabled = isUserNavigationEnabled
+//        streetViewPanorama.isZoomGesturesEnabled = isZoomGesturesEnabled
+//        //streetViewPanorama.setPosition
+//        //streetViewPanorama.location = StreetViewPanoramaLocation()
+//    }
 }
 
 @Composable
@@ -53,6 +92,18 @@ private fun StreetViewLifecycle(streetView: StreetViewPanoramaView) {
             context.unregisterComponentCallbacks(callbacks)
             streetView.onDestroy()
         }
+    }
+}
+
+private suspend inline fun StreetViewPanoramaView.newComposition(
+    parent: CompositionContext,
+    noinline content: @Composable () -> Unit
+): Composition {
+    val panorama = awaitStreetViewPanorama()
+    return Composition(
+        StreetViewPanoramaApplier(panorama), parent
+    ).apply {
+        setContent(content)
     }
 }
 
