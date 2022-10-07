@@ -21,6 +21,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.StreetViewPanoramaView
 import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
 import com.google.maps.android.compose.MapApplier
@@ -32,16 +33,21 @@ import kotlinx.coroutines.NonDisposableHandle.parent
 @Composable
 public fun StreetView(
     modifier: Modifier = Modifier,
+    streetViewPanoramaOptionsFactory: () -> StreetViewPanoramaOptions = {
+        StreetViewPanoramaOptions()
+    },
     // TODO check that these defaults are correct
     isPanningGesturesEnabled: Boolean = false,
     isStreetNamesEnabled: Boolean = false,
     isUserNavigationEnabled: Boolean = false,
     isZoomGesturesEnabled: Boolean = true,
+    // END TODO
     onClick: (StreetViewPanoramaOrientation) -> Unit = {},
     onLongClick: (StreetViewPanoramaOrientation) -> Unit = {},
 ) {
     val context = LocalContext.current
-    val streetView = remember { StreetViewPanoramaView(context) }
+    val streetView =
+        remember { StreetViewPanoramaView(context, streetViewPanoramaOptionsFactory()) }
 
     AndroidView(modifier = modifier, factory = { streetView }) {}
     StreetViewLifecycle(streetView)
@@ -70,8 +76,8 @@ public fun StreetView(
 //        streetViewPanorama.isStreetNamesEnabled = isStreetNamesEnabled
 //        streetViewPanorama.isUserNavigationEnabled = isUserNavigationEnabled
 //        streetViewPanorama.isZoomGesturesEnabled = isZoomGesturesEnabled
-//        //streetViewPanorama.setPosition
-//        //streetViewPanorama.location = StreetViewPanoramaLocation()
+//        streetViewPanorama.setPosition
+//        streetViewPanorama.location = StreetViewPanoramaLocation()
 //    }
 }
 

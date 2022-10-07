@@ -21,8 +21,6 @@ import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import kotlin.random.Random
 
-private val singapore = LatLng(1.35, 103.87)
-private val singapore2 = LatLng(2.50, 103.87)
 private val TAG = MapClusteringActivity::class.simpleName
 
 class MapClusteringActivity : ComponentActivity() {

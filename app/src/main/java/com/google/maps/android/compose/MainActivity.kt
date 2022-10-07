@@ -105,6 +105,13 @@ class MainActivity : ComponentActivity() {
                             }) {
                             Text(getString(R.string.scale_bar_activity))
                         }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, StreetViewActivity::class.java))
+                            }) {
+                            Text(getString(R.string.street_view))
+                        }
                     }
                 }
             }

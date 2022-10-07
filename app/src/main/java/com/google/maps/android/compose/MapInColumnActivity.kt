@@ -43,9 +43,6 @@ import com.google.android.gms.maps.model.Marker
 
 private const val TAG = "ScrollingMapActivity"
 
-private val singapore = LatLng(1.35, 103.87)
-private val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
-
 class MapInColumnActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
