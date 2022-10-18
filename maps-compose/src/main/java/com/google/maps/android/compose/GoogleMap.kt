@@ -18,6 +18,7 @@ import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
@@ -87,9 +88,9 @@ public fun GoogleMap(
     contentPadding: PaddingValues = NoPadding,
     content: (@Composable @GoogleMapComposable () -> Unit)? = null,
 ) {
-    // Early return if in preview
+    // When in preview, early return a Box with the received modifier preserving layout
     if (LocalInspectionMode.current) {
-        return
+        return Box(modifier = modifier)
     }
 
     val context = LocalContext.current
