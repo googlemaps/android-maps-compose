@@ -37,7 +37,7 @@ public fun StreetView(
         StreetViewPanoramaOptions()
     },
     // TODO check that these defaults are correct
-    isPanningGesturesEnabled: Boolean = false,
+    isPanningGesturesEnabled: Boolean = true,
     isStreetNamesEnabled: Boolean = false,
     isUserNavigationEnabled: Boolean = false,
     isZoomGesturesEnabled: Boolean = true,
@@ -52,6 +52,10 @@ public fun StreetView(
     AndroidView(modifier = modifier, factory = { streetView }) {}
     StreetViewLifecycle(streetView)
 
+    val currentIsPanningGestureEnabled by rememberUpdatedState(isPanningGesturesEnabled)
+    val currentIsStreetNamesEnabled by rememberUpdatedState(isStreetNamesEnabled)
+    val currentIsUserNavigationEnabled by rememberUpdatedState(isUserNavigationEnabled)
+    val currentIsZoomGesturesEnabled by rememberUpdatedState(isZoomGesturesEnabled)
     val clickListeners by rememberUpdatedState(StreetViewPanoramaClickListeners().also {
         it.onClick = onClick
         it.onLongClick = onLongClick
@@ -62,10 +66,10 @@ public fun StreetView(
         disposingComposition {
             streetView.newComposition(parentComposition) {
                 StreetViewUpdater(
-                    isPanningGesturesEnabled = isPanningGesturesEnabled,
-                    isStreetNamesEnabled = isStreetNamesEnabled,
-                    isUserNavigationEnabled = isUserNavigationEnabled,
-                    isZoomGesturesEnabled = isZoomGesturesEnabled,
+                    isPanningGesturesEnabled = currentIsPanningGestureEnabled,
+                    isStreetNamesEnabled = currentIsStreetNamesEnabled,
+                    isUserNavigationEnabled = currentIsUserNavigationEnabled,
+                    isZoomGesturesEnabled = currentIsZoomGesturesEnabled,
                     clickListeners = clickListeners
                 )
             }
