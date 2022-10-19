@@ -61,24 +61,16 @@ public fun StreetView(
     LaunchedEffect(Unit) {
         disposingComposition {
             streetView.newComposition(parentComposition) {
-                StreetViewUpdater(clickListeners = clickListeners)
+                StreetViewUpdater(
+                    isPanningGesturesEnabled = isPanningGesturesEnabled,
+                    isStreetNamesEnabled = isStreetNamesEnabled,
+                    isUserNavigationEnabled = isUserNavigationEnabled,
+                    isZoomGesturesEnabled = isZoomGesturesEnabled,
+                    clickListeners = clickListeners
+                )
             }
         }
     }
-//    LaunchedEffect(
-//        isPanningGesturesEnabled,
-//        isStreetNamesEnabled,
-//        isUserNavigationEnabled,
-//        isZoomGesturesEnabled
-//    ) {
-//        val streetViewPanorama = streetView.awaitStreetViewPanorama()
-//        streetViewPanorama.isPanningGesturesEnabled = isPanningGesturesEnabled
-//        streetViewPanorama.isStreetNamesEnabled = isStreetNamesEnabled
-//        streetViewPanorama.isUserNavigationEnabled = isUserNavigationEnabled
-//        streetViewPanorama.isZoomGesturesEnabled = isZoomGesturesEnabled
-//        streetViewPanorama.setPosition
-//        streetViewPanorama.location = StreetViewPanoramaLocation()
-//    }
 }
 
 @Composable

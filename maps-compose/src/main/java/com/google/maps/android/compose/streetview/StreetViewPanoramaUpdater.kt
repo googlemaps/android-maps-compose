@@ -27,6 +27,10 @@ internal class StreetViewPanoramaPropertiesNode(
 @Suppress("NOTHING_TO_INLINE")
 @Composable
 internal inline fun StreetViewUpdater(
+    isPanningGesturesEnabled: Boolean,
+    isStreetNamesEnabled: Boolean,
+    isUserNavigationEnabled: Boolean,
+    isZoomGesturesEnabled: Boolean,
     clickListeners: StreetViewPanoramaClickListeners
 ) {
     val streetViewPanorama =
@@ -39,6 +43,14 @@ internal inline fun StreetViewUpdater(
             )
         }
     ) {
+        set(isPanningGesturesEnabled) {
+            panorama.isPanningGesturesEnabled = isPanningGesturesEnabled
+        }
+        set(isStreetNamesEnabled) { panorama.isStreetNamesEnabled = isStreetNamesEnabled }
+        set(isUserNavigationEnabled) {
+            panorama.isUserNavigationEnabled = isUserNavigationEnabled
+        }
+        set(isZoomGesturesEnabled) { panorama.isZoomGesturesEnabled = isZoomGesturesEnabled }
         set(clickListeners) { this.clickListeners = it }
     }
 }
