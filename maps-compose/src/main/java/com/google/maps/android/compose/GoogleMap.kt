@@ -90,7 +90,8 @@ public fun GoogleMap(
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
     if (LocalInspectionMode.current) {
-        return Box(modifier = modifier)
+        Box(modifier = modifier)
+        return
     }
 
     val context = LocalContext.current
