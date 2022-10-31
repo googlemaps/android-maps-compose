@@ -20,28 +20,24 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.StreetViewPanoramaView
+import com.google.android.gms.maps.model.StreetViewPanoramaCamera
 import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
-import com.google.maps.android.compose.MapApplier
 import com.google.maps.android.compose.disposingComposition
-import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.awaitStreetViewPanorama
-import kotlinx.coroutines.NonDisposableHandle.parent
 
 @Composable
 public fun StreetView(
     modifier: Modifier = Modifier,
+    cameraPositionState: StreetViewCameraPositionState = rememberStreetViewCameraPositionState(),
     streetViewPanoramaOptionsFactory: () -> StreetViewPanoramaOptions = {
         StreetViewPanoramaOptions()
     },
-    // TODO check that these defaults are correct
     isPanningGesturesEnabled: Boolean = true,
-    isStreetNamesEnabled: Boolean = false,
-    isUserNavigationEnabled: Boolean = false,
+    isStreetNamesEnabled: Boolean = true,
+    isUserNavigationEnabled: Boolean = true,
     isZoomGesturesEnabled: Boolean = true,
-    // END TODO
     onClick: (StreetViewPanoramaOrientation) -> Unit = {},
     onLongClick: (StreetViewPanoramaOrientation) -> Unit = {},
 ) {
@@ -52,11 +48,12 @@ public fun StreetView(
     AndroidView(modifier = modifier, factory = { streetView }) {}
     StreetViewLifecycle(streetView)
 
+    val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentIsPanningGestureEnabled by rememberUpdatedState(isPanningGesturesEnabled)
     val currentIsStreetNamesEnabled by rememberUpdatedState(isStreetNamesEnabled)
     val currentIsUserNavigationEnabled by rememberUpdatedState(isUserNavigationEnabled)
     val currentIsZoomGesturesEnabled by rememberUpdatedState(isZoomGesturesEnabled)
-    val clickListeners by rememberUpdatedState(StreetViewPanoramaClickListeners().also {
+    val clickListeners by rememberUpdatedState(StreetViewPanoramaEventListeners().also {
         it.onClick = onClick
         it.onLongClick = onLongClick
     })
@@ -66,6 +63,7 @@ public fun StreetView(
         disposingComposition {
             streetView.newComposition(parentComposition) {
                 StreetViewUpdater(
+                    cameraPositionState = currentCameraPositionState,
                     isPanningGesturesEnabled = currentIsPanningGestureEnabled,
                     isStreetNamesEnabled = currentIsStreetNamesEnabled,
                     isUserNavigationEnabled = currentIsUserNavigationEnabled,

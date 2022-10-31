@@ -7,17 +7,36 @@ import com.google.android.gms.maps.StreetViewPanorama
 import com.google.maps.android.compose.MapNode
 
 internal class StreetViewPanoramaPropertiesNode(
+    val cameraPositionState: StreetViewCameraPositionState,
     val panorama: StreetViewPanorama,
-    var clickListeners: StreetViewPanoramaClickListeners,
+    var eventListeners: StreetViewPanoramaEventListeners,
 ) : MapNode {
+    init {
+        cameraPositionState.panorama = panorama
+    }
+
     override fun onAttached() {
         super.onAttached()
         panorama.setOnStreetViewPanoramaClickListener {
-            clickListeners.onClick(it)
+            eventListeners.onClick(it)
         }
         panorama.setOnStreetViewPanoramaLongClickListener {
-            clickListeners.onLongClick(it)
+            eventListeners.onLongClick(it)
         }
+        panorama.setOnStreetViewPanoramaCameraChangeListener {
+            cameraPositionState.rawPanoramaCamera = it
+        }
+        panorama.setOnStreetViewPanoramaChangeListener {
+            cameraPositionState.rawLocation = it
+        }
+    }
+
+    override fun onRemoved() {
+        cameraPositionState.panorama = null
+    }
+
+    override fun onCleared() {
+        cameraPositionState.panorama = null
     }
 }
 
@@ -27,19 +46,21 @@ internal class StreetViewPanoramaPropertiesNode(
 @Suppress("NOTHING_TO_INLINE")
 @Composable
 internal inline fun StreetViewUpdater(
+    cameraPositionState: StreetViewCameraPositionState,
     isPanningGesturesEnabled: Boolean,
     isStreetNamesEnabled: Boolean,
     isUserNavigationEnabled: Boolean,
     isZoomGesturesEnabled: Boolean,
-    clickListeners: StreetViewPanoramaClickListeners
+    clickListeners: StreetViewPanoramaEventListeners
 ) {
     val streetViewPanorama =
         (currentComposer.applier as StreetViewPanoramaApplier).streetViewPanorama
     ComposeNode<StreetViewPanoramaPropertiesNode, StreetViewPanoramaApplier>(
         factory = {
             StreetViewPanoramaPropertiesNode(
+                cameraPositionState = cameraPositionState,
                 panorama = streetViewPanorama,
-                clickListeners = clickListeners,
+                eventListeners = clickListeners,
             )
         }
     ) {
@@ -51,6 +72,6 @@ internal inline fun StreetViewUpdater(
             panorama.isUserNavigationEnabled = isUserNavigationEnabled
         }
         set(isZoomGesturesEnabled) { panorama.isZoomGesturesEnabled = isZoomGesturesEnabled }
-        set(clickListeners) { this.clickListeners = it }
+        set(clickListeners) { this.eventListeners = it }
     }
 }
