@@ -2,7 +2,6 @@
 buildscript {
     ext.kotlin_version = libs.versions.kotlin.get()
     ext.compose_compiler_version = libs.versions.composecompiler.get()
-    ext.compose_version = libs.versions.compose.get()
     ext.androidx_test_version = libs.versions.androidxtest.get()
     repositories {
         google()
