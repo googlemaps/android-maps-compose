@@ -33,11 +33,13 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.compose.streetview.rememberStreetViewCameraPositionState
+import com.google.maps.android.ktx.MapsExperimentalFeature
 
 class StreetViewActivity : ComponentActivity() {
 
     private val TAG = StreetViewActivity::class.java.simpleName
 
+    @OptIn(MapsExperimentalFeature::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

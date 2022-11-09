@@ -23,6 +23,8 @@ public class StreetViewCameraPositionState {
     /**
      * The location of the panorama.
      *
+     * This is read-only - to update the camera's position use [setPosition].
+     *
      * Note that this property is observable and if you use it in a composable function it will be
      * recomposed on every change. Use `snapshotFlow` to observe it instead.
      */

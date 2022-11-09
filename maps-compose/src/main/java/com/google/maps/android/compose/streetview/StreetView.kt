@@ -3,6 +3,7 @@ package com.google.maps.android.compose.streetview
 import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
@@ -25,8 +26,10 @@ import com.google.android.gms.maps.StreetViewPanoramaView
 import com.google.android.gms.maps.model.StreetViewPanoramaCamera
 import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
 import com.google.maps.android.compose.disposingComposition
+import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitStreetViewPanorama
 
+@MapsExperimentalFeature
 @Composable
 public fun StreetView(
     modifier: Modifier = Modifier,
@@ -100,6 +103,7 @@ private suspend inline fun StreetViewPanoramaView.newComposition(
     noinline content: @Composable () -> Unit
 ): Composition {
     val panorama = awaitStreetViewPanorama()
+    Log.d("StreetView", "Location is ${panorama.location}")
     return Composition(
         StreetViewPanoramaApplier(panorama), parent
     ).apply {
