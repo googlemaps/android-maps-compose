@@ -49,7 +49,7 @@ jobs:
       env:
         MAPS_API_KEY: ${{ secrets.SYNCED_GOOGLE_MAPS_API_KEY_ANDROID }}
 
-    - name: Build and run instrumentation tests
+    - name: Run instrumentation tests
       run: ./gradlew :app:allDevicesCheck
 
     - name: Upload test reports
