@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
+    namespace "com.google.maps.android.compose"
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.google.maps.android.compose"
         minSdk 21
         targetSdk 32
         versionCode 1
