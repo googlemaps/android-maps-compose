@@ -50,7 +50,9 @@ jobs:
         MAPS_API_KEY: ${{ secrets.SYNCED_GOOGLE_MAPS_API_KEY_ANDROID }}
 
     - name: Run instrumentation tests
-      run: ./gradlew :app:allDevicesCheck -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=20
+      run: ./gradlew :app:allDevicesCheck -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=1200
+        # Due to a bug, setupTimeoutMinutes is actually expressed in seconds. Fix merged into AGP,
+        # but not released yet as of 7.3.1. TODO clean up once property is fixed
 
     - name: Upload test reports
       if: always()
