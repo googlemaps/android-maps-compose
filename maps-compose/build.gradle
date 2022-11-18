@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace "com.google.maps.android.compose"
     compileSdk 32
 
     defaultConfig {
