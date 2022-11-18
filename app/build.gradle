@@ -49,7 +49,7 @@ dependencies {
     implementation libs.androidx.compose.ui.preview.tooling
     debugImplementation libs.androidx.compose.ui.tooling
 
-    androidTestImplementation libs.androidx.compose.bom
+    androidTestImplementation platform(libs.androidx.compose.bom)
     androidTestImplementation libs.androidx.test.core
     androidTestImplementation libs.androidx.test.rules
     androidTestImplementation libs.androidx.test.runner

@@ -45,7 +45,7 @@ dependencies {
 
     testImplementation libs.test.junit
 
-    androidTestImplementation libs.androidx.compose.bom
+    androidTestImplementation platform(libs.androidx.compose.bom)
     androidTestImplementation libs.androidx.test.espresso
     androidTestImplementation libs.androidx.test.junit.ktx
 }
