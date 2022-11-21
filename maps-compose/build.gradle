@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace "com.google.maps.android.compose"
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
     }
@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    implementation platform(libs.androidx.compose.bom)
     implementation libs.androidx.core
     implementation libs.androidx.compose.foundation
     implementation libs.kotlin
@@ -44,6 +45,7 @@ dependencies {
 
     testImplementation libs.test.junit
 
+    androidTestImplementation platform(libs.androidx.compose.bom)
     androidTestImplementation libs.androidx.test.espresso
     androidTestImplementation libs.androidx.test.junit.ktx
 }
