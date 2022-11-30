@@ -177,6 +177,10 @@ private fun MapLifecycle(mapView: MapView) {
         onDispose {
             lifecycle.removeObserver(mapLifecycleObserver)
             context.unregisterComponentCallbacks(callbacks)
+        }
+    }
+    DisposableEffect(mapView) {
+        onDispose {
             mapView.onDestroy()
             mapView.removeAllViews()
         }
