@@ -34,6 +34,7 @@ import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.compose.streetview.rememberStreetViewCameraPositionState
 import com.google.maps.android.ktx.MapsExperimentalFeature
+import kotlinx.coroutines.launch
 
 class StreetViewActivity : ComponentActivity() {
 
@@ -47,14 +48,18 @@ class StreetViewActivity : ComponentActivity() {
             var isZoomEnabled by remember { mutableStateOf(false) }
             val camera = rememberStreetViewCameraPositionState()
             LaunchedEffect(camera) {
-                snapshotFlow { camera.panoramaCamera }
-                    .collect {
-                        Log.d(TAG, "Camera at: $it")
-                    }
-                snapshotFlow { camera.location }
-                    .collect {
-                        Log.d(TAG, "Location at: $it")
-                    }
+                launch {
+                    snapshotFlow { camera.panoramaCamera }
+                        .collect {
+                            Log.d(TAG, "Camera at: $it")
+                        }
+                }
+                launch {
+                    snapshotFlow { camera.location }
+                        .collect {
+                            Log.d(TAG, "Location at: $it")
+                        }
+                }
             }
             Box(Modifier.fillMaxSize(), Alignment.BottomStart) {
                 StreetView(

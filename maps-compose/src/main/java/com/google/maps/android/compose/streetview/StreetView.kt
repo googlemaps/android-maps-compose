@@ -46,7 +46,7 @@ public fun StreetView(
 ) {
     val context = LocalContext.current
     val streetView =
-        remember { StreetViewPanoramaView(context, streetViewPanoramaOptionsFactory()) }
+        remember(context) { StreetViewPanoramaView(context, streetViewPanoramaOptionsFactory()) }
 
     AndroidView(modifier = modifier, factory = { streetView }) {}
     StreetViewLifecycle(streetView)
