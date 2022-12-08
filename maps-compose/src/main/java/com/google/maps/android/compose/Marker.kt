@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -81,13 +82,15 @@ public class MarkerState(
         internal set
 
     // The marker associated with this MarkerState.
-    internal var marker: Marker? = null
+    private val markerState: MutableState<Marker?> = mutableStateOf(null)
+    internal var marker: Marker?
+        get() = markerState.value
         set(value) {
-            if (field == null && value == null) return
-            if (field != null && value != null) {
+            if (markerState.value == null && value == null) return
+            if (markerState.value != null && value != null) {
                 error("MarkerState may only be associated with one Marker at a time.")
             }
-            field = value
+            markerState.value = value
         }
 
     /**
