@@ -29,6 +29,22 @@ import com.google.maps.android.compose.disposingComposition
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitStreetViewPanorama
 
+/**
+ * A composable for displaying a Street View for a given location.
+ *
+ * @param modifier Modifier to be applied to the StreetView
+ * @param cameraPositionState the [StreetViewCameraPositionState] to be used to control or observe
+ * the Street View's camera
+ * @param streetViewPanoramaOptionsFactory a factory lambda for providing a
+ * [StreetViewPanoramaOptions] object which is used when the underlying [StreetViewPanoramaView] is
+ * constructed
+ * @param isPanningGesturesEnabled whether panning gestures are enabled or not
+ * @param isStreetNamesEnabled whether street names are enabled or not
+ * @param isUserNavigationEnabled whether user navigation is enabled or not
+ * @param isZoomGesturesEnabled whether zoom gestures are enabled or not
+ * @param onClick lambda to receive events when the Street View is clicked
+ * @param onLongClick lambda to receive events when the Street View is long clicked
+ */
 @MapsExperimentalFeature
 @Composable
 public fun StreetView(
