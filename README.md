@@ -155,7 +155,7 @@ MarkerInfoWindow(
 
 ### Street View
 
-You can a Street View given a location using the `StreetView` composable.
+You can add a Street View given a location using the `StreetView` composable.
 To use it, provide a `StreetViewPanoramaOptions` object as follows:
 
 ```kotlin
