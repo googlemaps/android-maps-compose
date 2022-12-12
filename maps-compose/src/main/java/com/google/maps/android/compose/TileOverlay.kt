@@ -17,23 +17,55 @@ package com.google.maps.android.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.currentComposer
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileProvider
 import com.google.maps.android.ktx.addTileOverlay
 
 private class TileOverlayNode(
     var tileOverlay: TileOverlay,
+    var tileOverlayState: TileOverlayState,
     var onTileOverlayClick: (TileOverlay) -> Unit
 ) : MapNode {
+    override fun onAttached() {
+        tileOverlayState.tileOverlay = tileOverlay
+    }
     override fun onRemoved() {
         tileOverlay.remove()
     }
+}
+
+@Composable
+@GoogleMapComposable
+@Deprecated("For compatibility", level = DeprecationLevel.HIDDEN)
+public fun TileOverlay(
+    tileProvider: TileProvider,
+    fadeIn: Boolean = true,
+    transparency: Float = 0f,
+    visible: Boolean = true,
+    zIndex: Float = 0f,
+    onClick: (TileOverlay) -> Unit = {},
+) {
+    TileOverlay(
+        tileProvider = tileProvider,
+        state = rememberTileOverlayState(),
+        fadeIn = fadeIn,
+        transparency = transparency,
+        visible = visible,
+        zIndex = zIndex,
+        onClick = onClick,
+    )
 }
 
 /**
  * A composable for a tile overlay on the map.
  *
  * @param tileProvider the tile provider to use for this tile overlay
+ * @param state the [TileOverlayState] to be used to control the tile overlay, such as clearing
+ * stale tiles
  * @param fadeIn boolean indicating whether the tiles should fade in
  * @param transparency the transparency of the tile overlay
  * @param visible the visibility of the tile overlay
@@ -44,6 +76,7 @@ private class TileOverlayNode(
 @GoogleMapComposable
 public fun TileOverlay(
     tileProvider: TileProvider,
+    state: TileOverlayState = rememberTileOverlayState(),
     fadeIn: Boolean = true,
     transparency: Float = 0f,
     visible: Boolean = true,
@@ -60,7 +93,7 @@ public fun TileOverlay(
                 visible(visible)
                 zIndex(zIndex)
             } ?: error("Error adding tile overlay")
-            TileOverlayNode(tileOverlay, onClick)
+            TileOverlayNode(tileOverlay, state, onClick)
         },
         update = {
             update(onClick) { this.onTileOverlayClick = it }
@@ -81,4 +114,34 @@ public fun TileOverlay(
             set(zIndex) { this.tileOverlay.zIndex = it }
         }
     )
+}
+
+/**
+ * A state object that can be hoisted to control the state of a [TileOverlay].
+ * A [TileOverlayState] may only be used by a single [TileOverlay] composable at a time.
+ *
+ * [clearTileCache] can be called to request that the map refresh these tiles.
+ */
+public class TileOverlayState {
+
+    internal var tileOverlay: TileOverlay? by mutableStateOf(null)
+
+    /**
+     * Call to force a refresh if the tiles provided by the tile overlay become 'stale'.
+     * This will cause all the tiles on this overlay to be reloaded.
+     * For example, if the tiles provided by the [TileProvider] change, you must call
+     * this afterwards to ensure that the previous tiles are no longer rendered.
+     *
+     * See [Maps SDK docs](https://developers.google.com/maps/documentation/android-sdk/tileoverlay#clear)
+     */
+    public fun clearTileCache() {
+        (tileOverlay ?: error("This TileOverlayState is not used in any TileOverlay"))
+            .clearTileCache()
+    }
+
+}
+
+@Composable
+public fun rememberTileOverlayState(): TileOverlayState {
+    return remember { TileOverlayState() }
 }
