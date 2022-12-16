@@ -54,6 +54,9 @@
     <activity
         android:name=".ScaleBarActivity"
         android:exported="false"/>
+    <activity
+        android:name=".StreetViewActivity"
+        android:exported="false"/>
 
     <!-- Used by createComponentActivity() for unit testing -->
     <activity android:name="androidx.activity.ComponentActivity" />

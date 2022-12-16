@@ -127,7 +127,7 @@ GoogleMap(
 }
 ```
 
-#### Customizing a marker's info window
+### Customizing a marker's info window
 
 You can customize a marker's info window contents by using the 
 `MarkerInfoWindowContent` element, or if you want to customize the entire info 
@@ -153,7 +153,21 @@ MarkerInfoWindow(
 }
 ```
 
-#### Obtaining Access to the raw GoogleMap (Experimental)
+### Street View
+
+You can add a Street View given a location using the `StreetView` composable.
+To use it, provide a `StreetViewPanoramaOptions` object as follows:
+
+```kotlin
+val singapore = LatLng(1.35, 103.87)
+StreetView(
+    streetViewPanoramaOptionsFactory = {
+        StreetViewPanoramaOptions().position(singapore)
+    }
+)
+```
+
+### Obtaining Access to the raw GoogleMap (Experimental)
 
 Certain use cases require extending the `GoogleMap` object to decorate / augment
 the map. For example, while marker clustering is not yet supported by Maps Compose

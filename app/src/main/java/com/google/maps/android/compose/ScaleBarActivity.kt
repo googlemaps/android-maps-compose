@@ -42,8 +42,6 @@ import com.google.maps.android.compose.widgets.ScaleBar
 private const val TAG = "ScaleBarActivity"
 
 private const val zoom = 8f
-private val singapore = LatLng(1.35, 103.87)
-private val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, zoom)
 
 class ScaleBarActivity : ComponentActivity() {
 

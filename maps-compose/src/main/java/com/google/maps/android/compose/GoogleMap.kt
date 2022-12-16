@@ -138,7 +138,7 @@ public fun GoogleMap(
     }
 }
 
-private suspend inline fun disposingComposition(factory: () -> Composition) {
+internal suspend inline fun disposingComposition(factory: () -> Composition) {
     val composition = factory()
     try {
         awaitCancellation()
