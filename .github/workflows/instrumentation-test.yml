@@ -47,7 +47,7 @@ jobs:
         # isn't picking up the key when creating a local.properties file here
         sed -i -e "s,\${MAPS_API_KEY},$MAPS_API_KEY,g" ./app/src/main/AndroidManifest.xml
       env:
-        MAPS_API_KEY: ${{ secrets.SYNCED_GOOGLE_MAPS_API_KEY_ANDROID }}
+        MAPS_API_KEY: ${{ secrets.ACTIONS_API_KEY }}
 
     - name: Build debug
       run: ./gradlew assembleDebug
