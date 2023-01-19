@@ -40,10 +40,7 @@ class GoogleMapViewTests {
     private lateinit var cameraPositionState: CameraPositionState
 
     private fun initMap(content: @Composable () -> Unit = {}) {
-        check(
-            BuildConfig.MAPS_API_KEY != "YOUR_API_KEY" && BuildConfig.MAPS_API_KEY.isNotBlank()
-        )
-        { "Maps API key not specified" }
+        check(hasValidApiKey) { "Maps API key not specified" }
         val countDownLatch = CountDownLatch(1)
         composeTestRule.setContent {
             GoogleMapView(
