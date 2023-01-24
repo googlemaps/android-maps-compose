@@ -258,13 +258,13 @@ To run it, you'll have to:
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:2.9.0'
+    implementation 'com.google.maps.android:maps-compose:2.9.1'
     
     // Make sure to also include the latest version of the Maps SDK for Android 
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     
     // Optionally, you can include the widgets library if you want to use ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:2.9.0'
+    implementation 'com.google.maps.android:maps-compose-widgets:2.9.1'
 }
 ```
 
