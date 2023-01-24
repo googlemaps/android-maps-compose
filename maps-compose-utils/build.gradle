@@ -1,0 +1,46 @@
+plugins {
+    id 'kotlin-android'
+}
+
+android {
+    namespace "com.google.maps.android.compose.utils"
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion libs.versions.composecompiler.get()
+    }
+
+    buildFeatures {
+        buildConfig false
+        compose true
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+        freeCompilerArgs += '-Xexplicit-api=strict'
+        freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
+    }
+}
+
+dependencies {
+    api project(':maps-compose')
+
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.compose.ui
+    implementation libs.kotlin
+    implementation libs.maps.playservice
+    implementation libs.maps.ktx.std
+    implementation libs.maps.ktx.utils
+}

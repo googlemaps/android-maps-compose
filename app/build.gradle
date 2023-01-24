@@ -65,6 +65,8 @@ dependencies {
     implementation project(':maps-compose')
     //implementation  "com.google.maps.android:maps-compose-widgets:1.0.0"
     implementation project(':maps-compose-widgets')
+    //implementation  "com.google.maps.android:maps-compose-utils:1.0.0"
+    implementation project(':maps-compose-utils')
     implementation libs.maps.playservice
 }
 
