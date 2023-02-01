@@ -30,7 +30,7 @@ ext.projectArtifactId = { project ->
 
 allprojects {
     group = 'com.google.maps.android'
-    version = '2.8.1'
+    version = '2.10.0'
     project.ext.artifactId = rootProject.ext.projectArtifactId(project)
 }
 
@@ -56,24 +56,21 @@ subprojects { project ->
         jacoco.excludes = ['jdk.internal.*']
     }
 
-    task sourcesJar(type: Jar) {
-        from android.sourceSets.main.java.source
-        archiveClassifier.set("sources")
-    }
-
-    task javadocJar(type: Jar) {
-        dependsOn(tasks.named("dokkaHtml"))
-        dependsOn(tasks.named("dokkaJavadoc"))
-        archiveClassifier.set("javadoc")
-        from new File(buildDir, "dokka/javadoc")
+    android {
+        publishing {
+            singleVariant("release") {
+                withSourcesJar()
+                withJavadocJar()
+            }
+        }
     }
 
     publishing {
         publications {
             aar(MavenPublication) {
-                groupId project.group
-                artifactId project.ext.artifactId
-                version project.version
+                afterEvaluate {
+                    from components.release
+                }
 
                 pom {
                     name = project.name
@@ -103,22 +100,6 @@ subprojects { project ->
                             name = 'Google Inc.'
                         }
                     }
-                }
-
-                pom.withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    project.configurations.api.allDependencies.each { dependency ->
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', dependency.group)
-                        dependencyNode.appendNode('artifactId', dependency.name)
-                        dependencyNode.appendNode('version', dependency.version)
-                    }
-                }
-
-                afterEvaluate {
-                    artifact "$buildDir/outputs/aar/$project.name-release.aar"
-                    artifact javadocJar
-                    artifact sourcesJar
                 }
             }
         }

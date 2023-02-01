@@ -43,9 +43,7 @@ jobs:
 
     - name: Inject Maps API Key
       run: |
-        # Injecting the key directly into the manifest as secrets-gradle-plugin
-        # isn't picking up the key when creating a local.properties file here
-        sed -i -e "s,\${MAPS_API_KEY},$MAPS_API_KEY,g" ./app/src/main/AndroidManifest.xml
+        echo MAPS_API_KEY=$MAPS_API_KEY >> ./local.properties
       env:
         MAPS_API_KEY: ${{ secrets.ACTIONS_API_KEY }}
 

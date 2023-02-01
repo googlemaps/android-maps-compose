@@ -15,8 +15,6 @@
 package com.google.maps.android.compose
 
 import android.view.View
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionContext
 import androidx.compose.ui.platform.ComposeView
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -42,20 +40,17 @@ internal class ComposeInfoWindowAdapter(
     private val markerNodeFinder: (Marker) -> MarkerNode?
 ) : GoogleMap.InfoWindowAdapter {
 
-    private val infoWindowView: ComposeView
-        get() = ComposeView(mapView.context).apply {
-            mapView.addView(this)
-        }
-
     override fun getInfoContents(marker: Marker): View? {
         val markerNode = markerNodeFinder(marker) ?: return null
         val content  = markerNode.infoContent
         if (content == null) {
             return null
         }
-        return infoWindowView.applyAndRemove(markerNode.compositionContext) {
-            content(marker)
+        val view = ComposeView(mapView.context).apply {
+            setContent { content(marker) }
         }
+        mapView.renderComposeView(view, parentContext = markerNode.compositionContext)
+        return view
     }
 
     override fun getInfoWindow(marker: Marker): View? {
@@ -64,20 +59,11 @@ internal class ComposeInfoWindowAdapter(
         if (infoWindow == null) {
             return null
         }
-        return infoWindowView.applyAndRemove(markerNode.compositionContext) {
-            infoWindow(marker)
+        val view = ComposeView(mapView.context).apply {
+            setContent { infoWindow(marker) }
         }
+        mapView.renderComposeView(view, parentContext = markerNode.compositionContext)
+        return view
     }
 
-    private fun ComposeView.applyAndRemove(
-        parentContext: CompositionContext,
-        content: @Composable () -> Unit
-    ): ComposeView {
-        val result = this.apply {
-            setParentCompositionContext(parentContext)
-            setContent(content)
-        }
-        (this.parent as? MapView)?.removeView(this)
-        return result
-    }
 }
