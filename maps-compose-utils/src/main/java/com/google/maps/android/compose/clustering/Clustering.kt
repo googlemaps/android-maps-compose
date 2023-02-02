@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -181,33 +180,12 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
 ) {
 
     private val maxMarkerSize = MaxMarkerSize.toAndroidSize(context)
-    private val clustersToViews: MutableMap<Cluster<T>, ComposeView> = mutableStateMapOf()
-
-    override fun onClustersChanged(clusters: Set<Cluster<T>>) {
-        super.onClustersChanged(clusters)
-
-        clustersToViews.keys.retainAll(clusters)
-        val addedClusters = clusters - clustersToViews.keys
-        addedClusters.forEach { addedCluster ->
-            clustersToViews[addedCluster] = ComposeView(context).apply {
-                if (addedCluster.size == 1) {
-                    setContent { clusterItemContentState.value?.invoke(addedCluster.items.first()) }
-                } else {
-                    setContent { clusterContentState.value?.invoke(addedCluster) }
-                }
-            }
-        }
-    }
+    private val composeView = ComposeView(context)
 
     override fun getDescriptorForCluster(cluster: Cluster<T>): BitmapDescriptor {
         return if (clusterContentState.value != null) {
-            val clusterView = clustersToViews[cluster]
-            if (clusterView != null) {
-                renderViewToBitmapDescriptor(clusterView)
-            } else {
-                // TODO do we need to handle null?
-                super.getDescriptorForCluster(cluster)
-            }
+            composeView.setContent { clusterContentState.value?.invoke(cluster) }
+            renderViewToBitmapDescriptor(composeView)
         } else {
             super.getDescriptorForCluster(cluster)
         }
@@ -217,12 +195,8 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
         super.onBeforeClusterItemRendered(item, markerOptions)
 
         if (clusterItemContentState.value != null) {
-            val clusterView = clustersToViews.entries.find { (cluster, _) ->
-                cluster.items.first() == item
-            }?.value
-            if (clusterView != null) {
-                markerOptions.icon(renderViewToBitmapDescriptor(clusterView))
-            }
+            composeView.setContent { clusterItemContentState.value?.invoke(item) }
+            markerOptions.icon(renderViewToBitmapDescriptor(composeView))
         }
     }
 
