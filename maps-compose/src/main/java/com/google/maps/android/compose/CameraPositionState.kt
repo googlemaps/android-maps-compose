@@ -315,6 +315,7 @@ public class CameraPositionState(
 /** Provides the [CameraPositionState] used by the map. */
 internal val LocalCameraPositionState = staticCompositionLocalOf { CameraPositionState() }
 
+/** The current [CameraPositionState] used by the map. */
 public val currentCameraPositionState: CameraPositionState
     @[GoogleMapComposable ReadOnlyComposable Composable]
     get() = LocalCameraPositionState.current
