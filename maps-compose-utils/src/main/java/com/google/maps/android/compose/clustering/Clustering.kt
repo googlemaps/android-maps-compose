@@ -24,6 +24,7 @@ import androidx.core.graphics.applyCanvas
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
@@ -52,6 +53,8 @@ import kotlin.math.roundToInt
  * window of a non-clustered item
  * @param clusterContent an optional Composable that is rendered for each [Cluster]. This content is
  * static and cannot be animated.
+ * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ * This content is static and cannot be animated.
  */
 @Composable
 @GoogleMapComposable
@@ -63,8 +66,9 @@ public fun <T : ClusterItem> Clustering(
     onClusterItemInfoWindowClick: (T) -> Unit = { },
     onClusterItemInfoWindowLongClick: (T) -> Unit = { },
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
 ) {
-    val clusterManager = rememberClusterManager(clusterContent) ?: return
+    val clusterManager = rememberClusterManager(clusterContent, clusterItemContent) ?: return
 
     ResetMapListeners(clusterManager)
     LaunchedEffect(
@@ -106,8 +110,10 @@ public fun <T : ClusterItem> Clustering(
 @Composable
 private fun <T : ClusterItem> rememberClusterManager(
     clusterContent: @Composable ((Cluster<T>) -> Unit)?,
+    clusterItemContent: @Composable ((T) -> Unit)?,
 ): ClusterManager<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
+    val clusterItemContentState = rememberUpdatedState(clusterItemContent)
     val context = LocalContext.current
     val viewRendererState = rememberUpdatedState(rememberComposeUiViewRenderer())
     val clusterManagerState: MutableState<ClusterManager<T>?> = remember { mutableStateOf(null) }
@@ -115,15 +121,18 @@ private fun <T : ClusterItem> rememberClusterManager(
         val clusterManager = ClusterManager<T>(context, map)
 
         launch {
-            snapshotFlow { clusterContentState.value != null }
-                .collect { hasClusterContent ->
-                    val renderer = if (hasClusterContent) {
+            snapshotFlow {
+                clusterContentState.value != null || clusterItemContentState.value != null
+            }
+                .collect { hasCustomContent ->
+                    val renderer = if (hasCustomContent) {
                         ComposeUiClusterRenderer(
                             context,
                             map,
                             clusterManager,
                             viewRendererState,
-                            clusterContentState = clusterContentState
+                            clusterContentState = clusterContentState,
+                            clusterItemContentState = clusterItemContentState,
                         )
                     } else {
                         DefaultClusterRenderer(context, map, clusterManager)
@@ -164,6 +173,7 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
     clusterManager: ClusterManager<T>,
     private val viewRendererState: State<ComposeUiViewRenderer>,
     private val clusterContentState: State<@Composable ((Cluster<T>) -> Unit)?>,
+    private val clusterItemContentState: State<@Composable ((T) -> Unit)?>,
 ) : DefaultClusterRenderer<T>(
     context,
     map,
@@ -180,8 +190,10 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
         val addedClusters = clusters - clustersToViews.keys
         addedClusters.forEach { addedCluster ->
             clustersToViews[addedCluster] = ComposeView(context).apply {
-                setContent {
-                    clusterContentState.value?.invoke(addedCluster)
+                if (addedCluster.size == 1) {
+                    setContent { clusterItemContentState.value?.invoke(addedCluster.items.first()) }
+                } else {
+                    setContent { clusterContentState.value?.invoke(addedCluster) }
                 }
             }
         }
@@ -191,31 +203,7 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
         return if (clusterContentState.value != null) {
             val clusterView = clustersToViews[cluster]
             if (clusterView != null) {
-                lateinit var bitmap: Bitmap // onAddedToWindow is called in place
-                viewRendererState.value.renderView(
-                    view = clusterView,
-                    onAddedToWindow = {
-                        clusterView.measure(
-                            MeasureSpec.makeMeasureSpec(maxMarkerSize.width, MeasureSpec.AT_MOST),
-                            MeasureSpec.makeMeasureSpec(maxMarkerSize.height, MeasureSpec.AT_MOST),
-                        )
-                        val actualSize = Size(
-                            clusterView.measuredWidth.coerceAtMost(maxMarkerSize.width),
-                            clusterView.measuredHeight.coerceAtMost(maxMarkerSize.height),
-                        )
-                        clusterView.layout(0, 0, actualSize.width, actualSize.height)
-                        bitmap = Bitmap.createBitmap(
-                            actualSize.width,
-                            actualSize.height,
-                            Bitmap.Config.ARGB_8888
-                        )
-                        bitmap.applyCanvas {
-                            clusterView.draw(this)
-                        }
-                    }
-                )
-
-                BitmapDescriptorFactory.fromBitmap(bitmap)
+                renderViewToBitmapDescriptor(clusterView)
             } else {
                 // TODO do we need to handle null?
                 super.getDescriptorForCluster(cluster)
@@ -223,6 +211,47 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
         } else {
             super.getDescriptorForCluster(cluster)
         }
+    }
+
+    override fun onBeforeClusterItemRendered(item: T, markerOptions: MarkerOptions) {
+        super.onBeforeClusterItemRendered(item, markerOptions)
+
+        if (clusterItemContentState.value != null) {
+            val clusterView = clustersToViews.entries.find { (cluster, _) ->
+                cluster.items.first() == item
+            }?.value
+            if (clusterView != null) {
+                markerOptions.icon(renderViewToBitmapDescriptor(clusterView))
+            }
+        }
+    }
+
+    private fun renderViewToBitmapDescriptor(view: ComposeView): BitmapDescriptor {
+        lateinit var bitmap: Bitmap // onAddedToWindow is called in place
+        viewRendererState.value.renderView(
+            view = view,
+            onAddedToWindow = {
+                view.measure(
+                    MeasureSpec.makeMeasureSpec(maxMarkerSize.width, MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(maxMarkerSize.height, MeasureSpec.AT_MOST),
+                )
+                val actualSize = Size(
+                    view.measuredWidth.coerceAtMost(maxMarkerSize.width),
+                    view.measuredHeight.coerceAtMost(maxMarkerSize.height),
+                )
+                view.layout(0, 0, actualSize.width, actualSize.height)
+                bitmap = Bitmap.createBitmap(
+                    actualSize.width,
+                    actualSize.height,
+                    Bitmap.Config.ARGB_8888
+                )
+                bitmap.applyCanvas {
+                    view.draw(this)
+                }
+            }
+        )
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     companion object {

@@ -96,7 +96,9 @@ fun GoogleMapClustering(items: List<MyItem>) {
                         )
                     }
                 }
-            }
+            },
+            // Optional: Custom rendering for non-clustered items
+            clusterItemContent = null
         )
         MarkerInfoWindow(
             state = rememberMarkerState(position = singapore),
