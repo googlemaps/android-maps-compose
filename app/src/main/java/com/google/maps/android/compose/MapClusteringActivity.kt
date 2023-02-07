@@ -6,8 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -81,7 +81,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
             // Optional: Custom rendering for clusters
             clusterContent = { cluster ->
                 Surface(
-                    Modifier.aspectRatio(1f),
+                    Modifier.size(40.dp),
                     shape = CircleShape,
                     color = Color.Blue,
                     contentColor = Color.White,

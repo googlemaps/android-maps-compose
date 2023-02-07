@@ -2,9 +2,9 @@ package com.google.maps.android.compose.clustering
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Handler
 import android.os.Looper
-import android.util.Size
 import android.view.View.MeasureSpec
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,8 +17,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
 import androidx.core.graphics.applyCanvas
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -38,7 +36,6 @@ import com.google.maps.android.compose.currentCameraPositionState
 import com.google.maps.android.compose.rememberComposeUiViewRenderer
 import com.google.maps.android.compose.rememberReattachClickListenersHandle
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 /**
  * Groups many items on a map based on zoom level.
@@ -179,8 +176,8 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
     clusterManager
 ) {
 
-    private val maxMarkerSize = MaxMarkerSize.toAndroidSize(context)
     private val composeView = ComposeView(context)
+    private val fakeCanvas = Canvas()
 
     override fun getDescriptorForCluster(cluster: Cluster<T>): BitmapDescriptor {
         return if (clusterContentState.value != null) {
@@ -205,18 +202,18 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
         viewRendererState.value.renderView(
             view = view,
             onAddedToWindow = {
+                /* AndroidComposeView triggers LayoutNode's layout phase in the View draw phase,
+                   so trigger a draw to an empty canvas to force that */
+                view.draw(fakeCanvas)
+                // TODO do we need a max size?
                 view.measure(
-                    MeasureSpec.makeMeasureSpec(maxMarkerSize.width, MeasureSpec.AT_MOST),
-                    MeasureSpec.makeMeasureSpec(maxMarkerSize.height, MeasureSpec.AT_MOST),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
                 )
-                val actualSize = Size(
-                    view.measuredWidth.coerceAtMost(maxMarkerSize.width),
-                    view.measuredHeight.coerceAtMost(maxMarkerSize.height),
-                )
-                view.layout(0, 0, actualSize.width, actualSize.height)
+                view.layout(0, 0, view.measuredWidth, view.measuredHeight)
                 bitmap = Bitmap.createBitmap(
-                    actualSize.width,
-                    actualSize.height,
+                    view.measuredWidth,
+                    view.measuredHeight,
                     Bitmap.Config.ARGB_8888
                 )
                 bitmap.applyCanvas {
@@ -226,20 +223,6 @@ private class ComposeUiClusterRenderer <T : ClusterItem>(
         )
 
         return BitmapDescriptorFactory.fromBitmap(bitmap)
-    }
-
-    companion object {
-
-        private val MaxMarkerSize = DpSize(width = 40.dp, height = 40.dp)
-
-        private fun DpSize.toAndroidSize(context: Context): Size {
-            val density = context.resources.displayMetrics.density
-            return Size(
-                (width.value * density).roundToInt(),
-                (height.value * density).roundToInt()
-            )
-        }
-
     }
 
 }
