@@ -16,11 +16,13 @@ package com.google.maps.android.compose
 
 import androidx.annotation.UiThread
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -309,3 +311,11 @@ public class CameraPositionState(
         )
     }
 }
+
+/** Provides the [CameraPositionState] used by the map. */
+internal val LocalCameraPositionState = staticCompositionLocalOf { CameraPositionState() }
+
+/** The current [CameraPositionState] used by the map. */
+public val currentCameraPositionState: CameraPositionState
+    @[GoogleMapComposable ReadOnlyComposable Composable]
+    get() = LocalCameraPositionState.current
