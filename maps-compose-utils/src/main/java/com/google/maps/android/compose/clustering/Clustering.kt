@@ -1,49 +1,70 @@
 package com.google.maps.android.compose.clustering
 
+import android.content.Context
+import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
+import android.util.Size
+import android.view.View.MeasureSpec
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.UiComposable
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.applyCanvas
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.collections.MarkerManager
-import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.ComposeUiViewRenderer
+import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.InputHandler
 import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapsComposeExperimentalApi
+import com.google.maps.android.compose.currentCameraPositionState
+import com.google.maps.android.compose.rememberComposeUiViewRenderer
 import com.google.maps.android.compose.rememberReattachClickListenersHandle
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 /**
  * Groups many items on a map based on zoom level.
  *
  * @param items all items to show
- * @param cameraPositionState the state of the camera, which affects clustering behavior
  * @param onClusterClick a lambda invoked when the user clicks a cluster of items
  * @param onClusterItemClick a lambda invoked when the user clicks a non-clustered item
  * @param onClusterItemInfoWindowClick a lambda invoked when the user clicks the info window of a
  * non-clustered item
  * @param onClusterItemInfoWindowLongClick a lambda invoked when the user long-clicks the info
  * window of a non-clustered item
+ * @param clusterContent an optional Composable that is rendered for each [Cluster]. This content is
+ * static and cannot be animated.
  */
-@MapsComposeExperimentalApi
 @Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
 public fun <T : ClusterItem> Clustering(
     items: Collection<T>,
-    cameraPositionState: CameraPositionState,
     onClusterClick: (Cluster<T>) -> Boolean = { false },
     onClusterItemClick: (T) -> Boolean = { false },
     onClusterItemInfoWindowClick: (T) -> Unit = { },
     onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
 ) {
-    val clusterManager = rememberClusterManager<T>() ?: return
+    val clusterManager = rememberClusterManager(clusterContent) ?: return
 
     ResetMapListeners(clusterManager)
     LaunchedEffect(
@@ -66,6 +87,7 @@ public fun <T : ClusterItem> Clustering(
         onMarkerDragEnd = clusterManager.markerManager::onMarkerDragEnd,
         onMarkerDragStart = clusterManager.markerManager::onMarkerDragStart,
     )
+    val cameraPositionState = currentCameraPositionState
     LaunchedEffect(cameraPositionState) {
         snapshotFlow { cameraPositionState.isMoving }
             .collect { isMoving ->
@@ -82,13 +104,37 @@ public fun <T : ClusterItem> Clustering(
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
-private fun <T : ClusterItem> rememberClusterManager(): ClusterManager<T>? {
+private fun <T : ClusterItem> rememberClusterManager(
+    clusterContent: @Composable ((Cluster<T>) -> Unit)?,
+): ClusterManager<T>? {
+    val clusterContentState = rememberUpdatedState(clusterContent)
     val context = LocalContext.current
-    var clusterManager: ClusterManager<T>? by remember { mutableStateOf(null) }
+    val viewRendererState = rememberUpdatedState(rememberComposeUiViewRenderer())
+    val clusterManagerState: MutableState<ClusterManager<T>?> = remember { mutableStateOf(null) }
     MapEffect(context) { map ->
-        clusterManager = ClusterManager<T>(context, map)
+        val clusterManager = ClusterManager<T>(context, map)
+
+        launch {
+            snapshotFlow { clusterContentState.value != null }
+                .collect { hasClusterContent ->
+                    val renderer = if (hasClusterContent) {
+                        ComposeUiClusterRenderer(
+                            context,
+                            map,
+                            clusterManager,
+                            viewRendererState,
+                            clusterContentState = clusterContentState
+                        )
+                    } else {
+                        DefaultClusterRenderer(context, map, clusterManager)
+                    }
+                    clusterManager.renderer = renderer
+                }
+        }
+
+        clusterManagerState.value = clusterManager
     }
-    return clusterManager
+    return clusterManagerState.value
 }
 
 /**
@@ -110,4 +156,87 @@ private fun ResetMapListeners(
             reattach()
         }
     }
+}
+
+private class ComposeUiClusterRenderer <T : ClusterItem>(
+    private val context: Context,
+    map: GoogleMap,
+    clusterManager: ClusterManager<T>,
+    private val viewRendererState: State<ComposeUiViewRenderer>,
+    private val clusterContentState: State<@Composable ((Cluster<T>) -> Unit)?>,
+) : DefaultClusterRenderer<T>(
+    context,
+    map,
+    clusterManager
+) {
+
+    private val maxMarkerSize = MaxMarkerSize.toAndroidSize(context)
+    private val clustersToViews: MutableMap<Cluster<T>, ComposeView> = mutableStateMapOf()
+
+    override fun onClustersChanged(clusters: Set<Cluster<T>>) {
+        super.onClustersChanged(clusters)
+
+        clustersToViews.keys.retainAll(clusters)
+        val addedClusters = clusters - clustersToViews.keys
+        addedClusters.forEach { addedCluster ->
+            clustersToViews[addedCluster] = ComposeView(context).apply {
+                setContent {
+                    clusterContentState.value?.invoke(addedCluster)
+                }
+            }
+        }
+    }
+
+    override fun getDescriptorForCluster(cluster: Cluster<T>): BitmapDescriptor {
+        return if (clusterContentState.value != null) {
+            val clusterView = clustersToViews[cluster]
+            if (clusterView != null) {
+                lateinit var bitmap: Bitmap // onAddedToWindow is called in place
+                viewRendererState.value.renderView(
+                    view = clusterView,
+                    onAddedToWindow = {
+                        clusterView.measure(
+                            MeasureSpec.makeMeasureSpec(maxMarkerSize.width, MeasureSpec.AT_MOST),
+                            MeasureSpec.makeMeasureSpec(maxMarkerSize.height, MeasureSpec.AT_MOST),
+                        )
+                        val actualSize = Size(
+                            clusterView.measuredWidth.coerceAtMost(maxMarkerSize.width),
+                            clusterView.measuredHeight.coerceAtMost(maxMarkerSize.height),
+                        )
+                        clusterView.layout(0, 0, actualSize.width, actualSize.height)
+                        bitmap = Bitmap.createBitmap(
+                            actualSize.width,
+                            actualSize.height,
+                            Bitmap.Config.ARGB_8888
+                        )
+                        bitmap.applyCanvas {
+                            clusterView.draw(this)
+                        }
+                    }
+                )
+
+                BitmapDescriptorFactory.fromBitmap(bitmap)
+            } else {
+                // TODO do we need to handle null?
+                super.getDescriptorForCluster(cluster)
+            }
+        } else {
+            super.getDescriptorForCluster(cluster)
+        }
+    }
+
+    companion object {
+
+        private val MaxMarkerSize = DpSize(width = 40.dp, height = 40.dp)
+
+        private fun DpSize.toAndroidSize(context: Context): Size {
+            val density = context.resources.displayMetrics.density
+            return Size(
+                (width.value * density).roundToInt(),
+                (height.value * density).roundToInt()
+            )
+        }
+
+    }
+
 }

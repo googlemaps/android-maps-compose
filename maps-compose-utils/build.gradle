@@ -37,6 +37,7 @@ android {
 dependencies {
     api project(':maps-compose')
 
+    implementation libs.androidx.core
     implementation platform(libs.androidx.compose.bom)
     implementation libs.androidx.compose.ui
     implementation libs.kotlin
