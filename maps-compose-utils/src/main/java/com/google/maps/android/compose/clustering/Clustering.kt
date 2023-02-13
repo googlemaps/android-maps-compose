@@ -9,6 +9,7 @@ import android.view.View.MeasureSpec
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,13 +68,7 @@ public fun <T : ClusterItem> Clustering(
     val clusterManager = rememberClusterManager(clusterContent, clusterItemContent) ?: return
 
     ResetMapListeners(clusterManager)
-    LaunchedEffect(
-        clusterManager,
-        onClusterClick,
-        onClusterItemClick,
-        onClusterItemInfoWindowClick,
-        onClusterItemInfoWindowLongClick,
-    ) {
+    SideEffect {
         clusterManager.setOnClusterClickListener(onClusterClick)
         clusterManager.setOnClusterItemClickListener(onClusterItemClick)
         clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
