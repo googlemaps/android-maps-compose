@@ -57,12 +57,11 @@ fun GoogleMapClustering() {
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun GoogleMapClustering(items: List<MyItem>) {
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
-    }
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
+        cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(singapore, 10f)
+        }
     ) {
         Clustering(
             items = items,
