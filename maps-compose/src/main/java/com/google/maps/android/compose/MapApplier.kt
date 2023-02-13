@@ -33,7 +33,7 @@ private object MapNodeRoot : MapNode
 
 internal class MapApplier(
     val map: GoogleMap,
-    private val mapView: MapView,
+    internal val mapView: MapView,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
     private val decorations = mutableListOf<MapNode>()
