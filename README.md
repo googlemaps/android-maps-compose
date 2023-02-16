@@ -250,6 +250,20 @@ dependencies {
 }
 ```
 
+## Controlling the map directly (experimental)
+Certain use cases may require extending the `GoogleMap` object to decorate / augment
+the map. It can be obtained with the `MapEffect` Composable.
+Doing so can be dangerous, as the `GoogleMap` object is managed by this library.
+```kotlin
+GoogleMap(
+    // ...
+) {
+    MapEffect { map ->
+        // map is the GoogleMap
+    }
+}
+```
+
 ## Documentation
 
 You can learn more about all the extensions provided by this library by reading the [reference documents][Javadoc].
