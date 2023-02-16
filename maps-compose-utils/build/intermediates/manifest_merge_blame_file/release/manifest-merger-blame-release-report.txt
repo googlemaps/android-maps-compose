@@ -1,0 +1,11 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.google.maps.android.compose.utils" >
+4
+5    <uses-sdk
+6        android:minSdkVersion="21"
+6-->/home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest18025094535370738024.xml
+7        android:targetSdkVersion="33" />
+7-->/home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest18025094535370738024.xml
+8
+9</manifest>

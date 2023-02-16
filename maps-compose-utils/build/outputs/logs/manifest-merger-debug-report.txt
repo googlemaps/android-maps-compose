@@ -1,0 +1,25 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml:2:13-83
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml:2:13-83
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml:2:13-83
+	package
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+		ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml:2:13-83
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+	xmlns:android
+		ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml:2:23-81
+uses-sdk
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml reason: use-sdk injection requested
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+	android:targetSdkVersion
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+		ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+	android:minSdkVersion
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+		ADDED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
+		INJECTED from /home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest8260210365384246581.xml
