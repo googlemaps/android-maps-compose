@@ -167,51 +167,30 @@ StreetView(
 )
 ```
 
-### Obtaining Access to the raw GoogleMap (Experimental)
+## Utils
 
-Certain use cases require extending the `GoogleMap` object to decorate / augment
-the map. For example, while marker clustering is not yet supported by Maps Compose
-(see [Issue #44](https://github.com/googlemaps/android-maps-compose/issues/44)),
-it is desirable to use the available [utility library](https://github.com/googlemaps/android-maps-utils)
-to perform clustering in the interim. Doing so requires access to the Maps SDK
-`GoogleMap` object which you can obtain with the `MapEffect` composable.
+This library also provides optional utilities in the `maps-compose-utils` library.
+
+### Clustering
+
+The marker clustering utility helps you manage multiple markers at different zoom levels.
+When a user views the map at a high zoom level, the individual markers show on the map. When the user zooms out, the markers gather together into clusters, to make viewing the map easier.
+
+The [MapClusteringActivity](app/src/main/java/com/google/maps/android/compose/MapClusteringActivity.kt) this.
 
 ```kotlin
-GoogleMap(
-    // ...
-) {
-    val context = LocalContext.current
-    var clusterManager by remember { mutableStateOf<ClusterManager<MyItem>?>(null) }
-    MapEffect(items) { map ->
-        if (clusterManager == null) {
-            clusterManager = ClusterManager<MyItem>(context, map)
-        }
-        clusterManager?.addItems(items)
-    }
-    
-    MarkerInfoWindow(
-        state = rememberMarkerState(position = LatLng(1.35, 103.87)),
-        onClick = {
-            // This won't work :(
-            Log.d("MapEffect", "I cannot be clicked :( $it")
-            true
-        }
-    )
-
-}
+Clustering(
+    items = items,
+    // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
+    onClusterClick = null,
+    onClusterItemClick = null,
+    onClusterItemInfoWindowClick = null,
+    // Optional: Custom rendering for clusters
+    clusterContent = null,
+    // Optional: Custom rendering for non-clustered items
+    clusterItemContent = null,
+)
 ```
-
-Note, however, that `MapEffect` is designed as an escape hatch and has certain
-gotchas. The `GoogleMap` composable provided by the Maps Compose library manages
-properties while the `GoogleMap` is in composition, and so, setting properties
-on the `GoogleMap` instance provided in the `MapEffect` composable may have
-unintended consequences. For instance, using the utility library to perform 
-clustering as shown in the example above will break `onClick` events from
-being propagated on `Marker` composables as shown in the comment above. So, if 
-you are using clustering, stick with adding markers through the `ClusterManager`
-and don't use `Marker` composables (unless you don't care about `onClick` 
-events). Clustering is the only use-case tested with `MapEffect`, there may be
-gotchas depending on what features you use in the utility library.
 
 ## Widgets
 
@@ -262,9 +241,26 @@ dependencies {
     
     // Make sure to also include the latest version of the Maps SDK for Android 
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+    // Optionally, you can include the utils library if you want to use Clustering, etc.
+    implementation 'com.google.maps.android:maps-compose-utils:2.10.0'
     
     // Optionally, you can include the widgets library if you want to use ScaleBar, etc.
     implementation 'com.google.maps.android:maps-compose-widgets:2.10.0'
+}
+```
+
+## Controlling the map directly (experimental)
+Certain use cases may require extending the `GoogleMap` object to decorate / augment
+the map. It can be obtained with the `MapEffect` Composable.
+Doing so can be dangerous, as the `GoogleMap` object is managed by this library.
+```kotlin
+GoogleMap(
+    // ...
+) {
+    MapEffect { map ->
+        // map is the GoogleMap
+    }
 }
 ```
 

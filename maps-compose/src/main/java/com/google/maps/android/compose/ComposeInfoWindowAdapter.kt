@@ -49,7 +49,7 @@ internal class ComposeInfoWindowAdapter(
         val view = ComposeView(mapView.context).apply {
             setContent { content(marker) }
         }
-        mapView.renderComposeView(view, parentContext = markerNode.compositionContext)
+        mapView.renderComposeViewOnce(view, parentContext = markerNode.compositionContext)
         return view
     }
 
@@ -62,7 +62,7 @@ internal class ComposeInfoWindowAdapter(
         val view = ComposeView(mapView.context).apply {
             setContent { infoWindow(marker) }
         }
-        mapView.renderComposeView(view, parentContext = markerNode.compositionContext)
+        mapView.renderComposeViewOnce(view, parentContext = markerNode.compositionContext)
         return view
     }
 
