@@ -1,0 +1,6 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:com.google.maps.android.compose.clustering////PointingToDeclaration/maps-compose-utils/com.google.maps.android.compose.clustering/index.html
+$dokka.location:com.google.maps.android.compose.clustering//Clustering/#kotlin.collections.Collection[TypeParam(bounds=[com.google.maps.android.clustering.ClusterItem])]#kotlin.Function1[com.google.maps.android.clustering.Cluster[TypeParam(bounds=[com.google.maps.android.clustering.ClusterItem])],kotlin.Boolean]#kotlin.Function1[TypeParam(bounds=[com.google.maps.android.clustering.ClusterItem]),kotlin.Boolean]#kotlin.Function1[TypeParam(bounds=[com.google.maps.android.clustering.ClusterItem]),kotlin.Unit]#kotlin.Function1[TypeParam(bounds=[com.google.maps.android.clustering.ClusterItem]),kotlin.Unit]#kotlin.Function1[com.google.maps.android.clustering.Cluster[TypeParam(bounds=[com.google.maps.android.clustering.ClusterItem])],kotlin.Unit]?#kotlin.Function1[TypeParam(bounds=[com.google.maps.android.clustering.ClusterItem]),kotlin.Unit]?/PointingToDeclaration/maps-compose-utils/com.google.maps.android.compose.clustering/-clustering.html
+com.google.maps.android.compose.clustering
+
