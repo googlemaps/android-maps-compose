@@ -78,9 +78,14 @@ public fun <T : ClusterItem> Clustering(
                 }
             }
     }
-    LaunchedEffect(items) {
-        clusterManager.clearItems()
-        clusterManager.addItems(items)
+    val itemsState = rememberUpdatedState(items)
+    LaunchedEffect(itemsState) {
+        snapshotFlow { itemsState.value.toList() }
+            .collect { items ->
+                clusterManager.clearItems()
+                clusterManager.addItems(items)
+                clusterManager.cluster()
+            }
     }
 }
 
