@@ -83,7 +83,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         }
     }
 
-    private fun createAndAddView(key: ViewKey<T>) {
+    private fun createAndAddView(key: ViewKey<T>): ViewInfo {
         val view = InvalidatingComposeView(
             context,
             content = when (key) {
@@ -101,13 +101,15 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             collectInvalidationsAndRerender(key, view)
         }
 
-        keysToViews[key] = ViewInfo(
+        val viewInfo = ViewInfo(
             view,
             onRemove = {
                 rerenderJob.cancel()
                 renderHandle.dispose()
             },
         )
+        keysToViews[key] = viewInfo
+        return viewInfo
     }
 
     /** Re-render the corresponding marker whenever [view] invalidates */
@@ -147,12 +149,8 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             val viewInfo = keysToViews.entries
                 .find { (key, _) -> (key as? ViewKey.Cluster)?.cluster == cluster }
                 ?.value
-            if (viewInfo != null) {
-                renderViewToBitmapDescriptor(viewInfo.view)
-            } else {
-                // Sometimes called for a marker that seems to be only transient
-                super.getDescriptorForCluster(cluster)
-            }
+                ?: createAndAddView(ViewKey.Cluster(cluster))
+            renderViewToBitmapDescriptor(viewInfo.view)
         } else {
             super.getDescriptorForCluster(cluster)
         }
@@ -165,9 +163,8 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             val viewInfo = keysToViews.entries
                 .find { (key, _) -> (key as? ViewKey.Item)?.item == item }
                 ?.value
-            if (viewInfo != null) {
-                markerOptions.icon(renderViewToBitmapDescriptor(viewInfo.view))
-            } // Sometimes called for a marker that seems to be only transient, so do nothing
+                ?: createAndAddView(ViewKey.Item(item))
+            markerOptions.icon(renderViewToBitmapDescriptor(viewInfo.view))
         }
     }
 
