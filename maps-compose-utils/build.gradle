@@ -43,5 +43,5 @@ dependencies {
     implementation libs.kotlin
     implementation libs.maps.playservice
     implementation libs.maps.ktx.std
-    implementation libs.maps.ktx.utils
+    api libs.maps.ktx.utils
 }
