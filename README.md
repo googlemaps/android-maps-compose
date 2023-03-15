@@ -1,6 +1,6 @@
 ![Tests](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)
 ![Stable](https://img.shields.io/badge/stability-stable-green)
-[![Discord](https://img.shields.io/discord/676948200904589322)][Discord channel]
+[![Discord](https://img.shields.io/discord/676948200904589322)][Discord server]
 ![Apache-2.0](https://img.shields.io/badge/license-Apache-blue)
 
 # Maps Compose 🗺
@@ -20,16 +20,16 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the [
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:2.11.1'
+    implementation 'com.google.maps.android:maps-compose:2.11.2'
 
     // Make sure to also include the latest version of the Maps SDK for Android
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
 
     // Optionally, you can include the Compose utils library for Clustering, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:2.11.1'
+    implementation 'com.google.maps.android:maps-compose-utils:2.11.2'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:2.11.1'
+    implementation 'com.google.maps.android:maps-compose-widgets:2.11.2'
 }
 ```
 
