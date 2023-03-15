@@ -58,7 +58,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             forEach { (key, viewInfo) ->
                 if (key !in keys) {
                     remove()
-                    viewInfo.renderHandle.dispose()
+                    viewInfo.onRemove()
                 }
             }
         }
@@ -97,11 +97,17 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             }
         )
         val renderHandle = viewRendererState.value.startRenderingView(view)
-        scope.launch {
+        val rerenderJob = scope.launch {
             collectInvalidationsAndRerender(key, view)
         }
 
-        keysToViews[key] = ViewInfo(view, renderHandle)
+        keysToViews[key] = ViewInfo(
+            view,
+            onRemove = {
+                rerenderJob.cancel()
+                renderHandle.dispose()
+            },
+        )
     }
 
     /** Re-render the corresponding marker whenever [view] invalidates */
@@ -192,7 +198,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
     private class ViewInfo(
         val view: AbstractComposeView,
-        val renderHandle: ComposeUiViewRenderer.RenderHandle,
+        val onRemove: () -> Unit,
     )
 
     /**
