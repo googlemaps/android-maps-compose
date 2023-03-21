@@ -33,7 +33,7 @@ private object MapNodeRoot : MapNode
 
 internal class MapApplier(
     val map: GoogleMap,
-    private val mapView: MapView,
+    internal val mapView: MapView,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
     private val decorations = mutableListOf<MapNode>()
@@ -68,94 +68,138 @@ internal class MapApplier(
         decorations.remove(index, count)
     }
 
-    private fun attachClickListeners() {
-        map.setOnCircleClickListener {
-            decorations.nodeForCircle(it)
-                ?.onCircleClick
-                ?.invoke(it)
+    internal fun attachClickListeners() {
+        map.setOnCircleClickListener { circle ->
+            decorations.findInputCallback<CircleNode, Circle, Unit>(
+                nodeMatchPredicate = { it.circle == circle },
+                nodeInputCallback = { onCircleClick },
+                inputHandlerCallback = { onCircleClick }
+            )?.invoke(circle)
         }
-        map.setOnGroundOverlayClickListener {
-            decorations.nodeForGroundOverlay(it)
-                ?.onGroundOverlayClick
-                ?.invoke(it)
+        map.setOnGroundOverlayClickListener { groundOverlay ->
+            decorations.findInputCallback<GroundOverlayNode, GroundOverlay, Unit>(
+                nodeMatchPredicate = { it.groundOverlay == groundOverlay },
+                nodeInputCallback = { onGroundOverlayClick },
+                inputHandlerCallback = { onGroundOverlayClick }
+            )?.invoke(groundOverlay)
         }
-        map.setOnPolygonClickListener {
-            decorations.nodeForPolygon(it)
-                ?.onPolygonClick
-                ?.invoke(it)
+        map.setOnPolygonClickListener { polygon ->
+            decorations.findInputCallback<PolygonNode, Polygon, Unit>(
+                nodeMatchPredicate = { it.polygon == polygon },
+                nodeInputCallback = { onPolygonClick },
+                inputHandlerCallback = { onPolygonClick }
+            )?.invoke(polygon)
         }
-        map.setOnPolylineClickListener {
-            decorations.nodeForPolyline(it)
-                ?.onPolylineClick
-                ?.invoke(it)
+        map.setOnPolylineClickListener { polyline ->
+            decorations.findInputCallback<PolylineNode, Polyline, Unit>(
+                nodeMatchPredicate = { it.polyline == polyline },
+                nodeInputCallback = { onPolylineClick },
+                inputHandlerCallback = { onPolylineClick }
+            )?.invoke(polyline)
         }
 
         // Marker
         map.setOnMarkerClickListener { marker ->
-            decorations.nodeForMarker(marker)
-                ?.onMarkerClick
-                ?.invoke(marker)
+            decorations.findInputCallback<MarkerNode, Marker, Boolean>(
+                nodeMatchPredicate = { it.marker == marker },
+                nodeInputCallback = { onMarkerClick },
+                inputHandlerCallback = { onMarkerClick }
+            )?.invoke(marker)
                 ?: false
         }
         map.setOnInfoWindowClickListener { marker ->
-            decorations.nodeForMarker(marker)
-                ?.onInfoWindowClick
-                ?.invoke(marker)
+            decorations.findInputCallback<MarkerNode, Marker, Unit>(
+                nodeMatchPredicate = { it.marker == marker },
+                nodeInputCallback = { onInfoWindowClick },
+                inputHandlerCallback = { onInfoWindowClick }
+            )?.invoke(marker)
         }
         map.setOnInfoWindowCloseListener { marker ->
-            decorations.nodeForMarker(marker)
-                ?.onInfoWindowClose
-                ?.invoke(marker)
+            decorations.findInputCallback<MarkerNode, Marker, Unit>(
+                nodeMatchPredicate = { it.marker == marker },
+                nodeInputCallback = { onInfoWindowClose },
+                inputHandlerCallback = { onInfoWindowClose }
+            )?.invoke(marker)
         }
         map.setOnInfoWindowLongClickListener { marker ->
-            decorations.nodeForMarker(marker)
-                ?.onInfoWindowLongClick
-                ?.invoke(marker)
+            decorations.findInputCallback<MarkerNode, Marker, Unit>(
+                nodeMatchPredicate = { it.marker == marker },
+                nodeInputCallback = { onInfoWindowLongClick },
+                inputHandlerCallback = { onInfoWindowLongClick }
+            )?.invoke(marker)
         }
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDrag(marker: Marker) {
-                with(decorations.nodeForMarker(marker)) {
-                    this?.markerState?.position = marker.position
-                    this?.markerState?.dragState = DragState.DRAG
-                }
+                decorations.findInputCallback<MarkerNode, Marker, Unit>(
+                    nodeMatchPredicate = { it.marker == marker },
+                    nodeInputCallback = {
+                        {
+                            markerState.position = it.position
+                            markerState.dragState = DragState.DRAG
+                        }
+                    },
+                    inputHandlerCallback = { onMarkerDrag }
+                )?.invoke(marker)
             }
 
             override fun onMarkerDragEnd(marker: Marker) {
-                with(decorations.nodeForMarker(marker)) {
-                    this?.markerState?.position = marker.position
-                    this?.markerState?.dragState = DragState.END
-                }
+                decorations.findInputCallback<MarkerNode, Marker, Unit>(
+                    nodeMatchPredicate = { it.marker == marker },
+                    nodeInputCallback = {
+                        {
+                            markerState.position = it.position
+                            markerState.dragState = DragState.END
+                        }
+                    },
+                    inputHandlerCallback = { onMarkerDragEnd }
+                )?.invoke(marker)
             }
 
             override fun onMarkerDragStart(marker: Marker) {
-                with(decorations.nodeForMarker(marker)) {
-                    this?.markerState?.position = marker.position
-                    this?.markerState?.dragState = DragState.START
-                }
+                decorations.findInputCallback<MarkerNode, Marker, Unit>(
+                    nodeMatchPredicate = { it.marker == marker },
+                    nodeInputCallback = {
+                        {
+                            markerState.position = it.position
+                            markerState.dragState = DragState.START
+                        }
+                    },
+                    inputHandlerCallback = { onMarkerDragStart }
+                )?.invoke(marker)
             }
         })
         map.setInfoWindowAdapter(
             ComposeInfoWindowAdapter(
                 mapView,
-                markerNodeFinder = { decorations.nodeForMarker(it) }
+                markerNodeFinder = { marker ->
+                    decorations.firstOrNull { it is MarkerNode && it.marker == marker }
+                            as MarkerNode?
+                }
             )
         )
     }
 }
 
-private fun MutableList<MapNode>.nodeForCircle(circle: Circle): CircleNode? =
-    firstOrNull { it is CircleNode && it.circle == circle } as? CircleNode
-
-private fun MutableList<MapNode>.nodeForMarker(marker: Marker): MarkerNode? =
-    firstOrNull { it is MarkerNode && it.marker == marker } as? MarkerNode
-
-private fun MutableList<MapNode>.nodeForPolygon(polygon: Polygon): PolygonNode? =
-    firstOrNull { it is PolygonNode && it.polygon == polygon } as? PolygonNode
-
-private fun MutableList<MapNode>.nodeForPolyline(polyline: Polyline): PolylineNode? =
-    firstOrNull { it is PolylineNode && it.polyline == polyline } as? PolylineNode
-
-private fun MutableList<MapNode>.nodeForGroundOverlay(
-    groundOverlay: GroundOverlay
-): GroundOverlayNode? =
-    firstOrNull { it is GroundOverlayNode && it.groundOverlay == groundOverlay } as? GroundOverlayNode
+/**
+ * General pattern for handling input:
+ * Find the node that belongs to the clicked item.
+ * If there is none, default to the first InputHandlerNode.
+ * If there is none, don't handle.
+ */
+private inline fun <reified NodeT : MapNode, I, O> Iterable<MapNode>.findInputCallback(
+    nodeMatchPredicate: (NodeT) -> Boolean,
+    nodeInputCallback: NodeT.() -> ((I) -> O)?,
+    inputHandlerCallback: InputHandlerNode.() -> ((I) -> O)?,
+): ((I) -> O)? {
+    var callback: ((I) -> O)? = null
+    for (item in this) {
+        if (item is NodeT && nodeMatchPredicate(item)) {
+            // Found a matching node
+            return nodeInputCallback(item)
+        } else if (item is InputHandlerNode) {
+            // Found an input handler, but keep looking for matching nodes
+            callback = inputHandlerCallback(item)
+        }
+    }
+    return callback
+}

@@ -1,14 +1,14 @@
 plugins {
     id 'kotlin-android'
-    id 'kotlin-parcelize'
 }
 
 android {
-    compileSdk 32
+    namespace "com.google.maps.android.compose"
+    compileSdk 33
 
     defaultConfig {
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
     }
@@ -19,7 +19,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "$compose_compiler_version"
+        kotlinCompilerExtensionVersion libs.versions.composecompiler.get()
     }
 
     buildFeatures {
@@ -35,14 +35,16 @@ android {
 }
 
 dependencies {
-    implementation "androidx.compose.foundation:foundation:$compose_version"
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    implementation 'com.google.maps.android:maps-ktx:3.4.0'
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.core
+    implementation libs.androidx.compose.foundation
+    implementation libs.kotlin
+    implementation libs.maps.playservice
+    implementation libs.maps.ktx.std
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation "androidx.core:core-ktx:1.7.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation libs.test.junit
+
+    androidTestImplementation platform(libs.androidx.compose.bom)
+    androidTestImplementation libs.androidx.test.espresso
+    androidTestImplementation libs.androidx.test.junit.ktx
 }

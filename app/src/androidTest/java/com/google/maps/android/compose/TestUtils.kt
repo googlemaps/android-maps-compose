@@ -4,6 +4,9 @@ import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 
+val hasValidApiKey: Boolean =
+    BuildConfig.MAPS_API_KEY.isNotBlank() && BuildConfig.MAPS_API_KEY != "YOUR_API_KEY"
+
 const val assertRoundingError: Double = 0.01
 
 fun LatLng.assertEquals(other: LatLng) {

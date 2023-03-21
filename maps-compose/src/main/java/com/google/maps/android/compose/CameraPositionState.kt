@@ -16,11 +16,13 @@ package com.google.maps.android.compose
 
 import androidx.annotation.UiThread
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -110,16 +112,16 @@ public class CameraPositionState(
 
     // Used to perform side effects thread-safely.
     // Guards all mutable properties that are not `by mutableStateOf`.
-    private val lock = Any()
+    private val lock = Unit
 
     // The map currently associated with this CameraPositionState.
     // Guarded by `lock`.
-    private var map: GoogleMap? = null
+    private var map: GoogleMap? by mutableStateOf(null)
 
     // An action to run when the map becomes available or unavailable.
     // represents a mutually exclusive mutation to perform while holding `lock`.
     // Guarded by `lock`.
-    private var onMapChanged: OnMapChangedCallback? = null
+    private var onMapChanged: OnMapChangedCallback? by mutableStateOf(null)
 
     /**
      * Set [onMapChanged] to [callback], invoking the current callback's
@@ -133,7 +135,7 @@ public class CameraPositionState(
     // A token representing the current owner of any ongoing motion in progress.
     // Used to determine if map animation should stop when calls to animate end.
     // Guarded by `lock`.
-    private var movementOwner: Any? = null
+    private var movementOwner: Any? by mutableStateOf(null)
 
     /**
      * Used with [onMapChangedLocked] to execute one-time actions when a map becomes available
@@ -309,3 +311,11 @@ public class CameraPositionState(
         )
     }
 }
+
+/** Provides the [CameraPositionState] used by the map. */
+internal val LocalCameraPositionState = staticCompositionLocalOf { CameraPositionState() }
+
+/** The current [CameraPositionState] used by the map. */
+public val currentCameraPositionState: CameraPositionState
+    @[GoogleMapComposable ReadOnlyComposable Composable]
+    get() = LocalCameraPositionState.current

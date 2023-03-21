@@ -15,8 +15,7 @@
  limitations under the License.
 -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.maps.android.compose">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
   <uses-permission android:name="android.permission.INTERNET" />
 
@@ -54,6 +53,9 @@
         android:exported="false"/>
     <activity
         android:name=".ScaleBarActivity"
+        android:exported="false"/>
+    <activity
+        android:name=".StreetViewActivity"
         android:exported="false"/>
 
     <!-- Used by createComponentActivity() for unit testing -->

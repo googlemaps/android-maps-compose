@@ -1,19 +1,51 @@
 ![Tests](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)
 ![Stable](https://img.shields.io/badge/stability-stable-green)
-[![Discord](https://img.shields.io/discord/676948200904589322)][Discord channel]
+[![Discord](https://img.shields.io/discord/676948200904589322)][Discord server]
 ![Apache-2.0](https://img.shields.io/badge/license-Apache-blue)
 
-Maps Compose 🗺
-===============
+# Maps Compose 🗺
 
 ## Description
-This repository contains [Jetpack Compose][jetpack-compose] components for the Maps SDK for Android.
+
+This repository contains [Jetpack Compose][jetpack-compose] components for the [Maps SDK for Android][maps-sdk].
 
 ## Requirements
+
 * Kotlin-enabled project
 * Jetpack Compose-enabled project (see [releases](https://github.com/googlemaps/android-maps-compose/releases) for the required version of Jetpack Compose)
 * An [API key][api-key]
 * API level 21+
+
+## Installation
+
+```groovy
+dependencies {
+    implementation 'com.google.maps.android:maps-compose:2.11.2'
+
+    // Make sure to also include the latest version of the Maps SDK for Android
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+    // Optionally, you can include the Compose utils library for Clustering, etc.
+    implementation 'com.google.maps.android:maps-compose-utils:2.11.2'
+
+    // Optionally, you can include the widgets library for ScaleBar, etc.
+    implementation 'com.google.maps.android:maps-compose-widgets:2.11.2'
+}
+```
+
+## Sample App
+
+This repository includes a [sample app](app).
+
+To run it:
+
+1. Get a [Maps API key][api-key]
+1. Create a file in the root directory named `local.properties` with a single line that looks like this, replacing YOUR_KEY with the key from step 1: `MAPS_API_KEY=YOUR_KEY`
+1. Build and run
+
+## Documentation
+
+You can learn more about all the extensions provided by this library by reading the [reference documents][Javadoc].
 
 ## Usage
 
@@ -30,14 +62,17 @@ GoogleMap(
 )
 ```
 
-### Creating and configuring a map
+<details>
+  <summary>Creating and configuring a map</summary>
 
-Configuring the map can be done by passing a `MapProperties` object into the 
+## Creating and configuring a map
+
+Configuring the map can be done by passing a `MapProperties` object into the
 `GoogleMap` composable, or for UI-related configurations, use `MapUiSettings`.
 `MapProperties` and `MapUiSettings` should be your first go-to for configuring
 the map. For any other configuration not present in those two classes, use
-`googleMapOptionsFactory` to provide a `GoogleMapOptions` instance instead. 
-Typically, anything that can only be provided once (i.e. when the map is 
+`googleMapOptionsFactory` to provide a `GoogleMapOptions` instance instead.
+Typically, anything that can only be provided once (i.e. when the map is
 created)—like map ID—should be provided via `googleMapOptionsFactory`.
 
 ```kotlin
@@ -83,12 +118,17 @@ GoogleMap(
 
 ```
 
+</details>
+
+<details>
+  <summary>Controlling a map's camera</summary>
+
 ### Controlling a map's camera
 
 Camera changes and updates can be observed and controlled via `CameraPositionState`.
 
-**Note**: `CameraPositionState` is the source of truth for anything camera 
-related. So, providing a camera position in `GoogleMapOptions` will be 
+**Note**: `CameraPositionState` is the source of truth for anything camera
+related. So, providing a camera position in `GoogleMapOptions` will be
 overridden by `CameraPosition`.
 
 ```kotlin
@@ -107,9 +147,14 @@ Box(Modifier.fillMaxSize()) {
 }
 ```
 
+</details>
+
+<details>
+  <summary>Drawing on a map</summary>
+
 ### Drawing on a map
 
-Drawing on the map, such as adding markers, can be accomplished by adding child 
+Drawing on the map, such as adding markers, can be accomplished by adding child
 composable elements to the content of the `GoogleMap`.
 
 ```kotlin
@@ -127,10 +172,15 @@ GoogleMap(
 }
 ```
 
-#### Customizing a marker's info window
+</details>
 
-You can customize a marker's info window contents by using the 
-`MarkerInfoWindowContent` element, or if you want to customize the entire info 
+<details>
+  <summary>Customizing a marker's info window</summary>
+
+### Customizing a marker's info window
+
+You can customize a marker's info window contents by using the
+`MarkerInfoWindowContent` element, or if you want to customize the entire info
 window, use the `MarkerInfoWindow` element instead. Both of these elements
 accept a `content` parameter to provide your customization in a composable
 lambda expression.
@@ -153,51 +203,72 @@ MarkerInfoWindow(
 }
 ```
 
-#### Obtaining Access to the raw GoogleMap (Experimental)
+</details>
 
-Certain use cases require extending the `GoogleMap` object to decorate / augment
-the map. For example, while marker clustering is not yet supported by Maps Compose
-(see [Issue #44](https://github.com/googlemaps/android-maps-compose/issues/44)),
-it is desirable to use the available [utility library](https://github.com/googlemaps/android-maps-utils)
-to perform clustering in the interim. Doing so requires access to the Maps SDK
-`GoogleMap` object which you can obtain with the `MapEffect` composable.
+<details>
+  <summary>Street View</summary>
+
+### Street View
+
+You can add a Street View given a location using the `StreetView` composable.
+To use it, provide a `StreetViewPanoramaOptions` object as follows:
+
+```kotlin
+val singapore = LatLng(1.35, 103.87)
+StreetView(
+    streetViewPanoramaOptionsFactory = {
+        StreetViewPanoramaOptions().position(singapore)
+    }
+)
+```
+
+</details>
+
+<details>
+  <summary>Controlling the map directly (experimental)</summary>
+
+## Controlling the map directly (experimental)
+
+Certain use cases may require extending the `GoogleMap` object to decorate / augment
+the map. It can be obtained with the `MapEffect` Composable.
+Doing so can be dangerous, as the `GoogleMap` object is managed by this library.
 
 ```kotlin
 GoogleMap(
     // ...
 ) {
-    val context = LocalContext.current
-    var clusterManager by remember { mutableStateOf<ClusterManager<MyItem>?>(null) }
-    MapEffect(items) { map ->
-        if (clusterManager == null) {
-            clusterManager = ClusterManager<MyItem>(context, map)
-        }
-        clusterManager?.addItems(items)
+    MapEffect { map ->
+        // map is the GoogleMap
     }
-    
-    MarkerInfoWindow(
-        state = rememberMarkerState(position = LatLng(1.35, 103.87)),
-        onClick = {
-            // This won't work :(
-            Log.d("MapEffect", "I cannot be clicked :( $it")
-            true
-        }
-    )
-
 }
 ```
 
-Note, however, that `MapEffect` is designed as an escape hatch and has certain
-gotchas. The `GoogleMap` composable provided by the Maps Compose library manages
-properties while the `GoogleMap` is in composition, and so, setting properties
-on the `GoogleMap` instance provided in the `MapEffect` composable may have
-unintended consequences. For instance, using the utility library to perform 
-clustering as shown in the example above will break `onClick` events from
-being propagated on `Marker` composables as shown in the comment above. So, if 
-you are using clustering, stick with adding markers through the `ClusterManager`
-and don't use `Marker` composables (unless you don't care about `onClick` 
-events). Clustering is the only use-case tested with `MapEffect`, there may be
-gotchas depending on what features you use in the utility library.
+</details>
+
+## Utility Library
+
+This library also provides optional utilities in the `maps-compose-utils` library.
+
+### Clustering
+
+The marker clustering utility helps you manage multiple markers at different zoom levels.
+When a user views the map at a high zoom level, the individual markers show on the map. When the user zooms out, the markers gather together into clusters, to make viewing the map easier.
+
+The [MapClusteringActivity](app/src/main/java/com/google/maps/android/compose/MapClusteringActivity.kt) demonstrates usage.
+
+```kotlin
+Clustering(
+    items = items,
+    // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
+    onClusterClick = null,
+    onClusterItemClick = null,
+    onClusterItemInfoWindowClick = null,
+    // Optional: Custom rendering for clusters
+    clusterContent = null,
+    // Optional: Custom rendering for non-clustered items
+    clusterItemContent = null,
+)
+```
 
 ## Widgets
 
@@ -231,36 +302,6 @@ DisappearingScaleBar(
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
 
-## Sample App
-
-This repository includes a [sample app](app).
-
-To run it, you'll have to:
-1. Get a [Maps API key][api-key]
-1. Add an entry in `local.properties` that looks like `MAPS_API_KEY=YOUR_KEY`
-1. Build and run
-
-## Installation
-
-```groovy
-dependencies {
-    implementation 'com.google.maps.android:maps-compose:2.5.2'
-    
-    // Make sure to also include the latest version of the Maps SDK for Android 
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    
-    // Also include Compose version `1.2.0-alpha03` or higher - for example:
-    implementation 'androidx.compose.foundation:foundation:2.5.2-alpha03'
-    
-    // Optionally, you can include the widgets library if you want to use ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:2.5.2'
-}
-```
-
-## Documentation
-
-You can learn more about all the extensions provided by this library by reading the [reference documents][Javadoc].
-
 ## Contributing
 
 Contributions are welcome and encouraged! See [contributing] for more info.
@@ -272,10 +313,11 @@ Encounter an issue while using this library?
 If you find a bug or have a feature request, please [file an issue].
 Or, if you'd like to contribute, send us a [pull request] and refer to our [code of conduct].
 
-You can also reach us on our [Discord channel].
+You can also discuss this library on our [Discord server].
 
+[maps-sdk]: https://developers.google.com/maps/documentation/android-sdk
 [api-key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
-[Discord channel]: https://discord.gg/hYsWbmk
+[Discord server]: https://discord.gg/hYsWbmk
 [Javadoc]: https://googlemaps.github.io/android-maps-compose
 [contributing]: CONTRIBUTING.md
 [code of conduct]: CODE_OF_CONDUCT.md

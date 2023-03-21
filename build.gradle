@@ -1,28 +1,27 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = '1.7.0'
-    ext.compose_compiler_version = '1.2.0'
-    ext.compose_version = '1.2.0-rc03'
-    ext.androidx_test_version = '1.4.0'
+    ext.kotlin_version = libs.versions.kotlin.get()
+    ext.compose_compiler_version = libs.versions.composecompiler.get()
+    ext.androidx_test_version = libs.versions.androidxtest.get()
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.0.4"
-        classpath "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.5.0'
-        classpath 'com.hiya:jacoco-android:0.2'
+        classpath libs.android.gradle.plugin
+        classpath libs.maps.secrets.plugin
+        classpath libs.kotlin.gradle.plugin
+        classpath libs.dokka.plugin
+        classpath libs.jacoco.android.plugin
     }
 }
 
 plugins {
-    id 'org.jetbrains.dokka' version '1.5.0'
+    alias libs.plugins.dokka apply false
 }
 
 ext.projectArtifactId = { project ->
-    if (project.name == 'maps-compose' || project.name == 'maps-compose-widgets') {
+    if (project.name in ['maps-compose', 'maps-compose-widgets', 'maps-compose-utils']) {
         return project.name
     } else {
         return null
@@ -31,7 +30,7 @@ ext.projectArtifactId = { project ->
 
 allprojects {
     group = 'com.google.maps.android'
-    version = '2.5.2'
+    version = '2.11.3'
     project.ext.artifactId = rootProject.ext.projectArtifactId(project)
 }
 
@@ -49,7 +48,7 @@ subprojects { project ->
 
     // Code coverage
     jacoco {
-        toolVersion = "0.8.7"
+        toolVersion = libs.versions.jacoco.tool.plugin.get()
     }
 
     tasks.withType(Test) {
@@ -57,24 +56,21 @@ subprojects { project ->
         jacoco.excludes = ['jdk.internal.*']
     }
 
-    task sourcesJar(type: Jar) {
-        from android.sourceSets.main.java.source
-        archiveClassifier.set("sources")
-    }
-
-    task javadocJar(type: Jar) {
-        dependsOn(tasks.named("dokkaHtml"))
-        dependsOn(tasks.named("dokkaJavadoc"))
-        archiveClassifier.set("javadoc")
-        from new File(buildDir, "dokka/javadoc")
+    android {
+        publishing {
+            singleVariant("release") {
+                withSourcesJar()
+                withJavadocJar()
+            }
+        }
     }
 
     publishing {
         publications {
             aar(MavenPublication) {
-                groupId project.group
-                artifactId project.ext.artifactId
-                version project.version
+                afterEvaluate {
+                    from components.release
+                }
 
                 pom {
                     name = project.name
@@ -104,22 +100,6 @@ subprojects { project ->
                             name = 'Google Inc.'
                         }
                     }
-                }
-
-                pom.withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-                    project.configurations.api.allDependencies.each { dependency ->
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', dependency.group)
-                        dependencyNode.appendNode('artifactId', dependency.name)
-                        dependencyNode.appendNode('version', dependency.version)
-                    }
-                }
-
-                afterEvaluate {
-                    artifact "$buildDir/outputs/aar/$project.name-release.aar"
-                    artifact javadocJar
-                    artifact sourcesJar
                 }
             }
         }

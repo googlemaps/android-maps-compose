@@ -18,10 +18,12 @@ import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -32,6 +34,7 @@ import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -86,6 +89,12 @@ public fun GoogleMap(
     contentPadding: PaddingValues = NoPadding,
     content: (@Composable @GoogleMapComposable () -> Unit)? = null,
 ) {
+    // When in preview, early return a Box with the received modifier preserving layout
+    if (LocalInspectionMode.current) {
+        Box(modifier = modifier)
+        return
+    }
+
     val context = LocalContext.current
     val mapView = remember { MapView(context, googleMapOptionsFactory()) }
 
@@ -124,13 +133,17 @@ public fun GoogleMap(
                     mapProperties = currentMapProperties,
                     mapUiSettings = currentUiSettings,
                 )
-                currentContent?.invoke()
+                CompositionLocalProvider(
+                    LocalCameraPositionState provides cameraPositionState,
+                ) {
+                    currentContent?.invoke()
+                }
             }
         }
     }
 }
 
-private suspend inline fun disposingComposition(factory: () -> Composition) {
+internal suspend inline fun disposingComposition(factory: () -> Composition) {
     val composition = factory()
     try {
         awaitCancellation()
@@ -171,6 +184,12 @@ private fun MapLifecycle(mapView: MapView) {
             context.unregisterComponentCallbacks(callbacks)
         }
     }
+    DisposableEffect(mapView) {
+        onDispose {
+            mapView.onDestroy()
+            mapView.removeAllViews()
+        }
+    }
 }
 
 private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Event>): LifecycleEventObserver =
@@ -189,7 +208,9 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
             Lifecycle.Event.ON_RESUME -> this.onResume()
             Lifecycle.Event.ON_PAUSE -> this.onPause()
             Lifecycle.Event.ON_STOP -> this.onStop()
-            Lifecycle.Event.ON_DESTROY -> this.onDestroy()
+            Lifecycle.Event.ON_DESTROY -> {
+                //handled in onDispose
+            }
             else -> throw IllegalStateException()
         }
         previousState.value = event
