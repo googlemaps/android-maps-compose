@@ -145,9 +145,14 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     override fun getDescriptorForCluster(cluster: Cluster<T>): BitmapDescriptor {
         return if (clusterContentState.value != null) {
             val viewInfo = keysToViews.entries
-                .first { (key, _) -> (key as? ViewKey.Cluster)?.cluster == cluster }
-                .value
-            renderViewToBitmapDescriptor(viewInfo.view)
+                .find { (key, _) -> (key as? ViewKey.Cluster)?.cluster == cluster }
+                ?.value
+            if (viewInfo != null) {
+                renderViewToBitmapDescriptor(viewInfo.view)
+            } else {
+                // Sometimes called for a marker that seems to be only transient
+                super.getDescriptorForCluster(cluster)
+            }
         } else {
             super.getDescriptorForCluster(cluster)
         }
@@ -158,9 +163,11 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
         if (clusterItemContentState.value != null) {
             val viewInfo = keysToViews.entries
-                .first { (key, _) -> (key as? ViewKey.Item)?.item == item }
-                .value
-            markerOptions.icon(renderViewToBitmapDescriptor(viewInfo.view))
+                .find { (key, _) -> (key as? ViewKey.Item)?.item == item }
+                ?.value
+            if (viewInfo != null) {
+                markerOptions.icon(renderViewToBitmapDescriptor(viewInfo.view))
+            } // Sometimes called for a marker that seems to be only transient, so do nothing
         }
     }
 
