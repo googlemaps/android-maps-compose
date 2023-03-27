@@ -175,8 +175,8 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         )
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
         val bitmap = Bitmap.createBitmap(
-            view.measuredWidth,
-            view.measuredHeight,
+            view.measuredWidth.takeIf { it > 0 } ?: 1,
+            view.measuredHeight.takeIf { it > 0 } ?: 1,
             Bitmap.Config.ARGB_8888
         )
         bitmap.applyCanvas {
