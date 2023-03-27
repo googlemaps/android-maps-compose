@@ -98,7 +98,9 @@ public fun GoogleMap(
     val context = LocalContext.current
     val mapView = remember { MapView(context, googleMapOptionsFactory()) }
 
-    AndroidView(modifier = modifier, factory = { mapView })
+    Box(modifier = modifier) {
+        AndroidView(factory = { mapView })
+    }
     MapLifecycle(mapView)
 
     // rememberUpdatedState and friends are used here to make these values observable to
@@ -154,7 +156,7 @@ internal suspend inline fun disposingComposition(factory: () -> Composition) {
 
 private suspend inline fun MapView.newComposition(
     parent: CompositionContext,
-    noinline content: @Composable () -> Unit
+    noinline content: @Composable () -> Unit,
 ): Composition {
     val map = awaitMap()
     return Composition(
