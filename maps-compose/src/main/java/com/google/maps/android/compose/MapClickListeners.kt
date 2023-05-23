@@ -49,10 +49,10 @@ public interface IndoorStateChangeListener {
  */
 internal class MapClickListeners {
     var indoorStateChangeListener: IndoorStateChangeListener by mutableStateOf(DefaultIndoorStateChangeListener)
-    var onMapClick: (LatLng) -> Unit by mutableStateOf({})
-    var onMapLongClick: (LatLng) -> Unit by mutableStateOf({})
-    var onMapLoaded: () -> Unit by mutableStateOf({})
-    var onMyLocationButtonClick: () -> Boolean by mutableStateOf({ false })
-    var onMyLocationClick: (Location) -> Unit by mutableStateOf({})
-    var onPOIClick: (PointOfInterest) -> Unit by mutableStateOf({})
+    var onMapClick: ((LatLng) -> Unit)? by mutableStateOf(null)
+    var onMapLongClick: ((LatLng) -> Unit)? by mutableStateOf(null)
+    var onMapLoaded: (() -> Unit)? by mutableStateOf(null)
+    var onMyLocationButtonClick: (() -> Boolean)? by mutableStateOf(null)
+    var onMyLocationClick: ((Location) -> Unit)? by mutableStateOf(null)
+    var onPOIClick: ((PointOfInterest) -> Unit)? by mutableStateOf(null)
 }
