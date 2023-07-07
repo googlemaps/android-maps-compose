@@ -46,7 +46,7 @@ jobs:
         SONATYPE_PASSWORD: ${{ secrets.SYNCED_SONATYPE_PASSWORD }}
         SONATYPE_USERNAME: ${{ secrets.SYNCED_SONATYPE_USERNAME }}
     - name: Semantic Release
-      uses: cycjimmy/semantic-release-action@v3
+      uses: cycjimmy/semantic-release-action@v3.4.1
       with:
         extra_plugins: |
           "@semantic-release/commit-analyzer"
