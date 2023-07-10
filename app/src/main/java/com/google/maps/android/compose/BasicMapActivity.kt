@@ -65,7 +65,7 @@ val singapore = LatLng(48.135, 11.582)
 val singapore2 = LatLng(1.40, 103.77)
 val singapore3 = LatLng(1.45, 103.77)
 val munich = LatLng(48.135, 11.582)
-val defaultCameraPosition = CameraPosition.fromLatLngZoom(munich, 11f)
+val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
 
 class BasicMapActivity : ComponentActivity() {
 
