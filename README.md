@@ -23,7 +23,7 @@ dependencies {
     implementation 'com.google.maps.android:maps-compose:2.11.4'
 
     // Make sure to also include the latest version of the Maps SDK for Android
-    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
 
     // Optionally, you can include the Compose utils library for Clustering, etc.
     implementation 'com.google.maps.android:maps-compose-utils:2.11.4'
