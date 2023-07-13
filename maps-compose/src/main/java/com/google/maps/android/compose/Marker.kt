@@ -68,7 +68,7 @@ public enum class DragState {
  * @param position the initial marker position
  */
 public class MarkerState(
-    position: LatLng = LatLng(0.0, 0.0)
+    position: LatLng = LatLng(0.0, 0.0),
 ) {
     /**
      * Current position of the marker.
@@ -113,7 +113,7 @@ public class MarkerState(
          */
         public val Saver: Saver<MarkerState, LatLng> = Saver(
             save = { it.position },
-            restore = { MarkerState(it) }
+            restore = { MarkerState(it) },
         )
     }
 }
@@ -121,7 +121,7 @@ public class MarkerState(
 @Composable
 public fun rememberMarkerState(
     key: String? = null,
-    position: LatLng = LatLng(0.0, 0.0)
+    position: LatLng = LatLng(0.0, 0.0),
 ): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
     MarkerState(position)
 }
@@ -191,6 +191,75 @@ public fun Marker(
 }
 
 /**
+ * A composable for a marker on the map.
+ *
+ * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
+ * trigger a rendering of the content composable.
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
+ * @param alpha the alpha (opacity) of the marker
+ * @param anchor the anchor for the marker image
+ * @param draggable sets the draggability for the marker
+ * @param flat sets if the marker should be flat against the map
+ * @param infoWindowAnchor the anchor point of the info window on the marker image
+ * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
+ * @param snippet the snippet for the marker
+ * @param tag optional tag to associate with the marker
+ * @param title the title for the marker
+ * @param visible the visibility of the marker
+ * @param zIndex the z-index of the marker
+ * @param onClick a lambda invoked when the marker is clicked
+ * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
+ * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
+ * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param content composable lambda expression used to customize the marker's content
+ */
+@Composable
+@GoogleMapComposable
+public fun Marker(
+    vararg keys: Any,
+    state: MarkerState = rememberMarkerState(),
+    alpha: Float = 1.0f,
+    anchor: Offset = Offset(0.5f, 1.0f),
+    draggable: Boolean = false,
+    flat: Boolean = false,
+    infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
+    rotation: Float = 0.0f,
+    snippet: String? = null,
+    tag: Any? = null,
+    title: String? = null,
+    visible: Boolean = true,
+    zIndex: Float = 0.0f,
+    onClick: (Marker) -> Boolean = { false },
+    onInfoWindowClick: (Marker) -> Unit = {},
+    onInfoWindowClose: (Marker) -> Unit = {},
+    onInfoWindowLongClick: (Marker) -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    val icon = rememberComposeBitmapDescriptor(*keys) { content() }
+
+    MarkerImpl(
+        state = state,
+        alpha = alpha,
+        anchor = anchor,
+        draggable = draggable,
+        flat = flat,
+        icon = icon,
+        infoWindowAnchor = infoWindowAnchor,
+        rotation = rotation,
+        snippet = snippet,
+        tag = tag,
+        title = title,
+        visible = visible,
+        zIndex = zIndex,
+        onClick = onClick,
+        onInfoWindowClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose,
+        onInfoWindowLongClick = onInfoWindowLongClick,
+    )
+}
+
+/**
  * A composable for a marker on the map wherein its entire info window can be
  * customized. If this customization is not required, use
  * [com.google.maps.android.compose.Marker].
@@ -236,7 +305,7 @@ public fun MarkerInfoWindow(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    content: (@Composable (Marker) -> Unit)? = null
+    content: (@Composable (Marker) -> Unit)? = null,
 ) {
     MarkerImpl(
         state = state,
@@ -306,7 +375,7 @@ public fun MarkerInfoWindowContent(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    content: (@Composable (Marker) -> Unit)? = null
+    content: (@Composable (Marker) -> Unit)? = null,
 ) {
     MarkerImpl(
         state = state,
@@ -442,6 +511,6 @@ private fun MarkerImpl(
             }
             set(visible) { this.marker.isVisible = it }
             set(zIndex) { this.marker.zIndex = it }
-        }
+        },
     )
 }
