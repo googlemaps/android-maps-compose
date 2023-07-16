@@ -61,11 +61,10 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "BasicMapActivity"
 
-val singapore = LatLng(48.135, 11.582)
+val singapore = LatLng(48.1349428, 11.5820491)
 val singapore2 = LatLng(1.40, 103.77)
 val singapore3 = LatLng(1.45, 103.77)
-val munich = LatLng(48.135, 11.582)
-val defaultCameraPosition = CameraPosition.fromLatLngZoom(munich, 11f)
+val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
 
 class BasicMapActivity : ComponentActivity() {
 

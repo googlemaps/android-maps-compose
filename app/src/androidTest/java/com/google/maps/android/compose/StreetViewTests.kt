@@ -18,7 +18,7 @@ class StreetViewTests {
     val composeTestRule = createComposeRule()
 
     private lateinit var cameraPositionState: StreetViewCameraPositionState
-    private val initialLatLng = munich
+    private val initialLatLng = singapore
 
     @Before
     fun setUp() {
