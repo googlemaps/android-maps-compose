@@ -38,7 +38,7 @@ class StreetViewTests {
                 onClick = onClick
             )
         }
-        composeTestRule.waitUntil(8000) {
+        composeTestRule.waitUntil(10000) {
             cameraPositionState.location.position.latitude != 0.0 &&
                 cameraPositionState.location.position.longitude != 0.0
         }
