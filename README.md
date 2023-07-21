@@ -285,19 +285,31 @@ The [ScaleBarActivity](app/src/main/java/com/google/maps/android/compose/ScaleBa
 Both versions of this widget leverage the `CameraPositionState` in `maps-compose` and therefore are very simple to configure with their defaults:
 
 ```kotlin
-ScaleBar(
-    modifier = Modifier
+Box(Modifier.fillMaxSize()) { 
+    
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState
+    ) {
+        // ... your map composables ...
+    }
+
+    ScaleBar(
+        modifier = Modifier
             .padding(top = 5.dp, end = 15.dp)
             .align(Alignment.TopEnd),
-    cameraPositionState = cameraPositionState
-)
+        cameraPositionState = cameraPositionState
+    )
 
-DisappearingScaleBar(
-    modifier = Modifier
+    // OR
+
+    DisappearingScaleBar(
+        modifier = Modifier
             .padding(top = 5.dp, end = 15.dp)
             .align(Alignment.TopStart),
-    cameraPositionState = cameraPositionState
-)
+        cameraPositionState = cameraPositionState
+    )
+}
 ```
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
