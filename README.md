@@ -309,7 +309,7 @@ Box(Modifier.fillMaxSize()) {
             .align(Alignment.TopStart),
         cameraPositionState = cameraPositionState
     )
-}
+} 
 ```
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
