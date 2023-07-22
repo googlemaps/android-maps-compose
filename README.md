@@ -214,7 +214,7 @@ You can add a Street View given a location using the `StreetView` composable.
 To use it, provide a `StreetViewPanoramaOptions` object as follows:
 
 ```kotlin
-val singapore = LatLng(1.35, 103.87)
+val singapore = LatLng(1.3588227, 103.8742114)
 StreetView(
     streetViewPanoramaOptionsFactory = {
         StreetViewPanoramaOptions().position(singapore)
