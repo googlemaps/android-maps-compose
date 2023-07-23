@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ internal class MapClickListeners {
     var onMapClick: ((LatLng) -> Unit)? by mutableStateOf(null)
     var onMapLongClick: ((LatLng) -> Unit)? by mutableStateOf(null)
     var onMapLoaded: (() -> Unit)? by mutableStateOf(null)
-    var onMyLocationButtonClick: (() -> Boolean)? by mutableStateOf(null)
+    var onMyLocationButtonClick: () -> Boolean by mutableStateOf({false})
     var onMyLocationClick: ((Location) -> Unit)? by mutableStateOf(null)
     var onPOIClick: ((PointOfInterest) -> Unit)? by mutableStateOf(null)
 }
