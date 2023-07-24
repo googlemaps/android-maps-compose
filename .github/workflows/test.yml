@@ -24,9 +24,6 @@ on:
     branches-ignore: ['gh-pages']
   workflow_dispatch:
 
-  workflow_call:
-
-
 jobs:
   test:
     runs-on: ubuntu-latest
