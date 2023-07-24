@@ -42,10 +42,10 @@ jobs:
         distribution: 'adopt'
 
     - name: Inject Maps API Key
-      run: |
-        echo MAPS_API_KEY=$MAPS_API_KEY >> ./local.properties
       env:
         MAPS_API_KEY: ${{ secrets.ACTIONS_API_KEY }}
+      run: |
+        [ -z "$MAPS_API_KEY" ] && MAPS_API_KEY="YOUR_API_KEY"; echo "MAPS_API_KEY=$MAPS_API_KEY" >> ./local.properties
 
     - name: Build debug
       run: ./gradlew assembleDebug
