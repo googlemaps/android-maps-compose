@@ -40,7 +40,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "maps" }
 maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "maps" }
 maps-utils = { module = "com.google.maps.android:android-maps-utils", version.require = "2.3.0" }
-maps-playservice = { module = "com.google.android.gms:play-services-maps", version.require = "18.0.2" }
+maps-playservice = { module = "com.google.android.gms:play-services-maps", version.require = "18.1.0" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 test-junit = { module = "junit:junit", version.ref = "junit" }
