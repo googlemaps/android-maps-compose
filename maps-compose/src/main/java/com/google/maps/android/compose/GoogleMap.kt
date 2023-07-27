@@ -18,6 +18,7 @@ import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -45,6 +47,7 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
+import com.google.maps.android.v3.ktx.BuildConfig
 import kotlinx.coroutines.awaitCancellation
 
 /**
@@ -224,3 +227,40 @@ private fun MapView.componentCallbacks(): ComponentCallbacks =
             this@componentCallbacks.onLowMemory()
         }
     }
+
+public typealias GoogleMapFactory = @Composable () -> Unit
+
+@Composable
+public fun googleMapFactory(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    onMapLoaded: () -> Unit = {},
+    content: @Composable () -> Unit = {}
+): GoogleMapFactory {
+    return {
+        val singapore = LatLng(1.3588227, 103.8742114)
+        val singaporeState = rememberMarkerState(position = singapore)
+        var circleCenter by remember { mutableStateOf(singapore) }
+        if (singaporeState.dragState == DragState.END) {
+            circleCenter = singaporeState.position
+        }
+        val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+
+        val mapProperties by remember {
+            mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+        }
+        val mapVisible by remember { mutableStateOf(true) }
+
+        if (mapVisible) {
+            GoogleMap(
+                modifier = modifier,
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                uiSettings = uiSettings,
+                onMapLoaded = onMapLoaded,
+            )
+            GoogleMap()
+        }
+    }
+}
+
