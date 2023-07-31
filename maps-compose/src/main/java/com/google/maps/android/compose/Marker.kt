@@ -191,10 +191,10 @@ public fun Marker(
 }
 
 /**
- * A composable for a marker on the map.
+ * Composable rendering the content passed as a marker.
  *
  * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
- * trigger a rendering of the content composable.
+ * trigger a rendering of the content composable and thus the rendering of an updated marker.
  * @param state the [MarkerState] to be used to control or observe the marker
  * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
@@ -216,7 +216,7 @@ public fun Marker(
  */
 @Composable
 @GoogleMapComposable
-public fun Marker(
+public fun MarkerComposable(
     vararg keys: Any,
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
