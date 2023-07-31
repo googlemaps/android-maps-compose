@@ -172,6 +172,26 @@ GoogleMap(
 }
 ```
 
+You can also customize the marker you want to add by using `MarkerComposable`.
+
+```kotlin
+val state = MyState()
+
+GoogleMap(
+  //...
+) {
+    MarkerComposable(
+        keys = arrayOf(state),
+        state = MarkerState(position = LatLng(-34, 151)),
+    ) {
+        MyCustomMarker(state)
+    }
+}
+```
+As this Composable is backed by a rendering of your Composable into a Bitmap, it will not render
+your Composable every recomposition. So to trigger a new render of your Composable, you can pass
+all variables that your Composable depends on to trigger a render whenever one of them change.
+
 </details>
 
 <details>
