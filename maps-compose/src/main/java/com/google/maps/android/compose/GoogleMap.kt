@@ -238,17 +238,11 @@ public fun googleMapFactory(
     content: @Composable () -> Unit = {}
 ): GoogleMapFactory {
     return {
-        val singapore = LatLng(1.3588227, 103.8742114)
-        val singaporeState = rememberMarkerState(position = singapore)
-        var circleCenter by remember { mutableStateOf(singapore) }
-        if (singaporeState.dragState == DragState.END) {
-            circleCenter = singaporeState.position
-        }
         val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
-
         val mapProperties by remember {
             mutableStateOf(MapProperties(mapType = MapType.NORMAL))
         }
+
         val mapVisible by remember { mutableStateOf(true) }
 
         if (mapVisible) {
@@ -258,8 +252,8 @@ public fun googleMapFactory(
                 properties = mapProperties,
                 uiSettings = uiSettings,
                 onMapLoaded = onMapLoaded,
+                content = content
             )
-            GoogleMap()
         }
     }
 }
