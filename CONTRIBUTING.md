@@ -26,6 +26,12 @@ information on using pull requests.
 
 Reviews will undergo strict enforcement of the [Jetpack Compose API guidelines](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md).
 
+## Adding your own MAPS_API_KEY
+
+The project is set-up to run instrumentation tests on each Pull Request. They will run on each user's branch, and this means that you need to add your Maps API Key as a GitHub secret.
+
+In order to do that, add in your GitHub secrets a variable ACTIONS_API_KEY with your key name. More information about GitHub secrets can be found [here](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
+
 ## Community Guidelines
 
 This project follows
