@@ -224,3 +224,34 @@ private fun MapView.componentCallbacks(): ComponentCallbacks =
             this@componentCallbacks.onLowMemory()
         }
     }
+
+public typealias GoogleMapFactory = @Composable () -> Unit
+
+@Composable
+public fun googleMapFactory(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    onMapLoaded: () -> Unit = {},
+    content: @Composable () -> Unit = {}
+): GoogleMapFactory {
+    return {
+        val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+        val mapProperties by remember {
+            mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+        }
+
+        val mapVisible by remember { mutableStateOf(true) }
+
+        if (mapVisible) {
+            GoogleMap(
+                modifier = modifier,
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                uiSettings = uiSettings,
+                onMapLoaded = onMapLoaded,
+                content = content
+            )
+        }
+    }
+}
+
