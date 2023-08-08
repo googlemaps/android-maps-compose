@@ -227,6 +227,15 @@ private fun MapView.componentCallbacks(): ComponentCallbacks =
 
 public typealias GoogleMapFactory = @Composable () -> Unit
 
+/**
+ * This method provides a factory pattern for GoogleMap. It can typically be used in tests to provide a default Composable
+ * of type GoogleMapFactory.
+ *
+ * @param modifier Any modifier to be applied.
+ * @param cameraPositionState The position for the map.
+ * @param onMapLoaded Listener for the map loaded.
+ * @param content Any content to be added.
+ */
 @Composable
 public fun googleMapFactory(
     modifier: Modifier = Modifier,
