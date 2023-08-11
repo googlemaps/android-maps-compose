@@ -115,6 +115,8 @@ class LocationTrackingActivity : AppCompatActivity() {
                     onMapLoaded = {
                         isMapLoaded = true
                     },
+                    // This listener overrides the behavior for the location button. It is intended to be used when a
+                    // custom behavior is needed.
                     onMyLocationButtonClick = {  Log.d(TAG,"Overriding the onMyLocationButtonClick with this Log"); true },
                     locationSource = locationSource,
                     properties = mapProperties

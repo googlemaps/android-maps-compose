@@ -58,7 +58,7 @@
         android:name=".StreetViewActivity"
         android:exported="false"/>
     <activity
-        android:name=".CustomLocationButtonActivity"
+        android:name=".CustomControlsActivity"
         android:exported="false"/>
 
     <!-- Used by createComponentActivity() for unit testing -->

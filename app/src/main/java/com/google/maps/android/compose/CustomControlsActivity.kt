@@ -39,7 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-class CustomLocationButtonActivity : ComponentActivity() {
+class CustomControlsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +65,7 @@ class CustomLocationButtonActivity : ComponentActivity() {
                             "This is a custom location button",
                             onClick = {
                                 Toast.makeText(
-                                    this@CustomLocationButtonActivity,
+                                    this@CustomControlsActivity,
                                     "Click on my location",
                                     Toast.LENGTH_SHORT
                                 ).show()

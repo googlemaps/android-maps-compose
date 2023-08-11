@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.padding(5.dp))
                         Button(
                             onClick = {
-                                context.startActivity(Intent(context, CustomLocationButtonActivity::class.java))
+                                context.startActivity(Intent(context, CustomControlsActivity::class.java))
                             }) {
                             Text(getString(R.string.custom_location_button))
                         }
