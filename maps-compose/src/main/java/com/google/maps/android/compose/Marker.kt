@@ -405,6 +405,81 @@ public fun MarkerInfoWindow(
 }
 
 /**
+ * A composable for a marker on the map wherein its entire info window and the marker itself can be
+ * customized. If this customization is not required, use
+ * [com.google.maps.android.compose.Marker].
+ *
+ * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
+ * trigger a rendering of the content composable and thus the rendering of an updated marker.
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
+ * @param alpha the alpha (opacity) of the marker
+ * @param anchor the anchor for the marker image
+ * @param draggable sets the draggability for the marker
+ * @param flat sets if the marker should be flat against the map
+ * @param infoWindowAnchor the anchor point of the info window on the marker image
+ * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
+ * @param snippet the snippet for the marker
+ * @param tag optional tag to associate with the marker
+ * @param title the title for the marker
+ * @param visible the visibility of the marker
+ * @param zIndex the z-index of the marker
+ * @param onClick a lambda invoked when the marker is clicked
+ * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
+ * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
+ * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param infoContent optional composable lambda expression for customizing the
+ * info window's content
+ * @param content composable lambda expression used to customize the marker's content
+ */
+@Composable
+@GoogleMapComposable
+public fun MarkerInfoWindowComposable(
+    vararg keys: Any,
+    state: MarkerState = rememberMarkerState(),
+    alpha: Float = 1.0f,
+    anchor: Offset = Offset(0.5f, 1.0f),
+    draggable: Boolean = false,
+    flat: Boolean = false,
+    infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
+    rotation: Float = 0.0f,
+    snippet: String? = null,
+    tag: Any? = null,
+    title: String? = null,
+    visible: Boolean = true,
+    zIndex: Float = 0.0f,
+    onClick: (Marker) -> Boolean = { false },
+    onInfoWindowClick: (Marker) -> Unit = {},
+    onInfoWindowClose: (Marker) -> Unit = {},
+    onInfoWindowLongClick: (Marker) -> Unit = {},
+    infoContent: (@Composable (Marker) -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    val icon = rememberComposeBitmapDescriptor(*keys) { content() }
+
+    MarkerImpl(
+        state = state,
+        alpha = alpha,
+        anchor = anchor,
+        draggable = draggable,
+        flat = flat,
+        icon = icon,
+        infoWindowAnchor = infoWindowAnchor,
+        rotation = rotation,
+        snippet = snippet,
+        tag = tag,
+        title = title,
+        visible = visible,
+        zIndex = zIndex,
+        onClick = onClick,
+        onInfoWindowClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose,
+        onInfoWindowLongClick = onInfoWindowLongClick,
+        infoWindow = infoContent,
+    )
+}
+
+/**
  * A composable for a marker on the map wherein its info window contents can be
  * customized. If this customization is not required, use
  * [com.google.maps.android.compose.Marker].
