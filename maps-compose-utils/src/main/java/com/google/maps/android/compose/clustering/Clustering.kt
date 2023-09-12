@@ -57,7 +57,6 @@ public fun <T : ClusterItem> Clustering(
     val clusterManager = rememberClusterManager(clusterContent, clusterItemContent) ?: return
     ResetMapListeners(clusterManager)
     SideEffect {
-        clusterManager.clearItems()
         clusterManager.setOnClusterClickListener(onClusterClick)
         clusterManager.setOnClusterItemClickListener(onClusterItemClick)
         clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
