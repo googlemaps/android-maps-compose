@@ -176,6 +176,7 @@ fun GoogleMapView(
                 onClick = markerClick
             )
             MarkerComposable(
+                title = "Marker Composable",
                 keys = arrayOf("singapore4"),
                 state = singapore4State,
                 onClick = markerClick,

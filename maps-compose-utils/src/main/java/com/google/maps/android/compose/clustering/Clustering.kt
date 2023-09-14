@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
  * @param clusterContent an optional Composable that is rendered for each [Cluster].
  * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
  */
+
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
@@ -52,8 +53,8 @@ public fun <T : ClusterItem> Clustering(
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
 ) {
-    val clusterManager = rememberClusterManager(clusterContent, clusterItemContent) ?: return
 
+    val clusterManager = rememberClusterManager(clusterContent, clusterItemContent) ?: return
     ResetMapListeners(clusterManager)
     SideEffect {
         clusterManager.setOnClusterClickListener(onClusterClick)
@@ -62,8 +63,8 @@ public fun <T : ClusterItem> Clustering(
         clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
     }
     InputHandler(
-        onMarkerClick = clusterManager::onMarkerClick,
-        onInfoWindowClick = clusterManager::onInfoWindowClick,
+        onMarkerClick = clusterManager.markerManager::onMarkerClick,
+        onInfoWindowClick = clusterManager.markerManager::onInfoWindowClick,
         onInfoWindowLongClick = clusterManager.markerManager::onInfoWindowLongClick,
         onMarkerDrag = clusterManager.markerManager::onMarkerDrag,
         onMarkerDragEnd = clusterManager.markerManager::onMarkerDragEnd,
