@@ -13,7 +13,7 @@ junitktx = "1.1.5"
 junit = "4.13.2"
 kotlin = "1.7.20"
 material = "1.9.0"
-maps = "3.4.0"
+mapsktx = "3.4.0"
 mapsecrets = "2.0.1"
 
 [libraries]
@@ -37,8 +37,8 @@ dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref
 jacoco-android-plugin = { module = "com.hiya:jacoco-android", version.ref = "jacoco-plugin" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "maps" }
-maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "maps" }
+maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "mapsktx" }
+maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsktx" }
 maps-utils = { module = "com.google.maps.android:android-maps-utils", version.require = "3.5.2" }
 maps-playservice = { module = "com.google.android.gms:play-services-maps", version.require = "18.1.0" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
