@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
 import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.StyleSpan
 import com.google.maps.android.ktx.addPolyline
 
 internal class PolylineNode(
@@ -95,6 +96,78 @@ public fun Polyline(
             set(points) { this.polyline.points = it }
             set(clickable) { this.polyline.isClickable = it }
             set(color) { this.polyline.color = it.toArgb() }
+            set(endCap) { this.polyline.endCap = it }
+            set(geodesic) { this.polyline.isGeodesic = it }
+            set(jointType) { this.polyline.jointType = it }
+            set(pattern) { this.polyline.pattern = it }
+            set(startCap) { this.polyline.startCap = it }
+            set(tag) { this.polyline.tag = it }
+            set(visible) { this.polyline.isVisible = it }
+            set(width) { this.polyline.width = it }
+            set(zIndex) { this.polyline.zIndex = it }
+        }
+    )
+}
+
+/**
+ * A composable for a polyline on the map.
+ *
+ * @param points the points comprising the polyline
+ * @param spans style spans for the polyline
+ * @param clickable boolean indicating if the polyline is clickable or not
+ * @param endCap a cap at the end vertex of the polyline
+ * @param geodesic specifies whether to draw the polyline as a geodesic
+ * @param jointType the joint type for all vertices of the polyline except the start and end
+ * vertices
+ * @param pattern the pattern for the polyline
+ * @param startCap the cap at the start vertex of the polyline
+ * @param visible the visibility of the polyline
+ * @param width the width of the polyline in screen pixels
+ * @param zIndex the z-index of the polyline
+ * @param onClick a lambda invoked when the polyline is clicked
+ */
+@Composable
+@GoogleMapComposable
+public fun Polyline(
+    points: List<LatLng>,
+    spans: List<StyleSpan>,
+    clickable: Boolean = false,
+    endCap: Cap = ButtCap(),
+    geodesic: Boolean = false,
+    jointType: Int = JointType.DEFAULT,
+    pattern: List<PatternItem>? = null,
+    startCap: Cap = ButtCap(),
+    tag: Any? = null,
+    visible: Boolean = true,
+    width: Float = 10f,
+    zIndex: Float = 0f,
+    onClick: (Polyline) -> Unit = {}
+) {
+    val mapApplier = currentComposer.applier as MapApplier?
+    ComposeNode<PolylineNode, MapApplier>(
+        factory = {
+            val polyline = mapApplier?.map?.addPolyline {
+                addAll(points)
+                addAllSpans(spans)
+                clickable(clickable)
+                endCap(endCap)
+                geodesic(geodesic)
+                jointType(jointType)
+                pattern(pattern)
+                startCap(startCap)
+                visible(visible)
+                width(width)
+                zIndex(zIndex)
+            } ?: error("Error adding Polyline")
+            polyline.tag = tag
+            PolylineNode(polyline, onClick)
+        },
+        update = {
+            update(onClick) { this.onPolylineClick = it }
+
+            set(points) { this.polyline.points = it }
+            set(spans) { this.polyline.spans = it }
+            set(clickable) { this.polyline.isClickable = it }
             set(endCap) { this.polyline.endCap = it }
             set(geodesic) { this.polyline.isGeodesic = it }
             set(jointType) { this.polyline.jointType = it }
