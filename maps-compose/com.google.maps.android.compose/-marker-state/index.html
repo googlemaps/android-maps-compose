@@ -1,140 +1,187 @@
-<html>
-  <head>
+<!doctype html>
+<html class="no-js">
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>MarkerState</title>
-<link href="../../../../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script><script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script><link href="../../../styles/style.css" rel="Stylesheet"><link href="../../../styles/logo-styles.css" rel="Stylesheet"><link href="../../../styles/jetbrains-mono.css" rel="Stylesheet"><link href="../../../styles/main.css" rel="Stylesheet"><script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script><script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script><script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script><script type="text/javascript" src="../../../scripts/main.js" async="async"></script>  </head>
-  <body>
-    <div id="container">
-      <div id="leftColumn"><a href="../../../index.html">
-          <div id="logo"></div>
-        </a>
-        <div id="paneSearch"></div>
-        <div id="sideMenu"></div>
-      </div>
-      <div id="main">
-        <div id="leftToggler"><span class="icon-toggler"></span></div>
-<script type="text/javascript" src="../../../scripts/main.js"></script>        <div class="main-content" id="content" pageIds="maps-compose::com.google.maps.android.compose/MarkerState///PointingToDeclaration//1410455054">
-          <div class="navigation-wrapper" id="navigation-wrapper">
-            <div class="breadcrumbs"><a href="../../../index.html">maps-compose</a>/<a href="../index.html">com.google.maps.android.compose</a>/<a href="index.html">MarkerState</a></div>
-            <div class="pull-right d-flex">
-              <div id="searchBar"></div>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            android-maps-compose
+                    </a>            </div>
+            <div class="library-version">2.14.1
             </div>
-          </div>
-          <div class="cover ">
-            <h1 class="cover"><span>Marker</span><wbr></wbr><span>State</span></h1>
-            <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":maps-compose:dokkaHtml/release"><div class="symbol monospace">class <a href="index.html">MarkerState</a>(position: <span data-unresolved-link="com.google.android.gms.maps.model/LatLng///PointingToDeclaration/">LatLng</span>)<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">A state object that can be hoisted to control and observe the marker state.</p></div></div>
-          </div>
-          <div class="tabbedcontent">
-            <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button><button class="section-tab" data-togglable="Parameters">Parameters</button></div>
-            <div class="tabs-section-body">
-              <h2 class="">Parameters</h2>
-              <div data-togglable="Parameters">
-                <div class="platform-hinted WithExtraAttributes" data-platform-hinted="data-platform-hinted" data-togglable="Parameters"><div class="content sourceset-depenent-content" data-active="" data-togglable=":maps-compose:dokkaHtml/release"><div data-togglable="Parameters"><div class="table" data-togglable="Parameters"><div class="table-row" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release"><div class="main-subrow keyValue WithExtraAttributes"><div class=""><span class="inline-flex">position</span></div><div><div class="title"><div data-togglable="Parameters"><p class="paragraph">the initial marker position</p></div></div></div></div></div></div></div></div></div>
-              </div>
-              <h2 class="tabbedcontent">Constructors</h2>
-              <div class="table" data-togglable="Constructors"><a data-name="566029007%2FConstructors%2F1410455054" anchor-label="MarkerState" id="566029007%2FConstructors%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>
-                <div class="table-row" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release">
-                  <div class="main-subrow keyValue TabbedContent">
-                    <div class=""><span class="inline-flex"><a href="-marker-state.html">MarkerState</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="566029007%2FConstructors%2F1410455054"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":maps-compose:dokkaHtml/release"><div class="symbol monospace">fun <a href="-marker-state.html">MarkerState</a>(position: <span data-unresolved-link="com.google.android.gms.maps.model/LatLng///PointingToDeclaration/">LatLng</span> = LatLng(0.0, 0.0))<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief ">the initial marker position</div></div></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h2 class="">Types</h2>
-              <div class="table" data-togglable="Types"><a data-name="430916039%2FClasslikes%2F1410455054" anchor-label="Companion" id="430916039%2FClasslikes%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>
-                <div class="table-row" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="-companion/index.html">Companion</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="430916039%2FClasslikes%2F1410455054"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":maps-compose:dokkaHtml/release"><div class="symbol monospace">object <a href="-companion/index.html">Companion</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":maps-compose:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="maps-compose::com.google.maps.android.compose/MarkerState///PointingToDeclaration//508926583">
+  <div class="breadcrumbs"><a href="../../index.html">maps-compose</a><span class="delimiter">/</span><a href="../index.html">com.google.maps.android.compose</a><span class="delimiter">/</span><span class="current">MarkerState</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Marker</span><wbr><span><span>State</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">MarkerState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">position<span class="token operator">: </span><span data-unresolved-link="com.google.android.gms.maps.model/LatLng///PointingToDeclaration/">LatLng</span><span class="token operator"> = </span>LatLng(0.0, 0.0)</span></span><span class="token punctuation">)</span></div><p class="paragraph">A state object that can be hoisted to control and observe the marker state.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>position</span></span></u></div></span></div><div><div class="title"><p class="paragraph">the initial marker position</p></div></div></div></div></div></div></div>
   </div>
-</div>
-</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h2 class="">Functions</h2>
-              <div class="table" data-togglable="Functions"><a data-name="-196158534%2FFunctions%2F1410455054" anchor-label="hideInfoWindow" id="-196158534%2FFunctions%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>
-                <div class="table-row" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="hide-info-window.html">hideInfoWindow</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-196158534%2FFunctions%2F1410455054"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":maps-compose:dokkaHtml/release"><div class="symbol monospace">fun <a href="hide-info-window.html">hideInfoWindow</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-<a data-name="-196158534%2FFunctions%2F1410455054" anchor-label="hideInfoWindow" id="-196158534%2FFunctions%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a><div class="brief "><a data-name="-196158534%2FFunctions%2F1410455054" anchor-label="hideInfoWindow" id="-196158534%2FFunctions%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>Hides the info window for the underlying marker</div></div>
-</div>
-                    </div>
-                  </div>
-                </div>
-<a data-name="984542239%2FFunctions%2F1410455054" anchor-label="showInfoWindow" id="984542239%2FFunctions%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>
-                <div class="table-row" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="show-info-window.html">showInfoWindow</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="984542239%2FFunctions%2F1410455054"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title"><div class="divergent-group" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release"><div class="with-platform-tags"><span class="pull-right"></span></div>
-
-  <div>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":maps-compose:dokkaHtml/release"><div class="symbol monospace">fun <a href="show-info-window.html">showInfoWindow</a>()<span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-  </div>
-<a data-name="984542239%2FFunctions%2F1410455054" anchor-label="showInfoWindow" id="984542239%2FFunctions%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a><div class="brief "><a data-name="984542239%2FFunctions%2F1410455054" anchor-label="showInfoWindow" id="984542239%2FFunctions%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>Shows the info window for the underlying marker</div></div>
-</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h2 class="">Properties</h2>
-              <div class="table" data-togglable="Properties"><a data-name="1652156259%2FProperties%2F1410455054" anchor-label="dragState" id="1652156259%2FProperties%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>
-                <div class="table-row" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="drag-state.html">dragState</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1652156259%2FProperties%2F1410455054"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":maps-compose:dokkaHtml/release"><a data-name="1652156259%2FProperties%2F1410455054" anchor-label="dragState" id="1652156259%2FProperties%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a><div class="symbol monospace">var <a href="drag-state.html">dragState</a>: <a href="../-drag-state/index.html">DragState</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1652156259%2FProperties%2F1410455054" anchor-label="dragState" id="1652156259%2FProperties%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>Current <a href="../-drag-state/index.html">DragState</a> of the marker.</div></div></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-<a data-name="1300793745%2FProperties%2F1410455054" anchor-label="position" id="1300793745%2FProperties%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>
-                <div class="table-row" data-filterable-current=":maps-compose:dokkaHtml/release" data-filterable-set=":maps-compose:dokkaHtml/release">
-                  <div class="main-subrow keyValue ">
-                    <div class=""><span class="inline-flex"><a href="position.html">position</a><span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1300793745%2FProperties%2F1410455054"></span>
-                          <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                        </span></span></div>
-                    <div>
-                      <div class="title">
-                        <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":maps-compose:dokkaHtml/release"><a data-name="1300793745%2FProperties%2F1410455054" anchor-label="position" id="1300793745%2FProperties%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a><div class="symbol monospace">var <a href="position.html">position</a>: <span data-unresolved-link="com.google.android.gms.maps.model/LatLng///PointingToDeclaration/">LatLng</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><a data-name="1300793745%2FProperties%2F1410455054" anchor-label="position" id="1300793745%2FProperties%2F1410455054" data-filterable-set=":maps-compose:dokkaHtml/release"></a>Current position of the marker.</div></div></div>
-                      </div>
-                    </div>
-                  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="566029007%2FConstructors%2F508926583" anchor-label="MarkerState" id="566029007%2FConstructors%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-marker-state.html"><span>Marker</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="566029007%2FConstructors%2F508926583"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">position<span class="token operator">: </span><span data-unresolved-link="com.google.android.gms.maps.model/LatLng///PointingToDeclaration/">LatLng</span><span class="token operator"> = </span>LatLng(0.0, 0.0)</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="footer"><span class="go-to-top-icon"><a href="#content"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span></div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="">Types</h2>
+        <div class="table"><a data-name="430916039%2FClasslikes%2F508926583" anchor-label="Companion" id="430916039%2FClasslikes%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="430916039%2FClasslikes%2F508926583"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1652156259%2FProperties%2F508926583" anchor-label="dragState" id="1652156259%2FProperties%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="drag-state.html"><span>drag</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1652156259%2FProperties%2F508926583"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="drag-state.html">dragState</a><span class="token operator">: </span><a href="../-drag-state/index.html">DragState</a></div><div class="brief "><p class="paragraph">Current <a href="../-drag-state/index.html">DragState</a> of the marker.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1300793745%2FProperties%2F508926583" anchor-label="position" id="1300793745%2FProperties%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="position.html"><span><span>position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1300793745%2FProperties%2F508926583"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="position.html">position</a><span class="token operator">: </span><span data-unresolved-link="com.google.android.gms.maps.model/LatLng///PointingToDeclaration/">LatLng</span></div><div class="brief "><p class="paragraph">Current position of the marker.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-196158534%2FFunctions%2F508926583" anchor-label="hideInfoWindow" id="-196158534%2FFunctions%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="hide-info-window.html"><span>hide</span><wbr><span>Info</span><wbr><span><span>Window</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-196158534%2FFunctions%2F508926583"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="hide-info-window.html"><span class="token function">hideInfoWindow</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Hides the info window for the underlying marker</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="984542239%2FFunctions%2F508926583" anchor-label="showInfoWindow" id="984542239%2FFunctions%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="show-info-window.html"><span>show</span><wbr><span>Info</span><wbr><span><span>Window</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="984542239%2FFunctions%2F508926583"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="show-info-window.html"><span class="token function">showInfoWindow</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Shows the info window for the underlying marker</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </body>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
 </html>
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>DisappearingScaleBar</title>
+<!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.PathToRootSubstitutionCommand","pattern":"###","default":"../"}-->    <link href="###images/logo-icon.svg" rel="icon" type="image/svg">
+<!--[-]cmd-->    <!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.PathToRootSubstitutionCommand","pattern":"###","default":"../"}--><script>var pathToRoot = "###";</script><!--[-]cmd-->
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.PathToRootSubstitutionCommand","pattern":"###","default":"../"}--><script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
+<script type="text/javascript" src="###scripts/sourceset_dependencies.js" async="async"></script>
+<link href="###styles/style.css" rel="Stylesheet">
+<link href="###styles/main.css" rel="Stylesheet">
+<link href="###styles/prism.css" rel="Stylesheet">
+<link href="###styles/logo-styles.css" rel="Stylesheet">
+<link href="###styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="###scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="###scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="###scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="###scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="###scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="###scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+<!--[-]cmd--></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.PathToRootSubstitutionCommand","pattern":"###","default":"../"}-->                    <a class="library-name--link" href="###index.html">
+<!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.ProjectNameSubstitutionCommand","pattern":"###","default":"maps-compose-widgets"}-->                            ###
+<!--[-]cmd-->                    </a>
+<!--[-]cmd-->            </div>
+            <div class="library-version">
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;com.google.maps.android.compose.widgets/-disappearing-scale-bar.html&quot;}"></dokka-template-command>            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":maps-compose-widgets:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="member" id="content" pageIds="maps-compose-widgets::com.google.maps.android.compose.widgets//DisappearingScaleBar/#androidx.compose.ui.Modifier#androidx.compose.ui.unit.Dp#androidx.compose.ui.unit.Dp#com.google.maps.android.compose.CameraPositionState#androidx.compose.ui.graphics.Color#androidx.compose.ui.graphics.Color#androidx.compose.ui.graphics.Color#kotlin.Int#androidx.compose.animation.EnterTransition#androidx.compose.animation.ExitTransition/PointingToDeclaration//-1670735787">
+  <div class="breadcrumbs"><a href="../index.html">maps-compose-widgets</a><span class="delimiter">/</span><a href="index.html">com.google.maps.android.compose.widgets</a><span class="delimiter">/</span><span class="current">DisappearingScaleBar</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Disappearing</span><wbr></wbr><span>Scale</span><wbr></wbr><span><span>Bar</span></span></h1>
+  </div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose-widgets:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a></div></div><span class="token keyword"></span><span class="token keyword">fun </span><a href="-disappearing-scale-bar.html"><span class="token function">DisappearingScaleBar</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">modifier<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier.html">Modifier</a><span class="token operator"> = </span>Modifier<span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/unit/Dp.html">Dp</a><span class="token operator"> = </span>defaultWidth<span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/unit/Dp.html">Dp</a><span class="token operator"> = </span>defaultHeight<span class="token punctuation">, </span></span><span class="parameter ">cameraPositionState<span class="token operator">: </span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;com.google.maps.android.compose&quot;,&quot;classNames&quot;:&quot;CameraPositionState&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}">CameraPositionState</dokka-template-command><span class="token punctuation">, </span></span><span class="parameter ">textColor<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a><span class="token operator"> = </span>DarkGray<span class="token punctuation">, </span></span><span class="parameter ">lineColor<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a><span class="token operator"> = </span>DarkGray<span class="token punctuation">, </span></span><span class="parameter ">shadowColor<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/graphics/Color.html">Color</a><span class="token operator"> = </span>Color.White<span class="token punctuation">, </span></span><span class="parameter ">visibilityDurationMillis<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">enterTransition<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/EnterTransition.html">EnterTransition</a><span class="token operator"> = </span>fadeIn()<span class="token punctuation">, </span></span><span class="parameter ">exitTransition<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/animation/ExitTransition.html">ExitTransition</a><span class="token operator"> = </span>fadeOut()</span></span><span class="token punctuation">)</span></div><p class="paragraph">An animated scale bar that appears when the zoom level of the map changes, and then disappears after <a href="-disappearing-scale-bar.html">visibilityDurationMillis</a>. This composable wraps <a href="-scale-bar.html">ScaleBar</a> with visibility animations.</p><p class="paragraph">Implement your own observer on camera move events using <dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;com.google.maps.android.compose&quot;,&quot;classNames&quot;:&quot;CameraPositionState&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}">CameraPositionState</dokka-template-command> and pass it in as <a href="-disappearing-scale-bar.html">cameraPositionState</a>.</p></div></div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
