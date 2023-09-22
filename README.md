@@ -20,16 +20,16 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the [
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:2.14.1'
+    implementation 'com.google.maps.android:maps-compose:2.15.0'
 
     // Make sure to also include the latest version of the Maps SDK for Android
     // See latest version at https://goo.gle/android-maps-sdk-version
 
     // Optionally, you can include the Compose utils library for Clustering, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:2.14.1'
+    implementation 'com.google.maps.android:maps-compose-utils:2.15.0'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:2.14.1'
+    implementation 'com.google.maps.android:maps-compose-widgets:2.15.0'
 }
 ```
 
