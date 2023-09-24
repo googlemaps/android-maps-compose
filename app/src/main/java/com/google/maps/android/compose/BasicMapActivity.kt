@@ -53,6 +53,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -85,7 +87,6 @@ class BasicMapActivity : ComponentActivity() {
 
             Box(Modifier.fillMaxSize()) {
                 GoogleMapView(
-                    modifier = Modifier.matchParentSize(),
                     cameraPositionState = cameraPositionState,
                     onMapLoaded = {
                         isMapLoaded = true
@@ -113,7 +114,6 @@ class BasicMapActivity : ComponentActivity() {
 
 @Composable
 fun GoogleMapView(
-    modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     onMapLoaded: () -> Unit = {},
     content: @Composable () -> Unit = {}
@@ -137,7 +137,9 @@ fun GoogleMapView(
 
     if (mapVisible) {
         GoogleMap(
-            modifier = modifier,
+            modifier = Modifier
+                .semantics(mergeDescendants = true) { }
+                .clearAndSetSemantics { },
             cameraPositionState = cameraPositionState,
             properties = mapProperties,
             uiSettings = uiSettings,
@@ -223,7 +225,8 @@ fun GoogleMapView(
             MapButton(
                 text = "Toggle Map",
                 onClick = { mapVisible = !mapVisible },
-                modifier = Modifier.testTag("toggleMapVisibility"),
+                modifier = Modifier
+                    .testTag("toggleMapVisibility")
             )
         }
         val coroutineScope = rememberCoroutineScope()
@@ -349,6 +352,6 @@ private fun DebugView(
 @Composable
 fun GoogleMapViewPreview() {
     MapsComposeSampleTheme {
-        GoogleMapView(Modifier.fillMaxSize())
+        GoogleMapView()
     }
 }
