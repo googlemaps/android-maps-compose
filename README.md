@@ -32,7 +32,7 @@ dependencies {
     implementation 'com.google.maps.android:maps-compose-widgets:2.14.1'
 
     // Android Maps Utils KTX
-    implementation 'com.google.maps.android:maps-utils-ktx:3.5.0'
+    implementation 'com.google.maps.android:maps-utils-ktx:4.0.0'
 }
 ```
 

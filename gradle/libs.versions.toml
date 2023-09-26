@@ -13,7 +13,7 @@ junitktx = "1.1.5"
 junit = "4.13.2"
 kotlin = "1.9.10"
 material = "1.9.0"
-mapsktx = "3.4.0"
+mapsktx = "4.0.0"
 mapsecrets = "2.0.1"
 
 [libraries]
