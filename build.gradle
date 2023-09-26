@@ -17,7 +17,7 @@ buildscript {
 }
 
 plugins {
-    alias libs.plugins.dokka apply false
+    alias libs.plugins.dokka apply true
 }
 
 ext.projectArtifactId = { project ->
@@ -30,7 +30,7 @@ ext.projectArtifactId = { project ->
 
 allprojects {
     group = 'com.google.maps.android'
-    version = '2.14.1'
+    version = '2.15.0'
     project.ext.artifactId = rootProject.ext.projectArtifactId(project)
 }
 
@@ -51,7 +51,7 @@ subprojects { project ->
         toolVersion = libs.versions.jacoco.tool.plugin.get()
     }
 
-    tasks.withType(Test) {
+    tasks.withType(Test).configureEach {
         jacoco.includeNoLocationClasses = true
         jacoco.excludes = ['jdk.internal.*']
     }
@@ -123,6 +123,6 @@ subprojects { project ->
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
