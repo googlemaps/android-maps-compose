@@ -14,7 +14,9 @@
 
 package com.google.maps.android.compose
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
@@ -207,6 +209,29 @@ class GoogleMapViewTests {
             Marker(
                 state = markerState
             )
+        }
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun testMarkerStateInsideMarkerComposableCannotBeReused() {
+        initMap {
+            val markerState = rememberMarkerState()
+            MarkerComposable(
+                keys = arrayOf("marker1"),
+                state = markerState,
+            ) {
+                Box {
+                    Text(text = "marker1")
+                }
+            }
+            MarkerComposable(
+                keys = arrayOf("marker2"),
+                state = markerState,
+            ) {
+                Box {
+                    Text(text = "marker2")
+                }
+            }
         }
     }
 
