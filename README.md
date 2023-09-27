@@ -30,9 +30,6 @@ dependencies {
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
     implementation 'com.google.maps.android:maps-compose-widgets:2.15.0'
-
-    // Android Maps Utils KTX
-    implementation 'com.google.maps.android:maps-utils-ktx:4.0.0'
 }
 ```
 

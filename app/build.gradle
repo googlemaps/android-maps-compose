@@ -45,7 +45,6 @@ dependencies {
     implementation libs.kotlin
     implementation libs.material
     implementation libs.maps.ktx.std
-    implementation libs.maps.utils
     implementation libs.androidx.compose.ui.preview.tooling
     debugImplementation libs.androidx.compose.ui.tooling
 
