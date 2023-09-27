@@ -52,7 +52,7 @@ internal class MapClickListeners {
     var onMapClick: ((LatLng) -> Unit)? by mutableStateOf(null)
     var onMapLongClick: ((LatLng) -> Unit)? by mutableStateOf(null)
     var onMapLoaded: (() -> Unit)? by mutableStateOf(null)
-    var onMyLocationButtonClick: () -> Boolean by mutableStateOf({false})
+    var onMyLocationButtonClick: (() -> Boolean)? by mutableStateOf(null)
     var onMyLocationClick: ((Location) -> Unit)? by mutableStateOf(null)
     var onPOIClick: ((PointOfInterest) -> Unit)? by mutableStateOf(null)
 }

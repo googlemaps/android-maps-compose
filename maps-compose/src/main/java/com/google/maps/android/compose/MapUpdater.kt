@@ -79,7 +79,7 @@ internal class MapPropertiesNode(
         map.setOnMapClickListener(clickListeners.onMapClick)
         map.setOnMapLongClickListener(clickListeners.onMapLongClick)
         map.setOnMapLoadedCallback(clickListeners.onMapLoaded)
-        map.setOnMyLocationButtonClickListener { clickListeners.onMyLocationButtonClick.invoke() }
+        map.setOnMyLocationButtonClickListener { clickListeners.onMyLocationButtonClick?.invoke() == true }
         map.setOnMyLocationClickListener(clickListeners.onMyLocationClick)
         map.setOnPoiClickListener(clickListeners.onPOIClick)
 
