@@ -41,7 +41,7 @@ subprojects { project ->
     if (project.ext.artifactId == null) return
 
     apply plugin: 'com.android.library'
-    apply plugin: 'com.hiya.jacoco-android'
+    apply plugin: 'com.mxalbert.gradle.jacoco-android'
     apply plugin: 'maven-publish'
     apply plugin: 'org.jetbrains.dokka'
     apply plugin: 'signing'
