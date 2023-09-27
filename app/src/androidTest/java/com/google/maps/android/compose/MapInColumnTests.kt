@@ -39,7 +39,7 @@ class MapInColumnTests {
     private val startingPosition = LatLng(1.23, 4.56)
     private lateinit var cameraPositionState: CameraPositionState
 
-    private fun initMap(content: @Composable () -> Unit = {}) {
+    private fun initMap() {
         check(hasValidApiKey) { "Maps API key not specified" }
         val countDownLatch = CountDownLatch(1)
         composeTestRule.setContent {
@@ -134,7 +134,7 @@ class MapInColumnTests {
     fun testPanMapUp_MapCameraChangesColumnDoesNotScroll() {
         initMap()
         //Swipe the map up
-        composeTestRule.onNodeWithTag("Map").performTouchInput { swipeUp() }
+        composeTestRule.onAllNodesWithTag("Map").onFirst().performTouchInput { swipeUp() }
         composeTestRule.waitForIdle()
 
         //Make sure that the map changed (i.e., we can scroll the map in the column)
