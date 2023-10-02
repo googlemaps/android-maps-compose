@@ -18,13 +18,12 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the [
 
 ## Installation
 
+You no longer need to specify the Maps SDK for Android or its Utility Library as separate dependencies, since `maps-compose` and `maps-compose-utils` pull in the appropriate versions of these respectively.
+
 ```groovy
 dependencies {
     implementation 'com.google.maps.android:maps-compose:2.15.0'
-
-    // Make sure to also include the latest version of the Maps SDK for Android
-    // See latest version at https://goo.gle/android-maps-sdk-version
-
+    
     // Optionally, you can include the Compose utils library for Clustering, etc.
     implementation 'com.google.maps.android:maps-compose-utils:2.15.0'
 

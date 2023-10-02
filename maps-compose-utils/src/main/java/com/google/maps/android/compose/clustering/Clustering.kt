@@ -16,6 +16,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.view.ClusterRenderer
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.compose.GoogleMapComposable
@@ -39,6 +40,7 @@ import kotlinx.coroutines.launch
  * window of a non-clustered item
  * @param clusterContent an optional Composable that is rendered for each [Cluster].
  * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ * @param clusterRenderer an optional ClusterRenderer that can be used to specify the algorithm used by the rendering.
  */
 
 @Composable
@@ -52,9 +54,11 @@ public fun <T : ClusterItem> Clustering(
     onClusterItemInfoWindowLongClick: (T) -> Unit = { },
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterRenderer: ClusterRenderer<T>? = null
 ) {
 
-    val clusterManager = rememberClusterManager(clusterContent, clusterItemContent) ?: return
+    val clusterManager = rememberClusterManager(clusterContent, clusterItemContent, clusterRenderer) ?: return
+
     ResetMapListeners(clusterManager)
     SideEffect {
         clusterManager.setOnClusterClickListener(onClusterClick)
@@ -95,6 +99,7 @@ public fun <T : ClusterItem> Clustering(
 private fun <T : ClusterItem> rememberClusterManager(
     clusterContent: @Composable ((Cluster<T>) -> Unit)?,
     clusterItemContent: @Composable ((T) -> Unit)?,
+    clusterRenderer: ClusterRenderer<T>? = null
 ): ClusterManager<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
     val clusterItemContentState = rememberUpdatedState(clusterItemContent)
@@ -109,19 +114,20 @@ private fun <T : ClusterItem> rememberClusterManager(
                 clusterContentState.value != null || clusterItemContentState.value != null
             }
                 .collect { hasCustomContent ->
-                    val renderer = if (hasCustomContent) {
-                        ComposeUiClusterRenderer(
-                            context,
-                            scope = this,
-                            map,
-                            clusterManager,
-                            viewRendererState,
-                            clusterContentState,
-                            clusterItemContentState,
-                        )
-                    } else {
-                        DefaultClusterRenderer(context, map, clusterManager)
-                    }
+                    val renderer = clusterRenderer
+                        ?: if (hasCustomContent) {
+                            ComposeUiClusterRenderer(
+                                context,
+                                scope = this,
+                                map,
+                                clusterManager,
+                                viewRendererState,
+                                clusterContentState,
+                                clusterItemContentState,
+                            )
+                        } else {
+                            DefaultClusterRenderer(context, map, clusterManager)
+                        }
                     clusterManager.renderer = renderer
                 }
         }
