@@ -42,7 +42,73 @@ import kotlinx.coroutines.launch
  * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
  * @param clusterRenderer an optional ClusterRenderer that can be used to specify the algorithm used by the rendering.
  */
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+@Deprecated(
+    message = "If clusterRenderer is specified, clusterContent and clusterItemContent are not used; use a function that takes ClusterManager as an argument instead.",
+    replaceWith = ReplaceWith(
+        expression = """
+            val clusterManager = rememberClusterManager<T>()
+            LaunchedEffect(clusterManager, clusterRenderer) {
+                clusterManager.renderer = clusterRenderer
+            }
+            SideEffect {
+                clusterManager.setOnClusterClickListener(onClusterClick)
+                clusterManager.setOnClusterItemClickListener(onClusterItemClick)
+                clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
+                clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
+            }
+            Clustering(
+                items = items,
+                clusterManager = clusterManager,
+            )
+        """,
+        imports = [
+            "com.google.maps.android.compose.clustering.Clustering",
+            "androidx.compose.runtime.SideEffect",
+            "com.google.maps.android.clustering.ClusterManager",
+        ],
+    ),
+)
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    onClusterItemInfoWindowClick: (T) -> Unit = { },
+    onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterRenderer: ClusterRenderer<T>? = null,
+) {
+    val clusterManager = rememberClusterManager(clusterContent, clusterItemContent, clusterRenderer)
+        ?: return
 
+    SideEffect {
+        clusterManager.setOnClusterClickListener(onClusterClick)
+        clusterManager.setOnClusterItemClickListener(onClusterItemClick)
+        clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
+        clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
+    }
+    Clustering(
+        items = items,
+        clusterManager = clusterManager,
+    )
+}
+
+/**
+ * Groups many items on a map based on zoom level.
+ *
+ * @param items all items to show
+ * @param onClusterClick a lambda invoked when the user clicks a cluster of items
+ * @param onClusterItemClick a lambda invoked when the user clicks a non-clustered item
+ * @param onClusterItemInfoWindowClick a lambda invoked when the user clicks the info window of a
+ * non-clustered item
+ * @param onClusterItemInfoWindowLongClick a lambda invoked when the user long-clicks the info
+ * window of a non-clustered item
+ * @param clusterContent an optional Composable that is rendered for each [Cluster].
+ * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ */
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
@@ -54,18 +120,41 @@ public fun <T : ClusterItem> Clustering(
     onClusterItemInfoWindowLongClick: (T) -> Unit = { },
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
-    clusterRenderer: ClusterRenderer<T>? = null
 ) {
+    val clusterManager = rememberClusterManager<T>()
+        ?: return
+    val renderer = rememberClusterRenderer(clusterContent, clusterItemContent, clusterManager)
+    LaunchedEffect(clusterManager, renderer) {
+        clusterManager.renderer = renderer ?: return@LaunchedEffect
+    }
 
-    val clusterManager = rememberClusterManager(clusterContent, clusterItemContent, clusterRenderer) ?: return
-
-    ResetMapListeners(clusterManager)
     SideEffect {
         clusterManager.setOnClusterClickListener(onClusterClick)
         clusterManager.setOnClusterItemClickListener(onClusterItemClick)
         clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
         clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
     }
+
+    Clustering(
+        items = items,
+        clusterManager = clusterManager,
+    )
+}
+
+/**
+ * Groups many items on a map based on clusterManager.
+ *
+ * @param items all items to show
+ * @param clusterManager a [ClusterManager] that can be used to specify the algorithm used by the rendering.
+ */
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    clusterManager: ClusterManager<T>,
+) {
+    ResetMapListeners(clusterManager)
     InputHandler(
         onMarkerClick = clusterManager.markerManager::onMarkerClick,
         onInfoWindowClick = clusterManager.markerManager::onInfoWindowClick,
@@ -94,12 +183,72 @@ public fun <T : ClusterItem> Clustering(
     }
 }
 
+/**
+ * Default Renderer for drawing Composable.
+ *
+ * @param clusterContent an optional Composable that is rendered for each [Cluster].
+ * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ */
+@OptIn(MapsComposeExperimentalApi::class)
+@Composable
+@GoogleMapComposable
+public fun <T : ClusterItem> rememberClusterRenderer(
+    clusterContent: @Composable ((Cluster<T>) -> Unit)?,
+    clusterItemContent: @Composable ((T) -> Unit)?,
+    clusterManager: ClusterManager<T>?,
+): ClusterRenderer<T>? {
+    val clusterContentState = rememberUpdatedState(clusterContent)
+    val clusterItemContentState = rememberUpdatedState(clusterItemContent)
+    val context = LocalContext.current
+    val viewRendererState = rememberUpdatedState(rememberComposeUiViewRenderer())
+    val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
+
+    clusterManager ?: return null
+    MapEffect(context) { map ->
+        launch {
+            snapshotFlow {
+                clusterContentState.value != null || clusterItemContentState.value != null
+            }
+                .collect { hasCustomContent ->
+                    val renderer = if (hasCustomContent) {
+                        ComposeUiClusterRenderer(
+                            context,
+                            scope = this,
+                            map,
+                            clusterManager,
+                            viewRendererState,
+                            clusterContentState,
+                            clusterItemContentState,
+                        )
+                    } else {
+                        DefaultClusterRenderer(context, map, clusterManager)
+                    }
+                    clusterRendererState.value = renderer
+                }
+        }
+
+    }
+    return clusterRendererState.value
+}
+
+@OptIn(MapsComposeExperimentalApi::class)
+@GoogleMapComposable
+@Composable
+public fun <T : ClusterItem> rememberClusterManager(): ClusterManager<T>? {
+    val context = LocalContext.current
+    val clusterManagerState: MutableState<ClusterManager<T>?> = remember { mutableStateOf(null) }
+    MapEffect(context) { map ->
+        clusterManagerState.value = ClusterManager<T>(context, map)
+    }
+    return clusterManagerState.value
+}
+
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 private fun <T : ClusterItem> rememberClusterManager(
     clusterContent: @Composable ((Cluster<T>) -> Unit)?,
     clusterItemContent: @Composable ((T) -> Unit)?,
-    clusterRenderer: ClusterRenderer<T>? = null
+    clusterRenderer: ClusterRenderer<T>? = null,
 ): ClusterManager<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
     val clusterItemContentState = rememberUpdatedState(clusterItemContent)
