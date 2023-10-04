@@ -189,9 +189,9 @@ public fun <T : ClusterItem> Clustering(
  * @param clusterContent an optional Composable that is rendered for each [Cluster].
  * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
  */
-@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 @GoogleMapComposable
+@MapsComposeExperimentalApi
 public fun <T : ClusterItem> rememberClusterRenderer(
     clusterContent: @Composable ((Cluster<T>) -> Unit)?,
     clusterItemContent: @Composable ((T) -> Unit)?,
@@ -231,9 +231,9 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     return clusterRendererState.value
 }
 
-@OptIn(MapsComposeExperimentalApi::class)
-@GoogleMapComposable
 @Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
 public fun <T : ClusterItem> rememberClusterManager(): ClusterManager<T>? {
     val context = LocalContext.current
     val clusterManagerState: MutableState<ClusterManager<T>?> = remember { mutableStateOf(null) }
