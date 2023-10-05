@@ -17,7 +17,7 @@ buildscript {
 }
 
 plugins {
-    alias libs.plugins.dokka apply false
+    alias libs.plugins.dokka apply true
 }
 
 ext.projectArtifactId = { project ->
@@ -30,7 +30,7 @@ ext.projectArtifactId = { project ->
 
 allprojects {
     group = 'com.google.maps.android'
-    version = '2.11.4'
+    version = '3.0.0'
     project.ext.artifactId = rootProject.ext.projectArtifactId(project)
 }
 
@@ -41,7 +41,7 @@ subprojects { project ->
     if (project.ext.artifactId == null) return
 
     apply plugin: 'com.android.library'
-    apply plugin: 'com.hiya.jacoco-android'
+    apply plugin: 'com.mxalbert.gradle.jacoco-android'
     apply plugin: 'maven-publish'
     apply plugin: 'org.jetbrains.dokka'
     apply plugin: 'signing'
@@ -51,7 +51,7 @@ subprojects { project ->
         toolVersion = libs.versions.jacoco.tool.plugin.get()
     }
 
-    tasks.withType(Test) {
+    tasks.withType(Test).configureEach {
         jacoco.includeNoLocationClasses = true
         jacoco.excludes = ['jdk.internal.*']
     }
@@ -123,6 +123,6 @@ subprojects { project ->
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

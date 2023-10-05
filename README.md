@@ -18,18 +18,17 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the [
 
 ## Installation
 
+You no longer need to specify the Maps SDK for Android or its Utility Library as separate dependencies, since `maps-compose` and `maps-compose-utils` pull in the appropriate versions of these respectively.
+
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:2.11.2'
-
-    // Make sure to also include the latest version of the Maps SDK for Android
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
-
+    implementation 'com.google.maps.android:maps-compose:3.0.0'
+    
     // Optionally, you can include the Compose utils library for Clustering, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:2.11.2'
+    implementation 'com.google.maps.android:maps-compose-utils:3.0.0'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:2.11.2'
+    implementation 'com.google.maps.android:maps-compose-widgets:3.0.0'
 }
 ```
 
@@ -172,6 +171,26 @@ GoogleMap(
 }
 ```
 
+You can also customize the marker you want to add by using `MarkerComposable`.
+
+```kotlin
+val state = MyState()
+
+GoogleMap(
+  //...
+) {
+    MarkerComposable(
+        keys = arrayOf(state),
+        state = MarkerState(position = LatLng(-34, 151)),
+    ) {
+        MyCustomMarker(state)
+    }
+}
+```
+As this Composable is backed by a rendering of your Composable into a Bitmap, it will not render
+your Composable every recomposition. So to trigger a new render of your Composable, you can pass
+all variables that your Composable depends on to trigger a render whenever one of them change.
+
 </details>
 
 <details>
@@ -214,7 +233,7 @@ You can add a Street View given a location using the `StreetView` composable.
 To use it, provide a `StreetViewPanoramaOptions` object as follows:
 
 ```kotlin
-val singapore = LatLng(1.35, 103.87)
+val singapore = LatLng(1.3588227, 103.8742114)
 StreetView(
     streetViewPanoramaOptionsFactory = {
         StreetViewPanoramaOptions().position(singapore)
@@ -285,19 +304,31 @@ The [ScaleBarActivity](app/src/main/java/com/google/maps/android/compose/ScaleBa
 Both versions of this widget leverage the `CameraPositionState` in `maps-compose` and therefore are very simple to configure with their defaults:
 
 ```kotlin
-ScaleBar(
-    modifier = Modifier
+Box(Modifier.fillMaxSize()) { 
+    
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState
+    ) {
+        // ... your map composables ...
+    }
+
+    ScaleBar(
+        modifier = Modifier
             .padding(top = 5.dp, end = 15.dp)
             .align(Alignment.TopEnd),
-    cameraPositionState = cameraPositionState
-)
+        cameraPositionState = cameraPositionState
+    )
 
-DisappearingScaleBar(
-    modifier = Modifier
+    // OR
+
+    DisappearingScaleBar(
+        modifier = Modifier
             .padding(top = 5.dp, end = 15.dp)
             .align(Alignment.TopStart),
-    cameraPositionState = cameraPositionState
-)
+        cameraPositionState = cameraPositionState
+    )
+} 
 ```
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.

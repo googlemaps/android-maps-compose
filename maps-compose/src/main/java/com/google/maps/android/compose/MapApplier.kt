@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,61 +72,68 @@ internal class MapApplier(
         map.setOnCircleClickListener { circle ->
             decorations.findInputCallback<CircleNode, Circle, Unit>(
                 nodeMatchPredicate = { it.circle == circle },
+                marker = circle,
                 nodeInputCallback = { onCircleClick },
                 inputHandlerCallback = { onCircleClick }
-            )?.invoke(circle)
+            )
         }
         map.setOnGroundOverlayClickListener { groundOverlay ->
             decorations.findInputCallback<GroundOverlayNode, GroundOverlay, Unit>(
                 nodeMatchPredicate = { it.groundOverlay == groundOverlay },
                 nodeInputCallback = { onGroundOverlayClick },
+                marker = groundOverlay,
                 inputHandlerCallback = { onGroundOverlayClick }
-            )?.invoke(groundOverlay)
+            )
         }
         map.setOnPolygonClickListener { polygon ->
             decorations.findInputCallback<PolygonNode, Polygon, Unit>(
                 nodeMatchPredicate = { it.polygon == polygon },
                 nodeInputCallback = { onPolygonClick },
+                marker = polygon,
                 inputHandlerCallback = { onPolygonClick }
-            )?.invoke(polygon)
+            )
         }
         map.setOnPolylineClickListener { polyline ->
             decorations.findInputCallback<PolylineNode, Polyline, Unit>(
                 nodeMatchPredicate = { it.polyline == polyline },
                 nodeInputCallback = { onPolylineClick },
+                marker = polyline,
                 inputHandlerCallback = { onPolylineClick }
-            )?.invoke(polyline)
+            )
         }
 
         // Marker
         map.setOnMarkerClickListener { marker ->
             decorations.findInputCallback<MarkerNode, Marker, Boolean>(
                 nodeMatchPredicate = { it.marker == marker },
+                marker = marker,
                 nodeInputCallback = { onMarkerClick },
                 inputHandlerCallback = { onMarkerClick }
-            )?.invoke(marker)
-                ?: false
+            )
         }
         map.setOnInfoWindowClickListener { marker ->
             decorations.findInputCallback<MarkerNode, Marker, Unit>(
                 nodeMatchPredicate = { it.marker == marker },
+                marker = marker,
                 nodeInputCallback = { onInfoWindowClick },
                 inputHandlerCallback = { onInfoWindowClick }
-            )?.invoke(marker)
+            )
         }
         map.setOnInfoWindowCloseListener { marker ->
             decorations.findInputCallback<MarkerNode, Marker, Unit>(
                 nodeMatchPredicate = { it.marker == marker },
+                marker = marker,
                 nodeInputCallback = { onInfoWindowClose },
                 inputHandlerCallback = { onInfoWindowClose }
-            )?.invoke(marker)
+            )
         }
         map.setOnInfoWindowLongClickListener { marker ->
             decorations.findInputCallback<MarkerNode, Marker, Unit>(
                 nodeMatchPredicate = { it.marker == marker },
+                marker = marker,
                 nodeInputCallback = { onInfoWindowLongClick },
                 inputHandlerCallback = { onInfoWindowLongClick }
-            )?.invoke(marker)
+            )
         }
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
             override fun onMarkerDrag(marker: Marker) {
@@ -138,13 +145,15 @@ internal class MapApplier(
                             markerState.dragState = DragState.DRAG
                         }
                     },
+                    marker = marker,
                     inputHandlerCallback = { onMarkerDrag }
-                )?.invoke(marker)
+                )
             }
 
             override fun onMarkerDragEnd(marker: Marker) {
                 decorations.findInputCallback<MarkerNode, Marker, Unit>(
                     nodeMatchPredicate = { it.marker == marker },
+                    marker = marker,
                     nodeInputCallback = {
                         {
                             markerState.position = it.position
@@ -152,12 +161,13 @@ internal class MapApplier(
                         }
                     },
                     inputHandlerCallback = { onMarkerDragEnd }
-                )?.invoke(marker)
+                )
             }
 
             override fun onMarkerDragStart(marker: Marker) {
                 decorations.findInputCallback<MarkerNode, Marker, Unit>(
                     nodeMatchPredicate = { it.marker == marker },
+                    marker = marker,
                     nodeInputCallback = {
                         {
                             markerState.position = it.position
@@ -165,7 +175,7 @@ internal class MapApplier(
                         }
                     },
                     inputHandlerCallback = { onMarkerDragStart }
-                )?.invoke(marker)
+                )
             }
         })
         map.setInfoWindowAdapter(
@@ -181,25 +191,29 @@ internal class MapApplier(
 }
 
 /**
- * General pattern for handling input:
- * Find the node that belongs to the clicked item.
- * If there is none, default to the first InputHandlerNode.
+ * General pattern for handling input. This finds the node that belongs to the clicked item, and executes the callback.
+ *
  * If there is none, don't handle.
  */
 private inline fun <reified NodeT : MapNode, I, O> Iterable<MapNode>.findInputCallback(
     nodeMatchPredicate: (NodeT) -> Boolean,
     nodeInputCallback: NodeT.() -> ((I) -> O)?,
+    marker : I,
     inputHandlerCallback: InputHandlerNode.() -> ((I) -> O)?,
-): ((I) -> O)? {
-    var callback: ((I) -> O)? = null
+): Boolean {
+    var callback: ((I) -> O)?
     for (item in this) {
         if (item is NodeT && nodeMatchPredicate(item)) {
             // Found a matching node
-            return nodeInputCallback(item)
+            nodeInputCallback(item)?.invoke(marker)
+            return true
         } else if (item is InputHandlerNode) {
             // Found an input handler, but keep looking for matching nodes
             callback = inputHandlerCallback(item)
+            if (callback?.invoke(marker) == true) {
+                return true
+            }
         }
     }
-    return callback
+    return false
 }

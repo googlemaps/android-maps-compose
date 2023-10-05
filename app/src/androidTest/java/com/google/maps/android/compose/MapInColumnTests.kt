@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -130,18 +130,17 @@ class MapInColumnTests {
         startingPosition.assertEquals(cameraPositionState.position.target)
     }
 
-//    @Test
-//    fun testPanMapUp_MapCameraChangesColumnDoesNotScroll() {
-//        initMap()
-//        // Swipe the map up
-//        // FIXME - for some reason this scrolls the entire column instead of just the map
-//        composeTestRule.onNodeWithTag("Map").performTouchInput { swipeUp() }
-//        composeTestRule.waitForIdle()
-//
-//        // Make sure that the map changed (i.e., we can scroll the map in the column)
-//        startingPosition.assertNotEquals(cameraPositionState.position.target)
-//
-//        // Check to make sure column didn't scroll
-//        composeTestRule.onNodeWithTag("Item 1").assertIsDisplayed()
-//    }
+    @Test
+    fun testPanMapUp_MapCameraChangesColumnDoesNotScroll() {
+        initMap()
+        //Swipe the map up
+        composeTestRule.onNodeWithTag("Map").performTouchInput { swipeUp() }
+        composeTestRule.waitForIdle()
+
+        //Make sure that the map changed (i.e., we can scroll the map in the column)
+        assertNotEquals(startingPosition, cameraPositionState.position.target)
+
+        //Check to make sure column didn't scroll
+        composeTestRule.onNodeWithTag("Item 1").assertIsDisplayed()
+    }
 }
