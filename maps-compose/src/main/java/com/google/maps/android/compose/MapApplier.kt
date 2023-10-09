@@ -205,8 +205,9 @@ private inline fun <reified NodeT : MapNode, I, O> Iterable<MapNode>.findInputCa
     for (item in this) {
         if (item is NodeT && nodeMatchPredicate(item)) {
             // Found a matching node
-            nodeInputCallback(item)?.invoke(marker)
-            return true
+            if (nodeInputCallback(item)?.invoke(marker) == true) {
+                return true
+            }
         } else if (item is InputHandlerNode) {
             // Found an input handler, but keep looking for matching nodes
             callback = inputHandlerCallback(item)
