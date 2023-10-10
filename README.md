@@ -22,13 +22,13 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:3.1.0'
+    implementation 'com.google.maps.android:maps-compose:3.1.1'
     
     // Optionally, you can include the Compose utils library for Clustering, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:3.1.0'
+    implementation 'com.google.maps.android:maps-compose-utils:3.1.1'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:3.1.0'
+    implementation 'com.google.maps.android:maps-compose-widgets:3.1.1'
 }
 ```
 
