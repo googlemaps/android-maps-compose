@@ -74,6 +74,7 @@ import kotlinx.coroutines.awaitCancellation
 @Composable
 public fun GoogleMap(
     modifier: Modifier = Modifier,
+    currentLocationModifier : Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
     googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
@@ -119,11 +120,13 @@ public fun GoogleMap(
     val currentContentPadding by rememberUpdatedState(contentPadding)
 
     // If we pass a custom location button, the native one is deactivated.
-    val currentUiSettings by rememberUpdatedState(if (myLocationButton != null) {
-        uiSettings.copy(myLocationButtonEnabled = false)
-    } else {
-        uiSettings
-    })
+    val currentUiSettings by rememberUpdatedState(
+        if (myLocationButton != null) {
+            uiSettings.copy(myLocationButtonEnabled = false)
+        } else {
+            uiSettings
+        }
+    )
     val currentMapProperties by rememberUpdatedState(properties)
 
     val parentComposition = rememberCompositionContext()
@@ -150,10 +153,11 @@ public fun GoogleMap(
             }
         }
     }
-    Row(modifier = modifier) {
-        currentLocation?.invoke()
+    currentLocation?.let {
+        Row(modifier = currentLocationModifier) {
+            currentLocation?.invoke()
+        }
     }
-
 }
 
 internal suspend inline fun disposingComposition(factory: () -> Composition) {
@@ -217,6 +221,7 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
                     this.onCreate(Bundle())
                 }
             }
+
             Lifecycle.Event.ON_START -> this.onStart()
             Lifecycle.Event.ON_RESUME -> this.onResume()
             Lifecycle.Event.ON_PAUSE -> this.onPause()
@@ -224,6 +229,7 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
             Lifecycle.Event.ON_DESTROY -> {
                 //handled in onDispose
             }
+
             else -> throw IllegalStateException()
         }
         previousState.value = event
