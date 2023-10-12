@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+
 class CustomControlsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +47,7 @@ class CustomControlsActivity : ComponentActivity() {
 
         setContent {
             var isMapLoaded by remember { mutableStateOf(false) }
-            val mapProperties by remember { mutableStateOf(MapProperties(isMyLocationEnabled = true)) }
+            val uiSettings by remember { mutableStateOf(MapUiSettings(myLocationButtonEnabled = false)) }
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
                 position = defaultCameraPosition
@@ -59,17 +60,16 @@ class CustomControlsActivity : ComponentActivity() {
                     onMapLoaded = {
                         isMapLoaded = true
                     },
-
-                    myLocationButton = {
-                        MapButton(
-                            "This is a custom location button",
-                            onClick = {
-                                Toast.makeText(
-                                    this@CustomControlsActivity,
-                                    "Click on my location",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            })
+                    uiSettings = uiSettings,
+                )
+                MapButton(
+                    "This is a custom location button",
+                    onClick = {
+                        Toast.makeText(
+                            this@CustomControlsActivity,
+                            "Click on my location",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     })
 
                 if (!isMapLoaded) {
