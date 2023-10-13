@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -97,11 +98,25 @@ public fun GoogleMap(
         return
     }
 
-    val context = LocalContext.current
-    val mapView = remember { MapView(context, googleMapOptionsFactory()) }
+    // Will either be set to a re-used or a new MapView
+    var mapViewOrNull: MapView? by remember { mutableStateOf(null) }
+    var isMapViewReused by remember { mutableStateOf(true) }
 
-    AndroidView(modifier = modifier, factory = { mapView })
-    MapLifecycle(mapView)
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            isMapViewReused = false
+            MapView(context, googleMapOptionsFactory())
+        },
+        onReset = { },
+        onRelease = { it.destroyAndRemoveAllViews()},
+        update = { mapViewOrNull = it }
+    )
+
+    // Wait until we have a MapView
+    val mapView = mapViewOrNull ?: return
+
+    MapLifecycle(mapView, isMapViewReused)
 
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
@@ -177,14 +192,24 @@ private suspend inline fun MapView.newComposition(
     }
 }
 
+private fun MapView.destroyAndRemoveAllViews() {
+    onDestroy()
+    removeAllViews()
+}
+
 /**
  * Registers lifecycle observers to the local [MapView].
  */
 @Composable
-private fun MapLifecycle(mapView: MapView) {
+private fun MapLifecycle(mapView: MapView, isMapViewReused: Boolean) {
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val previousState = remember { mutableStateOf(Lifecycle.Event.ON_CREATE) }
+    val previousState = remember {
+        // If mapView is re-used then ON_CREATE should not be invoked on it again
+        val initialState = if(isMapViewReused) Lifecycle.Event.ON_STOP else Lifecycle.Event.ON_CREATE
+        mutableStateOf(initialState)
+    }
+
     DisposableEffect(context, lifecycle, mapView) {
         val mapLifecycleObserver = mapView.lifecycleObserver(previousState)
         val callbacks = mapView.componentCallbacks()
@@ -195,12 +220,6 @@ private fun MapLifecycle(mapView: MapView) {
         onDispose {
             lifecycle.removeObserver(mapLifecycleObserver)
             context.unregisterComponentCallbacks(callbacks)
-        }
-    }
-    DisposableEffect(mapView) {
-        onDispose {
-            mapView.onDestroy()
-            mapView.removeAllViews()
         }
     }
 }
@@ -222,7 +241,7 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
             Lifecycle.Event.ON_PAUSE -> this.onPause()
             Lifecycle.Event.ON_STOP -> this.onStop()
             Lifecycle.Event.ON_DESTROY -> {
-                //handled in onDispose
+                // Handled in AndroidView onRelease
             }
             else -> throw IllegalStateException()
         }
