@@ -16,13 +16,18 @@ material = "1.9.0"
 mapsktx = "4.0.0"
 mapsecrets = "2.0.1"
 
+# We have to override this version because the current release has a
+# bug related to AndroidView being re-used in LazyColumn.
+# Related issue: https://issuetracker.google.com/issues/267642562
+compose-ui = "1.6.0-alpha07"
+
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "activitycompose" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 androidx-compose-material = { module = "androidx.compose.material:material" }
-androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
 androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-core = { module = "androidx.core:core-ktx", version.require = "1.12.0" }
