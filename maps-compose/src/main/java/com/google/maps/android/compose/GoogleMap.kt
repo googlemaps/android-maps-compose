@@ -109,7 +109,7 @@ public fun GoogleMap(
             MapView(context, googleMapOptionsFactory())
         },
         onReset = { },
-        onRelease = { it.destroyAndRemoveAllViews()},
+        onRelease = { it.destroyAndRemoveAllViews() },
         update = { mapViewOrNull = it }
     )
 
