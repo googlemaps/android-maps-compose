@@ -81,6 +81,7 @@ class StreetViewActivity : ComponentActivity() {
                         }
                 }
                 launch {
+                    // Make sure that this API Key has Street View Static API activated.
                     streetViewResult =
                         fetchStreetViewData(singapore, BuildConfig.MAPS_API_KEY)
                 }
