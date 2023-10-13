@@ -47,6 +47,8 @@ class CustomControlsActivity : ComponentActivity() {
 
         setContent {
             var isMapLoaded by remember { mutableStateOf(false) }
+            // This needs to be manually deactivated to avoid having a custom and the native
+            // location button
             val uiSettings by remember { mutableStateOf(MapUiSettings(myLocationButtonEnabled = false)) }
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
