@@ -119,6 +119,13 @@ class MainActivity : ComponentActivity() {
                             }) {
                             Text(getString(R.string.custom_location_button))
                         }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, MapsInLazyColumnActivity::class.java))
+                            }) {
+                            Text(getString(R.string.maps_in_lazy_column_activity))
+                        }
                     }
                 }
             }
