@@ -241,6 +241,17 @@ StreetView(
 )
 ```
 
+In order to test whether that Street View location is valid, we recommend using the
+`fetchStreetViewData` utility from the Android Map Utils library. We showcase an example of this 
+in `StreetViewActivity`:
+
+```kotlin
+ streetViewResult =
+    fetchStreetViewData(singapore, BuildConfig.MAPS_API_KEY)
+```
+
+Please make sure that this API Key has Street View Static API activated.
+
 </details>
 
 <details>

@@ -60,7 +60,6 @@ class StreetViewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContent {
             var isPanningEnabled by remember { mutableStateOf(false) }
             var isZoomEnabled by remember { mutableStateOf(false) }
@@ -103,19 +102,21 @@ class StreetViewActivity : ComponentActivity() {
                             Log.d(TAG, "Street view long clicked")
                         }
                     )
-                }
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(8.dp)
-                ) {
-                    StreetViewSwitch(title = "Panning", checked = isPanningEnabled) {
-                        isPanningEnabled = it
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(Color.White)
+                            .padding(8.dp)
+                    ) {
+                        StreetViewSwitch(title = "Panning", checked = isPanningEnabled) {
+                            isPanningEnabled = it
+                        }
+                        StreetViewSwitch(title = "Zooming", checked = isZoomEnabled) {
+                            isZoomEnabled = it
+                        }
                     }
-                    StreetViewSwitch(title = "Zooming", checked = isZoomEnabled) {
-                        isZoomEnabled = it
-                    }
+                } else {
+                    Text("Location not available.")
                 }
             }
         }
