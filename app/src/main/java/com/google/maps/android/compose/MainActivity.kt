@@ -32,8 +32,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 
-private const val TAG = "MapSampleActivity"
-
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,6 +116,13 @@ class MainActivity : ComponentActivity() {
                                 context.startActivity(Intent(context, CustomControlsActivity::class.java))
                             }) {
                             Text(getString(R.string.custom_location_button))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, AdvancedMarkersActivity::class.java))
+                            }) {
+                            Text(getString(R.string.advanced_markers))
                         }
                     }
                 }
