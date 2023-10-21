@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,12 +77,14 @@ internal class MapPropertiesNode(
         map.setOnCameraMoveListener {
             cameraPositionState.rawPosition = map.cameraPosition
         }
-        map.setOnMapClickListener { clickListeners.onMapClick(it) }
-        map.setOnMapLongClickListener { clickListeners.onMapLongClick(it) }
-        map.setOnMapLoadedCallback { clickListeners.onMapLoaded() }
-        map.setOnMyLocationButtonClickListener { clickListeners.onMyLocationButtonClick() }
-        map.setOnMyLocationClickListener { clickListeners.onMyLocationClick(it) }
-        map.setOnPoiClickListener { clickListeners.onPOIClick(it) }
+
+        map.setOnMapClickListener(clickListeners.onMapClick)
+        map.setOnMapLongClickListener(clickListeners.onMapLongClick)
+        map.setOnMapLoadedCallback(clickListeners.onMapLoaded)
+        map.setOnMyLocationButtonClickListener { clickListeners.onMyLocationButtonClick?.invoke() == true }
+        map.setOnMyLocationClickListener(clickListeners.onMyLocationClick)
+        map.setOnPoiClickListener(clickListeners.onPOIClick)
+
         map.setOnIndoorStateChangeListener(object : GoogleMap.OnIndoorStateChangeListener {
             override fun onIndoorBuildingFocused() {
                 clickListeners.indoorStateChangeListener.onIndoorBuildingFocused()

@@ -23,4 +23,5 @@
   <string name="location_tracking_activity">Location Tracking</string>
   <string name="scale_bar_activity">Scale Bar</string>
   <string name="street_view">Street View</string>
+  <string name="custom_location_button">Custom Location Button</string>
 </resources>

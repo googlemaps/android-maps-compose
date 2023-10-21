@@ -20,6 +20,7 @@ import android.location.Location
 import android.os.Bundle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
@@ -80,13 +81,14 @@ public fun GoogleMap(
     locationSource: LocationSource? = null,
     uiSettings: MapUiSettings = DefaultMapUiSettings,
     indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
-    onMapClick: (LatLng) -> Unit = {},
-    onMapLongClick: (LatLng) -> Unit = {},
-    onMapLoaded: () -> Unit = {},
-    onMyLocationButtonClick: () -> Boolean = { false },
-    onMyLocationClick: (Location) -> Unit = {},
-    onPOIClick: (PointOfInterest) -> Unit = {},
+    onMapClick: ((LatLng) -> Unit)? = null,
+    onMapLongClick: ((LatLng) -> Unit)? = null,
+    onMapLoaded: (() -> Unit)? = null,
+    onMyLocationButtonClick: (() -> Boolean)? = null,
+    onMyLocationClick: ((Location) -> Unit)? = null,
+    onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = NoPadding,
+    myLocationButton: (@Composable @GoogleMapComposable () -> Unit)? = null,
     content: (@Composable @GoogleMapComposable () -> Unit)? = null,
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -115,11 +117,18 @@ public fun GoogleMap(
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
-    val currentUiSettings by rememberUpdatedState(uiSettings)
+
+    // If we pass a custom location button, the native one is deactivated.
+    val currentUiSettings by rememberUpdatedState(if (myLocationButton != null) {
+        uiSettings.copy(myLocationButtonEnabled = false)
+    } else {
+        uiSettings
+    })
     val currentMapProperties by rememberUpdatedState(properties)
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
+    val currentLocation by rememberUpdatedState(myLocationButton)
 
     LaunchedEffect(Unit) {
         disposingComposition {
@@ -141,6 +150,10 @@ public fun GoogleMap(
             }
         }
     }
+    Row(modifier = modifier) {
+        currentLocation?.invoke()
+    }
+
 }
 
 internal suspend inline fun disposingComposition(factory: () -> Composition) {
@@ -224,3 +237,43 @@ private fun MapView.componentCallbacks(): ComponentCallbacks =
             this@componentCallbacks.onLowMemory()
         }
     }
+
+public typealias GoogleMapFactory = @Composable () -> Unit
+
+/**
+ * This method provides a factory pattern for GoogleMap. It can typically be used in tests to provide a default Composable
+ * of type GoogleMapFactory.
+ *
+ * @param modifier Any modifier to be applied.
+ * @param cameraPositionState The position for the map.
+ * @param onMapLoaded Listener for the map loaded.
+ * @param content Any content to be added.
+ */
+@Composable
+public fun googleMapFactory(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    onMapLoaded: () -> Unit = {},
+    content: @Composable () -> Unit = {}
+): GoogleMapFactory {
+    return {
+        val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+        val mapProperties by remember {
+            mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+        }
+
+        val mapVisible by remember { mutableStateOf(true) }
+
+        if (mapVisible) {
+            GoogleMap(
+                modifier = modifier,
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                uiSettings = uiSettings,
+                onMapLoaded = onMapLoaded,
+                content = content
+            )
+        }
+    }
+}
+

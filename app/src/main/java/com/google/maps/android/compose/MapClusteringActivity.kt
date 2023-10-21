@@ -48,7 +48,7 @@ fun GoogleMapClustering() {
                 singapore2.latitude + Random.nextFloat(),
                 singapore2.longitude + Random.nextFloat(),
             )
-            items.add(MyItem(position, "Marker", "Snippet"))
+            items.add(MyItem(position, "Marker", "Snippet", 0f))
         }
     }
     GoogleMapClustering(items = items)
@@ -113,6 +113,7 @@ data class MyItem(
     val itemPosition: LatLng,
     val itemTitle: String,
     val itemSnippet: String,
+    val itemZIndex: Float,
 ) : ClusterItem {
     override fun getPosition(): LatLng =
         itemPosition
@@ -122,4 +123,7 @@ data class MyItem(
 
     override fun getSnippet(): String =
         itemSnippet
+
+    override fun getZIndex(): Float =
+        itemZIndex
 }
