@@ -231,7 +231,6 @@ MarkerInfoWindow(
 ### Street View
 
 You can add a Street View given a location using the `StreetView` composable.
-To use it, provide a `StreetViewPanoramaOptions` object as follows:
 
 1. Test whether a Street View location is valid with the the
 `fetchStreetViewData` utility from the [`maps-compose-utils` library](#maps-compose-utility-library).
@@ -241,7 +240,7 @@ To use it, provide a `StreetViewPanoramaOptions` object as follows:
     fetchStreetViewData(singapore, BuildConfig.MAPS_API_KEY)
 ```
 
-2. Once the location is confirmed valid, add a Street View composable.
+2. Once the location is confirmed valid, add a Street View composable by providing a `StreetViewPanoramaOptions` object.
 
 ```kotlin
 val singapore = LatLng(1.3588227, 103.8742114)
