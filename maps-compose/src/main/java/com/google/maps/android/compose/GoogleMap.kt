@@ -20,7 +20,6 @@ import android.location.Location
 import android.os.Bundle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
@@ -88,7 +87,6 @@ public fun GoogleMap(
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = NoPadding,
-    myLocationButton: (@Composable @GoogleMapComposable () -> Unit)? = null,
     content: (@Composable @GoogleMapComposable () -> Unit)? = null,
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -119,16 +117,11 @@ public fun GoogleMap(
     val currentContentPadding by rememberUpdatedState(contentPadding)
 
     // If we pass a custom location button, the native one is deactivated.
-    val currentUiSettings by rememberUpdatedState(if (myLocationButton != null) {
-        uiSettings.copy(myLocationButtonEnabled = false)
-    } else {
-        uiSettings
-    })
+    val currentUiSettings by rememberUpdatedState(uiSettings)
     val currentMapProperties by rememberUpdatedState(properties)
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-    val currentLocation by rememberUpdatedState(myLocationButton)
 
     LaunchedEffect(Unit) {
         disposingComposition {
@@ -150,10 +143,6 @@ public fun GoogleMap(
             }
         }
     }
-    Row(modifier = modifier) {
-        currentLocation?.invoke()
-    }
-
 }
 
 internal suspend inline fun disposingComposition(factory: () -> Composition) {
