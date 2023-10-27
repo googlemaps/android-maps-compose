@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
- Copyright 2021 Google LLC
+ Copyright 2023 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -65,6 +65,9 @@
         android:exported="false"/>
     <activity
         android:name=".AccessibilityActivity"
+        android:exported="false"/>
+    <activity
+        android:name=".RecompositionActivity"
         android:exported="false"/>
 
     <!-- Used by createComponentActivity() for unit testing -->
