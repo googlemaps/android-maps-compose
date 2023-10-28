@@ -23,7 +23,7 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 ```groovy
 dependencies {
     implementation 'com.google.maps.android:maps-compose:3.1.1'
-    
+
     // Optionally, you can include the Compose utils library for Clustering, etc.
     implementation 'com.google.maps.android:maps-compose-utils:3.1.1'
 
@@ -188,7 +188,7 @@ GoogleMap(
     val pinConfig = PinConfig.builder()
         .setBackgroundColor(Color.MAGENTA)
         .build()
-    
+
     AdvancedMarker(
         state = MarkerState(position = LatLng(-34, 151)),
         title = "Magenta marker in Sydney",
@@ -196,9 +196,6 @@ GoogleMap(
     )
 }
 ```
-As this Composable is backed by a rendering of your Composable into a Bitmap, it will not render
-your Composable every recomposition. So to trigger a new render of your Composable, you can pass
-all variables that your Composable depends on to trigger a render whenever one of them change.
 
 </details>
 
@@ -282,7 +279,7 @@ This library also provides optional utilities in the `maps-compose-utils` librar
 The marker clustering utility helps you manage multiple markers at different zoom levels.
 When a user views the map at a high zoom level, the individual markers show on the map. When the user zooms out, the markers gather together into clusters, to make viewing the map easier.
 
-The [MapClusteringActivity](app/src/main/java/com/google/maps/android/compose/MapClusteringActivity.kt) demonstrates usage.
+The [MarkerClusteringActivity](app/src/main/java/com/google/maps/android/compose/MarkerClusteringActivity.kt) demonstrates usage.
 
 ```kotlin
 Clustering(
@@ -313,8 +310,8 @@ The [ScaleBarActivity](app/src/main/java/com/google/maps/android/compose/ScaleBa
 Both versions of this widget leverage the `CameraPositionState` in `maps-compose` and therefore are very simple to configure with their defaults:
 
 ```kotlin
-Box(Modifier.fillMaxSize()) { 
-    
+Box(Modifier.fillMaxSize()) {
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState
@@ -337,7 +334,7 @@ Box(Modifier.fillMaxSize()) {
             .align(Alignment.TopStart),
         cameraPositionState = cameraPositionState
     )
-} 
+}
 ```
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
@@ -348,12 +345,13 @@ Contributions are welcome and encouraged! See [contributing] for more info.
 
 ## Support
 
-Encounter an issue while using this library?
+This library is offered via an open source [license](LICENSE). It is not governed by the Google Maps Platform [Technical Support Services Guidelines](https://cloud.google.com/maps-platform/terms/tssg?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss), the [SLA](https://cloud.google.com/maps-platform/terms/sla?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss), or the [Deprecation Policy](https://cloud.google.com/maps-platform/terms?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss) (however, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service).
 
-If you find a bug or have a feature request, please [file an issue].
-Or, if you'd like to contribute, send us a [pull request] and refer to our [code of conduct].
+This library adheres to [semantic versioning](https://semver.org/) to indicate when backwards-incompatible changes are introduced.
 
-You can also discuss this library on our [Discord server].
+If you find a bug, or have a feature request, please [file an issue] on GitHub.
+
+If you would like to get answers to technical questions from other Google Maps Platform developers, ask through one of our [developer community channels](https://developers.google.com/maps/developer-community?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss) including the Google Maps Platform [Discord server].
 
 [maps-sdk]: https://developers.google.com/maps/documentation/android-sdk
 [api-key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
