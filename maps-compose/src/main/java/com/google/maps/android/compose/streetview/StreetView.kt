@@ -1,3 +1,17 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.maps.android.compose.streetview
 
 import android.content.ComponentCallbacks
@@ -23,14 +37,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.StreetViewPanoramaView
-import com.google.android.gms.maps.model.StreetViewPanoramaCamera
 import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
 import com.google.maps.android.compose.disposingComposition
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitStreetViewPanorama
 
 /**
- * A composable for displaying a Street View for a given location.
+ * A composable for displaying a Street View for a given location. A location might not be available for a given
+ * set of coordinates. We recommend you to check our sample on [StreetViewActivity] using our utility function
+ * in [StreetViewUtils] to manage non-existing locations.
+ *
+ *
  *
  * @param modifier Modifier to be applied to the StreetView
  * @param cameraPositionState the [StreetViewCameraPositionState] to be used to control or observe

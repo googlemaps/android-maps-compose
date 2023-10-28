@@ -80,7 +80,7 @@ class GoogleMapViewTests {
         initMap()
         assertEquals(CameraMoveStartedReason.NO_MOVEMENT_YET, cameraPositionState.cameraMoveStartedReason)
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
             assertTrue(cameraPositionState.isMoving)
@@ -92,10 +92,10 @@ class GoogleMapViewTests {
     fun testCameraReportsNotMoving() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(5000) {
+            composeTestRule.waitUntil(timeout5) {
                 !cameraPositionState.isMoving
             }
             assertFalse(cameraPositionState.isMoving)
@@ -106,10 +106,10 @@ class GoogleMapViewTests {
     fun testCameraZoomInAnimation() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -124,10 +124,10 @@ class GoogleMapViewTests {
     fun testCameraZoomIn() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -142,10 +142,10 @@ class GoogleMapViewTests {
     fun testCameraZoomOut() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = false) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -160,10 +160,10 @@ class GoogleMapViewTests {
     fun testCameraZoomOutAnimation() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = false) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
