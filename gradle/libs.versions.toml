@@ -19,7 +19,7 @@ mapsecrets = "2.0.1"
 # We have to override this version because the current release has a
 # bug related to AndroidView being re-used in LazyColumn.
 # Related issue: https://issuetracker.google.com/issues/267642562
-compose-ui = "1.6.0-alpha07"
+compose-ui = "1.6.0-alpha08"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
