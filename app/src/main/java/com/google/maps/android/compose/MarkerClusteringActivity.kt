@@ -28,9 +28,9 @@ import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.compose.clustering.Clustering
 import kotlin.random.Random
 
-private val TAG = MapClusteringActivity::class.simpleName
+private val TAG = MarkerClusteringActivity::class.simpleName
 
-class MapClusteringActivity : ComponentActivity() {
+class MarkerClusteringActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -60,7 +60,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(singapore, 10f)
+            position = CameraPosition.fromLatLngZoom(singapore, 6f)
         }
     ) {
         Clustering(

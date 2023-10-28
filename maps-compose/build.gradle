@@ -39,7 +39,6 @@ dependencies {
     implementation libs.androidx.core
     implementation libs.androidx.compose.foundation
     implementation libs.kotlin
-    implementation libs.maps.playservice
     implementation libs.maps.ktx.std
 
     testImplementation libs.test.junit
