@@ -158,33 +158,42 @@ composable elements to the content of the `GoogleMap`.
 
 ```kotlin
 GoogleMap(
-  //...
+    googleMapOptionsFactory = {
+        GoogleMapOptions().mapId("DEMO_MAP_ID")
+    },
+    //...
 ) {
-    Marker(
+    AdvancedMarker(
         state = MarkerState(position = LatLng(-34, 151)),
         title = "Marker in Sydney"
     )
-    Marker(
+    AdvancedMarker(
         state = MarkerState(position = LatLng(35.66, 139.6)),
         title = "Marker in Tokyo"
     )
 }
 ```
 
-You can also customize the marker you want to add by using `MarkerComposable`.
+You can customize a marker by using `PinConfig` with an `AdvancedMarker`.
 
 ```kotlin
 val state = MyState()
 
 GoogleMap(
-  //...
+    googleMapOptionsFactory = {
+        GoogleMapOptions().mapId("DEMO_MAP_ID")
+    },
+    //...
 ) {
-    MarkerComposable(
-        keys = arrayOf(state),
+    val pinConfig = PinConfig.builder()
+        .setBackgroundColor(Color.MAGENTA)
+        .build()
+    
+    AdvancedMarker(
         state = MarkerState(position = LatLng(-34, 151)),
-    ) {
-        MyCustomMarker(state)
-    }
+        title = "Magenta marker in Sydney",
+        pinConfig = pinConfig
+    )
 }
 ```
 As this Composable is backed by a rendering of your Composable into a Bitmap, it will not render

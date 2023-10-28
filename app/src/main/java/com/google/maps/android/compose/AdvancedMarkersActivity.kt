@@ -15,7 +15,7 @@
 package com.google.maps.android.compose
 
 
-import android.R
+import android.R.drawable.ic_menu_myplaces
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -32,12 +32,20 @@ import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.PinConfig
 
 
 private const val TAG = "AdvancedMarkersActivity"
 
+private val santiago = LatLng(-33.4489, -70.6693)
+private val bogota = LatLng(-4.7110, -74.0721)
+private val lima = LatLng(-12.0464, -77.0428)
+private val salvador = LatLng(-12.9777, -38.5016)
+private val center = LatLng(-18.000, -58.000)
+private val defaultCameraPosition1 = CameraPosition.fromLatLngZoom(center, 2f)
 class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,15 +54,15 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
         setContent {
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
-                position = defaultCameraPosition
+                position = defaultCameraPosition1
             }
             val mapProperties by remember {
                 mutableStateOf(MapProperties(mapType = MapType.NORMAL))
             }
-            val singaporeState = rememberMarkerState(position = singapore)
-            val singapore2State = rememberMarkerState(position = singapore2)
-            val singapore3State = rememberMarkerState(position = singapore3)
-            val singapore4State = rememberMarkerState(position = singapore4)
+            val marker1State = rememberMarkerState(position = santiago)
+            val marker2State = rememberMarkerState(position = bogota)
+            val marker3State = rememberMarkerState(position = lima)
+            val marker4State = rememberMarkerState(position = salvador)
 
             // Drawing on the map is accomplished with a child-based API
             val markerClick: (Marker) -> Boolean = {
@@ -68,7 +76,7 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                 GoogleMap(
                     modifier = Modifier.matchParentSize(),
                     googleMapOptionsFactory = {
-                        GoogleMapOptions().mapId("45a7dec634a854b0")
+                        GoogleMapOptions().mapId("DEMO_MAP_ID")
                     },
                     cameraPositionState = cameraPositionState,
                     properties = mapProperties,
@@ -83,48 +91,51 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                     textView.setTextColor(Color.YELLOW)
 
                     AdvancedMarker(
-                        state = singapore3State,
+                        state = marker4State,
                         onClick = markerClick,
                         collisionBehavior = 1,
-                        iconView = textView
+                        iconView = textView,
+                        title="Marker 4"
                     )
 
-                    val pinConfigBuilder = PinConfig.builder()
-                    pinConfigBuilder.setBackgroundColor(Color.MAGENTA)
-                    pinConfigBuilder.setBorderColor(resources.getColor(R.color.holo_orange_dark))
-
-                    val pinConfig = pinConfigBuilder.build()
+                    val pinConfig = PinConfig.builder()
+                        .setBackgroundColor(Color.MAGENTA)
+                        .setBorderColor(Color.WHITE)
+                        .build()
 
                     AdvancedMarker(
-                        state = singapore2State,
+                        state = marker1State,
                         onClick = markerClick,
                         collisionBehavior = 1,
-                        pinConfig = pinConfig
+                        pinConfig = pinConfig,
+                        title="Marker 1"
                     )
-                    val pinConfigBuilder2 = PinConfig.builder()
-                    val glyphOne = PinConfig.Glyph("A", resources.getColor(R.color.black))
-                    pinConfigBuilder2.setGlyph(glyphOne)
 
-                    val pinConfig2 = pinConfigBuilder2.build()
+                    val glyphOne = PinConfig.Glyph("A", Color.BLACK)
+                    val pinConfig2 = PinConfig.builder()
+                        .setGlyph(glyphOne)
+                        .build()
 
                     AdvancedMarker(
-                        state = singaporeState,
+                        state = marker2State,
                         onClick = markerClick,
                         collisionBehavior = 1,
-                        pinConfig = pinConfig2
+                        pinConfig = pinConfig2,
+                        title="Marker 2"
                     )
 
-                    val pinConfigBuilder3 = PinConfig.builder()
-                    val glyphImage: Int = R.drawable.ic_menu_report_image
+                    val glyphImage: Int = ic_menu_myplaces
                     val descriptor = BitmapDescriptorFactory.fromResource(glyphImage)
-                    pinConfigBuilder3.setGlyph(PinConfig.Glyph(descriptor))
-                    val pinConfig3 = pinConfigBuilder3.build()
+                    val pinConfig3 = PinConfig.builder()
+                        .setGlyph(PinConfig.Glyph(descriptor))
+                        .build()
 
                     AdvancedMarker(
-                        state = singapore4State,
+                        state = marker3State,
                         onClick = markerClick,
                         collisionBehavior = 1,
-                        pinConfig = pinConfig3
+                        pinConfig = pinConfig3,
+                        title="Marker 3"
                     )
 
                 }

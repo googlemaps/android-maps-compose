@@ -63,6 +63,25 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.padding(5.dp))
                         Button(
                             onClick = {
+                                context.startActivity(Intent(context, AdvancedMarkersActivity::class.java))
+                            }) {
+                            Text(getString(R.string.advanced_markers))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        MarkerClusteringActivity::class.java
+                                    )
+                                )
+                            }) {
+                            Text(getString(R.string.marker_clustering_activity))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
                                 context.startActivity(
                                     Intent(
                                         context,
@@ -71,18 +90,6 @@ class MainActivity : ComponentActivity() {
                                 )
                             }) {
                             Text(getString(R.string.map_in_column_activity))
-                        }
-                        Spacer(modifier = Modifier.padding(5.dp))
-                        Button(
-                            onClick = {
-                                context.startActivity(
-                                    Intent(
-                                        context,
-                                        MapClusteringActivity::class.java
-                                    )
-                                )
-                            }) {
-                            Text(getString(R.string.map_clustering_activity))
                         }
                         Spacer(modifier = Modifier.padding(5.dp))
                         Button(
@@ -116,13 +123,6 @@ class MainActivity : ComponentActivity() {
                                 context.startActivity(Intent(context, CustomControlsActivity::class.java))
                             }) {
                             Text(getString(R.string.custom_location_button))
-                        }
-                        Spacer(modifier = Modifier.padding(5.dp))
-                        Button(
-                            onClick = {
-                                context.startActivity(Intent(context, AdvancedMarkersActivity::class.java))
-                            }) {
-                            Text(getString(R.string.advanced_markers))
                         }
                     }
                 }
