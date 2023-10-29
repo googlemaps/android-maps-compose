@@ -40,21 +40,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.StreetViewPanoramaOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.Status
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.compose.streetview.rememberStreetViewCameraPositionState
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import kotlinx.coroutines.launch
+import com.google.maps.android.StreetViewUtils.Companion.fetchStreetViewData
 
 class StreetViewActivity : ComponentActivity() {
 
     private val TAG = StreetViewActivity::class.java.simpleName
 
+    // This is an invalid location. If you use it instead of Singapore, the StreetViewUtils
+    // will return NOT_FOUND.
+    val invalidLocation = LatLng(32.429634, -96.828891)
+
     @OptIn(MapsExperimentalFeature::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             var isPanningEnabled by remember { mutableStateOf(false) }
             var isZoomEnabled by remember { mutableStateOf(false) }
+            var streetViewResult by remember { mutableStateOf(Status.NOT_FOUND) }
+
             val camera = rememberStreetViewCameraPositionState()
             LaunchedEffect(camera) {
                 launch {
@@ -69,40 +79,51 @@ class StreetViewActivity : ComponentActivity() {
                             Log.d(TAG, "Location at: $it")
                         }
                 }
+                launch {
+                    // Be sure to enable the Street View Static API on the project associated with
+                    // this API key using the instructions at https://goo.gle/enable-sv-static-api
+                    streetViewResult =
+                        fetchStreetViewData(singapore, BuildConfig.MAPS_API_KEY)
+                }
             }
             Box(Modifier.fillMaxSize(), Alignment.BottomStart) {
-                StreetView(
-                    Modifier.matchParentSize(),
-                    cameraPositionState = camera,
-                    streetViewPanoramaOptionsFactory = {
-                        StreetViewPanoramaOptions().position(singapore)
-                    },
-                    isPanningGesturesEnabled = isPanningEnabled,
-                    isZoomGesturesEnabled = isZoomEnabled,
-                    onClick = {
-                        Log.d(TAG, "Street view clicked")
-                    },
-                    onLongClick = {
-                        Log.d(TAG, "Street view long clicked")
+                if (streetViewResult == Status.OK) {
+                    StreetView(
+                        Modifier.matchParentSize(),
+                        cameraPositionState = camera,
+                        streetViewPanoramaOptionsFactory = {
+                            StreetViewPanoramaOptions().position(singapore)
+                        },
+                        isPanningGesturesEnabled = isPanningEnabled,
+                        isZoomGesturesEnabled = isZoomEnabled,
+                        onClick = {
+                            Log.d(TAG, "Street view clicked")
+                        },
+                        onLongClick = {
+                            Log.d(TAG, "Street view long clicked")
+                        }
+                    )
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(Color.White)
+                            .padding(8.dp)
+                    ) {
+                        StreetViewSwitch(title = "Panning", checked = isPanningEnabled) {
+                            isPanningEnabled = it
+                        }
+                        StreetViewSwitch(title = "Zooming", checked = isZoomEnabled) {
+                            isZoomEnabled = it
+                        }
                     }
-                )
-                Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(8.dp)
-                ) {
-                    StreetViewSwitch(title = "Panning", checked = isPanningEnabled) {
-                        isPanningEnabled = it
-                    }
-                    StreetViewSwitch(title = "Zooming", checked = isZoomEnabled) {
-                        isZoomEnabled = it
-                    }
+                } else {
+                    Text("Location not available.")
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun StreetViewSwitch(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {

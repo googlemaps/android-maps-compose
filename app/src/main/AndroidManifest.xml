@@ -43,13 +43,16 @@
         android:name=".BasicMapActivity"
         android:exported="false" />
     <activity
+        android:name=".AdvancedMarkersActivity"
+        android:exported="false"/>
+    <activity
         android:name=".MapInColumnActivity"
         android:exported="false"/>
     <activity
         android:name=".MapsInLazyColumnActivity"
         android:exported="false"/>
     <activity
-        android:name=".MapClusteringActivity"
+        android:name=".MarkerClusteringActivity"
         android:exported="false"/>
     <activity
         android:name=".LocationTrackingActivity"
