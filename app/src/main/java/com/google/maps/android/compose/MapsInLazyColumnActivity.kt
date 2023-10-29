@@ -1,7 +1,6 @@
 package com.google.maps.android.compose
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -20,36 +19,29 @@ import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.delay
-import kotlin.random.Random
-
-data class CountryLocation(val name: String, val latLng: LatLng, val zoom: Float)
 
 class MapsInLazyColumnActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MapsInLazyColumn(mapListItems)
+            MapsInLazyColumn()
         }
     }
 }
 
 @Composable
-private fun MapsInLazyColumn(mapListItems: List<MapListItem>) {
+private fun MapsInLazyColumn() {
     LazyColumn {
         items(mapListItems) { item ->
             Box(
@@ -73,7 +65,7 @@ private fun MapCard(item: MapListItem) {
     ) {
         Column {
             Box {
-                MyMap(
+                CardMap(
                     Modifier.fillMaxSize(),
                     item
                 )
@@ -90,7 +82,7 @@ private fun MapCard(item: MapListItem) {
 }
 
 @Composable
-private fun MyMap(
+private fun CardMap(
     modifier: Modifier,
     mapItem: MapListItem
 ) {
@@ -162,3 +154,5 @@ private val mapListItems = countries
     .mapIndexed { index, country ->
     MapListItem(country.name, country.latLng, country.zoom, "MapInLazyColumn#$index")
 }
+
+private data class CountryLocation(val name: String, val latLng: LatLng, val zoom: Float)
