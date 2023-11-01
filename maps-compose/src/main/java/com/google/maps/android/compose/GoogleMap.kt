@@ -51,6 +51,7 @@ import kotlinx.coroutines.awaitCancellation
 /**
  * A compose container for a [MapView].
  *
+ * @param mergeDescendants deactivates the map for accessibility purposes
  * @param modifier Modifier to be applied to the GoogleMap
  * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
  * camera state

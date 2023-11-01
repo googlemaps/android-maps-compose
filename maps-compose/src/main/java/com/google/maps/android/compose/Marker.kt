@@ -133,7 +133,7 @@ public fun rememberMarkerState(
 
 /**
  * A composable for a marker on the map.
- *
+ * @param contentDescription the content description for accessibility purposes
  * @param state the [MarkerState] to be used to control or observe the marker
  * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
