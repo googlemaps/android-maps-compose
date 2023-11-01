@@ -113,6 +113,7 @@ class BasicMapActivity : ComponentActivity() {
 
 @Composable
 fun GoogleMapView(
+    modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     onMapLoaded: () -> Unit = {},
     content: @Composable () -> Unit = {}
@@ -136,6 +137,7 @@ fun GoogleMapView(
 
     if (mapVisible) {
         GoogleMap(
+            modifier = modifier,
             cameraPositionState = cameraPositionState,
             properties = mapProperties,
             uiSettings = uiSettings,
