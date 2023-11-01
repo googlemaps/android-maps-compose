@@ -350,6 +350,6 @@ private fun DebugView(
 @Composable
 fun GoogleMapViewPreview() {
     MapsComposeSampleTheme {
-        GoogleMapView()
+        GoogleMapView(Modifier.fillMaxSize())
     }
 }
