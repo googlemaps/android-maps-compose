@@ -15,6 +15,7 @@
 package com.google.maps.android.compose
 
 import android.annotation.SuppressLint
+import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
@@ -112,6 +113,7 @@ internal val NoPadding = PaddingValues()
 @Suppress("NOTHING_TO_INLINE")
 @Composable
 internal inline fun MapUpdater(
+    mergeDescendants: Boolean = false,
     contentDescription: String?,
     cameraPositionState: CameraPositionState,
     clickListeners: MapClickListeners,
@@ -121,6 +123,10 @@ internal inline fun MapUpdater(
     mapUiSettings: MapUiSettings,
 ) {
     val map = (currentComposer.applier as MapApplier).map
+    val mapView = (currentComposer.applier as MapApplier).mapView
+    if (mergeDescendants) {
+        mapView.importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+    }
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
     ComposeNode<MapPropertiesNode, MapApplier>(

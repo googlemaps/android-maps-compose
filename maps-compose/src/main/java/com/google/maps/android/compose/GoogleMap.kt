@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -72,6 +73,7 @@ import kotlinx.coroutines.awaitCancellation
  */
 @Composable
 public fun GoogleMap(
+    mergeDescendants: Boolean = false,
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
@@ -120,11 +122,11 @@ public fun GoogleMap(
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-
     LaunchedEffect(Unit) {
         disposingComposition {
             mapView.newComposition(parentComposition) {
                 MapUpdater(
+                    mergeDescendants = mergeDescendants,
                     contentDescription = contentDescription,
                     cameraPositionState = currentCameraPositionState,
                     clickListeners = mapClickListeners,

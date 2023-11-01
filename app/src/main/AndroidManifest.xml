@@ -63,6 +63,9 @@
     <activity
         android:name=".CustomControlsActivity"
         android:exported="false"/>
+    <activity
+        android:name=".AccessibilityActivity"
+        android:exported="false"/>
 
     <!-- Used by createComponentActivity() for unit testing -->
     <activity android:name="androidx.activity.ComponentActivity" />
