@@ -23,7 +23,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Button
@@ -35,9 +37,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.CameraUpdateFactory
+import kotlinx.coroutines.launch
 
 
 class CustomControlsActivity : ComponentActivity() {
@@ -47,9 +52,17 @@ class CustomControlsActivity : ComponentActivity() {
 
         setContent {
             var isMapLoaded by remember { mutableStateOf(false) }
+            val coroutineScope = rememberCoroutineScope()
             // This needs to be manually deactivated to avoid having a custom and the native
             // location button
-            val uiSettings by remember { mutableStateOf(MapUiSettings(myLocationButtonEnabled = false)) }
+            val uiSettings by remember {
+                mutableStateOf(
+                    MapUiSettings(
+                        myLocationButtonEnabled = false,
+                        zoomGesturesEnabled = false
+                    )
+                )
+            }
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
                 position = defaultCameraPosition
@@ -64,15 +77,6 @@ class CustomControlsActivity : ComponentActivity() {
                     },
                     uiSettings = uiSettings,
                 )
-                MapButton(
-                    "This is a custom location button",
-                    onClick = {
-                        Toast.makeText(
-                            this@CustomControlsActivity,
-                            "Click on my location",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    })
 
                 if (!isMapLoaded) {
                     AnimatedVisibility(
@@ -88,6 +92,33 @@ class CustomControlsActivity : ComponentActivity() {
                                 .wrapContentSize()
                         )
                     }
+                }
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    MapButton(
+                        "This is a custom location button",
+                        onClick = {
+                            Toast.makeText(
+                                this@CustomControlsActivity,
+                                "Click on my location",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        })
+                    MapButton(
+                        "+",
+                        onClick = {
+                            coroutineScope.launch {
+                                cameraPositionState.animate(CameraUpdateFactory.zoomIn())
+                            }
+                        })
+                    MapButton(
+                        "-",
+                        onClick = {
+                            coroutineScope.launch {
+                                cameraPositionState.animate(CameraUpdateFactory.zoomOut())
+                            }
+                        })
                 }
             }
         }
