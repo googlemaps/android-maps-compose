@@ -123,23 +123,27 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
 ) {
     val clusterManager = rememberClusterManager<T>()
-        ?: return
     val renderer = rememberClusterRenderer(clusterContent, clusterItemContent, clusterManager)
-    LaunchedEffect(clusterManager, renderer) {
-        clusterManager.renderer = renderer ?: return@LaunchedEffect
+    SideEffect {
+        if (clusterManager?.renderer != renderer) {
+            clusterManager?.renderer = renderer ?: return@SideEffect
+        }
     }
 
     SideEffect {
+        clusterManager ?: return@SideEffect
         clusterManager.setOnClusterClickListener(onClusterClick)
         clusterManager.setOnClusterItemClickListener(onClusterItemClick)
         clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
         clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
     }
 
-    Clustering(
-        items = items,
-        clusterManager = clusterManager,
-    )
+    if (clusterManager != null) {
+        Clustering(
+            items = items,
+            clusterManager = clusterManager,
+        )
+    }
 }
 
 /**

@@ -203,8 +203,10 @@ fun CustomRendererClustering(items: List<MyItem>) {
             Log.d(TAG, "Cluster item info window clicked! $it")
         }
     }
-    LaunchedEffect(clusterManager, renderer) {
-        clusterManager?.renderer = renderer ?: return@LaunchedEffect
+    SideEffect {
+        if (clusterManager?.renderer != renderer) {
+            clusterManager?.renderer = renderer ?: return@SideEffect
+        }
     }
 
     if (clusterManager != null) {
