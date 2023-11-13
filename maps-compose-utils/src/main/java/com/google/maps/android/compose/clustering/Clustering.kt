@@ -190,6 +190,25 @@ public fun <T : ClusterItem> Clustering(
     }
 }
 
+
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> rememberClusterRenderer(
+    clusterManager: ClusterManager<T>?,
+): ClusterRenderer<T>? {
+    val context = LocalContext.current
+    val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
+
+    clusterManager ?: return null
+    MapEffect(context) { map ->
+        val renderer = DefaultClusterRenderer(context, map, clusterManager)
+        clusterRendererState.value = renderer
+    }
+
+    return clusterRendererState.value
+}
+
 /**
  * Default Renderer for drawing Composable.
  *
@@ -212,28 +231,16 @@ public fun <T : ClusterItem> rememberClusterRenderer(
 
     clusterManager ?: return null
     MapEffect(context) { map ->
-        launch {
-            snapshotFlow {
-                clusterContentState.value != null || clusterItemContentState.value != null
-            }
-                .collect { hasCustomContent ->
-                    val renderer = if (hasCustomContent) {
-                        ComposeUiClusterRenderer(
-                            context,
-                            scope = this,
-                            map,
-                            clusterManager,
-                            viewRendererState,
-                            clusterContentState,
-                            clusterItemContentState,
-                        )
-                    } else {
-                        DefaultClusterRenderer(context, map, clusterManager)
-                    }
-                    clusterRendererState.value = renderer
-                }
-        }
-
+        val renderer = ComposeUiClusterRenderer(
+            context,
+            scope = this,
+            map,
+            clusterManager,
+            viewRendererState,
+            clusterContentState,
+            clusterItemContentState,
+        )
+        clusterRendererState.value = renderer
     }
     return clusterRendererState.value
 }
