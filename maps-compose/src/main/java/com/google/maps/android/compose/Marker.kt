@@ -133,7 +133,7 @@ public fun rememberMarkerState(
 
 /**
  * A composable for a marker on the map.
- *
+ * @param contentDescription the content description for accessibility purposes
  * @param state the [MarkerState] to be used to control or observe the marker
  * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
@@ -156,6 +156,7 @@ public fun rememberMarkerState(
 @Composable
 @GoogleMapComposable
 public fun Marker(
+    contentDescription: String? = "",
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -175,6 +176,7 @@ public fun Marker(
     onInfoWindowLongClick: (Marker) -> Unit = {},
 ) {
     MarkerImpl(
+        contentDescription = contentDescription,
         state = state,
         alpha = alpha,
         anchor = anchor,
@@ -434,6 +436,7 @@ public fun MarkerInfoWindowContent(
 @Composable
 @GoogleMapComposable
 private fun MarkerImpl(
+    contentDescription: String? = "",
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -459,6 +462,7 @@ private fun MarkerImpl(
     ComposeNode<MarkerNode, MapApplier>(
         factory = {
             val marker = mapApplier?.map?.addMarker {
+                contentDescription(contentDescription)
                 alpha(alpha)
                 anchor(anchor.x, anchor.y)
                 draggable(draggable)

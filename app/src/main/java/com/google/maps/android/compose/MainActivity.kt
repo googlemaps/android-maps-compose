@@ -127,6 +127,13 @@ class MainActivity : ComponentActivity() {
                             }) {
                             Text(getString(R.string.custom_location_button))
                         }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, AccessibilityActivity::class.java))
+                            }) {
+                            Text(getString(R.string.accessibility_button))
+                        }
                     }
                 }
             }
