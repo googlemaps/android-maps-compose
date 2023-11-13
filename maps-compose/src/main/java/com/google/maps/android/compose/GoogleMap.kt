@@ -115,6 +115,8 @@ public fun GoogleMap(
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
+
+    // If we pass a custom location button, the native one is deactivated.
     val currentUiSettings by rememberUpdatedState(uiSettings)
     val currentMapProperties by rememberUpdatedState(properties)
 

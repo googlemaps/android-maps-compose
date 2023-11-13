@@ -43,10 +43,13 @@
         android:name=".BasicMapActivity"
         android:exported="false" />
     <activity
+        android:name=".AdvancedMarkersActivity"
+        android:exported="false"/>
+    <activity
         android:name=".MapInColumnActivity"
         android:exported="false"/>
     <activity
-        android:name=".MapClusteringActivity"
+        android:name=".MarkerClusteringActivity"
         android:exported="false"/>
     <activity
         android:name=".LocationTrackingActivity"
@@ -56,6 +59,9 @@
         android:exported="false"/>
     <activity
         android:name=".StreetViewActivity"
+        android:exported="false"/>
+    <activity
+        android:name=".CustomControlsActivity"
         android:exported="false"/>
 
     <!-- Used by createComponentActivity() for unit testing -->

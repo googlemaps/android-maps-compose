@@ -18,9 +18,11 @@
   <string name="app_name">android-maps-compose</string>
   <string name="main_activity_title">"Maps Compose Demos \uD83D\uDDFA"</string>
   <string name="basic_map_activity">Basic Map</string>
+  <string name="advanced_markers">Advanced Markers</string>
   <string name="map_in_column_activity">Map In Column</string>
-  <string name="map_clustering_activity">Map Clustering</string>
+  <string name="marker_clustering_activity">Marker Clustering</string>
   <string name="location_tracking_activity">Location Tracking</string>
   <string name="scale_bar_activity">Scale Bar</string>
   <string name="street_view">Street View</string>
+  <string name="custom_location_button">Custom Location Button</string>
 </resources>

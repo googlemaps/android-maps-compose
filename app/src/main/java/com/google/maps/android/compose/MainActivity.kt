@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -31,8 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
-
-private const val TAG = "MapSampleActivity"
 
 class MainActivity : ComponentActivity() {
 
@@ -47,7 +47,8 @@ class MainActivity : ComponentActivity() {
                     val context = LocalContext.current
                     Column(
                         Modifier
-                            .fillMaxSize(),
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState()),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Spacer(modifier = Modifier.padding(10.dp))
@@ -65,6 +66,25 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.padding(5.dp))
                         Button(
                             onClick = {
+                                context.startActivity(Intent(context, AdvancedMarkersActivity::class.java))
+                            }) {
+                            Text(getString(R.string.advanced_markers))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        MarkerClusteringActivity::class.java
+                                    )
+                                )
+                            }) {
+                            Text(getString(R.string.marker_clustering_activity))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
                                 context.startActivity(
                                     Intent(
                                         context,
@@ -73,18 +93,6 @@ class MainActivity : ComponentActivity() {
                                 )
                             }) {
                             Text(getString(R.string.map_in_column_activity))
-                        }
-                        Spacer(modifier = Modifier.padding(5.dp))
-                        Button(
-                            onClick = {
-                                context.startActivity(
-                                    Intent(
-                                        context,
-                                        MapClusteringActivity::class.java
-                                    )
-                                )
-                            }) {
-                            Text(getString(R.string.map_clustering_activity))
                         }
                         Spacer(modifier = Modifier.padding(5.dp))
                         Button(
@@ -111,6 +119,13 @@ class MainActivity : ComponentActivity() {
                                 context.startActivity(Intent(context, StreetViewActivity::class.java))
                             }) {
                             Text(getString(R.string.street_view))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, CustomControlsActivity::class.java))
+                            }) {
+                            Text(getString(R.string.custom_location_button))
                         }
                     }
                 }

@@ -44,7 +44,6 @@ dependencies {
     implementation libs.androidx.compose.material
     implementation libs.kotlin
     implementation libs.material
-    implementation libs.maps.ktx.std
     implementation libs.androidx.compose.ui.preview.tooling
     debugImplementation libs.androidx.compose.ui.tooling
 
@@ -58,15 +57,11 @@ dependencies {
     androidTestImplementation libs.androidx.test.compose.ui
     androidTestImplementation libs.coroutines
 
-    // Uncomment the implementation 'com.google...` declaration and comment out the project
-    // declaration if you want to test the sample app with a Maven Central release of the library.
-    //implementation  "com.google.maps.android:maps-compose:2.2.1"
+    // Instead of the lines below, regular apps would load these libraries from Maven according to
+    // the README installation instructions
     implementation project(':maps-compose')
-    //implementation  "com.google.maps.android:maps-compose-widgets:1.0.0"
     implementation project(':maps-compose-widgets')
-    //implementation  "com.google.maps.android:maps-compose-utils:1.0.0"
     implementation project(':maps-compose-utils')
-    implementation libs.maps.playservice
 }
 
 secrets {
