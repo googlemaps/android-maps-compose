@@ -3,6 +3,7 @@ package com.google.maps.android.compose.clustering
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
@@ -91,6 +92,14 @@ public fun <T : ClusterItem> Clustering(
                 clusterManager.addItems(items)
                 clusterManager.cluster()
             }
+    }
+
+    // Disposes the clustering items if re-composed and removed.
+    DisposableEffect(itemsState) {
+        onDispose {
+            clusterManager.clearItems()
+            clusterManager.cluster()
+        }
     }
 }
 
