@@ -52,18 +52,21 @@ import kotlinx.coroutines.launch
         expression = """
             val clusterManager = rememberClusterManager<T>()
             LaunchedEffect(clusterManager, clusterRenderer) {
-                clusterManager.renderer = clusterRenderer
+                clusterManager?.renderer = clusterRenderer
             }
             SideEffect {
+                clusterManager ?: return@SideEffect
                 clusterManager.setOnClusterClickListener(onClusterClick)
                 clusterManager.setOnClusterItemClickListener(onClusterItemClick)
                 clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
                 clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
             }
-            Clustering(
-                items = items,
-                clusterManager = clusterManager,
-            )
+            if (clusterManager != null) {
+                Clustering(
+                    items = items,
+                    clusterManager = clusterManager,
+                )
+            }
         """,
         imports = [
             "com.google.maps.android.compose.clustering.Clustering",
