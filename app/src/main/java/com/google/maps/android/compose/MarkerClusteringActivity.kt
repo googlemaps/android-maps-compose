@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
+import com.google.maps.android.clustering.algo.NonHierarchicalViewBasedAlgorithm
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
@@ -171,7 +173,19 @@ private fun CustomUiClustering(items: List<MyItem>) {
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun CustomRendererClustering(items: List<MyItem>) {
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+    val screenWidth = configuration.screenWidthDp.dp
     val clusterManager = rememberClusterManager<MyItem>()
+
+    // Here the clusterManager is being customized with a NonHierarchicalViewBasedAlgorithm.
+    // This speeds up by a factor the rendering of items on the screen.
+    clusterManager?.setAlgorithm(
+        NonHierarchicalViewBasedAlgorithm(
+            screenHeight.value.toInt(),
+            screenWidth.value.toInt()
+        )
+    )
     val renderer = rememberClusterRenderer(
         clusterContent = { cluster ->
             CircleContent(
