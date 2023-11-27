@@ -201,6 +201,30 @@ GoogleMap(
 </details>
 
 <details>
+  <summary>Recomposing elements</summary>
+
+### Recomposing elements
+
+Markers and other elements need to be recomposed in the screen. To achieve recomposition you need to 
+have a mutable state variable:
+
+```kotlin
+var location by remember { mutableStateOf(singapore) }
+val singaporeState = MarkerState(position = location)
+
+//...
+
+Marker(
+    state = singaporeState,
+    title = "Marker in Singapore",
+    onClick = markerClick
+)
+```
+
+In the example above, when `location` changes the recomposition will be triggered. 
+
+</details>
+<details>
   <summary>Customizing a marker's info window</summary>
 
 ### Customizing a marker's info window
