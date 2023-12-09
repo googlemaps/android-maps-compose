@@ -1,5 +1,5 @@
 <!--
- Copyright 2021 Google LLC
+ Copyright 2023 Google LLC
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@
   <string name="marker_clustering_activity">Marker Clustering</string>
   <string name="location_tracking_activity">Location Tracking</string>
   <string name="scale_bar_activity">Scale Bar</string>
+  <string name="recomposition_activity">Recomposition Map</string>
   <string name="street_view">Street View</string>
   <string name="custom_location_button">Custom Location Button</string>
   <string name="accessibility_button">Accessibility</string>

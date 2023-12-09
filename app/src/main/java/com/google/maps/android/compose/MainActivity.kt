@@ -134,6 +134,13 @@ class MainActivity : ComponentActivity() {
                             }) {
                             Text(getString(R.string.accessibility_button))
                         }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, RecompositionActivity::class.java))
+                            }) {
+                            Text(getString(R.string.recomposition_activity))
+                        }
                     }
                 }
             }
