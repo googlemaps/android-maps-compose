@@ -145,6 +145,7 @@ private fun DefaultClustering(items: List<MyItem>) {
 private fun CustomUiClustering(items: List<MyItem>) {
     Clustering(
         items = items,
+        minClusterSize = 2,
         // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
         onClusterClick = {
             Log.d(TAG, "Cluster clicked! $it")
