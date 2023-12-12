@@ -182,8 +182,8 @@ fun CustomRendererClustering(items: List<MyItem>) {
     // This speeds up by a factor the rendering of items on the screen.
     clusterManager?.setAlgorithm(
         NonHierarchicalViewBasedAlgorithm(
-            screenHeight.value.toInt(),
-            screenWidth.value.toInt()
+            screenWidth.value.toInt(),
+            screenHeight.value.toInt()
         )
     )
     val renderer = rememberClusterRenderer(
