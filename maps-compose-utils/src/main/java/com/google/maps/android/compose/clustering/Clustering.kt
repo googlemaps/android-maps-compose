@@ -125,8 +125,47 @@ public fun <T : ClusterItem> Clustering(
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
 ) {
+    Clustering(
+        items = items,
+        minClusterSize = null,
+        onClusterClick = onClusterClick,
+        onClusterItemClick = onClusterItemClick,
+        onClusterItemInfoWindowClick = onClusterItemInfoWindowClick,
+        onClusterItemInfoWindowLongClick = onClusterItemInfoWindowLongClick,
+        clusterContent = clusterContent,
+        clusterItemContent = clusterItemContent,
+    )
+}
+
+/**
+ * Groups many items on a map based on zoom level.
+ *
+ * @param items all items to show
+ * @param minClusterSize optional minimum number of items needed to form a cluster (default 4)
+ * @param onClusterClick a lambda invoked when the user clicks a cluster of items
+ * @param onClusterItemClick a lambda invoked when the user clicks a non-clustered item
+ * @param onClusterItemInfoWindowClick a lambda invoked when the user clicks the info window of a
+ * non-clustered item
+ * @param onClusterItemInfoWindowLongClick a lambda invoked when the user long-clicks the info
+ * window of a non-clustered item
+ * @param clusterContent an optional Composable that is rendered for each [Cluster].
+ * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ */
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    minClusterSize: Int? = null,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    onClusterItemInfoWindowClick: (T) -> Unit = { },
+    onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+) {
     val clusterManager = rememberClusterManager<T>()
-    val renderer = rememberClusterRenderer(clusterContent, clusterItemContent, clusterManager)
+    val renderer = rememberClusterRenderer(clusterContent, clusterItemContent, clusterManager, minClusterSize)
     SideEffect {
         if (clusterManager?.renderer != renderer) {
             clusterManager?.renderer = renderer ?: return@SideEffect
@@ -229,6 +268,7 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     clusterContent: @Composable ((Cluster<T>) -> Unit)?,
     clusterItemContent: @Composable ((T) -> Unit)?,
     clusterManager: ClusterManager<T>?,
+    minClusterSize: Int? = null,
 ): ClusterRenderer<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
     val clusterItemContentState = rememberUpdatedState(clusterItemContent)
@@ -247,6 +287,9 @@ public fun <T : ClusterItem> rememberClusterRenderer(
             clusterContentState,
             clusterItemContentState,
         )
+        minClusterSize?.let {
+            renderer.minClusterSize = minClusterSize
+        }
         clusterRendererState.value = renderer
     }
     return clusterRendererState.value
