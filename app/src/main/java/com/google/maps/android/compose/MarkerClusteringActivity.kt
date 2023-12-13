@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.algo.NonHierarchicalViewBasedAlgorithm
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
@@ -145,7 +146,6 @@ private fun DefaultClustering(items: List<MyItem>) {
 private fun CustomUiClustering(items: List<MyItem>) {
     Clustering(
         items = items,
-        minClusterSize = 2,
         // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
         onClusterClick = {
             Log.d(TAG, "Cluster clicked! $it")
@@ -167,7 +167,11 @@ private fun CustomUiClustering(items: List<MyItem>) {
             )
         },
         // Optional: Custom rendering for non-clustered items
-        clusterItemContent = null
+        clusterItemContent = null,
+        // Optional: Customization hook for clusterManager and renderer when they're ready
+        onClusterManager = { clusterManager ->
+            (clusterManager.renderer as DefaultClusterRenderer).minClusterSize = 2
+        },
     )
 }
 
