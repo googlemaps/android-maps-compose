@@ -209,8 +209,7 @@ Markers and other elements need to be recomposed in the screen. To achieve recom
 have a mutable state variable:
 
 ```kotlin
-var location by remember { mutableStateOf(singapore) }
-val singaporeState = MarkerState(position = location)
+val singaporeState = remember { MarkerState(singapore) }
 
 //...
 

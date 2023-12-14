@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
@@ -65,8 +64,7 @@ class RecompositionActivity : ComponentActivity() {
         cameraPositionState: CameraPositionState = rememberCameraPositionState(),
         content: @Composable () -> Unit = {},
     ) {
-        var location by remember { mutableStateOf(singapore) }
-        val singaporeState = MarkerState(position = location)
+        val singaporeState = remember { MarkerState(singapore) }
 
         val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
         val mapProperties by remember {
@@ -103,7 +101,7 @@ class RecompositionActivity : ComponentActivity() {
             Column {
                 Button(onClick = {
                     val randomValue = Random.nextInt(3)
-                    location = when (randomValue) {
+                    singaporeState.position = when (randomValue) {
                         0 -> singapore
                         1 -> singapore2
                         2 -> singapore3
