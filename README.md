@@ -220,7 +220,7 @@ Marker(
 )
 ```
 
-In the example above, when `location` changes the recomposition will be triggered. 
+In the example above, when the `position` attribute in the MarkerState changes, the recomposition will be triggered. 
 
 </details>
 <details>
