@@ -64,7 +64,7 @@ class RecompositionActivity : ComponentActivity() {
         cameraPositionState: CameraPositionState = rememberCameraPositionState(),
         content: @Composable () -> Unit = {},
     ) {
-        val singaporeState = remember { MarkerState(position = singapore) }
+        val markerState = remember { MarkerState(position = singapore) }
 
         val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
         val mapProperties by remember {
@@ -91,7 +91,7 @@ class RecompositionActivity : ComponentActivity() {
                 }
 
                 Marker(
-                    state = singaporeState,
+                    state = markerState,
                     title = "Marker in Singapore",
                     onClick = markerClick
                 )
@@ -101,7 +101,7 @@ class RecompositionActivity : ComponentActivity() {
             Column {
                 Button(onClick = {
                     val randomValue = Random.nextInt(3)
-                    singaporeState.position = when (randomValue) {
+                    markerState.position = when (randomValue) {
                         0 -> singapore
                         1 -> singapore2
                         2 -> singapore3
