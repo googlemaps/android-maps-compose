@@ -31,9 +31,15 @@ internal interface MapNode {
 
 private object MapNodeRoot : MapNode
 
+// [mapClickListeners] must be a singleton for the [map] and is therefore stored here:
+// [GoogleMap.setOnIndoorStateChangeListener()] will not actually set a new non-null listener if
+// called more than once; if [mapClickListeners] were passed through the Compose function hierarchy
+// we would need to consider the case of it changing, which would require special treatment
+// for that particular listener; yet MapClickListeners never actually changes.
 internal class MapApplier(
     val map: GoogleMap,
     internal val mapView: MapView,
+    val mapClickListeners: MapClickListeners,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
     private val decorations = mutableListOf<MapNode>()
