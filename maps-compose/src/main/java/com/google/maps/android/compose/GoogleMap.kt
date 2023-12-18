@@ -137,7 +137,7 @@ public fun GoogleMap(
                     mapUiSettings = currentUiSettings,
                 )
                 CompositionLocalProvider(
-                    LocalCameraPositionState provides cameraPositionState,
+                    LocalCameraPositionState provides currentCameraPositionState,
                 ) {
                     currentContent?.invoke()
                 }
