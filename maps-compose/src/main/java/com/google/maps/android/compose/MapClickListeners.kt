@@ -172,6 +172,7 @@ private fun <L : Any> MapClickListenerComposeNode(
 ) = MapClickListenerComposeNode(callback) { MapClickListenerNode(setter, listener) }
 
 @Composable
+@GoogleMapComposable
 private fun MapClickListenerComposeNode(
     callback: () -> Any?,
     factory: () -> MapClickListenerNode<*>
