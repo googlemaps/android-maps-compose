@@ -157,7 +157,10 @@ internal fun MapClickListenerUpdater() {
  * Encapsulates the ComposeNode factory lambda as a recomposition optimization.
  *
  * @param L GoogleMap click listener type, e.g. [OnMapClickListener]
- * @param listener must include a call to [callback()] inside the listener
+ * @param callback a property reference to the callback lambda, i.e.
+ * invoking it returns the callback lambda
+ * @param setter a reference to a GoogleMap setter method, e.g. `setOnMapClickListener()`
+ * @param listener must include a call to `callback()` inside the listener
  * to use the most up-to-date recomposed version of the callback lambda;
  * However, the resulting callback reference might actually be null due to races;
  * the caller must guard against this case.
