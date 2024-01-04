@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -85,7 +86,6 @@ class BasicMapActivity : ComponentActivity() {
 
             Box(Modifier.fillMaxSize()) {
                 GoogleMapView(
-                    modifier = Modifier.matchParentSize(),
                     cameraPositionState = cameraPositionState,
                     onMapLoaded = {
                         isMapLoaded = true
@@ -129,7 +129,7 @@ fun GoogleMapView(
 
     var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
     var shouldAnimateZoom by remember { mutableStateOf(true) }
-    var ticker by remember { mutableStateOf(0) }
+    var ticker by remember { mutableIntStateOf(0) }
     var mapProperties by remember {
         mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
@@ -223,7 +223,8 @@ fun GoogleMapView(
             MapButton(
                 text = "Toggle Map",
                 onClick = { mapVisible = !mapVisible },
-                modifier = Modifier.testTag("toggleMapVisibility"),
+                modifier = Modifier
+                    .testTag("toggleMapVisibility")
             )
         }
         val coroutineScope = rememberCoroutineScope()

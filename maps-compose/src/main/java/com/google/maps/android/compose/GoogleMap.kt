@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -50,6 +51,7 @@ import kotlinx.coroutines.awaitCancellation
 /**
  * A compose container for a [MapView].
  *
+ * @param mergeDescendants deactivates the map for accessibility purposes
  * @param modifier Modifier to be applied to the GoogleMap
  * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
  * camera state
@@ -72,6 +74,7 @@ import kotlinx.coroutines.awaitCancellation
  */
 @Composable
 public fun GoogleMap(
+    mergeDescendants: Boolean = false,
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
@@ -120,11 +123,11 @@ public fun GoogleMap(
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-
     LaunchedEffect(Unit) {
         disposingComposition {
             mapView.newComposition(parentComposition) {
                 MapUpdater(
+                    mergeDescendants = mergeDescendants,
                     contentDescription = contentDescription,
                     cameraPositionState = currentCameraPositionState,
                     clickListeners = mapClickListeners,
@@ -204,6 +207,7 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
                     this.onCreate(Bundle())
                 }
             }
+
             Lifecycle.Event.ON_START -> this.onStart()
             Lifecycle.Event.ON_RESUME -> this.onResume()
             Lifecycle.Event.ON_PAUSE -> this.onPause()
@@ -211,6 +215,7 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
             Lifecycle.Event.ON_DESTROY -> {
                 //handled in onDispose
             }
+
             else -> throw IllegalStateException()
         }
         previousState.value = event

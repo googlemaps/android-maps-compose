@@ -3,6 +3,9 @@ package com.google.maps.android.compose
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+const val timeout2 = 2_000L
+const val timeout3 = 3_000L
+const val timeout5 = 5_000L
 
 val hasValidApiKey: Boolean =
     BuildConfig.MAPS_API_KEY.isNotBlank() && BuildConfig.MAPS_API_KEY != "YOUR_API_KEY"
