@@ -22,6 +22,7 @@ import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnIndoorStateChangeListener
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener
 import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback
@@ -72,83 +73,84 @@ internal class MapClickListeners {
  * @param L GoogleMap click listener type, e.g. [OnMapClickListener]
  */
 internal class MapClickListenerNode<L : Any>(
-    private val setter: (L?) -> Unit,
+    private val map: GoogleMap,
+    private val setter: GoogleMap.(L?) -> Unit,
     private val listener: L
 ) : MapNode {
-    override fun onAttached() = setter(listener)
-    override fun onRemoved() = setter(null)
-    override fun onCleared() = setter(null)
+    override fun onAttached() = setListener(listener)
+    override fun onRemoved() = setListener(null)
+    override fun onCleared() = setListener(null)
+
+    private fun setListener(listenerOrNull: L?) = map.setter(listenerOrNull)
 }
 
 @Suppress("ComplexRedundantLet")
 @Composable
 internal fun MapClickListenerUpdater() {
-    val mapApplier = currentComposer.applier as MapApplier
-
     // The mapClickListeners container object is not allowed to ever change
-    with(mapApplier.mapClickListeners) {
-        with(mapApplier.map) {
-            ::indoorStateChangeListener.let { callback ->
-                MapClickListenerComposeNode(
-                    callback,
-                    ::setOnIndoorStateChangeListener,
-                    object : OnIndoorStateChangeListener {
-                        override fun onIndoorBuildingFocused() =
-                            callback().onIndoorBuildingFocused()
+    val mapClickListeners = (currentComposer.applier as MapApplier).mapClickListeners
 
-                        override fun onIndoorLevelActivated(building: IndoorBuilding) =
-                            callback().onIndoorLevelActivated(building)
-                    }
-                )
-            }
+    with(mapClickListeners) {
+        ::indoorStateChangeListener.let { callback ->
+            MapClickListenerComposeNode(
+                callback,
+                GoogleMap::setOnIndoorStateChangeListener,
+                object : OnIndoorStateChangeListener {
+                    override fun onIndoorBuildingFocused() =
+                        callback().onIndoorBuildingFocused()
 
-            ::onMapClick.let { callback ->
-                MapClickListenerComposeNode(
-                    callback,
-                    ::setOnMapClickListener,
-                    OnMapClickListener { callback()?.invoke(it) }
-                )
-            }
+                    override fun onIndoorLevelActivated(building: IndoorBuilding) =
+                        callback().onIndoorLevelActivated(building)
+                }
+            )
+        }
 
-            ::onMapLongClick.let { callback ->
-                MapClickListenerComposeNode(
-                    callback,
-                    ::setOnMapLongClickListener,
-                    OnMapLongClickListener { callback()?.invoke(it) }
-                )
-            }
+        ::onMapClick.let { callback ->
+            MapClickListenerComposeNode(
+                callback,
+                GoogleMap::setOnMapClickListener,
+                OnMapClickListener { callback()?.invoke(it) }
+            )
+        }
 
-            ::onMapLoaded.let { callback ->
-                MapClickListenerComposeNode(
-                    callback,
-                    ::setOnMapLoadedCallback,
-                    OnMapLoadedCallback { callback()?.invoke() }
-                )
-            }
+        ::onMapLongClick.let { callback ->
+            MapClickListenerComposeNode(
+                callback,
+                GoogleMap::setOnMapLongClickListener,
+                OnMapLongClickListener { callback()?.invoke(it) }
+            )
+        }
 
-            ::onMyLocationButtonClick.let { callback ->
-                MapClickListenerComposeNode(
-                    callback,
-                    ::setOnMyLocationButtonClickListener,
-                    OnMyLocationButtonClickListener { callback()?.invoke() ?: false }
-                )
-            }
+        ::onMapLoaded.let { callback ->
+            MapClickListenerComposeNode(
+                callback,
+                GoogleMap::setOnMapLoadedCallback,
+                OnMapLoadedCallback { callback()?.invoke() }
+            )
+        }
 
-            ::onMyLocationClick.let { callback ->
-                MapClickListenerComposeNode(
-                    callback,
-                    ::setOnMyLocationClickListener,
-                    OnMyLocationClickListener { callback()?.invoke(it) }
-                )
-            }
+        ::onMyLocationButtonClick.let { callback ->
+            MapClickListenerComposeNode(
+                callback,
+                GoogleMap::setOnMyLocationButtonClickListener,
+                OnMyLocationButtonClickListener { callback()?.invoke() ?: false }
+            )
+        }
 
-            ::onPOIClick.let { callback ->
-                MapClickListenerComposeNode(
-                    callback,
-                    ::setOnPoiClickListener,
-                    OnPoiClickListener { callback()?.invoke(it) }
-                )
-            }
+        ::onMyLocationClick.let { callback ->
+            MapClickListenerComposeNode(
+                callback,
+                GoogleMap::setOnMyLocationClickListener,
+                OnMyLocationClickListener { callback()?.invoke(it) }
+            )
+        }
+
+        ::onPOIClick.let { callback ->
+            MapClickListenerComposeNode(
+                callback,
+                GoogleMap::setOnPoiClickListener,
+                OnPoiClickListener { callback()?.invoke(it) }
+            )
         }
     }
 }
@@ -170,9 +172,13 @@ internal fun MapClickListenerUpdater() {
 @NonRestartableComposable
 private fun <L : Any> MapClickListenerComposeNode(
     callback: () -> Any?,
-    setter: (L?) -> Unit,
+    setter: GoogleMap.(L?) -> Unit,
     listener: L
-) = MapClickListenerComposeNode(callback) { MapClickListenerNode(setter, listener) }
+) {
+    val mapApplier = currentComposer.applier as MapApplier
+
+    MapClickListenerComposeNode(callback) { MapClickListenerNode(mapApplier.map, setter, listener) }
+}
 
 @Composable
 @GoogleMapComposable
