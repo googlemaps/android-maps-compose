@@ -208,7 +208,7 @@ GoogleMap(
 Markers and other elements need to be recomposed in the screen. To achieve recomposition, you can set mutable properties of state objects:
 
 ```kotlin
-val markerState = remember { MarkerState(position = singapore) }
+val markerState = rememberMarkerState(position = singapore)
 
 //...
 
