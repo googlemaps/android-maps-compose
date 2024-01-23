@@ -115,6 +115,7 @@ public fun GoogleMap(
         it.onMyLocationClick = onMyLocationClick
         it.onPOIClick = onPOIClick
     }
+    val currentContentDescription by rememberUpdatedState(contentDescription)
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
@@ -128,7 +129,7 @@ public fun GoogleMap(
             mapView.newComposition(parentComposition) {
                 MapUpdater(
                     mergeDescendants = mergeDescendants,
-                    contentDescription = contentDescription,
+                    contentDescription = currentContentDescription,
                     cameraPositionState = currentCameraPositionState,
                     clickListeners = mapClickListeners,
                     contentPadding = currentContentPadding,
