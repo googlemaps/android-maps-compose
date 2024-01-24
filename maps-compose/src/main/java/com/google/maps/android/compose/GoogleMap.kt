@@ -27,7 +27,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -106,20 +105,15 @@ public fun GoogleMap(
 
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
-    val mapClickListeners = remember { MapClickListeners() }
-
-    SideEffect {
-        mapClickListeners.also {
-            it.indoorStateChangeListener = indoorStateChangeListener
-            it.onMapClick = onMapClick
-            it.onMapLongClick = onMapLongClick
-            it.onMapLoaded = onMapLoaded
-            it.onMyLocationButtonClick = onMyLocationButtonClick
-            it.onMyLocationClick = onMyLocationClick
-            it.onPOIClick = onPOIClick
-        }
+    val mapClickListeners = remember { MapClickListeners() }.also {
+        it.indoorStateChangeListener = indoorStateChangeListener
+        it.onMapClick = onMapClick
+        it.onMapLongClick = onMapLongClick
+        it.onMapLoaded = onMapLoaded
+        it.onMyLocationButtonClick = onMyLocationButtonClick
+        it.onMyLocationClick = onMyLocationClick
+        it.onPOIClick = onPOIClick
     }
-
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
