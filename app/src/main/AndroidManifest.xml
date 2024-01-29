@@ -43,13 +43,13 @@
         android:name=".BasicMapActivity"
         android:exported="false" />
     <activity
-        android:name=".AdvancedMarkersActivity"
+        android:name=".marker.AdvancedMarkersActivity"
         android:exported="false"/>
     <activity
         android:name=".MapInColumnActivity"
         android:exported="false"/>
     <activity
-        android:name=".MarkerClusteringActivity"
+        android:name=".marker.MarkerClusteringActivity"
         android:exported="false"/>
     <activity
         android:name=".LocationTrackingActivity"
@@ -68,6 +68,18 @@
         android:exported="false"/>
     <activity
         android:name=".RecompositionActivity"
+        android:exported="false"/>
+    <activity
+        android:name=".marker.markerdragevents.MarkerDragEventsActivity"
+        android:exported="false"/>
+    <activity
+        android:name=".marker.markerscollection.MarkersCollectionActivity"
+        android:exported="false"/>
+    <activity
+        android:name=".marker.syncingdraggablemarkerwithdatamodel.SyncingDraggableMarkerWithDataModelActivity"
+        android:exported="false"/>
+    <activity
+        android:name=".marker.updatingnodragmarkerwithdatamodel.UpdatingNoDragMarkerWithDataModelActivity"
         android:exported="false"/>
 
     <!-- Used by createComponentActivity() for unit testing -->
