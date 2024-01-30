@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.maps.android.compose.marker.markerscollection
+package com.google.maps.android.compose.markerexamples.draggablemarkerscollectionwithpolygon
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,16 +20,21 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polygon
 import com.google.maps.android.compose.defaultCameraPosition
-import com.google.maps.android.compose.marker.updatingnodragmarkerwithdatamodel.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
+import kotlinx.coroutines.flow.drop
 
 /**
  * Simplistic app data model intended for persistent storage.
@@ -61,16 +66,17 @@ private typealias KeyedLocationData = Pair<LocationKey, LocationData>
 
 /**
  * Demonstrates how to sync a data model with a changing collection of
- * location markers using keys.
+ * draggable markers using keys, while keeping a Polygon of the marker positions in sync with
+ * the current marker position. When dragging: the data model is updated only once dragging has
+ * ended (user released marker), as a model update might trigger other costly operations.
  *
  * The user can add a location marker to the model by clicking the map and delete a location from
  * the model by clicking a marker.
  *
- * This example reuses the simple non-draggable Marker approach from the
- * `UpdatingNoDragMarkerWithDataModelActivity` example, which encapsulates
- * [MarkerState] to provide a cleaner API surface.
+ * This example builds on top of ideas from MarkersCollectionActivity and
+ * SyncingDraggableMarkerWithDataModelActivity.
  */
-class MarkersCollectionActivity : ComponentActivity() {
+class DraggableMarkersCollectionWithPolygonActivity : ComponentActivity() {
     private val dataModel = DataModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,23 +105,22 @@ private fun Screen(
     },
     onDeleteLocation = { key ->
         dataModel.locationDataMap -= key
+    },
+    onMoveLocation = { key, locationData ->
+        dataModel.locationDataMap[key] = locationData
     }
 )
 
 /**
  * A GoogleMap with locations represented by markers
- *
- * @param keyedLocationData model data for location markers.
- * Uses a [Collection] type to keep it independent of our data model.
- * @param onAddLocation location addition events for updating data model
- * @param onDeleteLocation location deletion events for updating data model
  */
 @Composable
 private fun GoogleMapWithLocations(
     keyedLocationData: Collection<KeyedLocationData>,
     modifier: Modifier = Modifier,
     onAddLocation: (LocationData) -> Unit,
-    onDeleteLocation: (LocationKey) -> Unit
+    onDeleteLocation: (LocationKey) -> Unit,
+    onMoveLocation: (LocationKey, LocationData) -> Unit
 ) {
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
@@ -126,29 +131,82 @@ private fun GoogleMapWithLocations(
     ) {
         Locations(
             keyedLocationData = keyedLocationData,
-            onLocationClick = onDeleteLocation
+            onLocationClick = onDeleteLocation,
+            onLocationUpdate = onMoveLocation
         )
     }
 }
 
 /**
  * Renders locations on a GoogleMap
- *
- * @param keyedLocationData model data for location markers.
- * @param onLocationClick location click events
  */
 @Composable
 private fun Locations(
     keyedLocationData: Collection<KeyedLocationData>,
-    onLocationClick: (LocationKey) -> Unit
-) = keyedLocationData.forEach { (key, locationData) ->
-    key(key) {
-        Marker(
-            position = locationData.position,
-            onClick = {
-                onLocationClick(key)
-                true // consume click event to prevent camera move to marker
+    onLocationClick: (LocationKey) -> Unit,
+    onLocationUpdate: (LocationKey, LocationData) -> Unit
+) {
+    // This doubles as a handy trick to leverage Compose's node matching algorithm for
+    // generating a list of MarkerStates derived from the original model
+    val markerStates = keyedLocationData.map { (key, locationData) ->
+        key(key) {
+            // This sets the MarkerData from our model once (model is initial source of truth)
+            // and never updates it from the model afterwards.
+            // See SyncingDraggableMarkerWithDataModelActivity for rationale.
+            val markerState = remember { MarkerState(locationData.position) }
+
+            LocationMarker(
+                markerState,
+                onClick = { onLocationClick(key) },
+                onDragEnd = {
+                    val newLocationData = LocationData(markerState.position)
+                    onLocationUpdate(key, newLocationData)
+                }
+            )
+
+            markerState
+        }
+    }
+
+    Polygon(markerStates)
+}
+
+/**
+ * A draggable GoogleMap Marker representing a location on the map
+ */
+@Composable
+private fun LocationMarker(
+    markerState: MarkerState,
+    onClick: () -> Unit,
+    onDragEnd: () -> Unit
+) {
+    Marker(
+        state = markerState,
+        draggable = true,
+        onClick = {
+            onClick()
+
+            true
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { markerState.isDragging }
+            .drop(1) // ignore initial value
+            .collect { isDragging ->
+                if (!isDragging) onDragEnd()
             }
-        )
+    }
+}
+
+/**
+ * A Polygon. Helps isolate recompositions while a Marker is being dragged.
+ */
+@Composable
+private fun Polygon(markerStates: List<MarkerState>) {
+    if (markerStates.isNotEmpty()) {
+        val markerPositions = markerStates.map { it.position }
+
+        Polygon(markerPositions)
     }
 }

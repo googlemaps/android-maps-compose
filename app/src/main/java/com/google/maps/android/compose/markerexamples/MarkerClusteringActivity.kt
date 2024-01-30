@@ -1,4 +1,4 @@
-package com.google.maps.android.compose.marker
+package com.google.maps.android.compose.markerexamples
 
 import android.os.Bundle
 import android.util.Log
