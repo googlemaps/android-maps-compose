@@ -32,12 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.google.maps.android.compose.marker.AdvancedMarkersActivity
-import com.google.maps.android.compose.marker.MarkerClusteringActivity
-import com.google.maps.android.compose.marker.markerdragevents.MarkerDragEventsActivity
-import com.google.maps.android.compose.marker.markerscollection.MarkersCollectionActivity
-import com.google.maps.android.compose.marker.syncingdraggablemarkerwithdatamodel.SyncingDraggableMarkerWithDataModelActivity
-import com.google.maps.android.compose.marker.updatingnodragmarkerwithdatamodel.UpdatingNoDragMarkerWithDataModelActivity
+import com.google.maps.android.compose.markerexamples.AdvancedMarkersActivity
+import com.google.maps.android.compose.markerexamples.MarkerClusteringActivity
+import com.google.maps.android.compose.markerexamples.draggablemarkerscollectionwithpolygon.DraggableMarkersCollectionWithPolygonActivity
+import com.google.maps.android.compose.markerexamples.markerdragevents.MarkerDragEventsActivity
+import com.google.maps.android.compose.markerexamples.markerscollection.MarkersCollectionActivity
+import com.google.maps.android.compose.markerexamples.syncingdraggablemarkerwithdatamodel.SyncingDraggableMarkerWithDataModelActivity
+import com.google.maps.android.compose.markerexamples.updatingnodragmarkerwithdatamodel.UpdatingNoDragMarkerWithDataModelActivity
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 
 class MainActivity : ComponentActivity() {
@@ -174,6 +175,13 @@ class MainActivity : ComponentActivity() {
                                 context.startActivity(Intent(context, UpdatingNoDragMarkerWithDataModelActivity::class.java))
                             }) {
                             Text(getString(R.string.updating_non_draggable_marker_with_data_model))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, DraggableMarkersCollectionWithPolygonActivity::class.java))
+                            }) {
+                            Text(getString(R.string.draggable_markers_collection_with_polygon))
                         }
                     }
                 }

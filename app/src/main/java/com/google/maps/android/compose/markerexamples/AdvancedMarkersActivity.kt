@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.maps.android.compose.marker
+package com.google.maps.android.compose.markerexamples
 
 
 import android.R.drawable.ic_menu_myplaces

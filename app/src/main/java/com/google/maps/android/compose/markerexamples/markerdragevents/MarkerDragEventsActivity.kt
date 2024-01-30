@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.maps.android.compose.marker.markerdragevents
+package com.google.maps.android.compose.markerexamples.markerdragevents
 
 import android.os.Bundle
 import android.util.Log
