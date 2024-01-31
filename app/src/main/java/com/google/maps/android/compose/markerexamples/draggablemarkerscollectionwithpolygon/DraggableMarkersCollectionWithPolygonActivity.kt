@@ -147,8 +147,8 @@ private fun Locations(
     onLocationUpdate: (LocationKey, LocationData) -> Unit
 ) {
     // This doubles as a handy trick to leverage Compose's node matching algorithm for
-    // generating a list of MarkerStates derived from the original model
-    val markerStates = keyedLocationData.map { (key, locationData) ->
+    // generating a list of marker positions derived from the original model
+    val movingVertices: List<() -> LatLng> = keyedLocationData.map { (key, locationData) ->
         key(key) {
             // This sets the MarkerData from our model once (model is initial source of truth)
             // and never updates it from the model afterwards.
@@ -164,11 +164,11 @@ private fun Locations(
                 }
             )
 
-            markerState
+            markerState::position // share only read access to MarkerState.position
         }
     }
 
-    Polygon(markerStates)
+    Polygon(movingVertices)
 }
 
 /**
@@ -203,9 +203,9 @@ private fun LocationMarker(
  * A Polygon. Helps isolate recompositions while a Marker is being dragged.
  */
 @Composable
-private fun Polygon(markerStates: List<MarkerState>) {
-    if (markerStates.isNotEmpty()) {
-        val markerPositions = markerStates.map { it.position }
+private fun Polygon(movingVertices: List<() -> LatLng>) {
+    if (movingVertices.isNotEmpty()) {
+        val markerPositions = movingVertices.map { it() }
 
         Polygon(markerPositions)
     }
