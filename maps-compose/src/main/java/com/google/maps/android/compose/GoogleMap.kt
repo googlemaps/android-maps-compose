@@ -69,6 +69,8 @@ import kotlinx.coroutines.awaitCancellation
  * @param onPOIClick lambda invoked when a POI is clicked
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
+ * @param reuseMapView whether the underlying MapView will be reused. Optimized for lazy layouts.
+ * Can have a very slight impact on initial initialization time if enabled.
  * @param content the content of the map
  */
 @Composable
@@ -88,6 +90,7 @@ public fun GoogleMap(
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = NoPadding,
+    reuseMapView: Boolean = false,
     content: (@Composable @GoogleMapComposable () -> Unit)? = null,
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -96,6 +99,64 @@ public fun GoogleMap(
         return
     }
 
+    if(reuseMapView) {
+        ReusableGoogleMap(
+            cameraPositionState = cameraPositionState,
+            contentDescription = contentDescription,
+            googleMapOptionsFactory = googleMapOptionsFactory,
+            properties = properties,
+            locationSource = locationSource,
+            uiSettings = uiSettings,
+            indoorStateChangeListener = indoorStateChangeListener,
+            onMapClick = onMapClick,
+            onMapLongClick = onMapLongClick,
+            onMapLoaded = onMapLoaded,
+            onMyLocationButtonClick = onMyLocationButtonClick,
+            onMyLocationClick = onMyLocationClick,
+            onPOIClick = onPOIClick,
+            contentPadding = contentPadding,
+            content = content,
+        )
+    } else {
+        FastGoogleMap(
+            cameraPositionState = cameraPositionState,
+            contentDescription = contentDescription,
+            googleMapOptionsFactory = googleMapOptionsFactory,
+            properties = properties,
+            locationSource = locationSource,
+            uiSettings = uiSettings,
+            indoorStateChangeListener = indoorStateChangeListener,
+            onMapClick = onMapClick,
+            onMapLongClick = onMapLongClick,
+            onMapLoaded = onMapLoaded,
+            onMyLocationButtonClick = onMyLocationButtonClick,
+            onMyLocationClick = onMyLocationClick,
+            onPOIClick = onPOIClick,
+            contentPadding = contentPadding,
+            content = content,
+        )
+    }
+}
+
+@Composable
+private fun ReusableGoogleMap(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    contentDescription: String? = null,
+    googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
+    properties: MapProperties = DefaultMapProperties,
+    locationSource: LocationSource? = null,
+    uiSettings: MapUiSettings = DefaultMapUiSettings,
+    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
+    onMapClick: ((LatLng) -> Unit)? = null,
+    onMapLongClick: ((LatLng) -> Unit)? = null,
+    onMapLoaded: (() -> Unit)? = null,
+    onMyLocationButtonClick: (() -> Boolean)? = null,
+    onMyLocationClick: ((Location) -> Unit)? = null,
+    onPOIClick: ((PointOfInterest) -> Unit)? = null,
+    contentPadding: PaddingValues = NoPadding,
+    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
+) {
     // Will either be set to a re-used or a new MapView
     var mapViewOrNull: MapView? by remember { mutableStateOf(null) }
     var isMapViewReused by remember { mutableStateOf(true) }
@@ -116,6 +177,92 @@ public fun GoogleMap(
 
     MapLifecycle(mapView, isMapViewReused)
 
+    ApplyMapConfiguration(
+        mapView,
+        cameraPositionState,
+        contentDescription,
+        properties,
+        locationSource,
+        uiSettings,
+        indoorStateChangeListener,
+        onMapClick,
+        onMapLongClick,
+        onMapLoaded,
+        onMyLocationButtonClick,
+        onMyLocationClick,
+        onPOIClick,
+        contentPadding,
+        content
+    )
+}
+
+/**
+ * This [GoogleMap] overload doesn't re-use the underlying MapView between composables but
+ * could be slightly faster than using [ReusableGoogleMap]
+ * */
+@Composable
+private fun FastGoogleMap(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    contentDescription: String? = null,
+    googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
+    properties: MapProperties = DefaultMapProperties,
+    locationSource: LocationSource? = null,
+    uiSettings: MapUiSettings = DefaultMapUiSettings,
+    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
+    onMapClick: ((LatLng) -> Unit)? = null,
+    onMapLongClick: ((LatLng) -> Unit)? = null,
+    onMapLoaded: (() -> Unit)? = null,
+    onMyLocationButtonClick: (() -> Boolean)? = null,
+    onMyLocationClick: ((Location) -> Unit)? = null,
+    onPOIClick: ((PointOfInterest) -> Unit)? = null,
+    contentPadding: PaddingValues = NoPadding,
+    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
+) {
+    val context = LocalContext.current
+    val mapView = remember { MapView(context, googleMapOptionsFactory()) }
+
+    AndroidView(modifier = modifier, factory = { mapView })
+
+    MapLifecycle(mapView = mapView, isMapViewReused = false)
+
+    ApplyMapConfiguration(
+        mapView,
+        cameraPositionState,
+        contentDescription,
+        properties,
+        locationSource,
+        uiSettings,
+        indoorStateChangeListener,
+        onMapClick,
+        onMapLongClick,
+        onMapLoaded,
+        onMyLocationButtonClick,
+        onMyLocationClick,
+        onPOIClick,
+        contentPadding,
+        content
+    )
+}
+
+@Composable
+private fun ApplyMapConfiguration(
+    mapView: MapView,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    contentDescription: String? = null,
+    properties: MapProperties = DefaultMapProperties,
+    locationSource: LocationSource? = null,
+    uiSettings: MapUiSettings = DefaultMapUiSettings,
+    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
+    onMapClick: ((LatLng) -> Unit)? = null,
+    onMapLongClick: ((LatLng) -> Unit)? = null,
+    onMapLoaded: (() -> Unit)? = null,
+    onMyLocationButtonClick: (() -> Boolean)? = null,
+    onMyLocationClick: ((Location) -> Unit)? = null,
+    onPOIClick: ((PointOfInterest) -> Unit)? = null,
+    contentPadding: PaddingValues = NoPadding,
+    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
+) {
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
     val mapClickListeners = remember { MapClickListeners() }.also {
