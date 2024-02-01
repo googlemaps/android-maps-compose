@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -115,6 +114,7 @@ public fun GoogleMap(
         it.onMyLocationClick = onMyLocationClick
         it.onPOIClick = onPOIClick
     }
+    val currentContentDescription by rememberUpdatedState(contentDescription)
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
@@ -125,19 +125,21 @@ public fun GoogleMap(
     val currentContent by rememberUpdatedState(content)
     LaunchedEffect(Unit) {
         disposingComposition {
-            mapView.newComposition(parentComposition) {
+            mapView.newComposition(parentComposition, mapClickListeners) {
                 MapUpdater(
                     mergeDescendants = mergeDescendants,
-                    contentDescription = contentDescription,
+                    contentDescription = currentContentDescription,
                     cameraPositionState = currentCameraPositionState,
-                    clickListeners = mapClickListeners,
                     contentPadding = currentContentPadding,
                     locationSource = currentLocationSource,
                     mapProperties = currentMapProperties,
                     mapUiSettings = currentUiSettings,
                 )
+
+                MapClickListenerUpdater()
+
                 CompositionLocalProvider(
-                    LocalCameraPositionState provides cameraPositionState,
+                    LocalCameraPositionState provides currentCameraPositionState,
                 ) {
                     currentContent?.invoke()
                 }
@@ -157,11 +159,12 @@ internal suspend inline fun disposingComposition(factory: () -> Composition) {
 
 private suspend inline fun MapView.newComposition(
     parent: CompositionContext,
+    mapClickListeners: MapClickListeners,
     noinline content: @Composable () -> Unit
 ): Composition {
     val map = awaitMap()
     return Composition(
-        MapApplier(map, this), parent
+        MapApplier(map, this, mapClickListeners), parent
     ).apply {
         setContent(content)
     }

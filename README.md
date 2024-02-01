@@ -22,14 +22,14 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:4.3.0'
+    implementation 'com.google.maps.android:maps-compose:4.3.3'
 
     // Optionally, you can include the Compose utils library for Clustering,
     // Street View metadata checks, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:4.3.0'
+    implementation 'com.google.maps.android:maps-compose-utils:4.3.3'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:4.3.0'
+    implementation 'com.google.maps.android:maps-compose-widgets:4.3.3'
 }
 ```
 
@@ -205,23 +205,24 @@ GoogleMap(
 
 ### Recomposing elements
 
-Markers and other elements need to be recomposed in the screen. To achieve recomposition you need to 
-have a mutable state variable:
+Markers and other elements need to be recomposed in the screen. To achieve recomposition, you can set mutable properties of state objects:
 
 ```kotlin
-var location by remember { mutableStateOf(singapore) }
-val singaporeState = MarkerState(position = location)
+val markerState = rememberMarkerState(position = singapore)
 
 //...
 
-Marker(
-    state = singaporeState,
-    title = "Marker in Singapore",
-    onClick = markerClick
-)
+LaunchedEffect(Unit) {
+    repeat(10) {
+        delay(5.seconds)
+        val old = markerState.position
+        markerState.position = LatLng(old.latitude + 1.0, old.longitude + 2.0)
+    }
+}
 ```
 
-In the example above, when `location` changes the recomposition will be triggered. 
+In the example above, recomposition occurs as `MarkerState.position` is updated with different values over time, shifting the Marker around the screen.
+
 
 </details>
 <details>
