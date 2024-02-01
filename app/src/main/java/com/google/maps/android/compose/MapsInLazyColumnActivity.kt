@@ -98,7 +98,7 @@ private fun CardMap(
             cameraPositionState = cameraPositionState,
             onMapLoaded = { mapLoaded = true }
         ) {
-            Marker(rememberMarkerState(position = mapItem.location))
+            Marker(state = rememberMarkerState(position = mapItem.location))
         }
 
         AnimatedVisibility(!mapLoaded, enter = fadeIn(), exit = fadeOut()) {
