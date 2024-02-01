@@ -103,6 +103,8 @@ public fun GoogleMap(
 
     if(reuseMapView) {
         ReusableGoogleMap(
+            modifier = modifier,
+            mergeDescendants = mergeDescendants,
             cameraPositionState = cameraPositionState,
             contentDescription = contentDescription,
             googleMapOptionsFactory = googleMapOptionsFactory,
@@ -121,6 +123,8 @@ public fun GoogleMap(
         )
     } else {
         FastGoogleMap(
+            modifier = modifier,
+            mergeDescendants = mergeDescendants,
             cameraPositionState = cameraPositionState,
             contentDescription = contentDescription,
             googleMapOptionsFactory = googleMapOptionsFactory,
@@ -142,22 +146,23 @@ public fun GoogleMap(
 
 @Composable
 private fun ReusableGoogleMap(
-    modifier: Modifier = Modifier,
-    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
-    contentDescription: String? = null,
-    googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
-    properties: MapProperties = DefaultMapProperties,
-    locationSource: LocationSource? = null,
-    uiSettings: MapUiSettings = DefaultMapUiSettings,
-    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
-    onMapClick: ((LatLng) -> Unit)? = null,
-    onMapLongClick: ((LatLng) -> Unit)? = null,
-    onMapLoaded: (() -> Unit)? = null,
-    onMyLocationButtonClick: (() -> Boolean)? = null,
-    onMyLocationClick: ((Location) -> Unit)? = null,
-    onPOIClick: ((PointOfInterest) -> Unit)? = null,
-    contentPadding: PaddingValues = NoPadding,
-    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
+    modifier: Modifier,
+    mergeDescendants: Boolean,
+    cameraPositionState: CameraPositionState,
+    contentDescription: String?,
+    googleMapOptionsFactory: () -> GoogleMapOptions,
+    properties: MapProperties,
+    locationSource: LocationSource?,
+    uiSettings: MapUiSettings,
+    indoorStateChangeListener: IndoorStateChangeListener,
+    onMapClick: ((LatLng) -> Unit)?,
+    onMapLongClick: ((LatLng) -> Unit)?,
+    onMapLoaded: (() -> Unit)?,
+    onMyLocationButtonClick: (() -> Boolean)?,
+    onMyLocationClick: ((Location) -> Unit)?,
+    onPOIClick: ((PointOfInterest) -> Unit)?,
+    contentPadding: PaddingValues,
+    content: (@Composable @GoogleMapComposable () -> Unit)?,
 ) {
     // Will either be set to a re-used or a new MapView
     var mapViewOrNull: MapView? by remember { mutableStateOf(null) }
@@ -180,6 +185,7 @@ private fun ReusableGoogleMap(
     MapLifecycle(mapView, isMapViewReused)
 
     ApplyMapConfiguration(
+        mergeDescendants,
         mapView,
         cameraPositionState,
         contentDescription,
@@ -204,22 +210,23 @@ private fun ReusableGoogleMap(
  * */
 @Composable
 private fun FastGoogleMap(
-    modifier: Modifier = Modifier,
-    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
-    contentDescription: String? = null,
-    googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
-    properties: MapProperties = DefaultMapProperties,
-    locationSource: LocationSource? = null,
-    uiSettings: MapUiSettings = DefaultMapUiSettings,
-    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
-    onMapClick: ((LatLng) -> Unit)? = null,
-    onMapLongClick: ((LatLng) -> Unit)? = null,
-    onMapLoaded: (() -> Unit)? = null,
-    onMyLocationButtonClick: (() -> Boolean)? = null,
-    onMyLocationClick: ((Location) -> Unit)? = null,
-    onPOIClick: ((PointOfInterest) -> Unit)? = null,
-    contentPadding: PaddingValues = NoPadding,
-    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
+    mergeDescendants: Boolean,
+    modifier: Modifier,
+    cameraPositionState: CameraPositionState,
+    contentDescription: String?,
+    googleMapOptionsFactory: () -> GoogleMapOptions,
+    properties: MapProperties,
+    locationSource: LocationSource?,
+    uiSettings: MapUiSettings,
+    indoorStateChangeListener: IndoorStateChangeListener,
+    onMapClick: ((LatLng) -> Unit)?,
+    onMapLongClick: ((LatLng) -> Unit)?,
+    onMapLoaded: (() -> Unit)?,
+    onMyLocationButtonClick: (() -> Boolean)?,
+    onMyLocationClick: ((Location) -> Unit)?,
+    onPOIClick: ((PointOfInterest) -> Unit)?,
+    contentPadding: PaddingValues,
+    content: (@Composable @GoogleMapComposable () -> Unit)?,
 ) {
     val context = LocalContext.current
     val mapView = remember { MapView(context, googleMapOptionsFactory()) }
@@ -229,6 +236,7 @@ private fun FastGoogleMap(
     MapLifecycle(mapView = mapView, isMapViewReused = false)
 
     ApplyMapConfiguration(
+        mergeDescendants,
         mapView,
         cameraPositionState,
         contentDescription,
@@ -249,6 +257,7 @@ private fun FastGoogleMap(
 
 @Composable
 private fun ApplyMapConfiguration(
+    mergeDescendants: Boolean,
     mapView: MapView,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
