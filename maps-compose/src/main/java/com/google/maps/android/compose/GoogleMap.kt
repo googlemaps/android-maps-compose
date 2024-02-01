@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import kotlinx.coroutines.awaitCancellation
 /**
  * A compose container for a [MapView].
  *
+ * @param mergeDescendants deactivates the map for accessibility purposes
  * @param modifier Modifier to be applied to the GoogleMap
  * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
  * camera state
@@ -75,6 +76,7 @@ import kotlinx.coroutines.awaitCancellation
  */
 @Composable
 public fun GoogleMap(
+    mergeDescendants: Boolean = false,
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
@@ -274,31 +276,32 @@ private fun ApplyMapConfiguration(
         it.onMyLocationClick = onMyLocationClick
         it.onPOIClick = onPOIClick
     }
+    val currentContentDescription by rememberUpdatedState(contentDescription)
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
     val currentContentPadding by rememberUpdatedState(contentPadding)
-
-    // If we pass a custom location button, the native one is deactivated.
     val currentUiSettings by rememberUpdatedState(uiSettings)
     val currentMapProperties by rememberUpdatedState(properties)
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-
     LaunchedEffect(Unit) {
         disposingComposition {
-            mapView.newComposition(parentComposition) {
+            mapView.newComposition(parentComposition, mapClickListeners) {
                 MapUpdater(
-                    contentDescription = contentDescription,
+                    mergeDescendants = mergeDescendants,
+                    contentDescription = currentContentDescription,
                     cameraPositionState = currentCameraPositionState,
-                    clickListeners = mapClickListeners,
                     contentPadding = currentContentPadding,
                     locationSource = currentLocationSource,
                     mapProperties = currentMapProperties,
                     mapUiSettings = currentUiSettings,
                 )
+
+                MapClickListenerUpdater()
+
                 CompositionLocalProvider(
-                    LocalCameraPositionState provides cameraPositionState,
+                    LocalCameraPositionState provides currentCameraPositionState,
                 ) {
                     currentContent?.invoke()
                 }
@@ -318,11 +321,12 @@ internal suspend inline fun disposingComposition(factory: () -> Composition) {
 
 private suspend inline fun MapView.newComposition(
     parent: CompositionContext,
+    mapClickListeners: MapClickListeners,
     noinline content: @Composable () -> Unit
 ): Composition {
     val map = awaitMap()
     return Composition(
-        MapApplier(map, this), parent
+        MapApplier(map, this, mapClickListeners), parent
     ).apply {
         setContent(content)
     }
@@ -372,6 +376,7 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
                     this.onCreate(Bundle())
                 }
             }
+
             Lifecycle.Event.ON_START -> this.onStart()
             Lifecycle.Event.ON_RESUME -> this.onResume()
             Lifecycle.Event.ON_PAUSE -> this.onPause()
@@ -379,6 +384,7 @@ private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Even
             Lifecycle.Event.ON_DESTROY -> {
                 // Handled in AndroidView onRelease
             }
+
             else -> throw IllegalStateException()
         }
         previousState.value = event

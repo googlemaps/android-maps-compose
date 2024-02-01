@@ -130,6 +130,20 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.padding(5.dp))
                         Button(
                             onClick = {
+                                context.startActivity(Intent(context, AccessibilityActivity::class.java))
+                            }) {
+                            Text(getString(R.string.accessibility_button))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, RecompositionActivity::class.java))
+                            }) {
+                            Text(getString(R.string.recomposition_activity))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
                                 context.startActivity(Intent(context, MapsInLazyColumnActivity::class.java))
                             }) {
                             Text(getString(R.string.maps_in_lazy_column_activity))

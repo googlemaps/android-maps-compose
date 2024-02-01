@@ -15,6 +15,7 @@
 package com.google.maps.android.compose
 
 import android.annotation.SuppressLint
+import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
@@ -25,13 +26,11 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.LocationSource
-import com.google.android.gms.maps.model.IndoorBuilding
 
 internal class MapPropertiesNode(
     val map: GoogleMap,
     cameraPositionState: CameraPositionState,
     contentDescription: String?,
-    var clickListeners: MapClickListeners,
     var density: Density,
     var layoutDirection: LayoutDirection,
 ) : MapNode {
@@ -75,23 +74,6 @@ internal class MapPropertiesNode(
         map.setOnCameraMoveListener {
             cameraPositionState.rawPosition = map.cameraPosition
         }
-
-        map.setOnMapClickListener(clickListeners.onMapClick)
-        map.setOnMapLongClickListener(clickListeners.onMapLongClick)
-        map.setOnMapLoadedCallback(clickListeners.onMapLoaded)
-        map.setOnMyLocationButtonClickListener { clickListeners.onMyLocationButtonClick?.invoke() == true }
-        map.setOnMyLocationClickListener(clickListeners.onMyLocationClick)
-        map.setOnPoiClickListener(clickListeners.onPOIClick)
-
-        map.setOnIndoorStateChangeListener(object : GoogleMap.OnIndoorStateChangeListener {
-            override fun onIndoorBuildingFocused() {
-                clickListeners.indoorStateChangeListener.onIndoorBuildingFocused()
-            }
-
-            override fun onIndoorLevelActivated(building: IndoorBuilding) {
-                clickListeners.indoorStateChangeListener.onIndoorLevelActivated(building)
-            }
-        })
     }
 
     override fun onRemoved() {
@@ -112,15 +94,19 @@ internal val NoPadding = PaddingValues()
 @Suppress("NOTHING_TO_INLINE")
 @Composable
 internal inline fun MapUpdater(
+    mergeDescendants: Boolean = false,
     contentDescription: String?,
     cameraPositionState: CameraPositionState,
-    clickListeners: MapClickListeners,
     contentPadding: PaddingValues = NoPadding,
     locationSource: LocationSource?,
     mapProperties: MapProperties,
     mapUiSettings: MapUiSettings,
 ) {
     val map = (currentComposer.applier as MapApplier).map
+    val mapView = (currentComposer.applier as MapApplier).mapView
+    if (mergeDescendants) {
+        mapView.importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+    }
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
     ComposeNode<MapPropertiesNode, MapApplier>(
@@ -129,7 +115,6 @@ internal inline fun MapUpdater(
                 map = map,
                 contentDescription = contentDescription,
                 cameraPositionState = cameraPositionState,
-                clickListeners = clickListeners,
                 density = density,
                 layoutDirection = layoutDirection,
             )
@@ -175,6 +160,5 @@ internal inline fun MapUpdater(
         set(mapUiSettings.zoomGesturesEnabled) { map.uiSettings.isZoomGesturesEnabled = it }
 
         update(cameraPositionState) { this.cameraPositionState = it }
-        update(clickListeners) { this.clickListeners = it }
     }
 }
