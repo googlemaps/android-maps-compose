@@ -24,13 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -46,7 +44,9 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.launch
 
 /**
  * A compose container for a [MapView].
@@ -70,8 +70,6 @@ import kotlinx.coroutines.awaitCancellation
  * @param onPOIClick lambda invoked when a POI is clicked
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
- * @param reuseMapView whether the underlying MapView will be reused. Optimized for lazy layouts.
- * Can have a very slight impact on initial initialization time if enabled.
  * @param content the content of the map
  */
 @Composable
@@ -92,7 +90,6 @@ public fun GoogleMap(
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = NoPadding,
-    reuseMapView: Boolean = false,
     content: (@Composable @GoogleMapComposable () -> Unit)? = null,
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -101,179 +98,6 @@ public fun GoogleMap(
         return
     }
 
-    if(reuseMapView) {
-        ReusableGoogleMap(
-            modifier = modifier,
-            mergeDescendants = mergeDescendants,
-            cameraPositionState = cameraPositionState,
-            contentDescription = contentDescription,
-            googleMapOptionsFactory = googleMapOptionsFactory,
-            properties = properties,
-            locationSource = locationSource,
-            uiSettings = uiSettings,
-            indoorStateChangeListener = indoorStateChangeListener,
-            onMapClick = onMapClick,
-            onMapLongClick = onMapLongClick,
-            onMapLoaded = onMapLoaded,
-            onMyLocationButtonClick = onMyLocationButtonClick,
-            onMyLocationClick = onMyLocationClick,
-            onPOIClick = onPOIClick,
-            contentPadding = contentPadding,
-            content = content,
-        )
-    } else {
-        FastGoogleMap(
-            modifier = modifier,
-            mergeDescendants = mergeDescendants,
-            cameraPositionState = cameraPositionState,
-            contentDescription = contentDescription,
-            googleMapOptionsFactory = googleMapOptionsFactory,
-            properties = properties,
-            locationSource = locationSource,
-            uiSettings = uiSettings,
-            indoorStateChangeListener = indoorStateChangeListener,
-            onMapClick = onMapClick,
-            onMapLongClick = onMapLongClick,
-            onMapLoaded = onMapLoaded,
-            onMyLocationButtonClick = onMyLocationButtonClick,
-            onMyLocationClick = onMyLocationClick,
-            onPOIClick = onPOIClick,
-            contentPadding = contentPadding,
-            content = content,
-        )
-    }
-}
-
-@Composable
-private fun ReusableGoogleMap(
-    modifier: Modifier,
-    mergeDescendants: Boolean,
-    cameraPositionState: CameraPositionState,
-    contentDescription: String?,
-    googleMapOptionsFactory: () -> GoogleMapOptions,
-    properties: MapProperties,
-    locationSource: LocationSource?,
-    uiSettings: MapUiSettings,
-    indoorStateChangeListener: IndoorStateChangeListener,
-    onMapClick: ((LatLng) -> Unit)?,
-    onMapLongClick: ((LatLng) -> Unit)?,
-    onMapLoaded: (() -> Unit)?,
-    onMyLocationButtonClick: (() -> Boolean)?,
-    onMyLocationClick: ((Location) -> Unit)?,
-    onPOIClick: ((PointOfInterest) -> Unit)?,
-    contentPadding: PaddingValues,
-    content: (@Composable @GoogleMapComposable () -> Unit)?,
-) {
-    // Will either be set to a re-used or a new MapView
-    var mapViewOrNull: MapView? by remember { mutableStateOf(null) }
-    var isMapViewReused by remember { mutableStateOf(true) }
-
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            isMapViewReused = false
-            MapView(context, googleMapOptionsFactory())
-        },
-        onReset = { },
-        onRelease = { it.destroyAndRemoveAllViews() },
-        update = { mapViewOrNull = it }
-    )
-
-    // Wait until we have a MapView
-    val mapView = mapViewOrNull ?: return
-
-    MapLifecycle(mapView, isMapViewReused)
-
-    ApplyMapConfiguration(
-        mergeDescendants,
-        mapView,
-        cameraPositionState,
-        contentDescription,
-        properties,
-        locationSource,
-        uiSettings,
-        indoorStateChangeListener,
-        onMapClick,
-        onMapLongClick,
-        onMapLoaded,
-        onMyLocationButtonClick,
-        onMyLocationClick,
-        onPOIClick,
-        contentPadding,
-        content
-    )
-}
-
-/**
- * This [GoogleMap] overload doesn't re-use the underlying MapView between composables but
- * could be slightly faster than using [ReusableGoogleMap]
- * */
-@Composable
-private fun FastGoogleMap(
-    mergeDescendants: Boolean,
-    modifier: Modifier,
-    cameraPositionState: CameraPositionState,
-    contentDescription: String?,
-    googleMapOptionsFactory: () -> GoogleMapOptions,
-    properties: MapProperties,
-    locationSource: LocationSource?,
-    uiSettings: MapUiSettings,
-    indoorStateChangeListener: IndoorStateChangeListener,
-    onMapClick: ((LatLng) -> Unit)?,
-    onMapLongClick: ((LatLng) -> Unit)?,
-    onMapLoaded: (() -> Unit)?,
-    onMyLocationButtonClick: (() -> Boolean)?,
-    onMyLocationClick: ((Location) -> Unit)?,
-    onPOIClick: ((PointOfInterest) -> Unit)?,
-    contentPadding: PaddingValues,
-    content: (@Composable @GoogleMapComposable () -> Unit)?,
-) {
-    val context = LocalContext.current
-    val mapView = remember { MapView(context, googleMapOptionsFactory()) }
-
-    AndroidView(modifier = modifier, factory = { mapView })
-
-    MapLifecycle(mapView = mapView, isMapViewReused = false)
-
-    ApplyMapConfiguration(
-        mergeDescendants,
-        mapView,
-        cameraPositionState,
-        contentDescription,
-        properties,
-        locationSource,
-        uiSettings,
-        indoorStateChangeListener,
-        onMapClick,
-        onMapLongClick,
-        onMapLoaded,
-        onMyLocationButtonClick,
-        onMyLocationClick,
-        onPOIClick,
-        contentPadding,
-        content
-    )
-}
-
-@Composable
-private fun ApplyMapConfiguration(
-    mergeDescendants: Boolean,
-    mapView: MapView,
-    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
-    contentDescription: String? = null,
-    properties: MapProperties = DefaultMapProperties,
-    locationSource: LocationSource? = null,
-    uiSettings: MapUiSettings = DefaultMapUiSettings,
-    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
-    onMapClick: ((LatLng) -> Unit)? = null,
-    onMapLongClick: ((LatLng) -> Unit)? = null,
-    onMapLoaded: (() -> Unit)? = null,
-    onMyLocationButtonClick: (() -> Boolean)? = null,
-    onMyLocationClick: ((Location) -> Unit)? = null,
-    onPOIClick: ((PointOfInterest) -> Unit)? = null,
-    contentPadding: PaddingValues = NoPadding,
-    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
-) {
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
     val mapClickListeners = remember { MapClickListeners() }.also {
@@ -294,7 +118,9 @@ private fun ApplyMapConfiguration(
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-    LaunchedEffect(Unit) {
+    val mapUpdaterScope = rememberCoroutineScope()
+
+    fun launchMapUpdaterJob(mapView: MapView) = mapUpdaterScope.launch {
         disposingComposition {
             mapView.newComposition(parentComposition, mapClickListeners) {
                 MapUpdater(
@@ -317,6 +143,52 @@ private fun ApplyMapConfiguration(
             }
         }
     }
+
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val context = LocalContext.current
+    var mapLifecycleController: MapViewLifecycleController? by remember { mutableStateOf(null) }
+    var componentCallbacks: ComponentCallbacks? by remember { mutableStateOf(null) }
+    var mapUpdaterJob: Job? by remember { mutableStateOf(null) }
+
+    AndroidView(
+        modifier = modifier,
+        factory = {
+            MapView(context, googleMapOptionsFactory()).also { mapView ->
+                mapLifecycleController = MapViewLifecycleController(
+                    mapView = mapView,
+                    isViewReused = false
+                )
+                componentCallbacks = mapView.componentCallbacks()
+            }
+        },
+        onReset = {
+            mapLifecycleController!!.lifecycle = null
+            context.unregisterComponentCallbacks(componentCallbacks)
+        },
+        onRelease = { mapView ->
+            // MapView will never be used again and should be destroyed.
+            mapLifecycleController!!.onDestroy()
+            mapView.removeAllViews()
+            context.unregisterComponentCallbacks(componentCallbacks)
+        },
+        update = { mapView ->
+            if (mapLifecycleController == null) {
+                mapLifecycleController = MapViewLifecycleController(
+                    mapView = mapView,
+                    isViewReused = true
+                )
+            }
+
+            if (componentCallbacks == null) {
+                componentCallbacks = mapView.componentCallbacks()
+            }
+
+            mapLifecycleController!!.lifecycle = lifecycle
+
+            if (mapUpdaterJob == null)
+                mapUpdaterJob = launchMapUpdaterJob(mapView)
+        }
+    )
 }
 
 internal suspend inline fun disposingComposition(factory: () -> Composition) {
@@ -341,63 +213,52 @@ private suspend inline fun MapView.newComposition(
     }
 }
 
-private fun MapView.destroyAndRemoveAllViews() {
-    onDestroy()
-    removeAllViews()
-}
+private class MapViewLifecycleController(
+    private val mapView: MapView,
+    isViewReused: Boolean
+) {
+    private var previousState = if (isViewReused)
+        Lifecycle.Event.ON_STOP else
+        Lifecycle.Event.ON_CREATE
 
-/**
- * Registers lifecycle observers to the local [MapView].
- */
-@Composable
-private fun MapLifecycle(mapView: MapView, isMapViewReused: Boolean) {
-    val context = LocalContext.current
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val previousState = remember {
-        // If mapView is re-used then ON_CREATE should not be invoked on it again
-        val initialState = if(isMapViewReused) Lifecycle.Event.ON_STOP else Lifecycle.Event.ON_CREATE
-        mutableStateOf(initialState)
+    fun onDestroy() {
+        lifecycle = null
+        mapView.onDestroy()
     }
 
-    DisposableEffect(context, lifecycle, mapView) {
-        val mapLifecycleObserver = mapView.lifecycleObserver(previousState)
-        val callbacks = mapView.componentCallbacks()
-
-        lifecycle.addObserver(mapLifecycleObserver)
-        context.registerComponentCallbacks(callbacks)
-
-        onDispose {
-            lifecycle.removeObserver(mapLifecycleObserver)
-            context.unregisterComponentCallbacks(callbacks)
-        }
-    }
-}
-
-private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Event>): LifecycleEventObserver =
-    LifecycleEventObserver { _, event ->
-        event.targetState
+    private val observer = LifecycleEventObserver { _, event ->
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
                 // Skip calling mapView.onCreate if the lifecycle did not go through onDestroy - in
                 // this case the GoogleMap composable also doesn't leave the composition. So,
                 // recreating the map does not restore state properly which must be avoided.
-                if (previousState.value != Lifecycle.Event.ON_STOP) {
-                    this.onCreate(Bundle())
+                if (previousState != Lifecycle.Event.ON_STOP) {
+                    mapView.onCreate(Bundle())
                 }
             }
 
-            Lifecycle.Event.ON_START -> this.onStart()
-            Lifecycle.Event.ON_RESUME -> this.onResume()
-            Lifecycle.Event.ON_PAUSE -> this.onPause()
-            Lifecycle.Event.ON_STOP -> this.onStop()
+            Lifecycle.Event.ON_START -> mapView.onStart()
+            Lifecycle.Event.ON_RESUME -> mapView.onResume()
+            Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+            Lifecycle.Event.ON_STOP -> mapView.onStop()
             Lifecycle.Event.ON_DESTROY -> {
                 // Handled in AndroidView onRelease
             }
 
             else -> throw IllegalStateException()
         }
-        previousState.value = event
+        previousState = event
     }
+
+    var lifecycle: Lifecycle? = null
+        set(value) {
+            if (field !== value) {
+                field?.removeObserver(observer)
+                value?.addObserver(observer)
+                field = value
+            }
+        }
+}
 
 private fun MapView.componentCallbacks(): ComponentCallbacks =
     object : ComponentCallbacks {

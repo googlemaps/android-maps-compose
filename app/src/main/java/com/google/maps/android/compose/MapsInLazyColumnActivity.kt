@@ -43,7 +43,7 @@ class MapsInLazyColumnActivity: ComponentActivity() {
 @Composable
 private fun MapsInLazyColumn() {
     LazyColumn {
-        items(mapListItems) { item ->
+        items(mapListItems, key = { it.id }) { item ->
             Box(
                 Modifier
                     .fillMaxWidth()
