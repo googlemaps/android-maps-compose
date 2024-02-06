@@ -16,8 +16,8 @@ package com.google.maps.android.compose
 
 import android.location.Location
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -88,7 +88,9 @@ internal class MapClickListenerNode<L : Any>(
 @Composable
 internal fun MapClickListenerUpdater() {
     // The mapClickListeners container object is not allowed to ever change
-    val mapClickListeners = (currentComposer.applier as MapApplier).mapClickListeners
+    val applier = (currentComposer.applier as MapApplier)
+    val mapClickListeners = applier.mapClickListeners
+    val mapView = applier.mapView
 
     with(mapClickListeners) {
         ::indoorStateChangeListener.let { callback ->
@@ -125,8 +127,18 @@ internal fun MapClickListenerUpdater() {
             MapClickListenerComposeNode(
                 callback,
                 GoogleMap::setOnMapLoadedCallback,
-                OnMapLoadedCallback { callback()?.invoke() }
+                OnMapLoadedCallback {
+                    // Save map loaded state in MapView tag.
+                    mapView.setTag(R.id.maps_compose_map_view_tag_map_loaded, true)
+                    callback()?.invoke()
+                }
             )
+
+            // Check if map is already loaded from MapView tag and if so, invoke the onMapLoaded callback.
+            // This is relevant if map is reused in a lazy layout.
+            if(mapView.getTag(R.id.maps_compose_map_view_tag_map_loaded) == true) {
+                callback()?.invoke()
+            }
         }
 
         ::onMyLocationButtonClick.let { callback ->
@@ -192,5 +204,5 @@ private fun MapClickListenerComposeNode(
     // when callbacks recompose rapidly; setting GoogleMap listeners could potentially be
     // expensive due to synchronization, etc. GoogleMap listeners are not designed with a
     // use case of rapid recomposition in mind.
-    if (callback() != null) ComposeNode<MapClickListenerNode<*>, MapApplier>(factory) {}
+    if (callback() != null) ReusableComposeNode<MapClickListenerNode<*>, MapApplier>(factory) {}
 }
