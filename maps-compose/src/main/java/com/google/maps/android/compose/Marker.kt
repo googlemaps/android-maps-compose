@@ -16,10 +16,10 @@ package com.google.maps.android.compose
 
 import android.view.View
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -459,7 +459,7 @@ private fun MarkerImpl(
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
     val compositionContext = rememberCompositionContext()
-    ComposeNode<MarkerNode, MapApplier>(
+    ReusableComposeNode<MarkerNode, MapApplier>(
         factory = {
             val marker = mapApplier?.map?.addMarker {
                 contentDescription(contentDescription)
@@ -664,7 +664,7 @@ private fun AdvancedMarkerImpl(
         advancedMarkerOptions.icon(BitmapDescriptorFactory.fromPinConfig(pinConfig))
     }
 
-    ComposeNode<MarkerNode, MapApplier>(
+    ReusableComposeNode<MarkerNode, MapApplier>(
         factory = {
             val marker = mapApplier?.map?.addMarker(advancedMarkerOptions)
                 ?: error("Error adding marker")
