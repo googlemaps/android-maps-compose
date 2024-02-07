@@ -133,10 +133,6 @@ public fun GoogleMap(
     val currentContent by rememberUpdatedState(content)
     val mapUpdaterScope = rememberCoroutineScope()
 
-    fun View.log(msg: String) {
-        Log.d(TAG, "[AndroidView/${this.getTag(R.id.maps_compose_map_view_tag_debug_id)}] $msg")
-    }
-
     var composition by remember { mutableStateOf<ReusableComposition?>(null) }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -289,6 +285,10 @@ public fun GoogleMap(
             Text("MapView ID: $debugMapId")
         }
     }
+}
+
+internal fun MapView.log(msg: String) {
+    Log.d(TAG, "[AndroidView/${this.getTag(R.id.maps_compose_map_view_tag_debug_id)}] $msg")
 }
 
 internal suspend inline fun disposingComposition(factory: () -> Composition) {
