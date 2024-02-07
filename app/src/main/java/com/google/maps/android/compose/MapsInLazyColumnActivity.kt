@@ -19,15 +19,21 @@ import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.IndoorBuilding
 import com.google.android.gms.maps.model.LatLng
 
 class MapsInLazyColumnActivity: ComponentActivity() {
@@ -69,47 +75,98 @@ private fun MapCard(item: MapListItem) {
                     Modifier.fillMaxSize(),
                     item
                 )
-                Text(
-                    item.title,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(8.dp)
-                        .background(Color.White.copy(0.8f))
-                )
             }
         }
     }
 }
 
+@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 private fun CardMap(
     modifier: Modifier,
     mapItem: MapListItem
 ) {
     var mapLoaded by remember { mutableStateOf(false) }
+    var buildingFocused: Boolean? by remember { mutableStateOf(null) }
+    var focusedBuildingInvocationCount by remember { mutableIntStateOf(0) }
+    var activatedIndoorLevel: String? by remember { mutableStateOf(null) }
+    var activatedIndoorLevelInvocationCount by remember { mutableIntStateOf(0) }
+    var onMapClickCount by remember { mutableIntStateOf(0) }
+
     val cameraPositionState = rememberCameraPositionState(
         key = mapItem.id,
         init = { position = CameraPosition.fromLatLngZoom(mapItem.location, mapItem.zoom) }
     )
 
+    var map: GoogleMap? by remember { mutableStateOf(null) }
+
+    fun updateIndoorLevel() {
+        activatedIndoorLevel = map!!.focusedBuilding?.run { levels.getOrNull(activeLevelIndex)?.name }
+    }
+
     Box {
         GoogleMap(
+            onMapClick = {
+                onMapClickCount++
+            },
             modifier = modifier,
+            properties = remember {
+                MapProperties(
+                    isBuildingEnabled = true,
+                    isIndoorEnabled = true
+                )
+            },
             cameraPositionState = cameraPositionState,
-            onMapLoaded = { mapLoaded = true }
+            onMapLoaded = { mapLoaded = true },
+            indoorStateChangeListener = object: IndoorStateChangeListener {
+                override fun onIndoorBuildingFocused() {
+                    super.onIndoorBuildingFocused()
+                    focusedBuildingInvocationCount++
+                    buildingFocused = (map!!.focusedBuilding != null)
+                    updateIndoorLevel()
+                }
+
+                override fun onIndoorLevelActivated(building: IndoorBuilding) {
+                    super.onIndoorLevelActivated(building)
+                    activatedIndoorLevelInvocationCount++
+                    updateIndoorLevel()
+                }
+            }
         ) {
-            Marker(state = rememberMarkerState(position = mapItem.location))
+            MapEffect(Unit) {
+                map = it
+            }
         }
 
         AnimatedVisibility(!mapLoaded, enter = fadeIn(), exit = fadeOut()) {
             Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.White),
+                Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
+        }
+
+        @Composable
+        fun TextWithBackground(text: String, fontWeight: FontWeight = FontWeight.Medium) {
+            Text(
+                modifier = Modifier.background(Color.White.copy(0.7f)),
+                text = text,
+                fontWeight = fontWeight,
+                fontSize = 10.sp
+            )
+        }
+
+        Column(
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            TextWithBackground(mapItem.title, fontWeight = FontWeight.Bold)
+            TextWithBackground("Map loaded: $mapLoaded")
+            TextWithBackground("Map click count: $onMapClickCount")
+            TextWithBackground("Building focused: $buildingFocused")
+            TextWithBackground("Building focused invocation count: $focusedBuildingInvocationCount")
+            TextWithBackground("Indoor level: $activatedIndoorLevel")
+            TextWithBackground("Indoor level invocation count: $activatedIndoorLevelInvocationCount")
         }
     }
 }
@@ -124,6 +181,7 @@ private data class MapListItem(
 // From https://developers.google.com/public-data/docs/canonical/countries_csv
 private val countries = listOf(
     CountryLocation("Hong Kong", LatLng(22.396428, 114.109497), 5f),
+    CountryLocation("Madison Square Garden (has indoor mode)", LatLng(40.7504656,-73.9937246), 19.33f),
     CountryLocation("Bolivia", LatLng(-16.290154, -63.588653), 5f),
     CountryLocation("Ecuador", LatLng(-1.831239, -78.183406), 5f),
     CountryLocation("Sweden", LatLng(60.128161, 18.643501), 5f),
@@ -138,16 +196,7 @@ private val countries = listOf(
     CountryLocation("South Africa", LatLng(-30.559482, 22.937506), 5f),
     CountryLocation("Spain", LatLng(40.463667, -3.74922), 5f),
     CountryLocation("Georgia", LatLng(42.315407, 43.356892), 5f),
-    CountryLocation("Burundi", LatLng(-3.373056, 29.918886), 5f),
-    CountryLocation("Christmas Island", LatLng(-10.447525, 105.690449), 5f),
-    CountryLocation("Vanuatu", LatLng(-15.376706, 166.959158), 5f),
-    CountryLocation("Jersey", LatLng(49.214439, -2.13125), 5f),
-    CountryLocation("Svalbard and Jan Mayen", LatLng(77.553604, 23.670272), 5f),
-    CountryLocation("American Samoa", LatLng(-14.270972, -170.132217), 5f),
-    CountryLocation("Moldova", LatLng(47.411631, 28.369885), 5f),
-    CountryLocation("Bouvet Island", LatLng(-54.423199, 3.413194), 5f),
-    CountryLocation("Puerto Rico", LatLng(18.220833, -66.590149), 5f),
-    CountryLocation("Colombia", LatLng(4.570868, -74.297333), 5f),
+    CountryLocation("Burundi", LatLng(-3.373056, 29.918886), 5f)
 )
 
 private val mapListItems = countries
