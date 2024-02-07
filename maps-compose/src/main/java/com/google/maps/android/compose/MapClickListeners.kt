@@ -16,6 +16,7 @@ package com.google.maps.android.compose
 
 import android.location.Location
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposeNodeLifecycleCallback
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
@@ -76,10 +77,14 @@ internal class MapClickListenerNode<L : Any>(
     private val map: GoogleMap,
     private val setter: GoogleMap.(L?) -> Unit,
     private val listener: L
-) : MapNode {
+) : MapNode, ComposeNodeLifecycleCallback {
     override fun onAttached() = setListener(listener)
     override fun onRemoved() = setListener(null)
     override fun onCleared() = setListener(null)
+
+    override fun onReuse() = setListener(listener)
+    override fun onDeactivate() = setListener(null)
+    override fun onRelease() = setListener(null)
 
     private fun setListener(listenerOrNull: L?) = map.setter(listenerOrNull)
 }
@@ -127,18 +132,8 @@ internal fun MapClickListenerUpdater() {
             MapClickListenerComposeNode(
                 callback,
                 GoogleMap::setOnMapLoadedCallback,
-                OnMapLoadedCallback {
-                    // Save map loaded state in MapView tag.
-                    mapView.setTag(R.id.maps_compose_map_view_tag_map_loaded, true)
-                    callback()?.invoke()
-                }
+                OnMapLoadedCallback { callback()?.invoke() }
             )
-
-            // Check if map is already loaded from MapView tag and if so, invoke the onMapLoaded callback.
-            // This is relevant if map is reused in a lazy layout.
-            if(mapView.getTag(R.id.maps_compose_map_view_tag_map_loaded) == true) {
-                callback()?.invoke()
-            }
         }
 
         ::onMyLocationButtonClick.let { callback ->
