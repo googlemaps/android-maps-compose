@@ -95,7 +95,6 @@ internal fun MapClickListenerUpdater() {
     // The mapClickListeners container object is not allowed to ever change
     val applier = (currentComposer.applier as MapApplier)
     val mapClickListeners = applier.mapClickListeners
-    val mapView = applier.mapView
 
     with(mapClickListeners) {
         ::indoorStateChangeListener.let { callback ->
