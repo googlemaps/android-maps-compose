@@ -216,65 +216,65 @@ public fun GoogleMap(
         mapClickListeners = clickListeners
     }
 
-    Box {
-        AndroidView(
-            modifier = modifier,
-            factory = {
-                Log.d(TAG, "Factory")
-                debugMapReused = false
-                MapView(context, googleMapOptionsFactory()).also { mapView ->
-                    mapLifecycleController = MapViewLifecycleController(
-                        isMapReused = false,
-                        mapView = mapView
-                    )
-                    componentCallbacks = mapView.componentCallbacks()
-                }
-            },
-            onReset = { mapView ->
-                mapView.log("onReset")
-                // Deactivate composition to save resources
-                context.unregisterComponentCallbacks(componentCallbacks)
-                mapLifecycleController!!.onLifecycleDetached()
-                composition?.deactivate()
-                // Call onStop/onPause or something? Set map type to None to save resources? Because the MapView is detached.
-            },
-            onRelease = { mapView ->
-                mapView.log("onRelease")
-                context.unregisterComponentCallbacks(componentCallbacks)
-                // Dispose composition
-                composition?.dispose()
-                // Invoke onDestroy + remove lifecycle callbacks for the MapView
-                mapLifecycleController!!.onDestroy()
-                // Clean up MapView.
-                mapView.removeAllViews()
-            },
-            update = { mapView ->
-                mapView.log("update")
-                if (mapLifecycleController == null) {
-                    debugMapReused = true
-                    mapLifecycleController = MapViewLifecycleController(
-                        isMapReused = true,
-                        mapView = mapView
-                    )
-                }
+    AndroidView(
+        modifier = modifier,
+        factory = {
+            Log.d(TAG, "Factory")
+            debugMapReused = false
+            MapView(context, googleMapOptionsFactory()).also { mapView ->
+                mapLifecycleController = MapViewLifecycleController(
+                    isMapReused = false,
+                    mapView = mapView
+                )
+                componentCallbacks = mapView.componentCallbacks()
+            }
+        },
+        onReset = { mapView ->
+            mapView.log("onReset")
+            // Deactivate composition to save resources
+            context.unregisterComponentCallbacks(componentCallbacks)
+            mapLifecycleController!!.onLifecycleDetached()
+            composition?.deactivate()
+            // Call onStop/onPause or something? Set map type to None to save resources? Because the MapView is detached.
+        },
+        onRelease = { mapView ->
+            mapView.log("onRelease")
+            context.unregisterComponentCallbacks(componentCallbacks)
+            // Dispose composition
+            composition?.dispose()
+            // Invoke onDestroy + remove lifecycle callbacks for the MapView
+            mapLifecycleController!!.onDestroy()
+            // Clean up MapView.
+            mapView.removeAllViews()
+        },
+        update = { mapView ->
+            mapView.log("update")
+            if (mapLifecycleController == null) {
+                debugMapReused = true
+                mapLifecycleController = MapViewLifecycleController(
+                    isMapReused = true,
+                    mapView = mapView
+                )
+            }
 
-                if (componentCallbacks == null) {
-                    componentCallbacks = mapView.componentCallbacks()
-                }
+            if (componentCallbacks == null) {
+                componentCallbacks = mapView.componentCallbacks()
+            }
 
-                mapLifecycleController!!.lifecycle = lifecycle
+            mapLifecycleController!!.lifecycle = lifecycle
 
-                // Create Composition
-                if(!isCompositionSet) {
-                    isCompositionSet = true
-                    mapUpdaterScope.launch {
-                        setComposition(mapView)
-                        debugMapId = mapView.getTag(R.id.maps_compose_map_view_tag_debug_id) as? Int
-                    }
+            // Create Composition
+            if(!isCompositionSet) {
+                isCompositionSet = true
+                mapUpdaterScope.launch {
+                    setComposition(mapView)
+                    debugMapId = mapView.getTag(R.id.maps_compose_map_view_tag_debug_id) as? Int
                 }
             }
-        )
+        }
+    )
 
+    Box(modifier = modifier) {
         Column(
             modifier = Modifier
                 .align(Alignment.TopStart)
