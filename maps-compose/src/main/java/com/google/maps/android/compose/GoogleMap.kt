@@ -150,10 +150,6 @@ public fun GoogleMap(
     ): Pair<ReusableComposition, /* is reused */ Boolean> {
         val current = getTag(R.id.maps_compose_map_view_tag_composition) as? ReusableComposition
 
-        if(current == null) {
-            setTag(R.id.maps_compose_map_view_tag_debug_id, androidViewCounter++)
-        }
-
         return if(current == null || current.isDisposed) {
             val map = awaitMap()
             ReusableComposition(
@@ -221,6 +217,7 @@ public fun GoogleMap(
             Log.d(TAG, "Factory")
             debugMapReused = false
             MapView(context, googleMapOptionsFactory()).also { mapView ->
+                mapView.setTag(R.id.maps_compose_map_view_tag_debug_id, androidViewCounter++)
                 mapLifecycleController = MapViewLifecycleController(
                     isMapReused = false,
                     mapView = mapView
@@ -234,7 +231,6 @@ public fun GoogleMap(
             context.unregisterComponentCallbacks(componentCallbacks)
             mapLifecycleController!!.onLifecycleDetached()
             composition?.deactivate()
-            // Call onStop/onPause or something? Set map type to None to save resources? Because the MapView is detached.
         },
         onRelease = { mapView ->
             mapView.log("onRelease")
@@ -303,7 +299,49 @@ private class MapViewLifecycleController(
     isMapReused: Boolean,
     private val mapView: MapView
 ) {
-    private var previousState = if (isMapReused)
+    private val lcTag = run {
+        val mapViewId = mapView.getTag(R.id.maps_compose_map_view_tag_debug_id)
+        "MVLC/$mapViewId"
+    }
+
+    private companion object {
+        /**
+         * Used to navigate up/down through lifecycle state.
+         * [up] and [down] are nullable suppliers to avoid circular references.
+         *
+         * Up means if a lifecycle goes "upwards", ie onCreate -> onResume.
+         * Down means the opposite, ie onResume -> onDestroy.
+         *
+         * https://developer.android.com/guide/components/activities/activity-lifecycle#alc
+         * */
+        sealed class LifecycleStateNavigation(
+            val lifecycle: Lifecycle.Event,
+            val up: (() -> LifecycleStateNavigation)?,
+            val down: (() -> LifecycleStateNavigation)?
+        ) {
+            companion object {
+                private val instances = listOf(OnDestroy, OnStop, OnPause, OnCreate, OnStart, OnResume)
+                fun forLifecycleEvent(lifecycleEvent: Lifecycle.Event) = instances.first { it.lifecycle == lifecycleEvent }
+            }
+        }
+
+        val lifecycleUp = listOf(
+            Lifecycle.Event.ON_CREATE,
+            Lifecycle.Event.ON_START,
+            Lifecycle.Event.ON_RESUME
+        )
+
+        data object OnDestroy: LifecycleStateNavigation(Lifecycle.Event.ON_DESTROY, null, null)
+        data object OnStop: LifecycleStateNavigation(Lifecycle.Event.ON_STOP, { OnStart }, { OnDestroy })
+        data object OnPause: LifecycleStateNavigation(Lifecycle.Event.ON_PAUSE, { OnResume }, { OnStop })
+        data object OnCreate: LifecycleStateNavigation(Lifecycle.Event.ON_CREATE, { OnStart }, null)
+        data object OnStart: LifecycleStateNavigation(Lifecycle.Event.ON_START, { OnResume }, null)
+        data object OnResume: LifecycleStateNavigation(Lifecycle.Event.ON_RESUME, null, { OnPause })
+    }
+
+    private var created = isMapReused
+
+    private var previousLifecycleState = if (isMapReused)
         Lifecycle.Event.ON_STOP else
         Lifecycle.Event.ON_CREATE
 
@@ -318,21 +356,55 @@ private class MapViewLifecycleController(
 
     fun onDestroy() {
         lifecycle = null
-        mapView.onDestroy()
+        moveToLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     }
 
     fun onLifecycleDetached() {
         lifecycle = null
-        mapView.onStop()
+        moveToLifecycleEvent(Lifecycle.Event.ON_STOP)
     }
 
-    private val observer = LifecycleEventObserver { _, event ->
+    /**
+     * Move to the lifecycle event instead of setting it directly.
+     *
+     *
+     * */
+    private fun moveToLifecycleEvent(targetLifecycle: Lifecycle.Event) {
+        if(targetLifecycle == previousLifecycleState) return
+
+        val moveUp = targetLifecycle in lifecycleUp
+        val strDirection = if(moveUp) "UP" else "DOWN"
+        var currentLifecycleNavigator = LifecycleStateNavigation.forLifecycleEvent(previousLifecycleState)
+        Log.d(lcTag, "Moving $strDirection from ${currentLifecycleNavigator.lifecycle} to $targetLifecycle.")
+
+        while(currentLifecycleNavigator.lifecycle != targetLifecycle) {
+            buildString {
+                appendLine("==========================================")
+                appendLine("Current navigator: ${currentLifecycleNavigator.lifecycle}")
+                appendLine("up: ${currentLifecycleNavigator.up?.invoke()?.lifecycle}")
+                appendLine("down: ${currentLifecycleNavigator.down?.invoke()?.lifecycle}")
+                appendLine("Moving: $strDirection")
+                appendLine("------------------------------------------")
+            }.also {
+                Log.d(lcTag, it)
+            }
+            currentLifecycleNavigator = if(moveUp)
+                currentLifecycleNavigator.up!!.invoke() else
+                currentLifecycleNavigator.down!!.invoke()
+
+            setLifecycleEvent(currentLifecycleNavigator.lifecycle)
+        }
+    }
+
+    private fun setLifecycleEvent(event: Lifecycle.Event) {
+        Log.d(lcTag, "Invoking: $event!")
+
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
                 // Skip calling mapView.onCreate if the lifecycle did not go through onDestroy - in
                 // this case the GoogleMap composable also doesn't leave the composition. So,
                 // recreating the map does not restore state properly which must be avoided.
-                if (previousState != Lifecycle.Event.ON_STOP) {
+                if (previousLifecycleState != Lifecycle.Event.ON_STOP) {
                     mapView.onCreate(Bundle())
                 }
             }
@@ -347,7 +419,23 @@ private class MapViewLifecycleController(
 
             else -> throw IllegalStateException()
         }
-        previousState = event
+        previousLifecycleState = event
+    }
+
+    private val observer = LifecycleEventObserver { _, event ->
+        Log.d(lcTag, "---===[ LEO: Lifecycle event received from LifecycleEventObserver: $event. ]===---")
+
+        if(!created) {
+            Log.d(lcTag, "LEO: Invoking initial ON_CREATE.")
+            created = true
+            setLifecycleEvent(Lifecycle.Event.ON_CREATE)
+        } else if(event == Lifecycle.Event.ON_CREATE) {
+            Log.d(lcTag, "LEO: ON_CREATE lifecycle event was received but view is already created.")
+        }
+
+        if(event != Lifecycle.Event.ON_CREATE) {
+            moveToLifecycleEvent(event)
+        }
     }
 }
 
