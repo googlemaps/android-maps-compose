@@ -23,7 +23,7 @@ internal class MapViewLifecycleController(
          * Up means if a lifecycle goes "upwards", ie onCreate -> onResume.
          * Down means the opposite, ie onResume -> onDestroy.
          *
-         * https://developer.android.com/guide/components/activities/activity-lifecycle#alc
+         * [developer.android.com/...](https://developer.android.com/guide/components/activities/activity-lifecycle)
          * */
         sealed class LifecycleStateNavigation(
             val lifecycle: Lifecycle.Event,
