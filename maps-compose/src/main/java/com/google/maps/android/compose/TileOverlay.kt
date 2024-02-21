@@ -15,7 +15,7 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -84,7 +84,7 @@ public fun TileOverlay(
     onClick: (TileOverlay) -> Unit = {},
 ) {
     val mapApplier = currentComposer.applier as MapApplier?
-    ComposeNode<TileOverlayNode, MapApplier>(
+    ReusableComposeNode<TileOverlayNode, MapApplier>(
         factory = {
             val tileOverlay = mapApplier?.map?.addTileOverlay {
                 tileProvider(tileProvider)

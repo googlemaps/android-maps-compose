@@ -15,7 +15,7 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -65,7 +65,7 @@ public fun Circle(
     onClick: (Circle) -> Unit = {},
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
-    ComposeNode<CircleNode, MapApplier>(
+    ReusableComposeNode<CircleNode, MapApplier>(
         factory = {
             val circle = mapApplier?.map?.addCircle {
                 center(center)
