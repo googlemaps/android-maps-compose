@@ -31,6 +31,27 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs += '-Xexplicit-api=strict'
         freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
+
+        freeCompilerArgs += [
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=" +
+                        layout.projectDirectory.file('compose_compiler.conf').asFile.absolutePath
+        ]
+
+        if (findProperty("composeCompilerReports") == "true") {
+            freeCompilerArgs += [
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
+                            project.buildDir.absolutePath + "/compose_compiler"
+            ]
+        }
+        if (findProperty("composeCompilerMetrics") == "true") {
+            freeCompilerArgs += [
+                    "-P",
+                    "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
+                            project.buildDir.absolutePath + "/compose_compiler"
+            ]
+        }
     }
 }
 
