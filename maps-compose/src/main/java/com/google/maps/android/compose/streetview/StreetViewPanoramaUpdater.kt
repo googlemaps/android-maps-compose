@@ -1,7 +1,7 @@
 package com.google.maps.android.compose.streetview
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
 import com.google.android.gms.maps.StreetViewPanorama
 import com.google.maps.android.compose.MapNode
@@ -55,7 +55,7 @@ internal inline fun StreetViewUpdater(
 ) {
     val streetViewPanorama =
         (currentComposer.applier as StreetViewPanoramaApplier).streetViewPanorama
-    ComposeNode<StreetViewPanoramaPropertiesNode, StreetViewPanoramaApplier>(
+    ReusableComposeNode<StreetViewPanoramaPropertiesNode, StreetViewPanoramaApplier>(
         factory = {
             StreetViewPanoramaPropertiesNode(
                 cameraPositionState = cameraPositionState,

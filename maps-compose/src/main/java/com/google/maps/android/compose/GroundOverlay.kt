@@ -15,7 +15,7 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -23,8 +23,8 @@ import com.google.android.gms.maps.model.GroundOverlay
 import com.google.android.gms.maps.model.GroundOverlayOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.compose.GroundOverlayPosition.Companion.create
 import com.google.maps.android.ktx.addGroundOverlay
-import kotlin.IllegalStateException
 
 internal class GroundOverlayNode(
     val groundOverlay: GroundOverlay,
@@ -90,7 +90,7 @@ public fun GroundOverlay(
     onClick: (GroundOverlay) -> Unit = {},
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
-    ComposeNode<GroundOverlayNode, MapApplier>(
+    ReusableComposeNode<GroundOverlayNode, MapApplier>(
         factory = {
             val groundOverlay = mapApplier?.map?.addGroundOverlay {
                 anchor(anchor.x, anchor.y)
