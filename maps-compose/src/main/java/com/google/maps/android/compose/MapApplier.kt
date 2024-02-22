@@ -142,12 +142,43 @@ internal class MapApplier(
             )
         }
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
+            // We update MarkerState isDragging & position properties in a specific well-defined
+            // order: MarkerState.position is never updated by us unless
+            // MarkerState.isDragging == true. This avoids using Snapshots, which can fail to apply;
+            // they would not be meaningful here, because we are not the actual source of truth.
+
+            override fun onMarkerDragStart(marker: Marker) {
+                decorations.findInputCallback<MarkerNode, Marker, Unit>(
+                    nodeMatchPredicate = { it.marker == marker },
+                    marker = marker,
+                    nodeInputCallback = {
+                        {
+                            val position = it.position
+
+                            markerState.isDragging = true
+                            // update position after enabling isDragging
+                            markerState.position = position
+
+                            @Suppress("DEPRECATION")
+                            markerState.dragState = DragState.START
+                        }
+                    },
+                    inputHandlerCallback = { onMarkerDragStart }
+                )
+            }
+
             override fun onMarkerDrag(marker: Marker) {
                 decorations.findInputCallback<MarkerNode, Marker, Unit>(
                     nodeMatchPredicate = { it.marker == marker },
                     nodeInputCallback = {
                         {
-                            markerState.position = it.position
+                            val position = it.position
+
+                            markerState.isDragging = true // just in case, should be set already
+                            // update position after enabling isDragging
+                            markerState.position = position
+
+                            @Suppress("DEPRECATION")
                             markerState.dragState = DragState.DRAG
                         }
                     },
@@ -162,25 +193,19 @@ internal class MapApplier(
                     marker = marker,
                     nodeInputCallback = {
                         {
-                            markerState.position = it.position
+                            val position = it.position
+
+                            markerState.isDragging = true // just in case, should be set already
+                            // update position after enabling isDragging
+                            markerState.position = position
+                            // disable isDragging after updating position
+                            markerState.isDragging = false
+
+                            @Suppress("DEPRECATION")
                             markerState.dragState = DragState.END
                         }
                     },
                     inputHandlerCallback = { onMarkerDragEnd }
-                )
-            }
-
-            override fun onMarkerDragStart(marker: Marker) {
-                decorations.findInputCallback<MarkerNode, Marker, Unit>(
-                    nodeMatchPredicate = { it.marker == marker },
-                    marker = marker,
-                    nodeInputCallback = {
-                        {
-                            markerState.position = it.position
-                            markerState.dragState = DragState.START
-                        }
-                    },
-                    inputHandlerCallback = { onMarkerDragStart }
                 )
             }
         })
