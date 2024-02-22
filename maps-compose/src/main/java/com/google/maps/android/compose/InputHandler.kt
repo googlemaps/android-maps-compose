@@ -2,7 +2,7 @@ package com.google.maps.android.compose
 
 import androidx.annotation.RestrictTo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReusableComposeNode
+import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -34,7 +34,7 @@ public fun InputHandler(
     onMarkerDragEnd: ((Marker) -> Unit)? = null,
     onMarkerDragStart: ((Marker) -> Unit)? = null,
 ) {
-    ReusableComposeNode<InputHandlerNode, MapApplier>(
+    ComposeNode<InputHandlerNode, MapApplier>(
         factory = {
             InputHandlerNode(
                 onCircleClick,

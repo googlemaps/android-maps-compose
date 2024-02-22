@@ -25,8 +25,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ReusableComposition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +48,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 
 internal const val TAG = "GoogleMap"
 
@@ -107,8 +109,7 @@ public fun GoogleMap(
 
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
-    var mapClickListeners by remember { mutableStateOf<MapClickListeners?>(null) }
-    mapClickListeners?.also {
+    val mapClickListeners = remember { MapClickListeners() }.also {
         it.indoorStateChangeListener = indoorStateChangeListener
         it.onMapClick = onMapClick
         it.onMapLongClick = onMapLongClick
@@ -117,7 +118,6 @@ public fun GoogleMap(
         it.onMyLocationClick = onMyLocationClick
         it.onPOIClick = onPOIClick
     }
-
     val currentContentDescription by rememberUpdatedState(contentDescription)
     val currentLocationSource by rememberUpdatedState(locationSource)
     val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
@@ -127,54 +127,26 @@ public fun GoogleMap(
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-    val mapUpdaterScope = rememberCoroutineScope()
-
-    var composition by remember { mutableStateOf<ReusableComposition?>(null) }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
     var mapLifecycleController: MapViewLifecycleController? by remember { mutableStateOf(null) }
     var componentCallbacks: ComponentCallbacks? by remember { mutableStateOf(null) }
-    var isCompositionSet by remember { mutableStateOf(false) }
 
     // Debug stuff
-    var debugMapReused: Boolean? by remember { mutableStateOf(null) }
     val debugCompositionId = remember { compositionCounter++ }
     var debugMapId: Int? by remember { mutableStateOf(null) }
 
-    suspend fun MapView.getOrCreateComposition(
-        mapClickListeners: MapClickListeners
-    ): Pair<ReusableComposition, /* is reused */ Boolean> {
-        val current = getTag(R.id.maps_compose_map_view_tag_composition) as? ReusableComposition
+    val mapUpdaterScope = rememberCoroutineScope()
 
-        return if(current == null || current.isDisposed) {
-            val map = awaitMap()
-            ReusableComposition(
-                MapApplier(map, this, mapClickListeners), parentComposition
-            ).also { composition ->
-                setTag(R.id.maps_compose_map_view_tag_composition, composition)
-            } to false
-        } else {
-            current to true
-        }.also { (_, reused) ->
-            log("getOrCreateComposition. Reused composition: $reused.")
-        }
-    }
-
-    fun MapView.getOrCreateMapListenersTag(): MapClickListeners {
-        return getTag(R.id.maps_compose_map_view_tag_click_listeners) as? MapClickListeners ?: MapClickListeners()
-            .also { clickListeners ->
-                setTag(R.id.maps_compose_map_view_tag_click_listeners, clickListeners)
-            }
-    }
-
-    /** Apply the [content] compositions to the map. */
-    suspend fun setComposition(mapView: MapView) {
-        mapView.log("setComposition")
-        val clickListeners = mapView.getOrCreateMapListenersTag()
-        val (currentComposition, mapReused) = mapView.getOrCreateComposition(clickListeners)
-
-        composition = currentComposition
+    /**
+     * Create and apply the [content] compositions to the map +
+     * dispose the [Composition] when the parent composable is disposed.
+     * */
+    fun setCompositionAsync(
+        mapView: MapView
+    ) {
+        mapView.log("Creating composition...")
 
         val mapCompositionContent: @Composable () -> Unit = {
             MapUpdater(
@@ -196,29 +168,41 @@ public fun GoogleMap(
             }
         }
 
-        currentComposition.apply {
-            if(mapReused) {
-                setContentWithReuse(mapCompositionContent)
-            } else {
+        mapUpdaterScope.launch {
+            val composition = mapView.createComposition(mapClickListeners, parentComposition).apply {
                 setContent(mapCompositionContent)
+            }
+
+            // Dispose composition when mapUpdaterScope is cancelled.
+            launch {
+                delay(Duration.INFINITE)
+            }.invokeOnCompletion {
+                mapView.log("Disposing composition...")
+                composition.dispose()
             }
         }
 
-        // Set this after composition is started.
-        mapClickListeners = clickListeners
     }
+
+    var isCompositionSet by remember { mutableStateOf(false) }
+    var debugIsMapReused: Boolean? by remember { mutableStateOf(null) }
 
     AndroidView(
         modifier = modifier,
         factory = {
             Log.d(TAG, "Factory")
-            debugMapReused = false
+            debugIsMapReused = false
             MapView(context, googleMapOptionsFactory()).also { mapView ->
-                mapView.setTag(R.id.maps_compose_map_view_tag_debug_id, androidViewCounter++)
+                (androidViewCounter++).also { mapViewId ->
+                    mapView.setTag(R.id.maps_compose_map_view_tag_debug_id, mapViewId)
+                    debugMapId = mapViewId
+                }
+
                 mapLifecycleController = MapViewLifecycleController(
                     isMapReused = false,
                     mapView = mapView
                 )
+
                 componentCallbacks = mapView.componentCallbacks()
             }
         },
@@ -227,13 +211,10 @@ public fun GoogleMap(
             // Deactivate composition to save resources
             context.unregisterComponentCallbacks(componentCallbacks)
             mapLifecycleController!!.onLifecycleDetached()
-            composition?.deactivate()
         },
         onRelease = { mapView ->
             mapView.log("onRelease")
             context.unregisterComponentCallbacks(componentCallbacks)
-            // Dispose composition
-            composition?.dispose()
             // Invoke onDestroy + remove lifecycle callbacks for the MapView
             mapLifecycleController!!.onDestroy()
             // Clean up MapView.
@@ -242,7 +223,7 @@ public fun GoogleMap(
         update = { mapView ->
             mapView.log("update")
             if (mapLifecycleController == null) {
-                debugMapReused = true
+                debugIsMapReused = true
                 mapLifecycleController = MapViewLifecycleController(
                     isMapReused = true,
                     mapView = mapView
@@ -251,6 +232,7 @@ public fun GoogleMap(
 
             if (componentCallbacks == null) {
                 componentCallbacks = mapView.componentCallbacks()
+                context.registerComponentCallbacks(componentCallbacks)
             }
 
             mapLifecycleController!!.lifecycle = lifecycle
@@ -258,10 +240,7 @@ public fun GoogleMap(
             // Create Composition
             if(!isCompositionSet) {
                 isCompositionSet = true
-                mapUpdaterScope.launch {
-                    setComposition(mapView)
-                    debugMapId = mapView.getTag(R.id.maps_compose_map_view_tag_debug_id) as? Int
-                }
+                setCompositionAsync(mapView)
             }
         }
     )
@@ -272,15 +251,26 @@ public fun GoogleMap(
                 .align(Alignment.TopStart)
                 .padding(8.dp)
         ) {
-            Text("Map reused: $debugMapReused")
+            Text("Map reused: $debugIsMapReused")
             Text("Composition ID: $debugCompositionId")
             Text("MapView ID: $debugMapId")
         }
     }
 }
 
+private suspend fun MapView.createComposition(
+    mapClickListeners: MapClickListeners,
+    parentComposition: CompositionContext
+): Composition {
+    val map = awaitMap()
+    return Composition(
+        applier = MapApplier(map, this, mapClickListeners),
+        parent = parentComposition
+    )
+}
+
 internal fun MapView.log(msg: String) {
-    Log.d(TAG, "[AndroidView/${this.getTag(R.id.maps_compose_map_view_tag_debug_id)}] $msg")
+    Log.d(TAG, "[MapView/${this.getTag(R.id.maps_compose_map_view_tag_debug_id)}] $msg")
 }
 
 internal suspend inline fun disposingComposition(factory: () -> Composition) {

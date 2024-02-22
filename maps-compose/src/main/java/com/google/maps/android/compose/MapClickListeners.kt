@@ -16,9 +16,9 @@ package com.google.maps.android.compose
 
 import android.location.Location
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.ComposeNodeLifecycleCallback
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -77,14 +77,10 @@ internal class MapClickListenerNode<L : Any>(
     private val map: GoogleMap,
     private val setter: GoogleMap.(L?) -> Unit,
     private val listener: L
-) : MapNode, ComposeNodeLifecycleCallback {
+) : MapNode {
     override fun onAttached() = setListener(listener)
     override fun onRemoved() = setListener(null)
     override fun onCleared() = setListener(null)
-
-    override fun onReuse() = setListener(listener)
-    override fun onDeactivate() = setListener(null)
-    override fun onRelease() = setListener(null)
 
     private fun setListener(listenerOrNull: L?) = map.setter(listenerOrNull)
 }
@@ -198,5 +194,5 @@ private fun MapClickListenerComposeNode(
     // when callbacks recompose rapidly; setting GoogleMap listeners could potentially be
     // expensive due to synchronization, etc. GoogleMap listeners are not designed with a
     // use case of rapid recomposition in mind.
-    if (callback() != null) ReusableComposeNode<MapClickListenerNode<*>, MapApplier>(factory) {}
+    if (callback() != null) ComposeNode<MapClickListenerNode<*>, MapApplier>(factory) {}
 }

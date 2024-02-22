@@ -15,7 +15,7 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReusableComposeNode
+import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -90,7 +90,7 @@ public fun GroundOverlay(
     onClick: (GroundOverlay) -> Unit = {},
 ) {
     val mapApplier = currentComposer.applier as? MapApplier
-    ReusableComposeNode<GroundOverlayNode, MapApplier>(
+    ComposeNode<GroundOverlayNode, MapApplier>(
         factory = {
             val groundOverlay = mapApplier?.map?.addGroundOverlay {
                 anchor(anchor.x, anchor.y)

@@ -18,7 +18,7 @@ import android.annotation.SuppressLint
 import android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReusableComposeNode
+import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -109,7 +109,7 @@ internal inline fun MapUpdater(
     }
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
-    ReusableComposeNode<MapPropertiesNode, MapApplier>(
+    ComposeNode<MapPropertiesNode, MapApplier>(
         factory = {
             MapPropertiesNode(
                 map = map,
