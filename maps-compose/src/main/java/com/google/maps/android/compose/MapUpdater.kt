@@ -85,7 +85,7 @@ internal class MapPropertiesNode(
     }
 }
 
-internal val NoPadding = PaddingValues()
+public val NoPadding: PaddingValues = PaddingValues()
 
 /**
  * Used to keep the primary map properties up to date. This should never leave the map composition.
