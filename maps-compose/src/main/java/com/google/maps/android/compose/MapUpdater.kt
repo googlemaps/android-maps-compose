@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.LocationSource
 
 internal class MapPropertiesNode(
     val map: GoogleMap,
@@ -93,15 +92,7 @@ internal val NoPadding = PaddingValues()
 @SuppressLint("MissingPermission")
 @Suppress("NOTHING_TO_INLINE")
 @Composable
-internal inline fun MapUpdater(
-    mergeDescendants: Boolean = false,
-    contentDescription: String?,
-    cameraPositionState: CameraPositionState,
-    contentPadding: PaddingValues = NoPadding,
-    locationSource: LocationSource?,
-    mapProperties: MapProperties,
-    mapUiSettings: MapUiSettings,
-) {
+internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdaterState) {
     val map = (currentComposer.applier as MapApplier).map
     val mapView = (currentComposer.applier as MapApplier).mapView
     if (mergeDescendants) {
