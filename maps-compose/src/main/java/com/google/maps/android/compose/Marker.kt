@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.StateFactoryMarker
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.AdvancedMarkerOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -72,9 +73,7 @@ public enum class DragState {
  *
  * @param position the initial marker position
  */
-public class MarkerState(
-    position: LatLng = LatLng(0.0, 0.0),
-) {
+public class MarkerState private constructor(position: LatLng) {
     /**
      * Current position of the marker.
      */
@@ -113,6 +112,16 @@ public class MarkerState(
     }
 
     public companion object {
+        /**
+         * Creates a new [MarkerState] object
+         *
+         * @param position the initial marker position
+         */
+        @StateFactoryMarker
+        public operator fun invoke(
+            position: LatLng = LatLng(0.0, 0.0)
+        ): MarkerState = MarkerState(position)
+
         /**
          * The default saver implementation for [MarkerState]
          */
