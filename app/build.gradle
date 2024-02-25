@@ -35,6 +35,18 @@ android {
         jvmTarget = '1.8'
         freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
     }
+
+    testOptions {
+        managedDevices {
+            devices {
+                pixel5api29(com.android.build.api.dsl.ManagedVirtualDevice) {
+                    device = "Pixel 5"
+                    apiLevel = 29
+                    systemImageSource = "google"
+                }
+            }
+        }
+    }
 }
 
 dependencies {

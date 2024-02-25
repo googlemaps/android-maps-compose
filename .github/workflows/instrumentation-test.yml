@@ -47,17 +47,10 @@ jobs:
       run: |
         [ -z "$MAPS_API_KEY" ] && MAPS_API_KEY="YOUR_API_KEY"; echo "MAPS_API_KEY=$MAPS_API_KEY" >> ./local.properties
 
-    - name: Build debug
-      run: ./gradlew assembleDebug
-
     - name: Run instrumentation tests
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: 29
-        target: google_apis
-        arch: x86
-        disable-animations: true
-        script: ./gradlew :app:connectedCheck --stacktrace
+      run: ./gradlew :app:allDevicesCheck -Pandroid.experimental.testOptions.managedDevices.setupTimeoutMinutes=1200 -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect" --info
+        # Due to a bug, setupTimeoutMinutes is actually expressed in seconds. Fix merged into AGP,
+        # but not released yet as of 7.3.1. TODO clean up once property is fixed
 
     - name: Upload test reports
       if: always()
