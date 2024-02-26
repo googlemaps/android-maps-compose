@@ -48,6 +48,7 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -167,7 +168,7 @@ public fun GoogleMap(
             }
         }
 
-        mapUpdaterScope.launch {
+        mapUpdaterScope.launch(start = CoroutineStart.UNDISPATCHED) {
             val composition = mapView.createComposition(mapClickListeners, parentComposition).apply {
                 setContent(mapCompositionContent)
             }
