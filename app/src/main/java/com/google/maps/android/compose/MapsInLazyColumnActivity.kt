@@ -36,7 +36,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.IndoorBuilding
 import com.google.android.gms.maps.model.LatLng
 
-class MapsInLazyColumnActivity: ComponentActivity() {
+class MapsInLazyColumnActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -118,7 +118,7 @@ private fun CardMap(
             },
             cameraPositionState = cameraPositionState,
             onMapLoaded = { mapLoaded = true },
-            indoorStateChangeListener = object: IndoorStateChangeListener {
+            indoorStateChangeListener = object : IndoorStateChangeListener {
                 override fun onIndoorBuildingFocused() {
                     super.onIndoorBuildingFocused()
                     focusedBuildingInvocationCount++
@@ -181,7 +181,7 @@ private data class MapListItem(
 // From https://developers.google.com/public-data/docs/canonical/countries_csv
 private val countries = listOf(
     CountryLocation("Hong Kong", LatLng(22.396428, 114.109497), 5f),
-    CountryLocation("Madison Square Garden (has indoor mode)", LatLng(40.7504656,-73.9937246), 19.33f),
+    CountryLocation("Madison Square Garden (has indoor mode)", LatLng(40.7504656, -73.9937246), 19.33f),
     CountryLocation("Bolivia", LatLng(-16.290154, -63.588653), 5f),
     CountryLocation("Ecuador", LatLng(-1.831239, -78.183406), 5f),
     CountryLocation("Sweden", LatLng(60.128161, 18.643501), 5f),
@@ -201,7 +201,7 @@ private val countries = listOf(
 
 private val mapListItems = countries
     .mapIndexed { index, country ->
-    MapListItem(country.name, country.latLng, country.zoom, "MapInLazyColumn#$index")
-}
+        MapListItem(country.name, country.latLng, country.zoom, "MapInLazyColumn#$index")
+    }
 
 private data class CountryLocation(val name: String, val latLng: LatLng, val zoom: Float)

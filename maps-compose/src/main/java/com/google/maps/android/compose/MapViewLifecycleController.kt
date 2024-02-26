@@ -2,12 +2,12 @@ package com.google.maps.android.compose
 
 import android.os.Bundle
 import android.util.Log
-import androidx.core.view.get
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.MapView
-import com.google.maps.android.compose.MapViewLifecycleController.LifecycleDirection.*
+import com.google.maps.android.compose.MapViewLifecycleController.LifecycleDirection.Down
+import com.google.maps.android.compose.MapViewLifecycleController.LifecycleDirection.Up
 
 internal class MapViewLifecycleController(
     isMapReused: Boolean,
@@ -47,41 +47,46 @@ internal class MapViewLifecycleController(
      * Move to the lifecycle event instead of setting it directly.
      * */
     private fun moveToLifecycleEvent(targetLifecycle: Event) {
-        if(targetLifecycle == previousLifecycleState) return
+        if (targetLifecycle == previousLifecycleState) return
 
-        val lifecycleDirection = if(targetLifecycle in lifecycleUp) Up else Down
+        val lifecycleDirection = if (targetLifecycle in lifecycleUp) Up else Down
 
-        (if(lifecycleDirection == Up) "UP" else "DOWN").let { strDirection ->
+        (if (lifecycleDirection == Up) "UP" else "DOWN").let { strDirection ->
             Log.d(lcTag, "Moving $strDirection from $previousLifecycleState to $targetLifecycle.")
         }
 
         do {
             val nextLifecycleState = nextLifecycleEvent(lifecycleDirection)
             setLifecycleEvent(nextLifecycleState)
-        } while(nextLifecycleState != targetLifecycle)
+        } while (nextLifecycleState != targetLifecycle)
     }
 
-    private fun nextLifecycleEvent(direction: LifecycleDirection) = when(previousLifecycleState) {
-        Event.ON_CREATE -> when(direction) {
+    private fun nextLifecycleEvent(direction: LifecycleDirection) = when (previousLifecycleState) {
+        Event.ON_CREATE -> when (direction) {
             Up -> Event.ON_START
             Down -> error("No lifecycle event below ON_CREATE.")
         }
-        Event.ON_START -> when(direction) {
+
+        Event.ON_START -> when (direction) {
             Up -> Event.ON_RESUME
             Down -> error("No lifecycle event below ON_START.")
         }
-        Event.ON_RESUME -> when(direction) {
+
+        Event.ON_RESUME -> when (direction) {
             Up -> error("No lifecycle event above ON_RESUME.")
             Down -> Event.ON_PAUSE
         }
-        Event.ON_PAUSE -> when(direction) {
+
+        Event.ON_PAUSE -> when (direction) {
             Up -> Event.ON_RESUME
             Down -> Event.ON_STOP
         }
-        Event.ON_STOP -> when(direction) {
+
+        Event.ON_STOP -> when (direction) {
             Up -> Event.ON_START
             Down -> Event.ON_DESTROY
         }
+
         Event.ON_DESTROY -> error("No lifecycle event above ON_DESTROY")
         Event.ON_ANY -> error("Unsupported operation")
     }
@@ -116,15 +121,15 @@ internal class MapViewLifecycleController(
     private val observer = LifecycleEventObserver { _, event ->
         Log.d(lcTag, "---===[ LEO: Lifecycle event received from LifecycleEventObserver: $event. ]===---")
 
-        if(!created) {
+        if (!created) {
             Log.d(lcTag, "LEO: Invoking initial ON_CREATE.")
             created = true
             setLifecycleEvent(Event.ON_CREATE)
-        } else if(event == Event.ON_CREATE) {
+        } else if (event == Event.ON_CREATE) {
             Log.d(lcTag, "LEO: ON_CREATE lifecycle event was received but view is already created.")
         }
 
-        if(event != Event.ON_CREATE) {
+        if (event != Event.ON_CREATE) {
             moveToLifecycleEvent(event)
         }
     }
