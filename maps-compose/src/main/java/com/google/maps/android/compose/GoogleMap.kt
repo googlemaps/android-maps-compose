@@ -15,37 +15,48 @@
 package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
+import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
-import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration
+
+internal const val TAG = "GoogleMap"
+
+private var compositionCounter = 0
 
 /**
  * A compose container for a [MapView].
@@ -97,12 +108,6 @@ public fun GoogleMap(
         return
     }
 
-    val context = LocalContext.current
-    val mapView = remember { MapView(context, googleMapOptionsFactory()) }
-
-    AndroidView(modifier = modifier, factory = { mapView })
-    MapLifecycle(mapView)
-
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
     val mapClickListeners = remember { MapClickListeners() }.also {
@@ -123,29 +128,183 @@ public fun GoogleMap(
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-    LaunchedEffect(Unit) {
-        disposingComposition {
-            mapView.newComposition(parentComposition, mapClickListeners) {
-                MapUpdater(
-                    mergeDescendants = mergeDescendants,
-                    contentDescription = currentContentDescription,
-                    cameraPositionState = currentCameraPositionState,
-                    contentPadding = currentContentPadding,
-                    locationSource = currentLocationSource,
-                    mapProperties = currentMapProperties,
-                    mapUiSettings = currentUiSettings,
-                )
 
-                MapClickListenerUpdater()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    var mapLifecycleController: MapViewLifecycleController? by remember { mutableStateOf(null) }
 
-                CompositionLocalProvider(
-                    LocalCameraPositionState provides currentCameraPositionState,
-                ) {
-                    currentContent?.invoke()
-                }
+    // Debug stuff
+    val debugCompositionId = remember { compositionCounter++ }
+    var debugMapId: Int? by remember { mutableStateOf(null) }
+
+    val mapUpdaterScope = rememberCoroutineScope()
+
+    /**
+     * Create and apply the [content] compositions to the map +
+     * dispose the [Composition] when the parent composable is disposed.
+     * */
+    fun setCompositionAsync(
+        mapView: MapView
+    ) {
+        mapView.log("Creating composition...")
+
+        val mapCompositionContent: @Composable () -> Unit = {
+            MapUpdater(
+                mergeDescendants = mergeDescendants,
+                contentDescription = currentContentDescription,
+                cameraPositionState = currentCameraPositionState,
+                contentPadding = currentContentPadding,
+                locationSource = currentLocationSource,
+                mapProperties = currentMapProperties,
+                mapUiSettings = currentUiSettings,
+            )
+
+            MapClickListenerUpdater()
+
+            CompositionLocalProvider(
+                LocalCameraPositionState provides currentCameraPositionState,
+            ) {
+                currentContent?.invoke()
             }
         }
+
+        mapUpdaterScope.launch(start = CoroutineStart.UNDISPATCHED) {
+            val composition = mapView.createComposition(mapClickListeners, parentComposition).apply {
+                setContent(mapCompositionContent)
+            }
+
+            // Dispose composition when mapUpdaterScope is cancelled.
+            launch {
+                delay(Duration.INFINITE)
+            }.invokeOnCompletion {
+                mapView.log("Disposing composition...")
+                composition.dispose()
+            }
+        }
+
     }
+
+    var isCompositionSet by remember { mutableStateOf(false) }
+    var componentCallbacksUpdated by remember { mutableStateOf(false) }
+    var debugIsMapReused: Boolean? by remember { mutableStateOf(null) }
+
+    AndroidView(
+        modifier = modifier,
+        factory = {
+            Log.d(TAG, "Factory")
+            debugIsMapReused = false
+            MapView(context, googleMapOptionsFactory()).also { mapView ->
+                mapLifecycleController = MapViewLifecycleController(
+                    isMapReused = false,
+                    mapView = mapView
+                )
+
+                mapView.registerAndSaveNewComponentCallbacks(context)
+            }
+        },
+        onReset = {
+            // View is detached.
+        },
+        onRelease = { mapView ->
+            mapView.log("onRelease")
+            val tagData = mapView.tagData()
+            tagData.componentCallbacks?.let { componentCallbacks ->
+                tagData.componentCallbacksContext?.unregisterComponentCallbacks(componentCallbacks)
+                tagData.componentCallbacks = null
+                tagData.componentCallbacksContext = null
+            }
+        },
+        update = { mapView ->
+            mapView.log("update")
+            if (mapLifecycleController == null) {
+                debugIsMapReused = true
+                mapLifecycleController = MapViewLifecycleController(
+                    isMapReused = true,
+                    mapView = mapView
+                )
+            }
+
+            // componentCallbacksUpdated will be reset upon reuse so we need to check one time on each reuse.
+            if (!componentCallbacksUpdated) {
+                debugMapId = mapView.tagData().debugId
+                componentCallbacksUpdated = true
+                mapView.reRegisterComponentCallbacksIfChanged(context)
+            }
+
+            mapLifecycleController!!.lifecycle = lifecycleOwner.lifecycle
+
+            // Create Composition
+            if (!isCompositionSet) {
+                isCompositionSet = true
+                setCompositionAsync(mapView)
+            }
+        }
+    )
+
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(8.dp)
+        ) {
+            Text("Map reused: $debugIsMapReused")
+            Text("Composition ID: $debugCompositionId")
+            Text("MapView ID: $debugMapId")
+        }
+    }
+}
+
+private fun MapView.reRegisterComponentCallbacksIfChanged(context: Context) {
+    // If componentCallbacks haven't been updated since initial composition, re-register to new context if necessary.
+    // Should never be null here because it's set in [factory]
+    val tagData = tagData()
+    val componentCallbacksContext = tagData.componentCallbacksContext!!
+    if (componentCallbacksContext != context) {
+        // New context. Unregister previous componentCallbacks and re-register on new context.
+        val currentCallbacks = tagData.componentCallbacks!!
+        componentCallbacksContext.unregisterComponentCallbacks(currentCallbacks)
+        this.registerAndSaveNewComponentCallbacks(context)
+    }
+}
+
+private fun MapView.registerAndSaveNewComponentCallbacks(context: Context) {
+    val newComponentCallbacks = this.componentCallbacks()
+    val tagData = tagData()
+    tagData.componentCallbacks = newComponentCallbacks
+    tagData.componentCallbacksContext = context
+    context.registerComponentCallbacks(newComponentCallbacks)
+}
+
+internal data class MapTagData(
+    var componentCallbacks: ComponentCallbacks?,
+    var componentCallbacksContext: Context?,
+    val debugId: Int = nextId
+) {
+    companion object {
+        private var nextId = 0
+            get() = field++
+    }
+}
+
+internal fun MapView.tagData(): MapTagData = tag as? MapTagData ?: run {
+    MapTagData(null, null).also { newTag ->
+        tag = newTag
+    }
+}
+
+private suspend fun MapView.createComposition(
+    mapClickListeners: MapClickListeners,
+    parentComposition: CompositionContext
+): Composition {
+    val map = awaitMap()
+    return Composition(
+        applier = MapApplier(map, this, mapClickListeners),
+        parent = parentComposition
+    )
+}
+
+internal fun MapView.log(msg: String) {
+    Log.d(TAG, "[MapView/${tagData().debugId}] $msg")
 }
 
 internal suspend inline fun disposingComposition(factory: () -> Composition) {
@@ -156,73 +315,6 @@ internal suspend inline fun disposingComposition(factory: () -> Composition) {
         composition.dispose()
     }
 }
-
-private suspend inline fun MapView.newComposition(
-    parent: CompositionContext,
-    mapClickListeners: MapClickListeners,
-    noinline content: @Composable () -> Unit
-): Composition {
-    val map = awaitMap()
-    return Composition(
-        MapApplier(map, this, mapClickListeners), parent
-    ).apply {
-        setContent(content)
-    }
-}
-
-/**
- * Registers lifecycle observers to the local [MapView].
- */
-@Composable
-private fun MapLifecycle(mapView: MapView) {
-    val context = LocalContext.current
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val previousState = remember { mutableStateOf(Lifecycle.Event.ON_CREATE) }
-    DisposableEffect(context, lifecycle, mapView) {
-        val mapLifecycleObserver = mapView.lifecycleObserver(previousState)
-        val callbacks = mapView.componentCallbacks()
-
-        lifecycle.addObserver(mapLifecycleObserver)
-        context.registerComponentCallbacks(callbacks)
-
-        onDispose {
-            lifecycle.removeObserver(mapLifecycleObserver)
-            context.unregisterComponentCallbacks(callbacks)
-        }
-    }
-    DisposableEffect(mapView) {
-        onDispose {
-            mapView.onDestroy()
-            mapView.removeAllViews()
-        }
-    }
-}
-
-private fun MapView.lifecycleObserver(previousState: MutableState<Lifecycle.Event>): LifecycleEventObserver =
-    LifecycleEventObserver { _, event ->
-        event.targetState
-        when (event) {
-            Lifecycle.Event.ON_CREATE -> {
-                // Skip calling mapView.onCreate if the lifecycle did not go through onDestroy - in
-                // this case the GoogleMap composable also doesn't leave the composition. So,
-                // recreating the map does not restore state properly which must be avoided.
-                if (previousState.value != Lifecycle.Event.ON_STOP) {
-                    this.onCreate(Bundle())
-                }
-            }
-
-            Lifecycle.Event.ON_START -> this.onStart()
-            Lifecycle.Event.ON_RESUME -> this.onResume()
-            Lifecycle.Event.ON_PAUSE -> this.onPause()
-            Lifecycle.Event.ON_STOP -> this.onStop()
-            Lifecycle.Event.ON_DESTROY -> {
-                //handled in onDispose
-            }
-
-            else -> throw IllegalStateException()
-        }
-        previousState.value = event
-    }
 
 private fun MapView.componentCallbacks(): ComponentCallbacks =
     object : ComponentCallbacks {

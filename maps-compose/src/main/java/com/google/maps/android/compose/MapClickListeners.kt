@@ -88,7 +88,8 @@ internal class MapClickListenerNode<L : Any>(
 @Composable
 internal fun MapClickListenerUpdater() {
     // The mapClickListeners container object is not allowed to ever change
-    val mapClickListeners = (currentComposer.applier as MapApplier).mapClickListeners
+    val applier = (currentComposer.applier as MapApplier)
+    val mapClickListeners = applier.mapClickListeners
 
     with(mapClickListeners) {
         ::indoorStateChangeListener.let { callback ->
