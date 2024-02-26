@@ -202,9 +202,8 @@ public fun GoogleMap(
                 mapView.registerAndSaveNewComponentCallbacks(context)
             }
         },
-        onReset = { mapView ->
-            mapView.log("onReset")
-            mapLifecycleController!!.onLifecycleDetached()
+        onReset = {
+            // View is detached.
         },
         onRelease = { mapView ->
             mapView.log("onRelease")
@@ -214,10 +213,6 @@ public fun GoogleMap(
                 tagData.componentCallbacks = null
                 tagData.componentCallbacksContext = null
             }
-            // Invoke onDestroy + remove lifecycle callbacks for the MapView
-            mapLifecycleController!!.onDestroy()
-            // Clean up MapView.
-            mapView.removeAllViews()
         },
         update = { mapView ->
             mapView.log("update")

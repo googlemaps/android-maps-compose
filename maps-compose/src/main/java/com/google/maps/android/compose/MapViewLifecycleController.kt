@@ -43,16 +43,6 @@ internal class MapViewLifecycleController(
             }
         }
 
-    fun onDestroy() {
-        lifecycle = null
-        moveToLifecycleEvent(Event.ON_DESTROY)
-    }
-
-    fun onLifecycleDetached() {
-        lifecycle = null
-        moveToLifecycleEvent(Event.ON_STOP)
-    }
-
     /**
      * Move to the lifecycle event instead of setting it directly.
      * */
@@ -114,9 +104,7 @@ internal class MapViewLifecycleController(
             Event.ON_RESUME -> mapView.onResume()
             Event.ON_PAUSE -> mapView.onPause()
             Event.ON_STOP -> mapView.onStop()
-            Event.ON_DESTROY -> {
-                // Handled in AndroidView onRelease
-            }
+            Event.ON_DESTROY -> mapView.onDestroy()
 
             else -> throw IllegalStateException()
         }
