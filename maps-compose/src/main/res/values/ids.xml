@@ -2,8 +2,9 @@
 <resources>
     <item name="maps_compose_nodraw_container_view" type="id" />
 
-    <item name="maps_compose_map_view_tag_composition" type="id" />
+    <item name="maps_compose_map_view_tag_context" type="id" />
     <item name="maps_compose_map_view_tag_click_listeners" type="id" />
+    <item name="maps_compose_map_view_tag_component_callbacks" type="id" />
     <!-- For test purposes -->
     <item name="maps_compose_map_view_tag_debug_id" type="id" />
 </resources>
