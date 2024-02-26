@@ -2,6 +2,7 @@ package com.google.maps.android.compose
 
 import android.os.Bundle
 import android.util.Log
+import androidx.core.view.get
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Lifecycle.Event
 import androidx.lifecycle.LifecycleEventObserver
@@ -13,7 +14,7 @@ internal class MapViewLifecycleController(
     private val mapView: MapView
 ) {
     private val lcTag = run {
-        val mapViewId = mapView.getTag(R.id.maps_compose_map_view_tag_debug_id)
+        val mapViewId = mapView.tagData().debugId
         "MVLC/$mapViewId"
     }
 

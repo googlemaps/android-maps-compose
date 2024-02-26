@@ -56,7 +56,6 @@ import kotlin.time.Duration
 internal const val TAG = "GoogleMap"
 
 private var compositionCounter = 0
-private var androidViewCounter = 0
 
 /**
  * A compose container for a [MapView].
@@ -129,7 +128,7 @@ public fun GoogleMap(
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
 
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     var mapLifecycleController: MapViewLifecycleController? by remember { mutableStateOf(null) }
 
@@ -194,11 +193,6 @@ public fun GoogleMap(
             Log.d(TAG, "Factory")
             debugIsMapReused = false
             MapView(context, googleMapOptionsFactory()).also { mapView ->
-                (androidViewCounter++).also { mapViewId ->
-                    mapView.setTag(R.id.maps_compose_map_view_tag_debug_id, mapViewId)
-                    debugMapId = mapViewId
-                }
-
                 mapLifecycleController = MapViewLifecycleController(
                     isMapReused = false,
                     mapView = mapView
@@ -209,17 +203,15 @@ public fun GoogleMap(
         },
         onReset = { mapView ->
             mapView.log("onReset")
-            mapView[ComponentCallbacksTag]?.let { componentCallbacks ->
-                mapView[ComponentCallbacksContextTag]?.unregisterComponentCallbacks(componentCallbacks)
-                mapView[ComponentCallbacksContextTag] = null
-            }
             mapLifecycleController!!.onLifecycleDetached()
         },
         onRelease = { mapView ->
             mapView.log("onRelease")
-            mapView[ComponentCallbacksTag]?.let { componentCallbacks ->
-                mapView[ComponentCallbacksContextTag]?.unregisterComponentCallbacks(componentCallbacks)
-                mapView[ComponentCallbacksContextTag] = null
+            val tagData = mapView.tagData()
+            tagData.componentCallbacks?.let { componentCallbacks ->
+                tagData.componentCallbacksContext?.unregisterComponentCallbacks(componentCallbacks)
+                tagData.componentCallbacks = null
+                tagData.componentCallbacksContext = null
             }
             // Invoke onDestroy + remove lifecycle callbacks for the MapView
             mapLifecycleController!!.onDestroy()
@@ -238,11 +230,12 @@ public fun GoogleMap(
 
             // componentCallbacksUpdated will be reset upon reuse so we need to check one time on each reuse.
             if(!componentCallbacksUpdated) {
+                debugMapId = mapView.tagData().debugId
                 componentCallbacksUpdated = true
                 mapView.reRegisterComponentCallbacksIfChanged(context)
             }
 
-            mapLifecycleController!!.lifecycle = lifecycle
+            mapLifecycleController!!.lifecycle = lifecycleOwner.lifecycle
 
             // Create Composition
             if(!isCompositionSet) {
@@ -268,34 +261,40 @@ public fun GoogleMap(
 private fun MapView.reRegisterComponentCallbacksIfChanged(context: Context) {
     // If componentCallbacks haven't been updated since initial composition, re-register to new context if necessary.
     // Should never be null here because it's set in [factory]
-    val componentCallbacksContext = this[ComponentCallbacksContextTag]!!
+    val tagData = tagData()
+    val componentCallbacksContext = tagData.componentCallbacksContext!!
     if(componentCallbacksContext != context) {
         // New context. Unregister previous componentCallbacks and re-register on new context.
-        val callbacks = this[ComponentCallbacksTag]!!
-        componentCallbacksContext.unregisterComponentCallbacks(callbacks)
+        val currentCallbacks = tagData.componentCallbacks!!
+        componentCallbacksContext.unregisterComponentCallbacks(currentCallbacks)
         this.registerAndSaveNewComponentCallbacks(context)
     }
 }
 
 private fun MapView.registerAndSaveNewComponentCallbacks(context: Context) {
-    val componentCallbacks = this.componentCallbacks()
-    this[ComponentCallbacksTag] = componentCallbacks
-    this[ComponentCallbacksContextTag] = context
-    context.registerComponentCallbacks(componentCallbacks)
+    val newComponentCallbacks = this.componentCallbacks()
+    val tagData = tagData()
+    tagData.componentCallbacks = newComponentCallbacks
+    tagData.componentCallbacksContext = context
+    context.registerComponentCallbacks(newComponentCallbacks)
 }
 
-private sealed class MapViewTag<T>(val resourceId: Int)
-private data object ComponentCallbacksContextTag: MapViewTag<Context>(R.id.maps_compose_map_view_tag_context)
-private data object ComponentCallbacksTag: MapViewTag<ComponentCallbacks>(R.id.maps_compose_map_view_tag_component_callbacks)
-private data object DebugTag: MapViewTag<Int>(R.id.maps_compose_map_view_tag_debug_id)
-private data object ClickListenersTag: MapViewTag<MapClickListeners>(R.id.maps_compose_map_view_tag_click_listeners)
-
-private operator fun <T> MapView.set(key: MapViewTag<T>, value: T?) {
-    setTag(key.resourceId, value)
+internal data class MapTagData(
+    var componentCallbacks: ComponentCallbacks?,
+    var componentCallbacksContext: Context?,
+    val debugId: Int = nextId
+) {
+    companion object {
+        private var nextId = 0
+            get() = field++
+    }
 }
 
-@Suppress("UNCHECKED_CAST")
-private operator fun <T> MapView.get(key: MapViewTag<T>): T? = getTag(key.resourceId) as? T
+internal fun MapView.tagData(): MapTagData = tag as? MapTagData ?: run {
+    MapTagData(null, null).also { newTag ->
+        tag = newTag
+    }
+}
 
 private suspend fun MapView.createComposition(
     mapClickListeners: MapClickListeners,
@@ -309,7 +308,7 @@ private suspend fun MapView.createComposition(
 }
 
 internal fun MapView.log(msg: String) {
-    Log.d(TAG, "[MapView/${this.getTag(R.id.maps_compose_map_view_tag_debug_id)}] $msg")
+    Log.d(TAG, "[MapView/${ tagData().debugId }] $msg")
 }
 
 internal suspend inline fun disposingComposition(factory: () -> Composition) {

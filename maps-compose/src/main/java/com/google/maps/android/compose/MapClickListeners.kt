@@ -17,7 +17,6 @@ package com.google.maps.android.compose
 import android.location.Location
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
-import androidx.compose.runtime.ComposeNodeLifecycleCallback
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
