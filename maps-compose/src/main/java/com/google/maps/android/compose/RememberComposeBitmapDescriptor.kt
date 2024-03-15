@@ -20,7 +20,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 internal fun rememberComposeBitmapDescriptor(
     vararg keys: Any,
     content: @Composable () -> Unit,
-): BitmapDescriptor {
+): BitmapDescriptor? {
     val parent = LocalView.current as ViewGroup
     val compositionContext = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
@@ -34,7 +34,7 @@ private fun renderComposableToBitmapDescriptor(
     parent: ViewGroup,
     compositionContext: CompositionContext,
     content: @Composable () -> Unit,
-): BitmapDescriptor {
+): BitmapDescriptor? {
     val fakeCanvas = Canvas()
     val composeView =
         ComposeView(parent.context)
@@ -50,6 +50,11 @@ private fun renderComposableToBitmapDescriptor(
         View.MeasureSpec.makeMeasureSpec(parent.width, View.MeasureSpec.AT_MOST),
         View.MeasureSpec.makeMeasureSpec(parent.height, View.MeasureSpec.AT_MOST),
     )
+
+    if(composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
+        parent.removeView(composeView)
+        return null
+    }
 
     composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
 
