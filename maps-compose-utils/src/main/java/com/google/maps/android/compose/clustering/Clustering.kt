@@ -27,6 +27,7 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.currentCameraPositionState
 import com.google.maps.android.compose.rememberComposeUiViewRenderer
 import com.google.maps.android.compose.rememberReattachClickListenersHandle
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 
 /**
@@ -248,6 +249,7 @@ public fun <T : ClusterItem> rememberClusterRenderer(
             clusterItemContentState,
         )
         clusterRendererState.value = renderer
+        awaitCancellation()
     }
     return clusterRendererState.value
 }
