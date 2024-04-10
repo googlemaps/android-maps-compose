@@ -201,6 +201,86 @@ GoogleMap(
 </details>
 
 <details>
+  <summary>Shapes</summary>
+
+### Shapes
+
+This library offers some simple ways for you to add shapes to your maps in order to customize them. For all shapes, you can customize their appearance by altering a number of properties.
+
+
+#### Polyline
+A `Polyline` is a series of connected line segments that can form any shape you want and can be used to mark paths and routes on the map:
+
+```kotlin
+val polylinePoints = remember { listOf(singapore, singapore5) }
+
+// ... 
+Polyline(
+    points = polylinePoints
+)
+```
+
+You can use spans to individually color segments of a polyline, by creating StyleSpan objects:
+
+```kotlin
+val styleSpan = StyleSpan(
+    StrokeStyle.gradientBuilder(
+        Color.Red.toArgb(),
+        Color.Green.toArgb(),
+    ).build(),
+)
+
+// ...
+
+val polylinePoints = remember { listOf(singapore, singapore5) }
+val styleSpanList = remember { listOf(styleSpan) }
+
+// ... 
+
+Polyline(
+    points = polylinePoints,
+    spans = styleSpanList,
+)
+```
+
+#### Polygon
+
+A `Polygon` is an enclosed shape that can be used to mark areas on the map:
+
+```kotlin
+import java.awt.Polygon
+
+val polygonPoints = remember { listOf(singapore8, singapore9, singapore10) }
+
+
+// ... 
+
+Polygon(
+    points = polygonPoints,
+    fillColor = Color.Black.copy(alpha = 0.5f)
+)
+```
+
+#### Circle
+
+A Circle is a geographically accurate projection of a circle on the Earth's surface drawn on the map:
+
+```kotlin
+var circleCenter by remember { mutableStateOf(singapore) }
+
+// ... 
+
+Circle(
+    center = circleCenter,
+    fillColor = MaterialTheme.colors.secondary,
+    strokeColor = MaterialTheme.colors.secondaryVariant,
+    radius = 1000.0,
+)
+```
+
+</details>
+
+<details>
   <summary>Recomposing elements</summary>
 
 ### Recomposing elements
