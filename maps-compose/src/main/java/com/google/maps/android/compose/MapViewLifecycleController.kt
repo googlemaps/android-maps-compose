@@ -87,8 +87,8 @@ internal class MapViewLifecycleController(
             Down -> Event.ON_DESTROY
         }
 
-        Event.ON_ANY -> error("Unsupported operation")
         Event.ON_DESTROY -> error("No lifecycle state above destroyed")
+        else -> error("Unsupported operation")
     }
 
 
