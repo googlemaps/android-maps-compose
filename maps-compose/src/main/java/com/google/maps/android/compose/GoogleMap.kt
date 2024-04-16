@@ -307,15 +307,6 @@ internal fun MapView.log(msg: String) {
     Log.d(TAG, "[MapView/${tagData().debugId}] $msg")
 }
 
-internal suspend inline fun disposingComposition(factory: () -> Composition) {
-    val composition = factory()
-    try {
-        awaitCancellation()
-    } finally {
-        composition.dispose()
-    }
-}
-
 private fun MapView.componentCallbacks(): ComponentCallbacks =
     object : ComponentCallbacks {
         override fun onConfigurationChanged(config: Configuration) {}
