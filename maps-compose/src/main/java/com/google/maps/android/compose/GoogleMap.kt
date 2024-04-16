@@ -48,11 +48,11 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Duration
 
 internal const val TAG = "GoogleMap"
 
@@ -143,9 +143,7 @@ public fun GoogleMap(
      * Create and apply the [content] compositions to the map +
      * dispose the [Composition] when the parent composable is disposed.
      * */
-    fun setCompositionAsync(
-        mapView: MapView
-    ) {
+    fun CoroutineScope.launchComposition(mapView: MapView): Job {
         mapView.log("Creating composition...")
 
         val mapCompositionContent: @Composable () -> Unit = {
@@ -168,7 +166,7 @@ public fun GoogleMap(
             }
         }
 
-        mapUpdaterScope.launch(start = CoroutineStart.UNDISPATCHED) {
+        return launch(start = CoroutineStart.UNDISPATCHED) {
             val composition = mapView.createComposition(mapClickListeners, parentComposition).apply {
                 setContent(mapCompositionContent)
             }
@@ -181,7 +179,6 @@ public fun GoogleMap(
                 composition.dispose()
             }
         }
-
     }
 
     var isCompositionSet by remember { mutableStateOf(false) }
@@ -236,7 +233,7 @@ public fun GoogleMap(
             // Create Composition
             if (!isCompositionSet) {
                 isCompositionSet = true
-                setCompositionAsync(mapView)
+                mapUpdaterScope.launchComposition(mapView)
             }
         }
     )
