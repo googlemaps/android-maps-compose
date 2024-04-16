@@ -174,9 +174,9 @@ public fun GoogleMap(
             }
 
             // Dispose composition when mapUpdaterScope is cancelled.
-            launch {
-                delay(Duration.INFINITE)
-            }.invokeOnCompletion {
+            try {
+                awaitCancellation()
+            } finally {
                 mapView.log("Disposing composition...")
                 composition.dispose()
             }
