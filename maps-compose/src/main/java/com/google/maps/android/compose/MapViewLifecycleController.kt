@@ -64,16 +64,16 @@ internal class MapViewLifecycleController(
     private fun nextLifecycleEvent(direction: LifecycleDirection) = when (previousLifecycleState) {
         Event.ON_CREATE -> when (direction) {
             Up -> Event.ON_START
-            Down -> error("No lifecycle event below ON_CREATE.")
+            Down -> error("No lifecycle state below created.")
         }
 
         Event.ON_START -> when (direction) {
             Up -> Event.ON_RESUME
-            Down -> error("No lifecycle event below ON_START.")
+            Down -> error("No lifecycle state below started.")
         }
 
         Event.ON_RESUME -> when (direction) {
-            Up -> error("No lifecycle event above ON_RESUME.")
+            Up -> error("No lifecycle state above resumed.")
             Down -> Event.ON_PAUSE
         }
 
@@ -87,8 +87,8 @@ internal class MapViewLifecycleController(
             Down -> Event.ON_DESTROY
         }
 
-        Event.ON_DESTROY -> error("No lifecycle event above ON_DESTROY")
         Event.ON_ANY -> error("Unsupported operation")
+        Event.ON_DESTROY -> error("No lifecycle state above destroyed")
     }
 
 
