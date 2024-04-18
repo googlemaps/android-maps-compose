@@ -7,11 +7,14 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.MapView
 
 /** Invokes lifecycle events on the [lifecycleApplier] based on the current [lifecycle]. */
-internal class IncrementalLifecycleApplier(
+internal open class IncrementalLifecycleApplier(
     private val lifecycle: Lifecycle,
     private val lifecycleApplier: LifecycleApplier
 ) {
-    private var currentLifecycleState = Lifecycle.State.INITIALIZED
+    /** The [Lifecycle.State] which was last applied to [lifecycleApplier] */
+    protected var appliedLifecycleState = Lifecycle.State.INITIALIZED
+    /** The [Lifecycle.Event] which was last received by [lifecycleEventObserver] */
+    protected var lastObservedLifecycleEvent: Lifecycle.Event? = null
     private lateinit var lifecycleEventObserver: LifecycleEventObserver
 
     init {
@@ -19,17 +22,20 @@ internal class IncrementalLifecycleApplier(
     }
 
     private fun observeLifecycleEvents() {
-        lifecycleEventObserver = LifecycleEventObserver { _, event -> onLifecycleEvent(event) }
+        lifecycleEventObserver = LifecycleEventObserver { _, event ->
+            lastObservedLifecycleEvent = event
+            onLifecycleEvent(event)
+        }
         lifecycle.addObserver(lifecycleEventObserver)
     }
 
-    private fun onLifecycleEvent(lifecycleEvent: Lifecycle.Event) {
+    protected fun onLifecycleEvent(lifecycleEvent: Lifecycle.Event) {
         val targetState = lifecycleEvent.targetState
 
-        if (targetState == currentLifecycleState) return
+        if (targetState == appliedLifecycleState) return
 
         val isValidTargetLifecycleEvent = isValidTargetLifecycleEvent(
-            sourceLifecycleState = currentLifecycleState,
+            sourceLifecycleState = appliedLifecycleState,
             targetLifecycleEvent = lifecycleEvent
         )
         if (!isValidTargetLifecycleEvent) return
@@ -38,17 +44,17 @@ internal class IncrementalLifecycleApplier(
     }
 
     private fun moveToLifecycleEvent(targetLifecycleEvent: Lifecycle.Event) {
-        val direction = getLifecycleDirection(currentLifecycleState, targetLifecycleEvent)
+        val direction = getLifecycleDirection(appliedLifecycleState, targetLifecycleEvent.targetState)
 
         do {
-            val nextEvent = getNextLifecycleEvent(currentLifecycleState, direction)!!
+            val nextEvent = getNextLifecycleEvent(appliedLifecycleState, direction)!!
             invokeLifecycleEvent(nextEvent)
         } while (nextEvent != targetLifecycleEvent)
     }
 
     private fun invokeLifecycleEvent(lifecycleEvent: Lifecycle.Event) {
         lifecycleApplier.invokeEvent(lifecycleEvent)
-        currentLifecycleState = lifecycleEvent.targetState
+        appliedLifecycleState = lifecycleEvent.targetState
     }
 
     fun destroyAndDispose() {
@@ -57,14 +63,14 @@ internal class IncrementalLifecycleApplier(
         lifecycle.removeObserver(lifecycleEventObserver)
     }
 
-    private companion object {
+    protected companion object {
 
         /** @return if there is a valid path from [sourceLifecycleState] to [targetLifecycleEvent]. */
-        private fun isValidTargetLifecycleEvent(
+        fun isValidTargetLifecycleEvent(
             sourceLifecycleState: Lifecycle.State,
             targetLifecycleEvent: Lifecycle.Event
         ): Boolean {
-            val direction = getLifecycleDirection(sourceLifecycleState, targetLifecycleEvent)
+            val direction = getLifecycleDirection(sourceLifecycleState, targetLifecycleEvent.targetState)
             var nextLifecycleEvent: Lifecycle.Event? = getNextLifecycleEvent(sourceLifecycleState, direction)
 
             while (true) {
@@ -76,9 +82,9 @@ internal class IncrementalLifecycleApplier(
 
         fun getLifecycleDirection(
             sourceLifecycleState: Lifecycle.State,
-            targetLifecycleEvent: Lifecycle.Event
+            targetLifecycleState: Lifecycle.State
         ) = when {
-            targetLifecycleEvent.targetState.isAtLeast(sourceLifecycleState) -> LifecycleEventDirection.UP
+            targetLifecycleState.isAtLeast(sourceLifecycleState) -> LifecycleEventDirection.UP
             else -> LifecycleEventDirection.DOWN
         }
 
@@ -87,15 +93,59 @@ internal class IncrementalLifecycleApplier(
             LifecycleEventDirection.DOWN -> Lifecycle.Event.downFrom(from)
         }
     }
+
+    protected enum class LifecycleEventDirection { UP, DOWN }
 }
 
-private enum class LifecycleEventDirection { UP, DOWN }
+/** Controls a MapView's lifecycle + allows override of actual [lifecycle]'s value */
+internal class IncrementalMapLifecycleApplier(
+    lifecycle: Lifecycle,
+    mapView: MapView
+) : IncrementalLifecycleApplier(
+    lifecycle = lifecycle,
+    lifecycleApplier = MapViewLifecycleApplier(mapView)
+) {
+    /** Currently overwritten lifecycle state */
+    private var temporaryLifecycleState: Lifecycle.State? = null
+
+    fun setTemporaryLifecycleState(targetLifecycleState: Lifecycle.State) {
+        if(targetLifecycleState in listOf(Lifecycle.State.DESTROYED, Lifecycle.State.INITIALIZED))
+            error("Invalid temporary lifecycle state: $targetLifecycleState")
+
+        val targetLifecycleEvent = getTargetLifecycleEventForState(
+            appliedLifecycleState, targetLifecycleState
+        ) ?: return
+
+        temporaryLifecycleState = targetLifecycleState
+        onLifecycleEvent(targetLifecycleEvent)
+    }
+
+    fun clearTemporaryLifecycleState() {
+        temporaryLifecycleState ?: return
+        lastObservedLifecycleEvent?.let { onLifecycleEvent(it) }
+        temporaryLifecycleState = null
+    }
+
+    private companion object {
+        fun getTargetLifecycleEventForState(
+            currentLifecycleState: Lifecycle.State,
+            targetLifecycleState: Lifecycle.State
+        ): Lifecycle.Event? {
+            val direction = getLifecycleDirection(currentLifecycleState, targetLifecycleState)
+
+            return when(direction) {
+                LifecycleEventDirection.UP -> Lifecycle.Event.upTo(targetLifecycleState)
+                LifecycleEventDirection.DOWN -> Lifecycle.Event.downTo(targetLifecycleState)
+            }
+        }
+    }
+}
 
 internal interface LifecycleApplier {
     fun invokeEvent(event: Lifecycle.Event)
 }
 
-internal class MapViewLifecycleApplier(private val mapView: MapView) : LifecycleApplier {
+private class MapViewLifecycleApplier(private val mapView: MapView) : LifecycleApplier {
     override fun invokeEvent(event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())

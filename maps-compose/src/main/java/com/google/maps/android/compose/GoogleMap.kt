@@ -132,7 +132,7 @@ public fun GoogleMap(
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    var mapLifecycleApplier: IncrementalLifecycleApplier? by remember { mutableStateOf(null) }
+    var mapLifecycleApplier: IncrementalMapLifecycleApplier? by remember { mutableStateOf(null) }
 
     // Debug stuff
     val debugCompositionId = remember { compositionCounter++ }
@@ -191,18 +191,16 @@ public fun GoogleMap(
             MapView(context, googleMapOptionsFactory()).also { mapView ->
                 mapView.registerAndSaveNewComponentCallbacks(context)
 
-                mapLifecycleApplier = IncrementalLifecycleApplier(
-                    lifecycleOwner.lifecycle,
-                    lifecycleApplier = MapViewLifecycleApplier(mapView)
-                )
+                mapLifecycleApplier = IncrementalMapLifecycleApplier(lifecycleOwner.lifecycle, mapView)
 
                 // This mapLifecycleApplier also has to be active while the MapView is detached from
                 // the UI. Therefore we store it i the MapView's tag so that it can be retrieved in the future.
                 mapView.tagData().lifecycleApplier = mapLifecycleApplier
             }
         },
-        onReset = {
+        onReset = { mapView ->
             // View is detached.
+            mapView.tagData().lifecycleApplier!!.setTemporaryLifecycleState(Lifecycle.State.CREATED)
         },
         onRelease = { mapView ->
             mapView.log("onRelease")
@@ -222,7 +220,10 @@ public fun GoogleMap(
             // Create Composition
             if (!isCompositionSet) {
                 isCompositionSet = true
-                debugMapId = mapView.tagData().debugId
+                mapView.tagData().let { tagData ->
+                    tagData.lifecycleApplier!!.clearTemporaryLifecycleState()
+                    debugMapId = tagData.debugId
+                }
                 mapUpdaterScope.launchComposition(mapView)
             }
         }
@@ -253,7 +254,7 @@ internal data class MapTagData(
     var componentCallbacks: ComponentCallbacks?,
     var mapViewContext: Context?,
     var lifecycleState: Lifecycle.State?,
-    var lifecycleApplier: IncrementalLifecycleApplier?,
+    var lifecycleApplier: IncrementalMapLifecycleApplier?,
     val debugId: Int = nextId
 ) {
     companion object {
