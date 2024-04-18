@@ -1,6 +1,7 @@
 package com.google.maps.android.compose
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.MapView
@@ -78,6 +79,7 @@ internal class IncrementalLifecycleApplier(
     }
 
     fun destroyAndDispose() {
+        Log.d(TAG, "destroyAndDispose()")
         onLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         lifecycle.removeObserver(lifecycleEventObserver)
     }
@@ -100,6 +102,8 @@ internal class MapViewLifecycleApplier(private val mapView: MapView) : Lifecycle
             Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
             Lifecycle.Event.ON_ANY -> error("Cannot invoke lifecycle event ON_ANY on mapView.")
         }
+
+        Log.d("MapViewLifecycleApplier", "[MapView#${ mapView.tagData().debugId }]Invoking $event")
 
         mapView.tagData().lifecycleState = event.targetState
     }
