@@ -14,7 +14,9 @@
 
 package com.google.maps.android.compose
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
@@ -78,7 +80,7 @@ class GoogleMapViewTests {
         initMap()
         assertEquals(CameraMoveStartedReason.NO_MOVEMENT_YET, cameraPositionState.cameraMoveStartedReason)
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
             assertTrue(cameraPositionState.isMoving)
@@ -90,10 +92,10 @@ class GoogleMapViewTests {
     fun testCameraReportsNotMoving() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(5000) {
+            composeTestRule.waitUntil(timeout5) {
                 !cameraPositionState.isMoving
             }
             assertFalse(cameraPositionState.isMoving)
@@ -104,10 +106,10 @@ class GoogleMapViewTests {
     fun testCameraZoomInAnimation() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -122,10 +124,10 @@ class GoogleMapViewTests {
     fun testCameraZoomIn() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -140,10 +142,10 @@ class GoogleMapViewTests {
     fun testCameraZoomOut() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = false) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -158,10 +160,10 @@ class GoogleMapViewTests {
     fun testCameraZoomOutAnimation() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = false) {
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(3000) {
+            composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -207,6 +209,29 @@ class GoogleMapViewTests {
             Marker(
                 state = markerState
             )
+        }
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun testMarkerStateInsideMarkerComposableCannotBeReused() {
+        initMap {
+            val markerState = rememberMarkerState()
+            MarkerComposable(
+                keys = arrayOf("marker1"),
+                state = markerState,
+            ) {
+                Box {
+                    Text(text = "marker1")
+                }
+            }
+            MarkerComposable(
+                keys = arrayOf("marker2"),
+                state = markerState,
+            ) {
+                Box {
+                    Text(text = "marker2")
+                }
+            }
         }
     }
 

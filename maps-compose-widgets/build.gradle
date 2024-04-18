@@ -4,11 +4,11 @@ plugins {
 
 android {
     namespace "com.google.maps.android.compose.widgets"
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
     }
@@ -42,9 +42,8 @@ dependencies {
     implementation libs.androidx.compose.material
     implementation libs.androidx.core
     implementation libs.kotlin
-    implementation libs.maps.playservice
-    implementation libs.maps.ktx.std
-    implementation libs.maps.ktx.utils
+    api libs.maps.ktx.std
+    api libs.maps.ktx.utils
 
     testImplementation libs.test.junit
     androidTestImplementation platform(libs.androidx.compose.bom)
