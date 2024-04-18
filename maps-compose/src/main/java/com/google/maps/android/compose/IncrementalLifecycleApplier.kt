@@ -37,35 +37,8 @@ internal class IncrementalLifecycleApplier(
         moveToLifecycleEvent(lifecycleEvent)
     }
 
-    /** @return if there is a valid path from [sourceLifecycleState] to [targetLifecycleEvent]. */
-    private fun isValidTargetLifecycleEvent(
-        sourceLifecycleState: Lifecycle.State,
-        targetLifecycleEvent: Lifecycle.Event
-    ): Boolean {
-        val direction = getLifecycleDirection(targetLifecycleEvent)
-        var nextLifecycleEvent: Lifecycle.Event? =
-            getNextLifecycleEvent(sourceLifecycleState, direction)
-
-        while (true) {
-            if (nextLifecycleEvent == null) return false
-            if (nextLifecycleEvent == targetLifecycleEvent) return true
-            nextLifecycleEvent = getNextLifecycleEvent(nextLifecycleEvent.targetState, direction)
-        }
-    }
-
-    private fun getLifecycleDirection(targetLifecycleEvent: Lifecycle.Event) = when {
-        targetLifecycleEvent.targetState.isAtLeast(currentLifecycleState) -> LifecycleEventDirection.UP
-        else -> LifecycleEventDirection.DOWN
-    }
-
-    private fun getNextLifecycleEvent(from: Lifecycle.State, direction: LifecycleEventDirection) =
-        when (direction) {
-            LifecycleEventDirection.UP -> Lifecycle.Event.upFrom(from)
-            LifecycleEventDirection.DOWN -> Lifecycle.Event.downFrom(from)
-        }
-
     private fun moveToLifecycleEvent(targetLifecycleEvent: Lifecycle.Event) {
-        val direction = getLifecycleDirection(targetLifecycleEvent)
+        val direction = getLifecycleDirection(currentLifecycleState, targetLifecycleEvent)
 
         do {
             val nextEvent = getNextLifecycleEvent(currentLifecycleState, direction)!!
@@ -82,6 +55,37 @@ internal class IncrementalLifecycleApplier(
         Log.d(TAG, "destroyAndDispose()")
         onLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         lifecycle.removeObserver(lifecycleEventObserver)
+    }
+
+    private companion object {
+
+        /** @return if there is a valid path from [sourceLifecycleState] to [targetLifecycleEvent]. */
+        private fun isValidTargetLifecycleEvent(
+            sourceLifecycleState: Lifecycle.State,
+            targetLifecycleEvent: Lifecycle.Event
+        ): Boolean {
+            val direction = getLifecycleDirection(sourceLifecycleState, targetLifecycleEvent)
+            var nextLifecycleEvent: Lifecycle.Event? = getNextLifecycleEvent(sourceLifecycleState, direction)
+
+            while (true) {
+                if (nextLifecycleEvent == null) return false
+                if (nextLifecycleEvent == targetLifecycleEvent) return true
+                nextLifecycleEvent = getNextLifecycleEvent(nextLifecycleEvent.targetState, direction)
+            }
+        }
+
+        fun getLifecycleDirection(
+            sourceLifecycleState: Lifecycle.State,
+            targetLifecycleEvent: Lifecycle.Event
+        ) = when {
+            targetLifecycleEvent.targetState.isAtLeast(sourceLifecycleState) -> LifecycleEventDirection.UP
+            else -> LifecycleEventDirection.DOWN
+        }
+
+        fun getNextLifecycleEvent(from: Lifecycle.State, direction: LifecycleEventDirection) = when (direction) {
+            LifecycleEventDirection.UP -> Lifecycle.Event.upFrom(from)
+            LifecycleEventDirection.DOWN -> Lifecycle.Event.downFrom(from)
+        }
     }
 }
 
