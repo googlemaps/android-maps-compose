@@ -9,9 +9,9 @@ import com.google.android.gms.maps.MapView
 /** Invokes lifecycle events on the [lifecycleApplier] based on the current [lifecycle]. */
 internal class IncrementalLifecycleApplier(
     private val lifecycle: Lifecycle,
-    private var currentLifecycleState: Lifecycle.State,
     private val lifecycleApplier: LifecycleApplier
 ) {
+    private var currentLifecycleState = Lifecycle.State.INITIALIZED
     private lateinit var lifecycleEventObserver: LifecycleEventObserver
 
     init {

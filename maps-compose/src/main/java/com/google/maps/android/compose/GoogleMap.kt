@@ -193,7 +193,6 @@ public fun GoogleMap(
 
                 mapLifecycleApplier = IncrementalLifecycleApplier(
                     lifecycleOwner.lifecycle,
-                    currentLifecycleState = Lifecycle.State.INITIALIZED,
                     lifecycleApplier = MapViewLifecycleApplier(mapView)
                 )
 
