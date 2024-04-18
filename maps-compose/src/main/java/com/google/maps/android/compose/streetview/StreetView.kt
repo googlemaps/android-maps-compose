@@ -131,7 +131,7 @@ private fun StreetViewLifecycle(streetView: StreetViewPanoramaView) {
     }
 }
 
-internal suspend inline fun disposingComposition(factory: () -> Composition) {
+private suspend inline fun disposingComposition(factory: () -> Composition) {
     val composition = factory()
     try {
         awaitCancellation()

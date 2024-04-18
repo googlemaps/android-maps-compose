@@ -137,8 +137,7 @@ public fun GoogleMap(
     // Debug stuff
     val debugCompositionId = remember { compositionCounter++ }
     var debugMapId: Int? by remember { mutableStateOf(null) }
-
-    val mapUpdaterScope = rememberCoroutineScope()
+    var debugIsMapReused: Boolean? by remember { mutableStateOf(null) }
 
     /**
      * Create and apply the [content] compositions to the map +
@@ -172,7 +171,6 @@ public fun GoogleMap(
                 setContent(mapCompositionContent)
             }
 
-            // Dispose composition when mapUpdaterScope is cancelled.
             try {
                 awaitCancellation()
             } finally {
@@ -183,8 +181,7 @@ public fun GoogleMap(
     }
 
     var isCompositionSet by remember { mutableStateOf(false) }
-    var componentCallbacksUpdated by remember { mutableStateOf(false) }
-    var debugIsMapReused: Boolean? by remember { mutableStateOf(null) }
+    val mapUpdaterScope = rememberCoroutineScope()
 
     AndroidView(
         modifier = modifier,
@@ -200,7 +197,6 @@ public fun GoogleMap(
                     lifecycleApplier = MapViewLifecycleApplier(mapView)
                 )
 
-                mapView.registerAndSaveNewComponentCallbacks(context)
                 // This mapLifecycleApplier also has to be active while the MapView is detached from
                 // the UI. Therefore we store it i the MapView's tag so that it can be retrieved in the future.
                 mapView.tagData().lifecycleApplier = mapLifecycleApplier
@@ -217,23 +213,17 @@ public fun GoogleMap(
                     tagData.mapViewContext?.unregisterComponentCallbacks(componentCallbacks)
                 }
             }
+            mapView.tag = null
         },
         update = { mapView ->
-            mapView.log("update")
             if (mapLifecycleApplier == null) {
                 mapLifecycleApplier = mapView.tagData().lifecycleApplier!!
-            }
-
-            // componentCallbacksUpdated will be reset upon reuse so we need to check one time on each reuse.
-            if (!componentCallbacksUpdated) {
-                debugMapId = mapView.tagData().debugId
-                componentCallbacksUpdated = true
-                mapView.reRegisterComponentCallbacksIfChanged(context)
             }
 
             // Create Composition
             if (!isCompositionSet) {
                 isCompositionSet = true
+                debugMapId = mapView.tagData().debugId
                 mapUpdaterScope.launchComposition(mapView)
             }
         }
@@ -252,24 +242,11 @@ public fun GoogleMap(
     }
 }
 
-private fun MapView.reRegisterComponentCallbacksIfChanged(context: Context) {
-    // If componentCallbacks haven't been updated since initial composition, re-register to new context if necessary.
-    // Should never be null here because it's set in [factory]
-    val tagData = tagData()
-    val componentCallbacksContext = tagData.componentCallbacksContext!!
-    if (componentCallbacksContext != context) {
-        // New context. Unregister previous componentCallbacks and re-register on new context.
-        val currentCallbacks = tagData.componentCallbacks!!
-        componentCallbacksContext.unregisterComponentCallbacks(currentCallbacks)
-        this.registerAndSaveNewComponentCallbacks(context)
-    }
-}
-
 private fun MapView.registerAndSaveNewComponentCallbacks(context: Context) {
     val newComponentCallbacks = this.componentCallbacks()
     val tagData = tagData()
     tagData.componentCallbacks = newComponentCallbacks
-    tagData.componentCallbacksContext = context
+    tagData.mapViewContext = context
     context.registerComponentCallbacks(newComponentCallbacks)
 }
 
@@ -303,8 +280,8 @@ private suspend fun MapView.createComposition(
     )
 }
 
-internal fun MapView.log(msg: String) {
-    Log.d(TAG, "[MapView/${tagData().debugId}] $msg")
+internal fun MapView.log(msg: String, tag: String = TAG) {
+    Log.d(tag, "[MapView/${tagData().debugId}] $msg")
 }
 
 private fun MapView.componentCallbacks(): ComponentCallbacks =
