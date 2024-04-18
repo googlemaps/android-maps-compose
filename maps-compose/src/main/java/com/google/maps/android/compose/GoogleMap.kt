@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
@@ -131,7 +132,7 @@ public fun GoogleMap(
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
-    var mapLifecycleController: MapViewLifecycleController? by remember { mutableStateOf(null) }
+    var mapLifecycleApplier: IncrementalLifecycleApplier? by remember { mutableStateOf(null) }
 
     // Debug stuff
     val debugCompositionId = remember { compositionCounter++ }
@@ -191,12 +192,18 @@ public fun GoogleMap(
             Log.d(TAG, "Factory")
             debugIsMapReused = false
             MapView(context, googleMapOptionsFactory()).also { mapView ->
-                mapLifecycleController = MapViewLifecycleController(
-                    isMapReused = false,
-                    mapView = mapView
+                mapView.registerAndSaveNewComponentCallbacks(context)
+
+                mapLifecycleApplier = IncrementalLifecycleApplier(
+                    lifecycleOwner.lifecycle,
+                    currentLifecycleState = Lifecycle.State.INITIALIZED,
+                    lifecycleApplier = MapViewLifecycleApplier(mapView)
                 )
 
                 mapView.registerAndSaveNewComponentCallbacks(context)
+                // This mapLifecycleApplier also has to be active while the MapView is detached from
+                // the UI. Therefore we store it i the MapView's tag so that it can be retrieved in the future.
+                mapView.tagData().lifecycleApplier = mapLifecycleApplier
             }
         },
         onReset = {
@@ -204,21 +211,17 @@ public fun GoogleMap(
         },
         onRelease = { mapView ->
             mapView.log("onRelease")
-            val tagData = mapView.tagData()
-            tagData.componentCallbacks?.let { componentCallbacks ->
-                tagData.componentCallbacksContext?.unregisterComponentCallbacks(componentCallbacks)
-                tagData.componentCallbacks = null
-                tagData.componentCallbacksContext = null
+            mapView.tagData().let { tagData ->
+                tagData.lifecycleApplier!!.destroyAndDispose()
+                tagData.componentCallbacks?.let { componentCallbacks ->
+                    tagData.mapViewContext?.unregisterComponentCallbacks(componentCallbacks)
+                }
             }
         },
         update = { mapView ->
             mapView.log("update")
-            if (mapLifecycleController == null) {
-                debugIsMapReused = true
-                mapLifecycleController = MapViewLifecycleController(
-                    isMapReused = true,
-                    mapView = mapView
-                )
+            if (mapLifecycleApplier == null) {
+                mapLifecycleApplier = mapView.tagData().lifecycleApplier!!
             }
 
             // componentCallbacksUpdated will be reset upon reuse so we need to check one time on each reuse.
@@ -227,8 +230,6 @@ public fun GoogleMap(
                 componentCallbacksUpdated = true
                 mapView.reRegisterComponentCallbacksIfChanged(context)
             }
-
-            mapLifecycleController!!.lifecycle = lifecycleOwner.lifecycle
 
             // Create Composition
             if (!isCompositionSet) {
@@ -274,7 +275,9 @@ private fun MapView.registerAndSaveNewComponentCallbacks(context: Context) {
 
 internal data class MapTagData(
     var componentCallbacks: ComponentCallbacks?,
-    var componentCallbacksContext: Context?,
+    var mapViewContext: Context?,
+    var lifecycleState: Lifecycle.State?,
+    var lifecycleApplier: IncrementalLifecycleApplier?,
     val debugId: Int = nextId
 ) {
     companion object {
@@ -284,7 +287,7 @@ internal data class MapTagData(
 }
 
 internal fun MapView.tagData(): MapTagData = tag as? MapTagData ?: run {
-    MapTagData(null, null).also { newTag ->
+    MapTagData(null, null, null, null).also { newTag ->
         tag = newTag
     }
 }
