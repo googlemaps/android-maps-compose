@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+@file:Suppress("RemoveRedundantQualifierName")
+
 package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +46,9 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
@@ -130,7 +136,6 @@ public fun GoogleMap(
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
 
-    val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
 
     // Debug stuff
@@ -179,28 +184,52 @@ public fun GoogleMap(
         }
     }
 
+    val lifecycleOwner = LocalLifecycleOwner.current
     var isCompositionSet by remember { mutableStateOf(false) }
     val mapUpdaterScope = rememberCoroutineScope()
 
     AndroidView(
         modifier = modifier,
         factory = {
-            Log.d(TAG, "Factory")
             debugIsMapReused = false
             MapView(context, googleMapOptionsFactory()).also { mapView ->
+                mapView.log("Creating MapView")
                 mapView.registerAndSaveNewComponentCallbacks(context)
+
+                // Used to observe lifecycle owner's lifecycle state and
+                // to gradually move between states.
+                mapView.tagData().lifecycleRegistry = DerivedLifecycleRegistry(lifecycleOwner) { _, event ->
+                    mapView.log("Invoking $event")
+                    when (event) {
+                        Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
+                        Lifecycle.Event.ON_START -> mapView.onStart()
+                        Lifecycle.Event.ON_RESUME -> mapView.onResume()
+                        Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+                        Lifecycle.Event.ON_STOP -> mapView.onStop()
+                        Lifecycle.Event.ON_DESTROY -> {
+                            mapView.onDestroy()
+                            mapView.tagData().lifecycleRegistry!!.destroy()
+                        }
+                        else -> error("Unsupported Lifecycle.Event: $event")
+                    }
+                }
             }
         },
         onReset = { mapView ->
             // View is detached.
+            mapView.tagData().lifecycleRegistry!!.overrideLifecycleState(Lifecycle.State.CREATED)
         },
         onRelease = { mapView ->
             mapView.log("onRelease")
+
             mapView.tagData().let { tagData ->
                 tagData.componentCallbacks?.let { componentCallbacks ->
                     tagData.mapViewContext?.unregisterComponentCallbacks(componentCallbacks)
                 }
+
+                tagData.lifecycleRegistry!!.destroy()
             }
+
             mapView.tag = null
         },
         update = { mapView ->
@@ -210,6 +239,8 @@ public fun GoogleMap(
                 debugMapId = mapView.tagData().debugId
                 mapUpdaterScope.launchComposition(mapView)
             }
+
+            mapView.tagData().lifecycleRegistry!!.clearOverwrittenLifecycleState()
         }
     )
 
@@ -226,6 +257,48 @@ public fun GoogleMap(
     }
 }
 
+// TODO is there a better name?
+/**
+ * LifecycleRegistry which observes [lifecycleOwner] and dispatches incoming events.
+ * Also supports overriding current state.
+ * */
+internal class DerivedLifecycleRegistry(
+    private val lifecycleOwner: LifecycleOwner,
+    private val lifecycleEventObserver: LifecycleEventObserver
+): LifecycleRegistry(lifecycleOwner) {
+    private var lifecycleOwnerState = Lifecycle.State.INITIALIZED
+    private var overwrittenLifecycleState: Lifecycle.State? = null
+
+    private val lifecycleObserver = LifecycleEventObserver { _, event ->
+        if(overwrittenLifecycleState == null) {
+            handleLifecycleEvent(event)
+        }
+        lifecycleOwnerState = event.targetState
+    }
+
+    init {
+        addObserver(lifecycleEventObserver)
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+    }
+
+    fun overrideLifecycleState(state: Lifecycle.State) {
+        overwrittenLifecycleState = state
+        currentState = state
+    }
+
+    fun clearOverwrittenLifecycleState() {
+        overwrittenLifecycleState ?: return
+        overwrittenLifecycleState = null
+        currentState = lifecycleOwnerState
+    }
+
+    fun destroy() {
+        lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+        currentState = Lifecycle.State.DESTROYED
+        removeObserver(lifecycleEventObserver)
+    }
+}
+
 private fun MapView.registerAndSaveNewComponentCallbacks(context: Context) {
     val newComponentCallbacks = this.componentCallbacks()
     val tagData = tagData()
@@ -237,7 +310,7 @@ private fun MapView.registerAndSaveNewComponentCallbacks(context: Context) {
 internal data class MapTagData(
     var componentCallbacks: ComponentCallbacks?,
     var mapViewContext: Context?,
-    var lifecycleState: Lifecycle.State?,
+    var lifecycleRegistry: DerivedLifecycleRegistry?,
     val debugId: Int = nextId
 ) {
     companion object {
@@ -246,6 +319,7 @@ internal data class MapTagData(
     }
 }
 
+// TODO make private
 internal fun MapView.tagData(): MapTagData = tag as? MapTagData ?: run {
     MapTagData(null, null, null).also { newTag ->
         tag = newTag
