@@ -7,14 +7,17 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -41,7 +44,18 @@ class MapsInLazyColumnActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MapsInLazyColumn()
+            var showMaps by remember { mutableStateOf(true) }
+
+            Column {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Button(onClick = { showMaps = !showMaps }) {
+                        Text(text = if(showMaps) "Hide maps" else "Show maps")
+                    }
+                }
+                if(showMaps) {
+                    MapsInLazyColumn()
+                }
+            }
         }
     }
 }
