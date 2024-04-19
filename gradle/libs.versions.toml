@@ -1,17 +1,17 @@
 [versions]
 activitycompose = "1.8.2"
-agp = "8.2.2"
+agp = "8.3.2"
 androidxtest = "1.5.0"
-compose-bom = "2024.01.00"
-composecompiler = "1.5.8"
-coroutines = "1.6.4"
+compose-bom = "2024.04.00"
+composecompiler = "1.5.11"
+coroutines = "1.7.3"
 dokka = "1.9.10"
 espresso = "3.5.1"
 jacoco-plugin = "0.2.1"
 jacoco-tool-plugin = "0.8.7"
 junitktx = "1.1.5"
 junit = "4.13.2"
-kotlin = "1.9.22"
+kotlin = "1.9.23"
 material = "1.11.0"
 mapsktx = "5.0.0"
 mapsecrets = "2.0.1"
@@ -25,7 +25,7 @@ androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-androidx-core = { module = "androidx.core:core-ktx", version.require = "1.12.0" }
+androidx-core = { module = "androidx.core:core-ktx", version = "1.12.0" }
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxtest" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
