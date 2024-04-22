@@ -205,7 +205,7 @@ GoogleMap(
 
 ### Shapes
 
-This library offers some simple ways for you to add shapes to your maps in order to customize them. For all shapes, you can customize their appearance by altering a number of properties.
+A shape is an object on the map, tied to a latitude/longitude coordinate. Currently, android-maps-compose offers `Polyline`, `Polygon` and `Circle`. For all shapes, you can customize their appearance by altering a number of properties.
 
 
 #### Polyline
@@ -248,9 +248,7 @@ Polyline(
 A `Polygon` is an enclosed shape that can be used to mark areas on the map:
 
 ```kotlin
-import java.awt.Polygon
-
-val polygonPoints = remember { listOf(singapore8, singapore9, singapore10) }
+val polygonPoints = remember { listOf(singapore1, singapore2, singapore3) }
 
 
 // ... 

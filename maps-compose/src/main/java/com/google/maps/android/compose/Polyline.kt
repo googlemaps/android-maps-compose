@@ -89,7 +89,7 @@ public fun Polyline(
 }
 
 /**
- * A composable for a polyline on the map.
+ * A composable for a polyline on the map that supports a StyleSpan.
  *
  * @param points the points comprising the polyline
  * @param spans style spans for the polyline
