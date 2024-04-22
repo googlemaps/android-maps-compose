@@ -49,6 +49,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
@@ -198,24 +199,11 @@ public fun GoogleMap(
 
                 // Used to observe lifecycle owner's lifecycle state and
                 // to gradually move between states.
-                mapView.tagData().lifecycleRegistry = DerivedLifecycleRegistry(lifecycleOwner) { _, event ->
-                    mapView.log("Invoking $event")
-                    when (event) {
-                        Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
-                        Lifecycle.Event.ON_START -> mapView.onStart()
-                        Lifecycle.Event.ON_RESUME -> mapView.onResume()
-                        Lifecycle.Event.ON_PAUSE -> mapView.onPause()
-                        Lifecycle.Event.ON_STOP -> mapView.onStop()
-                        Lifecycle.Event.ON_DESTROY -> {
-                            mapView.onDestroy()
-                            mapView.tagData().lifecycleRegistry!!.destroy()
-                        }
-                        else -> error("Unsupported Lifecycle.Event: $event")
-                    }
-                }
+                mapView.tagData().lifecycleRegistry = MapViewDerivedLifecycleRegistry(lifecycleOwner, mapView)
             }
         },
         onReset = { mapView ->
+            mapView.log("ON RESET!")
             // View is detached.
             mapView.tagData().lifecycleRegistry!!.overrideLifecycleState(Lifecycle.State.CREATED)
         },
@@ -240,7 +228,10 @@ public fun GoogleMap(
                 mapUpdaterScope.launchComposition(mapView)
             }
 
-            mapView.tagData().lifecycleRegistry!!.clearOverwrittenLifecycleState()
+            mapView.tagData().lifecycleRegistry!!.run {
+                tryUpdateLifecycleOwner(mapView.findViewTreeLifecycleOwner()!!)
+                clearOverwrittenLifecycleState()
+            }
         }
     )
 
@@ -262,23 +253,54 @@ public fun GoogleMap(
  * LifecycleRegistry which observes [lifecycleOwner] and dispatches incoming events.
  * Also supports overriding current state.
  * */
-internal class DerivedLifecycleRegistry(
-    private val lifecycleOwner: LifecycleOwner,
-    private val lifecycleEventObserver: LifecycleEventObserver
+internal abstract class DerivedLifecycleRegistry(
+    lifecycleOwner: LifecycleOwner
 ): LifecycleRegistry(lifecycleOwner) {
     private var lifecycleOwnerState = Lifecycle.State.INITIALIZED
     private var overwrittenLifecycleState: Lifecycle.State? = null
 
-    private val lifecycleObserver = LifecycleEventObserver { _, event ->
-        if(overwrittenLifecycleState == null) {
+    private var currentLifecycleOwner = lifecycleOwner
+
+    private val lifecycleOwnerObserver = LifecycleEventObserver { _, event ->
+        if (event == Event.ON_DESTROY) {
+            // Parent lifecycle reached DESTROYED state. Unregister LifecycleObserver.
+            removeCurrentLifecycleOwnerObserver()
+        }
+        if (overwrittenLifecycleState == null) {
             handleLifecycleEvent(event)
         }
         lifecycleOwnerState = event.targetState
     }
 
-    init {
+    private val lifecycleEventObserver = object : LifecycleEventObserver {
+        override fun onStateChanged(source: LifecycleOwner, event: Event) {
+            if (event == Event.ON_DESTROY) {
+                // This listener has received Event.ON_DESTROY. Won't receive more lifecycle events.
+                this@DerivedLifecycleRegistry.removeObserver(this)
+            }
+            onLifecycleEvent(event)
+        }
+    }
+
+    private fun removeCurrentLifecycleOwnerObserver() {
+        currentLifecycleOwner.lifecycle.removeObserver(lifecycleOwnerObserver)
+    }
+
+    @Synchronized
+    fun tryUpdateLifecycleOwner(lifecycleOwner: LifecycleOwner) {
+        if(lifecycleOwner == currentLifecycleOwner) return
+
+        // There is a new LifecycleOwner. Let's change it.
+        currentLifecycleOwner.lifecycle.removeObserver(lifecycleOwnerObserver)
+        currentLifecycleOwner = lifecycleOwner
+        lifecycleOwner.lifecycle.addObserver(lifecycleOwnerObserver)
+    }
+
+    abstract fun onLifecycleEvent(event: Lifecycle.Event)
+
+    fun initObserver() {
         addObserver(lifecycleEventObserver)
-        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        currentLifecycleOwner.lifecycle.addObserver(lifecycleOwnerObserver)
     }
 
     fun overrideLifecycleState(state: Lifecycle.State) {
@@ -293,9 +315,32 @@ internal class DerivedLifecycleRegistry(
     }
 
     fun destroy() {
-        lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+        currentLifecycleOwner.lifecycle.removeObserver(lifecycleOwnerObserver)
         currentState = Lifecycle.State.DESTROYED
         removeObserver(lifecycleEventObserver)
+    }
+}
+
+internal class MapViewDerivedLifecycleRegistry(
+    lifecycleOwner: LifecycleOwner,
+    private val mapView: MapView
+) : DerivedLifecycleRegistry(lifecycleOwner) {
+
+    init {
+        super.initObserver()
+    }
+
+    override fun onLifecycleEvent(event: Lifecycle.Event) {
+        mapView.log("Invoking $event")
+        when (event) {
+            Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
+            Lifecycle.Event.ON_START -> mapView.onStart()
+            Lifecycle.Event.ON_RESUME -> mapView.onResume()
+            Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+            Lifecycle.Event.ON_STOP -> mapView.onStop()
+            Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
+            else -> error("Unsupported Lifecycle.Event: $event")
+        }
     }
 }
 
