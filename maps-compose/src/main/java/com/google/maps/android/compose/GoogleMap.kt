@@ -372,8 +372,10 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
     @Synchronized
     fun moveToLifecycleState(targetState: Lifecycle.State) {
         while(currentLifecycleState != targetState) {
-            if(targetState < currentLifecycleState) moveBackward()
-            else moveForward()
+            when {
+                currentLifecycleState < targetState -> moveUp()
+                currentLifecycleState > targetState -> moveDown()
+            }
         }
     }
 
