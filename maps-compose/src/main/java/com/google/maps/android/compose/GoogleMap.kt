@@ -60,7 +60,6 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 internal const val TAG = "GoogleMap"
 
@@ -200,18 +199,20 @@ public fun GoogleMap(
 
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
 
-                var lifecycleOwner by Delegates.notNull<LifecycleOwner>()
+                var lifecycleOwner: LifecycleOwner? = null
 
                 fun unregisterLifecycleObserver() {
                     log("Unregistering lifecycle observer")
-                    lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+                    lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
+                    lifecycleOwner = null
                 }
 
                 val attachStateListener = object : View.OnAttachStateChangeListener {
-                    override fun onViewAttachedToWindow(v: View) {
+                    override fun onViewAttachedToWindow(mapView: View) {
                         log("View attached!")
-                        lifecycleOwner = v.findViewTreeLifecycleOwner()!!
-                        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+                        lifecycleOwner = mapView.findViewTreeLifecycleOwner()!!.also {
+                            it.lifecycle.addObserver(lifecycleObserver)
+                        }
                     }
 
                     override fun onViewDetachedFromWindow(v: View) {
