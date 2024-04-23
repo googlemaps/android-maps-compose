@@ -285,9 +285,9 @@ internal data class MapTagData(
 }
 
 // TODO make private
-internal fun MapView.tagData(): MapTagData = tag as? MapTagData ?: run {
+internal fun MapView.tagData(): MapTagData = (tag as? MapTagData) ?: let { mapView ->
     MapTagData(null, null, null).also { newTag ->
-        tag = newTag
+        mapView.tag = newTag
     }
 }
 
