@@ -218,7 +218,7 @@ public fun GoogleMap(
                     override fun onViewDetachedFromWindow(v: View) {
                         log("View detached!")
                         unregisterLifecycleObserver()
-                        lifecycleObserver.moveToLifecycleState(Lifecycle.State.CREATED)
+                        lifecycleObserver.moveToBaseState()
                     }
                 }
 
@@ -362,12 +362,21 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
     private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        if(event == Lifecycle.Event.ON_DESTROY) {
-            // Only destroy from onRelease. Move down to CREATED state.
-            moveToLifecycleState(Lifecycle.State.CREATED)
-            return
+        when (event) {
+            // [mapView.onDestroy] is only invoked from AndroidView->onRelease.
+            Lifecycle.Event.ON_DESTROY -> moveToBaseState()
+            else -> moveToLifecycleState(event.targetState)
         }
-        moveToLifecycleState(event.targetState)
+    }
+
+    /**
+     * Move down to [Lifecycle.State.CREATED] but only if [currentLifecycleState] is actually above that.
+     * It's theoretically possible that [currentLifecycleState] is still in [Lifecycle.State.INITIALIZED] state.
+     * */
+    fun moveToBaseState() {
+        if(currentLifecycleState > Lifecycle.State.CREATED) {
+            moveToLifecycleState(Lifecycle.State.CREATED)
+        }
     }
 
     @Synchronized
