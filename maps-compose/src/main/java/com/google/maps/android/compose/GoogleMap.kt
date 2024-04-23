@@ -377,13 +377,13 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
         }
     }
 
-    private fun moveBackward() {
+    private fun moveDown() {
         val event = Lifecycle.Event.downFrom(currentLifecycleState)
             ?: error("no event down from $currentLifecycleState")
         invokeEvent(event)
     }
 
-    private fun moveForward() {
+    private fun moveUp() {
         val event = Lifecycle.Event.upFrom(currentLifecycleState)
             ?: error("no event up from $currentLifecycleState")
         invokeEvent(event)
