@@ -197,7 +197,9 @@ public fun GoogleMap(
 
                 fun log(msg: String) = mapView.log(msg)
 
-                val lifecycleObserver = MapLifecycleEventObserver(mapView)
+                val lifecycleObserver = MapLifecycleEventObserver(mapView).also {
+                    mapView.tagData().lifecycleObserver = it
+                }
 
                 var lifecycleOwner: LifecycleOwner? = null
 
@@ -223,12 +225,6 @@ public fun GoogleMap(
                 }
 
                 mapView.addOnAttachStateChangeListener(onAttachStateListener)
-
-                mapView.tagData().onRelease = {
-                    unregisterLifecycleObserver()
-                    mapView.removeOnAttachStateChangeListener(onAttachStateListener)
-                    lifecycleObserver.moveToLifecycleState(Lifecycle.State.DESTROYED)
-                }
             }
         },
         onReset = { /* View is detached. */ },
@@ -240,7 +236,7 @@ public fun GoogleMap(
                     tagData.mapViewContext?.unregisterComponentCallbacks(componentCallbacks)
                 }
 
-                tagData.onRelease!!.invoke()
+                tagData.lifecycleObserver!!.moveToDestroyedState()
             }
 
             mapView.tag = null
@@ -279,7 +275,7 @@ private fun MapView.registerAndSaveNewComponentCallbacks(context: Context) {
 internal data class MapTagData(
     var componentCallbacks: ComponentCallbacks?,
     var mapViewContext: Context?,
-    var onRelease: (() -> Unit)?,
+    var lifecycleObserver: MapLifecycleEventObserver?,
     val debugId: Int = nextId
 ) {
     companion object {
@@ -358,7 +354,8 @@ public fun googleMapFactory(
     }
 }
 
-private class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
+// TODO make private
+internal class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
     private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -379,8 +376,14 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
         }
     }
 
+    fun moveToDestroyedState() {
+        if(currentLifecycleState > Lifecycle.State.INITIALIZED) {
+            moveToLifecycleState(Lifecycle.State.DESTROYED)
+        }
+    }
+
     @Synchronized
-    fun moveToLifecycleState(targetState: Lifecycle.State) {
+    private fun moveToLifecycleState(targetState: Lifecycle.State) {
         while(currentLifecycleState != targetState) {
             when {
                 currentLifecycleState < targetState -> moveUp()
