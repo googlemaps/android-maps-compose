@@ -48,7 +48,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
@@ -199,52 +198,7 @@ public fun GoogleMap(
 
                 fun log(msg: String) = mapView.log(msg)
 
-                val lifecycleObserver = object : LifecycleEventObserver {
-                    private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
-
-                    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                        if(event == Lifecycle.Event.ON_DESTROY) {
-                            // Only destroy from onRelease. Move down to CREATED state.
-                            moveToLifecycleState(Lifecycle.State.CREATED)
-                            return
-                        }
-                        moveToLifecycleState(event.targetState)
-                    }
-
-                    @Synchronized
-                    fun moveToLifecycleState(targetState: Lifecycle.State) {
-                        while(currentLifecycleState != targetState) {
-                            if(targetState < currentLifecycleState) moveBackward()
-                            else moveForward()
-                        }
-                    }
-
-                    private fun moveBackward() {
-                        val event = Lifecycle.Event.downFrom(currentLifecycleState)
-                            ?: error("no event down from $currentLifecycleState")
-                        invokeEvent(event)
-                    }
-
-                    private fun moveForward() {
-                        val event = Lifecycle.Event.upFrom(currentLifecycleState)
-                            ?: error("no event up from $currentLifecycleState")
-                        invokeEvent(event)
-                    }
-
-                    private fun invokeEvent(event: Lifecycle.Event) {
-                        log("Invoking Lifecycle event $event")
-                        when(event) {
-                            Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
-                            Lifecycle.Event.ON_START -> mapView.onStart()
-                            Lifecycle.Event.ON_RESUME -> mapView.onResume()
-                            Lifecycle.Event.ON_PAUSE -> mapView.onPause()
-                            Lifecycle.Event.ON_STOP -> mapView.onStop()
-                            Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
-                            else -> error("Unsupported lifecycle event: $event")
-                        }
-                        currentLifecycleState = event.targetState
-                    }
-                }
+                val lifecycleObserver = MapLifecycleEventObserver(mapView)
 
                 var lifecycleOwner by Delegates.notNull<LifecycleOwner>()
 
@@ -403,3 +357,49 @@ public fun googleMapFactory(
     }
 }
 
+private class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
+    private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
+
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        if(event == Lifecycle.Event.ON_DESTROY) {
+            // Only destroy from onRelease. Move down to CREATED state.
+            moveToLifecycleState(Lifecycle.State.CREATED)
+            return
+        }
+        moveToLifecycleState(event.targetState)
+    }
+
+    @Synchronized
+    fun moveToLifecycleState(targetState: Lifecycle.State) {
+        while(currentLifecycleState != targetState) {
+            if(targetState < currentLifecycleState) moveBackward()
+            else moveForward()
+        }
+    }
+
+    private fun moveBackward() {
+        val event = Lifecycle.Event.downFrom(currentLifecycleState)
+            ?: error("no event down from $currentLifecycleState")
+        invokeEvent(event)
+    }
+
+    private fun moveForward() {
+        val event = Lifecycle.Event.upFrom(currentLifecycleState)
+            ?: error("no event up from $currentLifecycleState")
+        invokeEvent(event)
+    }
+
+    private fun invokeEvent(event: Lifecycle.Event) {
+        mapView.log("Invoking Lifecycle event $event")
+        when(event) {
+            Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
+            Lifecycle.Event.ON_START -> mapView.onStart()
+            Lifecycle.Event.ON_RESUME -> mapView.onResume()
+            Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+            Lifecycle.Event.ON_STOP -> mapView.onStop()
+            Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
+            else -> error("Unsupported lifecycle event: $event")
+        }
+        currentLifecycleState = event.targetState
+    }
+}
