@@ -382,7 +382,6 @@ internal class MapLifecycleEventObserver(private val mapView: MapView) : Lifecyc
         }
     }
 
-    @Synchronized
     private fun moveToLifecycleState(targetState: Lifecycle.State) {
         while(currentLifecycleState != targetState) {
             when {
