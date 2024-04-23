@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +63,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.StrokeStyle
+import com.google.android.gms.maps.model.StyleSpan
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 import kotlinx.coroutines.launch
 
@@ -71,7 +74,21 @@ val singapore = LatLng(1.3588227, 103.8742114)
 val singapore2 = LatLng(1.40, 103.77)
 val singapore3 = LatLng(1.45, 103.77)
 val singapore4 = LatLng(1.50, 103.77)
+val singapore5 = LatLng(1.3418, 103.8461)
+val singapore6 = LatLng(1.3430, 103.8844)
+val singapore7 = LatLng(1.3430, 103.9116)
+val singapore8 = LatLng(1.3300, 103.8624)
+val singapore9 = LatLng(1.3200, 103.8541)
+val singapore10 = LatLng(1.3200, 103.8765)
+
 val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
+
+val styleSpan = StyleSpan(
+    StrokeStyle.gradientBuilder(
+        Color.Red.toArgb(),
+        Color.Green.toArgb(),
+    ).build(),
+)
 
 class BasicMapActivity : ComponentActivity() {
 
@@ -122,10 +139,17 @@ fun GoogleMapView(
     val singapore2State = rememberMarkerState(position = singapore2)
     val singapore3State = rememberMarkerState(position = singapore3)
     val singapore4State = rememberMarkerState(position = singapore4)
+
     var circleCenter by remember { mutableStateOf(singapore) }
     if (singaporeState.dragState == DragState.END) {
         circleCenter = singaporeState.position
     }
+
+    val polylinePoints = remember { listOf(singapore, singapore5) }
+    val polylineSpanPoints = remember { listOf(singapore, singapore6, singapore7) }
+    val styleSpanList = remember { listOf(styleSpan) }
+
+    val polygonPoints = remember { listOf(singapore8, singapore9, singapore10) }
 
     var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
     var shouldAnimateZoom by remember { mutableStateOf(true) }
@@ -195,15 +219,32 @@ fun GoogleMapView(
                     )
                 }
             }
+
             Circle(
                 center = circleCenter,
                 fillColor = MaterialTheme.colors.secondary,
                 strokeColor = MaterialTheme.colors.secondaryVariant,
                 radius = 1000.0,
             )
+
+            Polyline(
+                points = polylinePoints,
+                tag = "Polyline A",
+            )
+
+            Polyline(
+                points = polylineSpanPoints,
+                spans = styleSpanList,
+                tag = "Polyline B",
+            )
+
+            Polygon(
+                points = polygonPoints,
+                fillColor = Color.Black.copy(alpha = 0.5f)
+            )
+
             content()
         }
-
     }
     Column {
         MapTypeControls(onMapTypeClick = {
