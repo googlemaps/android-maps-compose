@@ -183,7 +183,7 @@ public fun GoogleMap(
     }
 
     var subcompositionJob by remember { mutableStateOf<Job?>(null) }
-    val mapUpdaterScope = rememberCoroutineScope()
+    val parentCompositionScope = rememberCoroutineScope()
 
     AndroidView(
         modifier = modifier,
@@ -239,7 +239,7 @@ public fun GoogleMap(
             // Create Composition
             if (subcompositionJob == null) {
                 debugMapId = mapView.tagData().debugId
-                subcompositionJob = mapUpdaterScope.launchComposition(mapView)
+                subcompositionJob = parentCompositionScope.launchComposition(mapView)
             }
         }
     )
