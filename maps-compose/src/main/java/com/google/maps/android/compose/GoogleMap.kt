@@ -208,7 +208,6 @@ public fun GoogleMap(
             mapView.tag = null
         },
         update = { mapView ->
-            // Create Composition
             if (subcompositionJob == null) {
                 subcompositionJob = parentCompositionScope.launchComposition(mapView)
             }
