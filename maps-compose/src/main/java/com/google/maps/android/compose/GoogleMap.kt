@@ -127,7 +127,7 @@ public fun GoogleMap(
      * Create and apply the [content] compositions to the map +
      * dispose the [Composition] when the parent composable is disposed.
      * */
-    fun CoroutineScope.launchComposition(mapView: MapView): Job {
+    fun CoroutineScope.launchSubcomposition(mapView: MapView): Job {
         val mapCompositionContent: @Composable () -> Unit = {
             MapUpdater(
                 mergeDescendants = mergeDescendants,
@@ -207,7 +207,7 @@ public fun GoogleMap(
         },
         update = { mapView ->
             if (subcompositionJob == null) {
-                subcompositionJob = parentCompositionScope.launchComposition(mapView)
+                subcompositionJob = parentCompositionScope.launchSubcomposition(mapView)
             }
         }
     )
