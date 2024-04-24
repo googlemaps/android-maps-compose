@@ -156,9 +156,9 @@ public fun GoogleMap(
                 applier = MapApplier(map, mapView, mapClickListeners),
                 parent = parentComposition
             )
-            composition.setContent(mapCompositionContent)
 
             try {
+                composition.setContent(mapCompositionContent)
                 awaitCancellation()
             } finally {
                 composition.dispose()
