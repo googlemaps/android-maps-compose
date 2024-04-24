@@ -148,7 +148,7 @@ public fun GoogleMap(
             }
         }
 
-        // Use [CoroutineStart.UNDISPATCHED] to kick off composition immediately
+        // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
         return launch(start = CoroutineStart.UNDISPATCHED) {
             val map = mapView.awaitMap()
             val composition = Composition(
