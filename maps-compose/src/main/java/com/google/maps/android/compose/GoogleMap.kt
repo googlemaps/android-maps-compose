@@ -172,8 +172,11 @@ public fun GoogleMap(
         modifier = modifier,
         factory = { context ->
             MapView(context, googleMapOptionsFactory()).also { mapView ->
-                val componentCallbacks = mapView.registerComponentCallbacks()
+                val componentCallbacks = MapViewComponentCallbacks(mapView)
+                context.registerComponentCallbacks(componentCallbacks)
+
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
+
                 mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
 
                 // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
@@ -211,16 +214,11 @@ public fun GoogleMap(
     )
 }
 
-private fun MapView.registerComponentCallbacks(): ComponentCallbacks {
-    val componentCallbacks = object : ComponentCallbacks {
-        override fun onConfigurationChanged(config: Configuration) {}
-
-        override fun onLowMemory() {
-            this@registerComponentCallbacks.onLowMemory()
-        }
+private class MapViewComponentCallbacks(private val mapView: MapView) : ComponentCallbacks {
+    override fun onConfigurationChanged(newConfig: Configuration) {}
+    override fun onLowMemory() {
+        mapView.onLowMemory()
     }
-    context.registerComponentCallbacks(componentCallbacks)
-    return componentCallbacks
 }
 
 /** Used to stored things in the tag which must be retrievable across recompositions */
