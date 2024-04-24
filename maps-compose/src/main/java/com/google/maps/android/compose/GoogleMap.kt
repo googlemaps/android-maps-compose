@@ -178,7 +178,6 @@ public fun GoogleMap(
                 val componentCallbacks = mapView.registerComponentCallbacks()
                 // Forward parent and custom lifecycle events to MapView
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
-                // Store things in the tag which must be retrievable across recompositions
                 mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
                 // MapView's parent LifecycleOwner, such as Activity/Fragment
                 var lifecycleOwner: LifecycleOwner? = null
@@ -228,6 +227,7 @@ private fun MapView.registerComponentCallbacks(): ComponentCallbacks {
     return componentCallbacks
 }
 
+/** Used to stored things in the tag which must be retrievable across recompositions */
 private data class MapTagData(
     val componentCallbacks: ComponentCallbacks,
     val lifecycleObserver: MapLifecycleEventObserver
