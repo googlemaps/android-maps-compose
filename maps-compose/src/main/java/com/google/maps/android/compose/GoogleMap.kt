@@ -20,7 +20,6 @@ import android.content.ComponentCallbacks
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -135,7 +134,6 @@ public fun GoogleMap(
 
     // Debug stuff
     val debugCompositionId = remember { compositionCounter++ }
-    var debugMapId: Int? by remember { mutableStateOf(null) }
     var debugIsMapReused: Boolean? by remember { mutableStateOf(null) }
 
     /**
@@ -143,8 +141,6 @@ public fun GoogleMap(
      * dispose the [Composition] when the parent composable is disposed.
      * */
     fun CoroutineScope.launchComposition(mapView: MapView): Job {
-        mapView.log("Creating composition...")
-
         val mapCompositionContent: @Composable () -> Unit = {
             MapUpdater(
                 mergeDescendants = mergeDescendants,
@@ -176,7 +172,6 @@ public fun GoogleMap(
             try {
                 awaitCancellation()
             } finally {
-                mapView.log("Disposing composition...")
                 composition.dispose()
             }
         }
@@ -190,28 +185,21 @@ public fun GoogleMap(
         factory = { context ->
             debugIsMapReused = false
             MapView(context, googleMapOptionsFactory()).also { mapView ->
-                mapView.log("Creating MapView")
-                mapView.registerAndSaveNewComponentCallbacks()
+                val componentCallbacks = mapView.registerComponentCallbacks()
+                val lifecycleObserver = MapLifecycleEventObserver(mapView)
 
-                fun log(msg: String) = mapView.log(msg)
-
-                val lifecycleObserver = MapLifecycleEventObserver(mapView).also {
-                    mapView.tagData().lifecycleObserver = it
-                }
+                mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
 
                 var lifecycleOwner: LifecycleOwner? = null
 
                 val onAttachStateListener = object : View.OnAttachStateChangeListener {
                     override fun onViewAttachedToWindow(mapView: View) {
-                        log("View attached!")
                         lifecycleOwner = mapView.findViewTreeLifecycleOwner()!!.also {
                             it.lifecycle.addObserver(lifecycleObserver)
                         }
                     }
 
                     override fun onViewDetachedFromWindow(v: View) {
-                        log("View detached!")
-                        log("Unregistering lifecycle observer")
                         lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
                         lifecycleOwner = null
                         lifecycleObserver.moveToBaseState()
@@ -223,22 +211,14 @@ public fun GoogleMap(
         },
         onReset = { /* View is detached. */ },
         onRelease = { mapView ->
-            mapView.log("onRelease")
-
-            mapView.tagData().let { tagData ->
-                tagData.componentCallbacks?.let { componentCallbacks ->
-                    mapView.context.unregisterComponentCallbacks(componentCallbacks)
-                }
-
-                tagData.lifecycleObserver!!.moveToDestroyedState()
-            }
-
+            val (componentCallbacks, lifecycleObserver) = mapView.tagData()
+            mapView.context.unregisterComponentCallbacks(componentCallbacks)
+            lifecycleObserver.moveToDestroyedState()
             mapView.tag = null
         },
         update = { mapView ->
             // Create Composition
             if (subcompositionJob == null) {
-                debugMapId = mapView.tagData().debugId
                 subcompositionJob = parentCompositionScope.launchComposition(mapView)
             }
         }
@@ -252,44 +232,28 @@ public fun GoogleMap(
         ) {
             Text("Map reused: $debugIsMapReused")
             Text("Composition ID: $debugCompositionId")
-            Text("MapView ID: $debugMapId")
         }
     }
 }
 
-private fun MapView.registerAndSaveNewComponentCallbacks() {
-    val newComponentCallbacks = object : ComponentCallbacks {
+private fun MapView.registerComponentCallbacks(): ComponentCallbacks {
+    val componentCallbacks = object : ComponentCallbacks {
         override fun onConfigurationChanged(config: Configuration) {}
 
         override fun onLowMemory() {
-            this@registerAndSaveNewComponentCallbacks.onLowMemory()
+            this@registerComponentCallbacks.onLowMemory()
         }
     }
-    val tagData = tagData()
-    tagData.componentCallbacks = newComponentCallbacks
-    context.registerComponentCallbacks(newComponentCallbacks)
+    context.registerComponentCallbacks(componentCallbacks)
+    return componentCallbacks
 }
 
 private data class MapTagData(
-    var componentCallbacks: ComponentCallbacks?,
-    var lifecycleObserver: MapLifecycleEventObserver?,
-    val debugId: Int = nextId
-) {
-    companion object {
-        private var nextId = 0
-            get() = field++
-    }
-}
+    val componentCallbacks: ComponentCallbacks,
+    val lifecycleObserver: MapLifecycleEventObserver
+)
 
-private fun MapView.tagData(): MapTagData = (tag as? MapTagData) ?: let { mapView ->
-    MapTagData(null, null).also { newTag ->
-        mapView.tag = newTag
-    }
-}
-
-internal fun MapView.log(msg: String, tag: String = TAG) {
-    Log.d(tag, "[MapView/${tagData().debugId}] $msg")
-}
+private fun MapView.tagData(): MapTagData = tag as MapTagData
 
 public typealias GoogleMapFactory = @Composable () -> Unit
 
@@ -379,7 +343,6 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
     }
 
     private fun invokeEvent(event: Lifecycle.Event) {
-        mapView.log("Invoking Lifecycle event $event")
         when(event) {
             Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
             Lifecycle.Event.ON_START -> mapView.onStart()
