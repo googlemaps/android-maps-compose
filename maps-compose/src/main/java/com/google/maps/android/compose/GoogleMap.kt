@@ -202,7 +202,7 @@ public fun GoogleMap(
         },
         onReset = { /* View is detached. */ },
         onRelease = { mapView ->
-            val (componentCallbacks, lifecycleObserver) = mapView.tagData()
+            val (componentCallbacks, lifecycleObserver) = mapView.tagData
             mapView.context.unregisterComponentCallbacks(componentCallbacks)
             lifecycleObserver.moveToDestroyedState()
             mapView.tag = null
@@ -232,7 +232,8 @@ private data class MapTagData(
     val lifecycleObserver: MapLifecycleEventObserver
 )
 
-private fun MapView.tagData(): MapTagData = tag as MapTagData
+private val MapView.tagData: MapTagData
+    get() = tag as MapTagData
 
 public typealias GoogleMapFactory = @Composable () -> Unit
 
