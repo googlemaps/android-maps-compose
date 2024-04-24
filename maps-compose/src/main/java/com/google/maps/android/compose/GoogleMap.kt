@@ -290,19 +290,19 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
      * It's theoretically possible that [currentLifecycleState] is still in [Lifecycle.State.INITIALIZED] state.
      * */
     fun moveToBaseState() {
-        if(currentLifecycleState > Lifecycle.State.CREATED) {
+        if (currentLifecycleState > Lifecycle.State.CREATED) {
             moveToLifecycleState(Lifecycle.State.CREATED)
         }
     }
 
     fun moveToDestroyedState() {
-        if(currentLifecycleState > Lifecycle.State.INITIALIZED) {
+        if (currentLifecycleState > Lifecycle.State.INITIALIZED) {
             moveToLifecycleState(Lifecycle.State.DESTROYED)
         }
     }
 
     private fun moveToLifecycleState(targetState: Lifecycle.State) {
-        while(currentLifecycleState != targetState) {
+        while (currentLifecycleState != targetState) {
             when {
                 currentLifecycleState < targetState -> moveUp()
                 currentLifecycleState > targetState -> moveDown()
@@ -323,7 +323,7 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
     }
 
     private fun invokeEvent(event: Lifecycle.Event) {
-        when(event) {
+        when (event) {
             Lifecycle.Event.ON_CREATE -> mapView.onCreate(Bundle())
             Lifecycle.Event.ON_START -> mapView.onStart()
             Lifecycle.Event.ON_RESUME -> mapView.onResume()

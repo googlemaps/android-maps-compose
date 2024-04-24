@@ -102,7 +102,7 @@ class MapsInLazyColumnActivity : ComponentActivity() {
                         Text(text = "Remove")
                     }
                     TextButton(onClick = { showLazyColumn = !showLazyColumn }) {
-                        Text(text = if(showLazyColumn) "Hide" else "Show")
+                        Text(text = if (showLazyColumn) "Hide" else "Show")
                     }
                     TextButton(onClick = { setItemCount(visibleItems.size + 1) }) {
                         Text(text = "Add")
@@ -111,7 +111,7 @@ class MapsInLazyColumnActivity : ComponentActivity() {
                         Text(text = "Fill")
                     }
                 }
-                if(showLazyColumn) {
+                if (showLazyColumn) {
                     Box(Modifier.border(1.dp, Color.LightGray.copy(0.5f))) {
                         MapsInLazyColumn(visibleItems)
                     }
