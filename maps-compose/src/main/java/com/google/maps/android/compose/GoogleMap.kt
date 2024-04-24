@@ -22,10 +22,7 @@ import android.location.Location
 import android.os.Bundle
 import android.view.View
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionLocalProvider
@@ -36,10 +33,8 @@ import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -58,8 +53,6 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 
 internal const val TAG = "GoogleMap"
-
-private var compositionCounter = 0
 
 /**
  * A compose container for a [MapView].
@@ -132,10 +125,6 @@ public fun GoogleMap(
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
 
-    // Debug stuff
-    val debugCompositionId = remember { compositionCounter++ }
-    var debugIsMapReused: Boolean? by remember { mutableStateOf(null) }
-
     /**
      * Create and apply the [content] compositions to the map +
      * dispose the [Composition] when the parent composable is disposed.
@@ -183,7 +172,6 @@ public fun GoogleMap(
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            debugIsMapReused = false
             MapView(context, googleMapOptionsFactory()).also { mapView ->
                 val componentCallbacks = mapView.registerComponentCallbacks()
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
@@ -223,17 +211,6 @@ public fun GoogleMap(
             }
         }
     )
-
-    Box(modifier = modifier) {
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(8.dp)
-        ) {
-            Text("Map reused: $debugIsMapReused")
-            Text("Composition ID: $debugCompositionId")
-        }
-    }
 }
 
 private fun MapView.registerComponentCallbacks(): ComponentCallbacks {
