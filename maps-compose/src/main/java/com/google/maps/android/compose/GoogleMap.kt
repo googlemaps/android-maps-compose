@@ -217,7 +217,7 @@ public fun GoogleMap(
     )
 }
 
-/** Used to stored things in the tag which must be retrievable across recompositions */
+/** Used to store things in the tag which must be retrievable across recompositions */
 private data class MapTagData(
     val componentCallbacks: ComponentCallbacks,
     val lifecycleObserver: MapLifecycleEventObserver
