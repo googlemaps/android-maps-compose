@@ -17,7 +17,6 @@
 package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
-import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
@@ -136,8 +135,6 @@ public fun GoogleMap(
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
 
-    val context = LocalContext.current
-
     // Debug stuff
     val debugCompositionId = remember { compositionCounter++ }
     var debugMapId: Int? by remember { mutableStateOf(null) }
@@ -189,11 +186,11 @@ public fun GoogleMap(
 
     AndroidView(
         modifier = modifier,
-        factory = {
+        factory = { context ->
             debugIsMapReused = false
             MapView(context, googleMapOptionsFactory()).also { mapView ->
                 mapView.log("Creating MapView")
-                mapView.registerAndSaveNewComponentCallbacks(context)
+                mapView.registerAndSaveNewComponentCallbacks()
 
                 fun log(msg: String) = mapView.log(msg)
 
@@ -233,7 +230,7 @@ public fun GoogleMap(
 
             mapView.tagData().let { tagData ->
                 tagData.componentCallbacks?.let { componentCallbacks ->
-                    tagData.mapViewContext?.unregisterComponentCallbacks(componentCallbacks)
+                    mapView.context.unregisterComponentCallbacks(componentCallbacks)
                 }
 
                 tagData.lifecycleObserver!!.moveToDestroyedState()
@@ -264,17 +261,15 @@ public fun GoogleMap(
     }
 }
 
-private fun MapView.registerAndSaveNewComponentCallbacks(context: Context) {
+private fun MapView.registerAndSaveNewComponentCallbacks() {
     val newComponentCallbacks = this.componentCallbacks()
     val tagData = tagData()
     tagData.componentCallbacks = newComponentCallbacks
-    tagData.mapViewContext = context
     context.registerComponentCallbacks(newComponentCallbacks)
 }
 
 internal data class MapTagData(
     var componentCallbacks: ComponentCallbacks?,
-    var mapViewContext: Context?,
     var lifecycleObserver: MapLifecycleEventObserver?,
     val debugId: Int = nextId
 ) {
@@ -287,6 +282,7 @@ internal data class MapTagData(
 // TODO make private
 internal fun MapView.tagData(): MapTagData = (tag as? MapTagData) ?: let { mapView ->
     MapTagData(null, null, null).also { newTag ->
+    MapTagData(null, null).also { newTag ->
         mapView.tag = newTag
     }
 }
