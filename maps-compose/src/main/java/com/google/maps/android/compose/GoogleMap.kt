@@ -167,9 +167,12 @@ public fun GoogleMap(
         }
 
         return launch(start = CoroutineStart.UNDISPATCHED) {
-            val composition = mapView.createComposition(mapClickListeners, parentComposition).apply {
-                setContent(mapCompositionContent)
-            }
+            val map = mapView.awaitMap()
+            val composition = Composition(
+                applier = MapApplier(map, mapView, mapClickListeners),
+                parent = parentComposition
+            )
+            composition.setContent(mapCompositionContent)
 
             try {
                 awaitCancellation()
@@ -288,17 +291,6 @@ private fun MapView.tagData(): MapTagData = (tag as? MapTagData) ?: let { mapVie
     MapTagData(null, null).also { newTag ->
         mapView.tag = newTag
     }
-}
-
-private suspend fun MapView.createComposition(
-    mapClickListeners: MapClickListeners,
-    parentComposition: CompositionContext
-): Composition {
-    val map = awaitMap()
-    return Composition(
-        applier = MapApplier(map, this, mapClickListeners),
-        parent = parentComposition
-    )
 }
 
 internal fun MapView.log(msg: String, tag: String = TAG) {
