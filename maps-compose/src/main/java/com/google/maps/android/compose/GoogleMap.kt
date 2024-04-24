@@ -173,13 +173,16 @@ public fun GoogleMap(
         modifier = modifier,
         factory = { context ->
             MapView(context, googleMapOptionsFactory()).also { mapView ->
+                // Register ComponentCallbacks so that MapView is notified on low memory
                 val componentCallbacks = mapView.registerComponentCallbacks()
+                // Forward parent and custom lifecycle events to MapView
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
-
+                // Store things in the tag which must be retrievable across recompositions
                 mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
-
+                // MapView's parent LifecycleOwner, such as Activity/Fragment
                 var lifecycleOwner: LifecycleOwner? = null
 
+                // Only register for [lifecycleObserver]'s lifecycle events when MapView is attached
                 val onAttachStateListener = object : View.OnAttachStateChangeListener {
                     override fun onViewAttachedToWindow(mapView: View) {
                         lifecycleOwner = mapView.findViewTreeLifecycleOwner()!!.also {
