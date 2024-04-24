@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-@file:Suppress("RemoveRedundantQualifierName")
-
 package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
