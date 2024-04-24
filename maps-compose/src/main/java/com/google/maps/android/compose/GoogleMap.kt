@@ -184,17 +184,17 @@ public fun GoogleMap(
 
                 // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
                 val onAttachStateListener = object : View.OnAttachStateChangeListener {
-                    private var lifecycleOwner: LifecycleOwner? = null
+                    private var lifecycle: Lifecycle? = null
 
                     override fun onViewAttachedToWindow(mapView: View) {
-                        lifecycleOwner = mapView.findViewTreeLifecycleOwner()!!.also {
-                            it.lifecycle.addObserver(lifecycleObserver)
+                        lifecycle = mapView.findViewTreeLifecycleOwner()!!.lifecycle.also {
+                            it.addObserver(lifecycleObserver)
                         }
                     }
 
                     override fun onViewDetachedFromWindow(v: View) {
-                        lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
-                        lifecycleOwner = null
+                        lifecycle?.removeObserver(lifecycleObserver)
+                        lifecycle = null
                         lifecycleObserver.moveToBaseState()
                     }
                 }
