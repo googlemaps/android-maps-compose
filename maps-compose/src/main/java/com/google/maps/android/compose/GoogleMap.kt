@@ -268,7 +268,7 @@ private fun MapView.registerAndSaveNewComponentCallbacks() {
     context.registerComponentCallbacks(newComponentCallbacks)
 }
 
-internal data class MapTagData(
+private data class MapTagData(
     var componentCallbacks: ComponentCallbacks?,
     var lifecycleObserver: MapLifecycleEventObserver?,
     val debugId: Int = nextId
@@ -279,9 +279,7 @@ internal data class MapTagData(
     }
 }
 
-// TODO make private
-internal fun MapView.tagData(): MapTagData = (tag as? MapTagData) ?: let { mapView ->
-    MapTagData(null, null, null).also { newTag ->
+private fun MapView.tagData(): MapTagData = (tag as? MapTagData) ?: let { mapView ->
     MapTagData(null, null).also { newTag ->
         mapView.tag = newTag
     }
@@ -350,8 +348,7 @@ public fun googleMapFactory(
     }
 }
 
-// TODO make private
-internal class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
+private class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
     private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
