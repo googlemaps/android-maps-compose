@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
-import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -183,7 +182,7 @@ public fun GoogleMap(
         }
     }
 
-    var isCompositionSet by remember { mutableStateOf(false) }
+    var subcompositionJob by remember { mutableStateOf<Job?>(null) }
     val mapUpdaterScope = rememberCoroutineScope()
 
     AndroidView(
@@ -238,10 +237,9 @@ public fun GoogleMap(
         },
         update = { mapView ->
             // Create Composition
-            if (!isCompositionSet) {
-                isCompositionSet = true
+            if (subcompositionJob == null) {
                 debugMapId = mapView.tagData().debugId
-                mapUpdaterScope.launchComposition(mapView)
+                subcompositionJob = mapUpdaterScope.launchComposition(mapView)
             }
         }
     )
