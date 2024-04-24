@@ -202,12 +202,6 @@ public fun GoogleMap(
 
                 var lifecycleOwner: LifecycleOwner? = null
 
-                fun unregisterLifecycleObserver() {
-                    log("Unregistering lifecycle observer")
-                    lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
-                    lifecycleOwner = null
-                }
-
                 val onAttachStateListener = object : View.OnAttachStateChangeListener {
                     override fun onViewAttachedToWindow(mapView: View) {
                         log("View attached!")
@@ -218,7 +212,9 @@ public fun GoogleMap(
 
                     override fun onViewDetachedFromWindow(v: View) {
                         log("View detached!")
-                        unregisterLifecycleObserver()
+                        log("Unregistering lifecycle observer")
+                        lifecycleOwner?.lifecycle?.removeObserver(lifecycleObserver)
+                        lifecycleOwner = null
                         lifecycleObserver.moveToBaseState()
                     }
                 }
