@@ -176,7 +176,7 @@ public fun GoogleMap(
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
                 mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
 
-                // Only register for [lifecycleObserver]'s lifecycle events when MapView is attached
+                // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
                 val onAttachStateListener = object : View.OnAttachStateChangeListener {
                     private var lifecycleOwner: LifecycleOwner? = null
 
