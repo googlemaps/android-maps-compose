@@ -261,7 +261,13 @@ public fun GoogleMap(
 }
 
 private fun MapView.registerAndSaveNewComponentCallbacks() {
-    val newComponentCallbacks = this.componentCallbacks()
+    val newComponentCallbacks = object : ComponentCallbacks {
+        override fun onConfigurationChanged(config: Configuration) {}
+
+        override fun onLowMemory() {
+            this@registerAndSaveNewComponentCallbacks.onLowMemory()
+        }
+    }
     val tagData = tagData()
     tagData.componentCallbacks = newComponentCallbacks
     context.registerComponentCallbacks(newComponentCallbacks)
@@ -298,15 +304,6 @@ private suspend fun MapView.createComposition(
 internal fun MapView.log(msg: String, tag: String = TAG) {
     Log.d(tag, "[MapView/${tagData().debugId}] $msg")
 }
-
-private fun MapView.componentCallbacks(): ComponentCallbacks =
-    object : ComponentCallbacks {
-        override fun onConfigurationChanged(config: Configuration) {}
-
-        override fun onLowMemory() {
-            this@componentCallbacks.onLowMemory()
-        }
-    }
 
 public typealias GoogleMapFactory = @Composable () -> Unit
 
