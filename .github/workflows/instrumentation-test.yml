@@ -26,7 +26,7 @@ on:
 
 jobs:
   run-instrumentation-test:
-    runs-on: macOS-latest # enables hardware acceleration in the virtual machine
+    runs-on: macOS-latest-large # enables hardware acceleration in the virtual machine
     timeout-minutes: 30
     steps:
     - name: Checkout Repo
