@@ -1,8 +1,8 @@
 [versions]
-activitycompose = "1.8.2"
-agp = "8.3.2"
+activitycompose = "1.9.0"
+agp = "8.4.0"
 androidxtest = "1.5.0"
-compose-bom = "2024.04.00"
+compose-bom = "2024.04.01"
 composecompiler = "1.5.11"
 coroutines = "1.7.3"
 dokka = "1.9.10"
@@ -25,7 +25,7 @@ androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-androidx-core = { module = "androidx.core:core-ktx", version = "1.12.0" }
+androidx-core = { module = "androidx.core:core-ktx", version = "1.13.0" }
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxtest" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
