@@ -20,7 +20,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -34,14 +36,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.widgets.DarkGray
 import com.google.maps.android.compose.widgets.DisappearingScaleBar
 import com.google.maps.android.compose.widgets.ScaleBar
-
-private const val TAG = "ScaleBarActivity"
-
-private const val zoom = 8f
 
 class ScaleBarActivity : ComponentActivity() {
 
@@ -56,6 +53,9 @@ class ScaleBarActivity : ComponentActivity() {
                 position = defaultCameraPosition
             }
 
+            val scaleBackground = MaterialTheme.colors.background.copy(alpha = 0.4f)
+            val scaleBorderStroke = BorderStroke(width = 1.dp, DarkGray.copy(alpha = 0.2f))
+
             Box(Modifier.fillMaxSize()) {
                 GoogleMap(
                     modifier = Modifier.matchParentSize(),
@@ -64,18 +64,45 @@ class ScaleBarActivity : ComponentActivity() {
                         isMapLoaded = true
                     }
                 )
-                DisappearingScaleBar(
+
+                Box(
                     modifier = Modifier
-                        .padding(top = 5.dp, start = 10.dp)
-                        .align(Alignment.TopStart),
-                    cameraPositionState = cameraPositionState
-                )
-                ScaleBar(
+                        .padding(top = 5.dp, start = 5.dp)
+                        .align(Alignment.TopStart)
+                        .background(
+                            scaleBackground,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                        .border(
+                            scaleBorderStroke,
+                            shape = MaterialTheme.shapes.medium
+                        ),
+                ) {
+                    DisappearingScaleBar(
+                        modifier = Modifier.padding(end = 4.dp),
+                        cameraPositionState = cameraPositionState
+                    )
+                }
+
+                Box(
                     modifier = Modifier
-                        .padding(top = 5.dp, end = 15.dp)
-                        .align(Alignment.TopEnd),
-                    cameraPositionState = cameraPositionState
-                )
+                        .padding(top = 5.dp, end = 5.dp)
+                        .align(Alignment.TopEnd)
+                        .background(
+                            scaleBackground,
+                            shape = MaterialTheme.shapes.medium,
+                        )
+                        .border(
+                            scaleBorderStroke,
+                            shape = MaterialTheme.shapes.medium
+                        ),
+                    ) {
+                    ScaleBar(
+                        modifier = Modifier.padding(end = 4.dp),
+                        cameraPositionState = cameraPositionState
+                    )
+
+                }
                 if (!isMapLoaded) {
                     AnimatedVisibility(
                         modifier = Modifier

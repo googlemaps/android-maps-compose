@@ -32,7 +32,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.End
@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -76,7 +77,7 @@ public fun ScaleBar(
             .size(width = width, height = height)
     ) {
         var horizontalLineWidthMeters by remember {
-            mutableStateOf(0)
+            mutableIntStateOf(0)
         }
 
         Canvas(
@@ -249,6 +250,7 @@ private fun ScaleText(
         fontSize = 12.sp,
         color = textColor,
         textAlign = TextAlign.End,
+        lineHeight = 1.em,
         modifier = modifier,
         style = MaterialTheme.typography.h4.copy(
             shadow = Shadow(
