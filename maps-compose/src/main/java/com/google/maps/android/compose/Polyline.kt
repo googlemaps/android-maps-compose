@@ -15,7 +15,7 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeNode
+import androidx.compose.runtime.ReusableComposeNode
 import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -176,7 +176,7 @@ private fun PolylineImpl(
     onClick: (Polyline) -> Unit = {},
 ) {
     val mapApplier = currentComposer.applier as MapApplier?
-    ComposeNode<PolylineNode, MapApplier>(
+    ReusableComposeNode<PolylineNode, MapApplier>(
         factory = {
             val polyline = mapApplier?.map?.addPolyline {
                 addAll(points)

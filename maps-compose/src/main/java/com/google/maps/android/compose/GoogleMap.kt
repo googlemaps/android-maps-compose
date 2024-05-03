@@ -21,12 +21,12 @@ import android.os.Bundle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.ReusableComposition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -148,7 +148,7 @@ public fun GoogleMap(
     }
 }
 
-internal suspend inline fun disposingComposition(factory: () -> Composition) {
+internal suspend inline fun disposingComposition(factory: () -> ReusableComposition) {
     val composition = factory()
     try {
         awaitCancellation()
@@ -161,12 +161,12 @@ private suspend inline fun MapView.newComposition(
     parent: CompositionContext,
     mapClickListeners: MapClickListeners,
     noinline content: @Composable () -> Unit
-): Composition {
+): ReusableComposition {
     val map = awaitMap()
-    return Composition(
+    return ReusableComposition(
         MapApplier(map, this, mapClickListeners), parent
     ).apply {
-        setContent(content)
+        setContentWithReuse(content)
     }
 }
 

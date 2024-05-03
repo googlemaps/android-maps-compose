@@ -24,6 +24,7 @@ import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.ReusableComposition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -134,10 +135,10 @@ private fun StreetViewLifecycle(streetView: StreetViewPanoramaView) {
 private suspend inline fun StreetViewPanoramaView.newComposition(
     parent: CompositionContext,
     noinline content: @Composable () -> Unit
-): Composition {
+): ReusableComposition {
     val panorama = awaitStreetViewPanorama()
     Log.d("StreetView", "Location is ${panorama.location}")
-    return Composition(
+    return ReusableComposition(
         StreetViewPanoramaApplier(panorama), parent
     ).apply {
         setContent(content)
