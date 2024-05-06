@@ -628,7 +628,6 @@ public fun AdvancedMarker(
 @Composable
 @GoogleMapComposable
 private fun AdvancedMarkerImpl(
-
     state: MarkerState = rememberMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -663,6 +662,17 @@ private fun AdvancedMarkerImpl(
     } else if (pinConfig != null) {
         advancedMarkerOptions.icon(BitmapDescriptorFactory.fromPinConfig(pinConfig))
     }
+    advancedMarkerOptions.alpha(alpha)
+    advancedMarkerOptions.anchor(anchor.x, anchor.y)
+    advancedMarkerOptions.draggable(draggable)
+    advancedMarkerOptions.flat(flat)
+    advancedMarkerOptions.infoWindowAnchor(infoWindowAnchor.x, infoWindowAnchor.y)
+    advancedMarkerOptions.position(state.position)
+    advancedMarkerOptions.rotation(rotation)
+    advancedMarkerOptions.snippet(snippet)
+    advancedMarkerOptions.title(title)
+    advancedMarkerOptions.visible(visible)
+    advancedMarkerOptions.zIndex(zIndex)
 
     ComposeNode<MarkerNode, MapApplier>(
         factory = {
