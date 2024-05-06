@@ -497,29 +497,29 @@ private fun MarkerImpl(
             update(infoContent) { this.infoContent = it }
             update(infoWindow) { this.infoWindow = it }
 
-            set(alpha) { this.marker.alpha = it }
-            set(anchor) { this.marker.setAnchor(it.x, it.y) }
-            set(draggable) { this.marker.isDraggable = it }
-            set(flat) { this.marker.isFlat = it }
-            set(icon) { this.marker.setIcon(it) }
-            set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
-            set(state.position) { this.marker.position = it }
-            set(rotation) { this.marker.rotation = it }
-            set(snippet) {
+            update(alpha) { this.marker.alpha = it }
+            update(anchor) { this.marker.setAnchor(it.x, it.y) }
+            update(draggable) { this.marker.isDraggable = it }
+            update(flat) { this.marker.isFlat = it }
+            update(icon) { this.marker.setIcon(it) }
+            update(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
+            update(state.position) { this.marker.position = it }
+            update(rotation) { this.marker.rotation = it }
+            update(snippet) {
                 this.marker.snippet = it
                 if (this.marker.isInfoWindowShown) {
                     this.marker.showInfoWindow()
                 }
             }
-            set(tag) { this.marker.tag = it }
-            set(title) {
+            update(tag) { this.marker.tag = it }
+            update(title) {
                 this.marker.title = it
                 if (this.marker.isInfoWindowShown) {
                     this.marker.showInfoWindow()
                 }
             }
-            set(visible) { this.marker.isVisible = it }
-            set(zIndex) { this.marker.zIndex = it }
+            update(visible) { this.marker.isVisible = it }
+            update(zIndex) { this.marker.zIndex = it }
         }
     )
 }
@@ -689,27 +689,27 @@ private fun AdvancedMarkerImpl(
             update(infoContent) { this.infoContent = it }
             update(infoWindow) { this.infoWindow = it }
 
-            set(alpha) { this.marker.alpha = it }
-            set(anchor) { this.marker.setAnchor(it.x, it.y) }
-            set(draggable) { this.marker.isDraggable = it }
-            set(flat) { this.marker.isFlat = it }
-            set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
-            set(state.position) { this.marker.position = it }
-            set(rotation) { this.marker.rotation = it }
-            set(snippet) {
+            update(alpha) { this.marker.alpha = it }
+            update(anchor) { this.marker.setAnchor(it.x, it.y) }
+            update(draggable) { this.marker.isDraggable = it }
+            update(flat) { this.marker.isFlat = it }
+            update(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
+            update(state.position) { this.marker.position = it }
+            update(rotation) { this.marker.rotation = it }
+            update(snippet) {
                 this.marker.snippet = it
                 if (this.marker.isInfoWindowShown) {
                     this.marker.showInfoWindow()
                 }
             }
-            set(tag) { this.marker.tag = it }
-            set(title) {
+            update(tag) { this.marker.tag = it }
+            update(title) {
                 this.marker.title = it
                 if (this.marker.isInfoWindowShown) {
                     this.marker.showInfoWindow()
                 }
             }
-            set(pinConfig) {
+            update(pinConfig) {
                 if (iconView == null) {
                     this.marker.setIcon(pinConfig?.let { it1 ->
                         BitmapDescriptorFactory.fromPinConfig(
@@ -719,8 +719,8 @@ private fun AdvancedMarkerImpl(
                 }
             }
 
-            set(visible) { this.marker.isVisible = it }
-            set(zIndex) { this.marker.zIndex = it }
+            update(visible) { this.marker.isVisible = it }
+            update(zIndex) { this.marker.zIndex = it }
         }
     )
 }

@@ -84,16 +84,16 @@ public fun Circle(
         update = {
             update(onClick) { this.onCircleClick = it }
 
-            set(center) { this.circle.center = it }
-            set(clickable) { this.circle.isClickable = it }
-            set(fillColor) { this.circle.fillColor = it.toArgb() }
-            set(radius) { this.circle.radius = it }
-            set(strokeColor) { this.circle.strokeColor = it.toArgb() }
-            set(strokePattern) { this.circle.strokePattern = it }
-            set(strokeWidth) { this.circle.strokeWidth = it }
-            set(tag) { this.circle.tag = it }
-            set(visible) { this.circle.isVisible = it }
-            set(zIndex) { this.circle.zIndex = it }
+            update(center) { this.circle.center = it }
+            update(clickable) { this.circle.isClickable = it }
+            update(fillColor) { this.circle.fillColor = it.toArgb() }
+            update(radius) { this.circle.radius = it }
+            update(strokeColor) { this.circle.strokeColor = it.toArgb() }
+            update(strokePattern) { this.circle.strokePattern = it }
+            update(strokeWidth) { this.circle.strokeWidth = it }
+            update(tag) { this.circle.tag = it }
+            update(visible) { this.circle.isVisible = it }
+            update(zIndex) { this.circle.zIndex = it }
         }
     )
 }
