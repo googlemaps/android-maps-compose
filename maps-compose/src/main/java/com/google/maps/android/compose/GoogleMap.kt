@@ -50,8 +50,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
 
-internal const val TAG = "GoogleMap"
-
 /**
  * A compose container for a [MapView].
  *
