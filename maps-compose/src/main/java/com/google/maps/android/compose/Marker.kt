@@ -133,9 +133,9 @@ public fun rememberMarkerState(
 
 /**
  * A composable for a marker on the map.
- * @param contentDescription the content description for accessibility purposes
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param contentDescription the content description for accessibility purposes
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -156,8 +156,8 @@ public fun rememberMarkerState(
 @Composable
 @GoogleMapComposable
 public fun Marker(
-    contentDescription: String? = "",
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -176,8 +176,8 @@ public fun Marker(
     onInfoWindowLongClick: (Marker) -> Unit = {},
 ) {
     MarkerImpl(
-        contentDescription = contentDescription,
         state = state,
+        contentDescription = contentDescription,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -203,7 +203,8 @@ public fun Marker(
  * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
  * trigger a rendering of the content composable and thus the rendering of an updated marker.
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
+ * @param contentDescription the content description for accessibility purposes
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -226,6 +227,7 @@ public fun Marker(
 public fun MarkerComposable(
     vararg keys: Any,
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -247,6 +249,7 @@ public fun MarkerComposable(
 
     MarkerImpl(
         state = state,
+        contentDescription = contentDescription,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -272,7 +275,7 @@ public fun MarkerComposable(
  * [com.google.maps.android.compose.Marker].
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -342,7 +345,7 @@ public fun MarkerInfoWindow(
  * [com.google.maps.android.compose.Marker].
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -410,7 +413,8 @@ public fun MarkerInfoWindowContent(
  * Internal implementation for a marker on a Google map.
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
+ * @param contentDescription the content description for accessibility purposes
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -436,8 +440,8 @@ public fun MarkerInfoWindowContent(
 @Composable
 @GoogleMapComposable
 private fun MarkerImpl(
-    contentDescription: String? = "",
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -497,29 +501,29 @@ private fun MarkerImpl(
             update(infoContent) { this.infoContent = it }
             update(infoWindow) { this.infoWindow = it }
 
-            set(alpha) { this.marker.alpha = it }
-            set(anchor) { this.marker.setAnchor(it.x, it.y) }
-            set(draggable) { this.marker.isDraggable = it }
-            set(flat) { this.marker.isFlat = it }
-            set(icon) { this.marker.setIcon(it) }
-            set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
-            set(state.position) { this.marker.position = it }
-            set(rotation) { this.marker.rotation = it }
-            set(snippet) {
+            update(alpha) { this.marker.alpha = it }
+            update(anchor) { this.marker.setAnchor(it.x, it.y) }
+            update(draggable) { this.marker.isDraggable = it }
+            update(flat) { this.marker.isFlat = it }
+            update(icon) { this.marker.setIcon(it) }
+            update(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
+            update(state.position) { this.marker.position = it }
+            update(rotation) { this.marker.rotation = it }
+            update(snippet) {
                 this.marker.snippet = it
                 if (this.marker.isInfoWindowShown) {
                     this.marker.showInfoWindow()
                 }
             }
-            set(tag) { this.marker.tag = it }
-            set(title) {
+            update(tag) { this.marker.tag = it }
+            update(title) {
                 this.marker.title = it
                 if (this.marker.isInfoWindowShown) {
                     this.marker.showInfoWindow()
                 }
             }
-            set(visible) { this.marker.isVisible = it }
-            set(zIndex) { this.marker.zIndex = it }
+            update(visible) { this.marker.isVisible = it }
+            update(zIndex) { this.marker.zIndex = it }
         }
     )
 }
@@ -529,7 +533,8 @@ private fun MarkerImpl(
  * A composable for an advanced marker on the map.
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param contentDescription the content description for accessibility purposes
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -553,6 +558,7 @@ private fun MarkerImpl(
 @GoogleMapComposable
 public fun AdvancedMarker(
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -572,9 +578,9 @@ public fun AdvancedMarker(
     iconView: View? = null,
     collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED
 ) {
-
     AdvancedMarkerImpl(
         state = state,
+        contentDescription = contentDescription,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -600,7 +606,8 @@ public fun AdvancedMarker(
  * Internal implementation for an advanced marker on a Google map.
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param contentDescription the content description for accessibility purposes
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -628,8 +635,8 @@ public fun AdvancedMarker(
 @Composable
 @GoogleMapComposable
 private fun AdvancedMarkerImpl(
-
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -655,17 +662,28 @@ private fun AdvancedMarkerImpl(
     val mapApplier = currentComposer.applier as? MapApplier
     val compositionContext = rememberCompositionContext()
 
-    val advancedMarkerOptions = AdvancedMarkerOptions()
-        .position(state.position)
-        .collisionBehavior(collisionBehavior)
-    if (iconView != null) {
-        advancedMarkerOptions.iconView(iconView)
-    } else if (pinConfig != null) {
-        advancedMarkerOptions.icon(BitmapDescriptorFactory.fromPinConfig(pinConfig))
-    }
-
     ComposeNode<MarkerNode, MapApplier>(
         factory = {
+            val advancedMarkerOptions = AdvancedMarkerOptions()
+                .position(state.position)
+                .collisionBehavior(collisionBehavior)
+            if (iconView != null) {
+                advancedMarkerOptions.iconView(iconView)
+            } else if (pinConfig != null) {
+                advancedMarkerOptions.icon(BitmapDescriptorFactory.fromPinConfig(pinConfig))
+            }
+            advancedMarkerOptions.contentDescription(contentDescription)
+            advancedMarkerOptions.alpha(alpha)
+            advancedMarkerOptions.anchor(anchor.x, anchor.y)
+            advancedMarkerOptions.draggable(draggable)
+            advancedMarkerOptions.flat(flat)
+            advancedMarkerOptions.infoWindowAnchor(infoWindowAnchor.x, infoWindowAnchor.y)
+            advancedMarkerOptions.position(state.position)
+            advancedMarkerOptions.rotation(rotation)
+            advancedMarkerOptions.snippet(snippet)
+            advancedMarkerOptions.title(title)
+            advancedMarkerOptions.visible(visible)
+            advancedMarkerOptions.zIndex(zIndex)
             val marker = mapApplier?.map?.addMarker(advancedMarkerOptions)
                 ?: error("Error adding marker")
             marker.tag = tag
@@ -689,27 +707,27 @@ private fun AdvancedMarkerImpl(
             update(infoContent) { this.infoContent = it }
             update(infoWindow) { this.infoWindow = it }
 
-            set(alpha) { this.marker.alpha = it }
-            set(anchor) { this.marker.setAnchor(it.x, it.y) }
-            set(draggable) { this.marker.isDraggable = it }
-            set(flat) { this.marker.isFlat = it }
-            set(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
-            set(state.position) { this.marker.position = it }
-            set(rotation) { this.marker.rotation = it }
-            set(snippet) {
+            update(alpha) { this.marker.alpha = it }
+            update(anchor) { this.marker.setAnchor(it.x, it.y) }
+            update(draggable) { this.marker.isDraggable = it }
+            update(flat) { this.marker.isFlat = it }
+            update(infoWindowAnchor) { this.marker.setInfoWindowAnchor(it.x, it.y) }
+            update(state.position) { this.marker.position = it }
+            update(rotation) { this.marker.rotation = it }
+            update(snippet) {
                 this.marker.snippet = it
                 if (this.marker.isInfoWindowShown) {
                     this.marker.showInfoWindow()
                 }
             }
-            set(tag) { this.marker.tag = it }
-            set(title) {
+            update(tag) { this.marker.tag = it }
+            update(title) {
                 this.marker.title = it
                 if (this.marker.isInfoWindowShown) {
                     this.marker.showInfoWindow()
                 }
             }
-            set(pinConfig) {
+            update(pinConfig) {
                 if (iconView == null) {
                     this.marker.setIcon(pinConfig?.let { it1 ->
                         BitmapDescriptorFactory.fromPinConfig(
@@ -719,8 +737,8 @@ private fun AdvancedMarkerImpl(
                 }
             }
 
-            set(visible) { this.marker.isVisible = it }
-            set(zIndex) { this.marker.zIndex = it }
+            update(visible) { this.marker.isVisible = it }
+            update(zIndex) { this.marker.zIndex = it }
         }
     )
 }

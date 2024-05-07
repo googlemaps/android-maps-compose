@@ -198,19 +198,19 @@ private fun PolylineImpl(
         update = {
             update(onClick) { this.onPolylineClick = it }
 
-            set(points) { this.polyline.points = it }
-            set(spans) { this.polyline.spans = it }
-            set(clickable) { this.polyline.isClickable = it }
-            set(color) { this.polyline.color = it.toArgb() }
-            set(endCap) { this.polyline.endCap = it }
-            set(geodesic) { this.polyline.isGeodesic = it }
-            set(jointType) { this.polyline.jointType = it }
-            set(pattern) { this.polyline.pattern = it }
-            set(startCap) { this.polyline.startCap = it }
-            set(tag) { this.polyline.tag = it }
-            set(visible) { this.polyline.isVisible = it }
-            set(width) { this.polyline.width = it }
-            set(zIndex) { this.polyline.zIndex = it }
+            update(points) { this.polyline.points = it }
+            update(spans) { this.polyline.spans = it }
+            update(clickable) { this.polyline.isClickable = it }
+            update(color) { this.polyline.color = it.toArgb() }
+            update(endCap) { this.polyline.endCap = it }
+            update(geodesic) { this.polyline.isGeodesic = it }
+            update(jointType) { this.polyline.jointType = it }
+            update(pattern) { this.polyline.pattern = it }
+            update(startCap) { this.polyline.startCap = it }
+            update(tag) { this.polyline.tag = it }
+            update(visible) { this.polyline.isVisible = it }
+            update(width) { this.polyline.width = it }
+            update(zIndex) { this.polyline.zIndex = it }
         }
     )
 }
