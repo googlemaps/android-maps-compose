@@ -133,8 +133,8 @@ public fun rememberMarkerState(
 
 /**
  * A composable for a marker on the map.
- * @param contentDescription the content description for accessibility purposes
  * @param state the [MarkerState] to be used to control or observe the marker
+ * @param contentDescription the content description for accessibility purposes
  * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
@@ -156,8 +156,8 @@ public fun rememberMarkerState(
 @Composable
 @GoogleMapComposable
 public fun Marker(
-    contentDescription: String? = "",
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -176,8 +176,8 @@ public fun Marker(
     onInfoWindowLongClick: (Marker) -> Unit = {},
 ) {
     MarkerImpl(
-        contentDescription = contentDescription,
         state = state,
+        contentDescription = contentDescription,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -249,6 +249,75 @@ public fun MarkerComposable(
 
     MarkerImpl(
         contentDescription = contentDescription,
+        state = state,
+        alpha = alpha,
+        anchor = anchor,
+        draggable = draggable,
+        flat = flat,
+        icon = icon,
+        infoWindowAnchor = infoWindowAnchor,
+        rotation = rotation,
+        snippet = snippet,
+        tag = tag,
+        title = title,
+        visible = visible,
+        zIndex = zIndex,
+        onClick = onClick,
+        onInfoWindowClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose,
+        onInfoWindowLongClick = onInfoWindowLongClick,
+    )
+}
+
+/**
+ * Composable rendering the content passed as a marker.
+ *
+ * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
+ * trigger a rendering of the content composable and thus the rendering of an updated marker.
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
+ * @param alpha the alpha (opacity) of the marker
+ * @param anchor the anchor for the marker image
+ * @param draggable sets the draggability for the marker
+ * @param flat sets if the marker should be flat against the map
+ * @param infoWindowAnchor the anchor point of the info window on the marker image
+ * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
+ * @param snippet the snippet for the marker
+ * @param tag optional tag to associate with the marker
+ * @param title the title for the marker
+ * @param visible the visibility of the marker
+ * @param zIndex the z-index of the marker
+ * @param onClick a lambda invoked when the marker is clicked
+ * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
+ * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
+ * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param content composable lambda expression used to customize the marker's content
+ */
+@Composable
+@GoogleMapComposable
+public fun MarkerComposable(
+    vararg keys: Any,
+    state: MarkerState = rememberMarkerState(),
+    alpha: Float = 1.0f,
+    anchor: Offset = Offset(0.5f, 1.0f),
+    draggable: Boolean = false,
+    flat: Boolean = false,
+    infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
+    rotation: Float = 0.0f,
+    snippet: String? = null,
+    tag: Any? = null,
+    title: String? = null,
+    visible: Boolean = true,
+    zIndex: Float = 0.0f,
+    onClick: (Marker) -> Boolean = { false },
+    onInfoWindowClick: (Marker) -> Unit = {},
+    onInfoWindowClose: (Marker) -> Unit = {},
+    onInfoWindowLongClick: (Marker) -> Unit = {},
+    content: @Composable () -> Unit,
+) {
+    val icon = rememberComposeBitmapDescriptor(*keys) { content() }
+
+    MarkerImpl(
         state = state,
         alpha = alpha,
         anchor = anchor,
@@ -414,6 +483,7 @@ public fun MarkerInfoWindowContent(
  *
  * @param state the [MarkerState] to be used to control or observe the marker
  * state such as its position and info window
+ * @param contentDescription the content description for accessibility purposes
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -439,8 +509,8 @@ public fun MarkerInfoWindowContent(
 @Composable
 @GoogleMapComposable
 private fun MarkerImpl(
-    contentDescription: String? = "",
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -577,9 +647,79 @@ public fun AdvancedMarker(
     iconView: View? = null,
     collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED
 ) {
-
     AdvancedMarkerImpl(
         contentDescription = contentDescription,
+        state = state,
+        alpha = alpha,
+        anchor = anchor,
+        draggable = draggable,
+        flat = flat,
+        infoWindowAnchor = infoWindowAnchor,
+        rotation = rotation,
+        snippet = snippet,
+        tag = tag,
+        title = title,
+        visible = visible,
+        zIndex = zIndex,
+        onClick = onClick,
+        onInfoWindowClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose,
+        onInfoWindowLongClick = onInfoWindowLongClick,
+        pinConfig = pinConfig,
+        iconView = iconView,
+        collisionBehavior = collisionBehavior
+    )
+}
+
+/**
+ * A composable for an advanced marker on the map.
+ *
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
+ * @param alpha the alpha (opacity) of the marker
+ * @param anchor the anchor for the marker image
+ * @param draggable sets the draggability for the marker
+ * @param flat sets if the marker should be flat against the map
+ * @param infoWindowAnchor the anchor point of the info window on the marker image
+ * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
+ * @param snippet the snippet for the marker
+ * @param tag optional tag to associate with the marker
+ * @param title the title for the marker
+ * @param visible the visibility of the marker
+ * @param zIndex the z-index of the marker
+ * @param onClick a lambda invoked when the marker is clicked
+ * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
+ * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
+ * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param pinConfig the PinConfig object that will be used for the advanced marker
+ * @param iconView the custom view to be used on the advanced marker
+ * @param collisionBehavior the expected collision behavior
+ */
+@Composable
+@GoogleMapComposable
+public fun AdvancedMarker(
+    state: MarkerState = rememberMarkerState(),
+    alpha: Float = 1.0f,
+    anchor: Offset = Offset(0.5f, 1.0f),
+    draggable: Boolean = false,
+    flat: Boolean = false,
+    infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
+    rotation: Float = 0.0f,
+    snippet: String? = null,
+    tag: Any? = null,
+    title: String? = null,
+    visible: Boolean = true,
+    zIndex: Float = 0.0f,
+    onClick: (Marker) -> Boolean = { false },
+    onInfoWindowClick: (Marker) -> Unit = {},
+    onInfoWindowClose: (Marker) -> Unit = {},
+    onInfoWindowLongClick: (Marker) -> Unit = {},
+    pinConfig: PinConfig? = null,
+    iconView: View? = null,
+    collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED
+) {
+
+    AdvancedMarkerImpl(
         state = state,
         alpha = alpha,
         anchor = anchor,
