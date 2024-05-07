@@ -802,29 +802,28 @@ private fun AdvancedMarkerImpl(
     val mapApplier = currentComposer.applier as? MapApplier
     val compositionContext = rememberCompositionContext()
 
-    val advancedMarkerOptions = AdvancedMarkerOptions()
-        .position(state.position)
-        .collisionBehavior(collisionBehavior)
-    if (iconView != null) {
-        advancedMarkerOptions.iconView(iconView)
-    } else if (pinConfig != null) {
-        advancedMarkerOptions.icon(BitmapDescriptorFactory.fromPinConfig(pinConfig))
-    }
-    advancedMarkerOptions.contentDescription(contentDescription)
-    advancedMarkerOptions.alpha(alpha)
-    advancedMarkerOptions.anchor(anchor.x, anchor.y)
-    advancedMarkerOptions.draggable(draggable)
-    advancedMarkerOptions.flat(flat)
-    advancedMarkerOptions.infoWindowAnchor(infoWindowAnchor.x, infoWindowAnchor.y)
-    advancedMarkerOptions.position(state.position)
-    advancedMarkerOptions.rotation(rotation)
-    advancedMarkerOptions.snippet(snippet)
-    advancedMarkerOptions.title(title)
-    advancedMarkerOptions.visible(visible)
-    advancedMarkerOptions.zIndex(zIndex)
-
     ComposeNode<MarkerNode, MapApplier>(
         factory = {
+            val advancedMarkerOptions = AdvancedMarkerOptions()
+                .position(state.position)
+                .collisionBehavior(collisionBehavior)
+            if (iconView != null) {
+                advancedMarkerOptions.iconView(iconView)
+            } else if (pinConfig != null) {
+                advancedMarkerOptions.icon(BitmapDescriptorFactory.fromPinConfig(pinConfig))
+            }
+            advancedMarkerOptions.contentDescription(contentDescription)
+            advancedMarkerOptions.alpha(alpha)
+            advancedMarkerOptions.anchor(anchor.x, anchor.y)
+            advancedMarkerOptions.draggable(draggable)
+            advancedMarkerOptions.flat(flat)
+            advancedMarkerOptions.infoWindowAnchor(infoWindowAnchor.x, infoWindowAnchor.y)
+            advancedMarkerOptions.position(state.position)
+            advancedMarkerOptions.rotation(rotation)
+            advancedMarkerOptions.snippet(snippet)
+            advancedMarkerOptions.title(title)
+            advancedMarkerOptions.visible(visible)
+            advancedMarkerOptions.zIndex(zIndex)
             val marker = mapApplier?.map?.addMarker(advancedMarkerOptions)
                 ?: error("Error adding marker")
             marker.tag = tag
