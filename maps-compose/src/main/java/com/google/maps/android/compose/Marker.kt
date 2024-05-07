@@ -135,7 +135,7 @@ public fun rememberMarkerState(
  * A composable for a marker on the map.
  * @param state the [MarkerState] to be used to control or observe the marker
  * @param contentDescription the content description for accessibility purposes
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -203,7 +203,7 @@ public fun Marker(
  * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
  * trigger a rendering of the content composable and thus the rendering of an updated marker.
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param contentDescription the content description for accessibility purposes
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
@@ -275,7 +275,7 @@ public fun MarkerComposable(
  * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
  * trigger a rendering of the content composable and thus the rendering of an updated marker.
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -344,7 +344,7 @@ public fun MarkerComposable(
  * [com.google.maps.android.compose.Marker].
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -414,7 +414,7 @@ public fun MarkerInfoWindow(
  * [com.google.maps.android.compose.Marker].
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -482,7 +482,7 @@ public fun MarkerInfoWindowContent(
  * Internal implementation for a marker on a Google map.
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param contentDescription the content description for accessibility purposes
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
@@ -603,7 +603,7 @@ private fun MarkerImpl(
  *
  * @param state the [MarkerState] to be used to control or observe the marker
  * @param contentDescription the content description for accessibility purposes
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -675,7 +675,7 @@ public fun AdvancedMarker(
  * A composable for an advanced marker on the map.
  *
  * @param state the [MarkerState] to be used to control or observe the marker
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
@@ -747,7 +747,7 @@ public fun AdvancedMarker(
  *
  * @param state the [MarkerState] to be used to control or observe the marker
  * @param contentDescription the content description for accessibility purposes
- * state such as its position and info window
+ * @param state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
