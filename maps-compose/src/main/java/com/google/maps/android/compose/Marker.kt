@@ -248,8 +248,8 @@ public fun MarkerComposable(
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
 
     MarkerImpl(
-        contentDescription = contentDescription,
         state = state,
+        contentDescription = contentDescription,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -601,8 +601,8 @@ private fun MarkerImpl(
 /**
  * A composable for an advanced marker on the map.
  *
- * @param contentDescription the content description for accessibility purposes
  * @param state the [MarkerState] to be used to control or observe the marker
+ * @param contentDescription the content description for accessibility purposes
  * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
@@ -626,8 +626,8 @@ private fun MarkerImpl(
 @Composable
 @GoogleMapComposable
 public fun AdvancedMarker(
-    contentDescription: String? = "",
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -648,8 +648,8 @@ public fun AdvancedMarker(
     collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED
 ) {
     AdvancedMarkerImpl(
-        contentDescription = contentDescription,
         state = state,
+        contentDescription = contentDescription,
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
@@ -745,8 +745,8 @@ public fun AdvancedMarker(
 /**
  * Internal implementation for an advanced marker on a Google map.
  *
- * @param contentDescription the content description for accessibility purposes
  * @param state the [MarkerState] to be used to control or observe the marker
+ * @param contentDescription the content description for accessibility purposes
  * state such as its position and info window
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
@@ -775,8 +775,8 @@ public fun AdvancedMarker(
 @Composable
 @GoogleMapComposable
 private fun AdvancedMarkerImpl(
-    contentDescription: String? = "",
     state: MarkerState = rememberMarkerState(),
+    contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
