@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -111,58 +113,29 @@ public fun GoogleMap(
         it.onMyLocationClick = onMyLocationClick
         it.onPOIClick = onPOIClick
     }
-    val currentContentDescription by rememberUpdatedState(contentDescription)
-    val currentLocationSource by rememberUpdatedState(locationSource)
-    val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
-    val currentContentPadding by rememberUpdatedState(contentPadding)
-    val currentUiSettings by rememberUpdatedState(uiSettings)
-    val currentMapProperties by rememberUpdatedState(properties)
+
+    val mapUpdaterState = remember {
+        MapUpdaterState(
+            mergeDescendants,
+            contentDescription,
+            cameraPositionState,
+            contentPadding,
+            locationSource,
+            properties,
+            uiSettings
+        )
+    }.also {
+        it.mergeDescendants = mergeDescendants
+        it.contentDescription = contentDescription
+        it.cameraPositionState = cameraPositionState
+        it.contentPadding = contentPadding
+        it.locationSource = locationSource
+        it.mapProperties = properties
+        it.mapUiSettings = uiSettings
+    }
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-
-    /**
-     * Create and apply the [content] compositions to the map +
-     * dispose the [Composition] when the parent composable is disposed.
-     * */
-    fun CoroutineScope.launchSubcomposition(mapView: MapView): Job {
-        val mapCompositionContent: @Composable () -> Unit = {
-            MapUpdater(
-                mergeDescendants = mergeDescendants,
-                contentDescription = currentContentDescription,
-                cameraPositionState = currentCameraPositionState,
-                contentPadding = currentContentPadding,
-                locationSource = currentLocationSource,
-                mapProperties = currentMapProperties,
-                mapUiSettings = currentUiSettings,
-            )
-
-            MapClickListenerUpdater()
-
-            CompositionLocalProvider(
-                LocalCameraPositionState provides currentCameraPositionState,
-            ) {
-                currentContent?.invoke()
-            }
-        }
-
-        // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
-        return launch(start = CoroutineStart.UNDISPATCHED) {
-            val map = mapView.awaitMap()
-            val composition = Composition(
-                applier = MapApplier(map, mapView, mapClickListeners),
-                parent = parentComposition
-            )
-
-            try {
-                composition.setContent(mapCompositionContent)
-                awaitCancellation()
-            } finally {
-                composition.dispose()
-            }
-        }
-    }
-
     var subcompositionJob by remember { mutableStateOf<Job?>(null) }
     val parentCompositionScope = rememberCoroutineScope()
 
@@ -209,10 +182,73 @@ public fun GoogleMap(
         },
         update = { mapView ->
             if (subcompositionJob == null) {
-                subcompositionJob = parentCompositionScope.launchSubcomposition(mapView)
+                subcompositionJob = parentCompositionScope.launchSubcomposition(
+                    mapUpdaterState,
+                    parentComposition,
+                    mapClickListeners,
+                    currentContent,
+                    mapView,
+                )
             }
         }
     )
+}
+
+/**
+ * Create and apply the [content] compositions to the map +
+ * dispose the [Composition] when the parent composable is disposed.
+ * */
+private fun CoroutineScope.launchSubcomposition(
+    mapUpdaterState: MapUpdaterState,
+    parentComposition: CompositionContext,
+    clickListeners: MapClickListeners,
+    content: (@Composable @GoogleMapComposable () -> Unit)?,
+    mapView: MapView
+): Job {
+    // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
+    return launch(start = CoroutineStart.UNDISPATCHED) {
+        val map = mapView.awaitMap()
+        val composition = Composition(
+            applier = MapApplier(map, mapView),
+            parent = parentComposition
+        )
+
+        try {
+            composition.setContent {
+                MapUpdater(mapUpdaterState)
+
+                MapClickListenerUpdater(clickListeners)
+
+                CompositionLocalProvider(
+                    LocalCameraPositionState provides currentCameraPositionState,
+                ) {
+                    content?.invoke()
+                }
+            }
+            awaitCancellation()
+        } finally {
+            composition.dispose()
+        }
+    }
+}
+
+@Stable
+internal class MapUpdaterState(
+    mergeDescendants: Boolean,
+    contentDescription: String?,
+    cameraPositionState: CameraPositionState,
+    contentPadding: PaddingValues,
+    locationSource: LocationSource?,
+    mapProperties: MapProperties,
+    mapUiSettings: MapUiSettings
+) {
+    var mergeDescendants by mutableStateOf(mergeDescendants)
+    var contentDescription by mutableStateOf(contentDescription)
+    var cameraPositionState by mutableStateOf(cameraPositionState)
+    var contentPadding by mutableStateOf(contentPadding)
+    var locationSource by mutableStateOf(locationSource)
+    var mapProperties by mutableStateOf(mapProperties)
+    var mapUiSettings by mutableStateOf(mapUiSettings)
 }
 
 /** Used to store things in the tag which must be retrievable across recompositions */
