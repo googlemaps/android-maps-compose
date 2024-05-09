@@ -19,12 +19,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +48,8 @@ import com.google.android.gms.maps.model.IndoorBuilding
 import com.google.android.gms.maps.model.LatLng
 
 private data class CountryLocation(val name: String, val latLng: LatLng, val zoom: Float)
+
+private typealias MapItemId = String
 
 // From https://developers.google.com/public-data/docs/canonical/countries_csv
 private val countries = listOf(
@@ -69,7 +76,7 @@ private data class MapListItem(
     val title: String,
     val location: LatLng,
     val zoom: Float,
-    val id: String
+    val id: MapItemId
 )
 
 private val allItems = countries.mapIndexed { index, country ->
@@ -123,15 +130,41 @@ class MapsInLazyColumnActivity : ComponentActivity() {
 
 @Composable
 private fun MapsInLazyColumn(mapItems: List<MapListItem>) {
-    LazyColumn {
-        items(mapItems, key = { it.id }) { item ->
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                MapCard(item)
+    val lazyListState = rememberLazyListState()
+
+    val cameraPositionStates = mapItems.associate { item ->
+        item.id to rememberCameraPositionState(
+            key = item.id,
+            init = { position = CameraPosition.fromLatLngZoom(item.location, item.zoom) }
+        )
+    }
+    val visibleItemIds by remember(lazyListState) {
+        derivedStateOf {
+            lazyListState.layoutInfo.visibleItemsInfo.map { it.key as MapItemId }
+        }
+    }
+    val anyMapMoving by remember(cameraPositionStates) {
+        derivedStateOf {
+            visibleItemIds.any { cameraPositionStates[it]?.isMoving == true }
+        }
+    }
+
+    Box {
+        LazyColumn(
+            state = lazyListState,
+            userScrollEnabled = !anyMapMoving
+        ) {
+            items(mapItems, key = { it.id }) { item ->
+                val cameraPositionState = cameraPositionStates[item.id]!!
+
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    MapCard(item, cameraPositionState)
+                }
             }
         }
     }
@@ -139,7 +172,7 @@ private fun MapsInLazyColumn(mapItems: List<MapListItem>) {
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
-private fun MapCard(item: MapListItem) {
+private fun MapCard(item: MapListItem, cameraPositionState: CameraPositionState) {
     Card(
         Modifier.padding(16.dp),
         elevation = 4.dp
@@ -150,11 +183,6 @@ private fun MapCard(item: MapListItem) {
         var activatedIndoorLevel: String? by remember { mutableStateOf(null) }
         var activatedIndoorLevelInvocationCount by remember { mutableIntStateOf(0) }
         var onMapClickCount by remember { mutableIntStateOf(0) }
-
-        val cameraPositionState = rememberCameraPositionState(
-            key = item.id,
-            init = { position = CameraPosition.fromLatLngZoom(item.location, item.zoom) }
-        )
 
         var map: GoogleMap? by remember { mutableStateOf(null) }
 
