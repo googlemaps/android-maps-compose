@@ -98,7 +98,7 @@ public fun TileOverlay(
         update = {
             update(onClick) { this.onTileOverlayClick = it }
 
-            set(tileProvider) {
+            update(tileProvider) {
                 this.tileOverlay.remove()
                 this.tileOverlay = mapApplier?.map?.addTileOverlay {
                     tileProvider(tileProvider)
@@ -108,10 +108,10 @@ public fun TileOverlay(
                     zIndex(zIndex)
                 } ?: error("Error adding tile overlay")
             }
-            set(fadeIn) { this.tileOverlay.fadeIn = it }
-            set(transparency) { this.tileOverlay.transparency = it }
-            set(visible) { this.tileOverlay.isVisible = it }
-            set(zIndex) { this.tileOverlay.zIndex = it }
+            update(fadeIn) { this.tileOverlay.fadeIn = it }
+            update(transparency) { this.tileOverlay.transparency = it }
+            update(visible) { this.tileOverlay.isVisible = it }
+            update(zIndex) { this.tileOverlay.zIndex = it }
         }
     )
 }

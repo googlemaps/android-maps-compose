@@ -94,7 +94,7 @@ public fun GoogleMap(
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = NoPadding,
-    content: (@Composable @GoogleMapComposable () -> Unit)? = null,
+    content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
     if (LocalInspectionMode.current) {
@@ -220,7 +220,7 @@ private fun CoroutineScope.launchSubcomposition(
                 MapClickListenerUpdater(clickListeners)
 
                 CompositionLocalProvider(
-                    LocalCameraPositionState provides currentCameraPositionState,
+                    LocalCameraPositionState provides currentCameraPositionState
                 ) {
                     content?.invoke()
                 }
