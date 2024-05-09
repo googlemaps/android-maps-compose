@@ -190,9 +190,10 @@ private fun MapCard(item: MapListItem) {
                     }
                 }
             ) {
-                MapEffect(Unit) {
-                    map = it
+                MapEffect(Unit) { googleMap ->
+                    map = googleMap
                     updateIndoorLevel()
+                    buildingFocused = (googleMap.focusedBuilding != null)
                 }
             }
 
