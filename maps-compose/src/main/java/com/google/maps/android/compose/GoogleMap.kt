@@ -220,7 +220,7 @@ private fun CoroutineScope.launchSubcomposition(
                 MapClickListenerUpdater()
 
                 CompositionLocalProvider(
-                    LocalCameraPositionState provides currentCameraPositionState,
+                    LocalCameraPositionState provides mapUpdaterState.cameraPositionState,
                     content
                 )
             }
