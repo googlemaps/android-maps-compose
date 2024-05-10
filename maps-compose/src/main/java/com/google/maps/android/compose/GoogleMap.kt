@@ -185,9 +185,9 @@ public fun GoogleMap(
                 subcompositionJob = parentCompositionScope.launchSubcomposition(
                     mapUpdaterState,
                     parentComposition,
+                    mapView,
                     mapClickListeners,
                     currentContent,
-                    mapView,
                 )
             }
         }
@@ -201,15 +201,15 @@ public fun GoogleMap(
 private fun CoroutineScope.launchSubcomposition(
     mapUpdaterState: MapUpdaterState,
     parentComposition: CompositionContext,
-    clickListeners: MapClickListeners,
-    content: (@Composable @GoogleMapComposable () -> Unit)?,
-    mapView: MapView
+    mapView: MapView,
+    mapClickListeners: MapClickListeners,
+    content: @Composable @GoogleMapComposable () -> Unit,
 ): Job {
     // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
     return launch(start = CoroutineStart.UNDISPATCHED) {
         val map = mapView.awaitMap()
         val composition = Composition(
-            applier = MapApplier(map, mapView),
+            applier = MapApplier(map, mapView, mapClickListeners),
             parent = parentComposition
         )
 
@@ -217,13 +217,12 @@ private fun CoroutineScope.launchSubcomposition(
             composition.setContent {
                 MapUpdater(mapUpdaterState)
 
-                MapClickListenerUpdater(clickListeners)
+                MapClickListenerUpdater()
 
                 CompositionLocalProvider(
-                    LocalCameraPositionState provides currentCameraPositionState
-                ) {
-                    content?.invoke()
-                }
+                    LocalCameraPositionState provides currentCameraPositionState,
+                    content
+                )
             }
             awaitCancellation()
         } finally {

@@ -86,7 +86,10 @@ internal class MapClickListenerNode<L : Any>(
 
 @Suppress("ComplexRedundantLet")
 @Composable
-internal fun MapClickListenerUpdater(mapClickListeners: MapClickListeners) {
+internal fun MapClickListenerUpdater() {
+    // The mapClickListeners container object is not allowed to ever change
+    val mapClickListeners = (currentComposer.applier as MapApplier).mapClickListeners
+
     with(mapClickListeners) {
         ::indoorStateChangeListener.let { callback ->
             MapClickListenerComposeNode(
