@@ -91,19 +91,18 @@ public fun Polygon(
         },
         update = {
             update(onClick) { this.onPolygonClick = it }
-
-            set(points) { this.polygon.points = it }
-            set(clickable) { this.polygon.isClickable = it }
-            set(fillColor) { this.polygon.fillColor = it.toArgb() }
-            set(geodesic) { this.polygon.isGeodesic = it }
-            set(holes) { this.polygon.holes = it }
-            set(strokeColor) { this.polygon.strokeColor = it.toArgb() }
-            set(strokeJointType) { this.polygon.strokeJointType = it }
-            set(strokePattern) { this.polygon.strokePattern = it }
-            set(strokeWidth) { this.polygon.strokeWidth = it }
-            set(tag) { this.polygon.tag = it }
-            set(visible) { this.polygon.isVisible = it }
-            set(zIndex) { this.polygon.zIndex = it }
+            update(points) { this.polygon.points = it }
+            update(clickable) { this.polygon.isClickable = it }
+            update(fillColor) { this.polygon.fillColor = it.toArgb() }
+            update(geodesic) { this.polygon.isGeodesic = it }
+            update(holes) { this.polygon.holes = it }
+            update(strokeColor) { this.polygon.strokeColor = it.toArgb() }
+            update(strokeJointType) { this.polygon.strokeJointType = it }
+            update(strokePattern) { this.polygon.strokePattern = it }
+            update(strokeWidth) { this.polygon.strokeWidth = it }
+            update(tag) { this.polygon.tag = it }
+            update(visible) { this.polygon.isVisible = it }
+            update(zIndex) { this.polygon.zIndex = it }
         }
     )
 }

@@ -108,14 +108,14 @@ public fun GroundOverlay(
         update = {
             update(onClick) { this.onGroundOverlayClick = it }
 
-            set(bearing) { this.groundOverlay.bearing = it }
-            set(clickable) { this.groundOverlay.isClickable = it }
-            set(image) { this.groundOverlay.setImage(it) }
-            set(position) { this.groundOverlay.position(it) }
-            set(tag) { this.groundOverlay.tag = it }
-            set(transparency) { this.groundOverlay.transparency = it }
-            set(visible) { this.groundOverlay.isVisible = it }
-            set(zIndex) { this.groundOverlay.zIndex = it }
+            update(bearing) { this.groundOverlay.bearing = it }
+            update(clickable) { this.groundOverlay.isClickable = it }
+            update(image) { this.groundOverlay.setImage(it) }
+            update(position) { this.groundOverlay.position(it) }
+            update(tag) { this.groundOverlay.tag = it }
+            update(transparency) { this.groundOverlay.transparency = it }
+            update(visible) { this.groundOverlay.isVisible = it }
+            update(zIndex) { this.groundOverlay.zIndex = it }
         }
     )
 }

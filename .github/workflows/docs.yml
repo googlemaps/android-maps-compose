@@ -29,13 +29,13 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout Repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Gradle Wrapper Validation
-      uses: gradle/wrapper-validation-action@v1.0.4
+      uses: gradle/actions/wrapper-validation@v3
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v2.3.1
+      uses: actions/setup-java@v4.2.1
       with:
         java-version: '17'
         distribution: 'adopt'
@@ -54,7 +54,7 @@ jobs:
 
     # Commit changes and create a PR
     - name: PR Changes
-      uses: peter-evans/create-pull-request@v3
+      uses: peter-evans/create-pull-request@v6
       with:
         token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
         commit-message: 'docs: Update docs'
