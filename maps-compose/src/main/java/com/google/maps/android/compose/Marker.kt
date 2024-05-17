@@ -200,6 +200,8 @@ public fun Marker(
 /**
  * Composable rendering the content passed as a marker.
  *
+ * This composable must have a non-zero size in both dimensions
+ *
  * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
  * trigger a rendering of the content composable and thus the rendering of an updated marker.
  * @param state the [MarkerState] to be used to control or observe the marker
@@ -221,6 +223,9 @@ public fun Marker(
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
  * @param content composable lambda expression used to customize the marker's content
+ *
+ * @throws IllegalStateException if the composable is measured to have a size of zero in either
+ * dimension
  */
 @Composable
 @GoogleMapComposable

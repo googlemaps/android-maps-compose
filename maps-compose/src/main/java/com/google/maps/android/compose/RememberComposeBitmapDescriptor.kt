@@ -39,6 +39,10 @@ private fun renderComposableToBitmapDescriptor(
     val composeView =
         ComposeView(parent.context)
             .apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                )
                 setParentCompositionContext(compositionContext)
                 setContent(content)
             }
@@ -47,9 +51,14 @@ private fun renderComposableToBitmapDescriptor(
     composeView.draw(fakeCanvas)
 
     composeView.measure(
-        View.MeasureSpec.makeMeasureSpec(parent.width, View.MeasureSpec.AT_MOST),
-        View.MeasureSpec.makeMeasureSpec(parent.height, View.MeasureSpec.AT_MOST),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
     )
+
+    if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
+        throw IllegalStateException("The ComposeView was measured to have a width or height of " +
+                "zero. Make sure the parent and content have a non-zero size.")
+    }
 
     composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
 
