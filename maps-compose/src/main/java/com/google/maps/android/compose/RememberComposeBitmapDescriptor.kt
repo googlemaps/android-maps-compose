@@ -30,6 +30,8 @@ internal fun rememberComposeBitmapDescriptor(
     }
 }
 
+private val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+
 private fun renderComposableToBitmapDescriptor(
     parent: ViewGroup,
     compositionContext: CompositionContext,
@@ -50,10 +52,7 @@ private fun renderComposableToBitmapDescriptor(
 
     composeView.draw(fakeCanvas)
 
-    composeView.measure(
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-    )
+    composeView.measure(measureSpec, measureSpec)
 
     if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
         throw IllegalStateException("The ComposeView was measured to have a width or height of " +
