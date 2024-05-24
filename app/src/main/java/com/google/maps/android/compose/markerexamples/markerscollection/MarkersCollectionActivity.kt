@@ -105,7 +105,7 @@ private fun Screen(
 /**
  * A GoogleMap with locations represented by markers
  *
- * @param keyedLocationData model data for location markers.
+ * @param keyedLocationData model data for location markers with unique keys.
  * Uses a [Collection] type to keep it independent of our data model.
  * @param onAddLocation location addition events for updating data model
  * @param onDeleteLocation location deletion events for updating data model
@@ -134,7 +134,7 @@ private fun GoogleMapWithLocations(
 /**
  * Renders locations on a GoogleMap
  *
- * @param keyedLocationData model data for location markers.
+ * @param keyedLocationData model data for location markers with unique keys.
  * @param onLocationClick location click events
  */
 @Composable
