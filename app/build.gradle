@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    alias libs.plugins.compose.compiler
 }
 
 android {
@@ -22,10 +23,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion libs.versions.composecompiler.get()
-    }
-
     buildFeatures {
         buildConfig true
         compose true
@@ -33,7 +30,7 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
-        freeCompilerArgs += '-Xopt-in=kotlin.RequiresOptIn'
+        freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
     }
 }
 
