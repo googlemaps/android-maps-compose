@@ -5,6 +5,17 @@ plugins {
 }
 
 android {
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+
+        release {
+            testCoverageEnabled true
+        }
+    }
+
     namespace "com.google.maps.android.compose"
     compileSdk 34
 
@@ -16,6 +27,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
