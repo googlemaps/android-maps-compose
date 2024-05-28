@@ -17,16 +17,14 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run Module Coverage
-        run: ./gradlew prodNormalDebugCoverage debugCoverage
+        run: ./gradlew clean createDebugCoverageReport
 
       - name: Jacoco Report to PR
         id: jacoco
         uses: madrapps/jacoco-report@v1.2
         with:
           paths: |
-            ${{ github.workspace }}/app/build/reports/jacoco/prodNormalDebugCoverage/prodNormalDebugCoverage.xml,
-            ${{ github.workspace }}/math/build/reports/jacoco/debugCoverage/debugCoverage.xml,
-            ${{ github.workspace }}/text/build/reports/jacoco/debugCoverage/debugCoverage.xml
+            ${{ github.workspace }}/app/build/reports/coverage/androidTests/debug/connected/report.xml
           token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
           min-coverage-overall: 40
           min-coverage-changed-files: 60
