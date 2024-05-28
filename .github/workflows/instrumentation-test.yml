@@ -57,7 +57,24 @@ jobs:
         target: google_apis
         arch: x86
         disable-animations: true
-        script: ./gradlew :app:connectedCheck --stacktrace
+        script: ./gradlew createDebugCoverageReport --stacktrace
+
+    - name: Jacoco Report to PR
+      id: jacoco
+      uses: madrapps/jacoco-report@v1.2
+      with:
+        paths: |
+          ${{ github.workspace }}/app/build/reports/coverage/androidTests/debug/connected/report.xml
+        token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
+        min-coverage-overall: 40
+        min-coverage-changed-files: 60
+        title: Code Coverage
+        debug-mode: false
+
+    - name: Get the Coverage info
+      run: |
+            echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
+            echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
 
     - name: Upload test reports
       if: always()
