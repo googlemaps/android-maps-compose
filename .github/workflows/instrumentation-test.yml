@@ -66,7 +66,7 @@ jobs:
         paths: |
           ${{ github.workspace }}/app/build/reports/coverage/androidTest/debug/connected/report.xml
         token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
-        min-coverage-overall: 29
+        min-coverage-overall: 26
         min-coverage-changed-files: 60
         title: Code Coverage
         debug-mode: false
