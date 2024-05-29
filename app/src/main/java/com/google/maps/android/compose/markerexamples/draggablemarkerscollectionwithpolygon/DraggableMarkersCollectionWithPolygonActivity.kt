@@ -146,7 +146,7 @@ private fun Locations(
     onLocationClick: (LocationKey) -> Unit,
     onLocationUpdate: (LocationKey, LocationData) -> Unit
 ) {
-    // This doubles as a handy trick to leverage Compose's node matching algorithm for
+    // This doubles as a handy trick to leverage Compose's group matching algorithm for
     // generating a list of marker positions derived from the original model
     val movingVertices: List<() -> LatLng> = keyedLocationData.map { (key, locationData) ->
         key(key) {
