@@ -70,6 +70,7 @@ jobs:
         min-coverage-changed-files: 60
         title: Code Coverage
         debug-mode: false
+        update-comment: true
 
     - name: Get the Coverage info
       run: |
