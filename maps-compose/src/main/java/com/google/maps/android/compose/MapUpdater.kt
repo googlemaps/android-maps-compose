@@ -85,7 +85,10 @@ internal class MapPropertiesNode(
     }
 }
 
-internal val NoPadding = PaddingValues()
+/**
+ * Default map content padding does not pad.
+ */
+public val DefaultMapContentPadding: PaddingValues = PaddingValues()
 
 /**
  * Used to keep the primary map properties up to date. This should never leave the map composition.
@@ -97,7 +100,7 @@ internal inline fun MapUpdater(
     mergeDescendants: Boolean = false,
     contentDescription: String?,
     cameraPositionState: CameraPositionState,
-    contentPadding: PaddingValues = NoPadding,
+    contentPadding: PaddingValues = DefaultMapContentPadding,
     locationSource: LocationSource?,
     mapProperties: MapProperties,
     mapUiSettings: MapUiSettings,
