@@ -141,7 +141,7 @@ fun GoogleMapView(
     val singapore4State = rememberMarkerState(position = singapore4)
 
     var circleCenter by remember { mutableStateOf(singapore) }
-    if (singaporeState.dragState == DragState.END) {
+    if (!singaporeState.isDragging) {
         circleCenter = singaporeState.position
     }
 
@@ -380,7 +380,7 @@ private fun DebugView(
         Text(text = "Camera position is ${cameraPositionState.position}")
         Spacer(modifier = Modifier.height(4.dp))
         val dragging =
-            if (markerState.dragState == DragState.DRAG) "dragging" else "not dragging"
+            if (markerState.isDragging) "dragging" else "not dragging"
         Text(text = "Marker is $dragging")
         Text(text = "Marker position is ${markerState.position}")
     }

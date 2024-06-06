@@ -21,8 +21,13 @@
   <string name="advanced_markers">Advanced Markers</string>
   <string name="map_in_column_activity">Map In Column</string>
   <string name="marker_clustering_activity">Marker Clustering</string>
+  <string name="marker_drag_events_activity">Marker Drag Events</string>
+  <string name="markers_collection_activity">Markers Collection</string>
   <string name="location_tracking_activity">Location Tracking</string>
   <string name="scale_bar_activity">Scale Bar</string>
+  <string name="syncing_draggable_marker_with_data_model">Syncing Draggable Marker With Model</string>
+  <string name="updating_non_draggable_marker_with_data_model">Updating Non-Draggable Marker With Model</string>
+  <string name="draggable_markers_collection_with_polygon">Polygon around draggable markers</string>
   <string name="recomposition_activity">Recomposition Map</string>
   <string name="street_view">Street View</string>
   <string name="custom_location_button">Custom Location Button</string>

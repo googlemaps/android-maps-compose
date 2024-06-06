@@ -1,4 +1,4 @@
-package com.google.maps.android.compose
+package com.google.maps.android.compose.markerexamples
 
 import android.os.Bundle
 import android.util.Log
@@ -40,9 +40,16 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.algo.NonHierarchicalViewBasedAlgorithm
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapsComposeExperimentalApi
+import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.singapore
+import com.google.maps.android.compose.singapore2
 import kotlin.random.Random
 
 private val TAG = MarkerClusteringActivity::class.simpleName
