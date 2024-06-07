@@ -5,8 +5,10 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 rootProject.name = "android-maps-compose"
-include ':app'
-include ':maps-compose'
-include ':maps-compose-widgets'
-include ':maps-compose-utils'
+
+include(":app")
+include(":maps-compose")
+include(":maps-compose-widgets")
+include(":maps-compose-utils")
