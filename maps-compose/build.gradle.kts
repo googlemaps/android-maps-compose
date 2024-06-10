@@ -1,15 +1,17 @@
 plugins {
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.compose.compiler)
+    id("android.maps.compose.PublishingConventionPlugin")
 }
 
 android {
+
     namespace = "com.google.maps.android.compose"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 21
-        lint.targetSdk = 34
+        targetSdk = 34
     }
 
     compileOptions {

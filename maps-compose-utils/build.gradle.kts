@@ -1,6 +1,7 @@
 plugins {
     id("kotlin-android")
     alias(libs.plugins.compose.compiler)
+    id("android.maps.compose.PublishingConventionPlugin")
 }
 
 android {
@@ -9,7 +10,7 @@ android {
 
     defaultConfig {
         minSdk = 21
-        lint.targetSdk = 34
+        targetSdk = 34
     }
 
     compileOptions {

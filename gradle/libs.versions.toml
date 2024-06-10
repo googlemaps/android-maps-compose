@@ -11,7 +11,7 @@ jacoco-plugin = "0.2.1"
 jacoco-tool-plugin = "0.8.7"
 junitktx = "1.1.5"
 junit = "4.13.2"
-kotlin = "1.9.23"
+kotlin = "2.0.0"
 material = "1.11.0"
 mapsktx = "5.0.0"
 mapsecrets = "2.0.1"
@@ -45,3 +45,4 @@ test-junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

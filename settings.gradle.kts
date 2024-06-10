@@ -5,7 +5,14 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-
+pluginManagement {
+    includeBuild("build-logic")
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 rootProject.name = "android-maps-compose"
 
 include(":app")
