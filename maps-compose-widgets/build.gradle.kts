@@ -18,10 +18,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composecompiler.get()
-    }
-
     buildFeatures {
         buildConfig = false
         compose = true

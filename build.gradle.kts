@@ -1,7 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     val kotlinVersion by extra(libs.versions.kotlin.get())
-    val composeCompilerVersion by extra(libs.versions.composecompiler.get())
     val androidxTestVersion by extra(libs.versions.androidxtest.get())
     repositories {
         google()
@@ -17,8 +16,9 @@ buildscript {
 }
 
 plugins {
-   // alias(libs.plugins.dokka) apply true
+    alias(libs.plugins.dokka) apply true
     alias(libs.plugins.compose.compiler) apply false
+    id("com.autonomousapps.dependency-analysis") version "1.32.0"
 
 }
 
