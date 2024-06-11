@@ -5,7 +5,7 @@ plugins {
 repositories {
     google()
     mavenCentral()
-    gradlePluginPortal() // Optional, for other Gradle plugins
+    gradlePluginPortal()
 }
 
 

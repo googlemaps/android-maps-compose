@@ -55,7 +55,9 @@ class PublishingConventionPlugin : Plugin<Project> {
         extensions.configure<PublishingExtension> {
             publications {
                 create<MavenPublication>("aar") {
-                 //   from(components["release"])
+                    afterEvaluate {
+                        from(components["release"])
+                    }
                     pom {
                         name.set(project.name)
                         description.set("Jetpack Compose components for the Maps SDK for Android")
