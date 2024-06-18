@@ -32,18 +32,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":maps-compose"))
+    api(project(":maps-compose"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material)
-    implementation(libs.androidx.core)
     implementation(libs.kotlin)
-    api(libs.maps.ktx.std)
-    api(libs.maps.ktx.utils)
+    implementation(libs.maps.ktx.utils)
 
-    testImplementation(libs.test.junit)
+    androidTestImplementation(libs.test.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.test.espresso)
-    androidTestImplementation(libs.androidx.test.junit.ktx)
 }

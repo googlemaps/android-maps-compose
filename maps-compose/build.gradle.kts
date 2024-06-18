@@ -50,13 +50,8 @@ android {
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core)
-    implementation(libs.androidx.compose.foundation)
     implementation(libs.kotlin)
     api(libs.maps.ktx.std)
-
-    testImplementation(libs.test.junit)
-
+    androidTestImplementation(libs.test.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.test.espresso)
-    androidTestImplementation(libs.androidx.test.junit.ktx)
 }

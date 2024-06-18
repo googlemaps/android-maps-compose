@@ -55,12 +55,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.test.core)
+    androidTestRuntimeOnly(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.espresso)
-    androidTestImplementation(libs.androidx.test.junit.ktx)
-    androidTestImplementation(libs.test.junit)
+    androidTestRuntimeOnly(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.compose.ui)
     androidTestImplementation(libs.coroutines)
 
