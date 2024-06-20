@@ -1,5 +1,5 @@
 branches:
-  - main
+  - fix/maven
 plugins:
   - "@semantic-release/commit-analyzer"
   - "@semantic-release/release-notes-generator"
