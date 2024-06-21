@@ -92,8 +92,8 @@ class PublishingConventionPlugin : Plugin<Project> {
                     val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
                     url = if (project.version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
                     credentials {
-                        username = project.findProperty("sonatypeUsername") as String?
-                        password = project.findProperty("sonatypePassword") as String?
+                        username = project.findProperty("sonatypeToken") as String?
+                        password = project.findProperty("sonatypeTokenPassword") as String?
                     }
                 }
             }
