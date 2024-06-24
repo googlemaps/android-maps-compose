@@ -1,5 +1,5 @@
 branches:
-  - main
+  - update_sonatype_token
 plugins:
   - "@semantic-release/commit-analyzer"
   - "@semantic-release/release-notes-generator"
