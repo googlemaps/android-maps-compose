@@ -27,7 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 import kotlin.random.Random
@@ -44,14 +46,10 @@ class RecompositionActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val cameraPositionState = rememberCameraPositionState {
-                position = defaultCameraPosition
-            }
             Box(Modifier.fillMaxSize()) {
                 MapsComposeSampleTheme {
                     GoogleMapView(
-                        modifier = Modifier.matchParentSize(),
-                        cameraPositionState = cameraPositionState
+                        modifier = Modifier.matchParentSize()
                     )
                 }
             }
@@ -61,10 +59,13 @@ class RecompositionActivity : ComponentActivity() {
     @Composable
     fun GoogleMapView(
         modifier: Modifier = Modifier,
-        cameraPositionState: CameraPositionState = rememberCameraPositionState(),
         content: @Composable () -> Unit = {},
     ) {
         val markerState = rememberMarkerState(position = singapore)
+        val cameraPosition = CameraPosition.fromLatLngZoom(markerState.position, 11f)
+        val cameraPositionState = rememberCameraPositionState {
+            position = cameraPosition
+        }
 
         val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
         val mapProperties by remember {
@@ -100,13 +101,14 @@ class RecompositionActivity : ComponentActivity() {
             }
             Column {
                 Button(onClick = {
-                    val randomValue = Random.nextInt(3)
+                    val randomValue = Random.nextInt(4)
                     markerState.position = when (randomValue) {
                         0 -> singapore
                         1 -> singapore2
                         2 -> singapore3
-                        else -> singapore
+                        else -> singapore4
                     }
+                    cameraPositionState.position = CameraPosition.fromLatLngZoom(markerState.position, 11f)
                 }) {
                     Text("Change Location")
                 }
