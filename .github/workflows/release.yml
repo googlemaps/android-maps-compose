@@ -15,7 +15,7 @@
 name: Release
 on:
   push:
-    branches: [ main ]
+    branches: [ update_sonatype_token ]
   workflow_dispatch:
 
 jobs:
