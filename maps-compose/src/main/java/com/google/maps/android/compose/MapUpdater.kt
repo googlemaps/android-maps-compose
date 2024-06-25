@@ -33,9 +33,11 @@ internal class MapPropertiesNode(
     contentDescription: String?,
     var density: Density,
     var layoutDirection: LayoutDirection,
+    contentPadding: PaddingValues
 ) : MapNode {
 
     init {
+        applyContentPadding(map, contentPadding)
         cameraPositionState.setMap(map)
         if (contentDescription != null) {
             map.setContentDescription(contentDescription)
@@ -120,6 +122,7 @@ internal inline fun MapUpdater(
                 cameraPositionState = cameraPositionState,
                 density = density,
                 layoutDirection = layoutDirection,
+                contentPadding = contentPadding
             )
         }
     ) {
@@ -140,15 +143,7 @@ internal inline fun MapUpdater(
         set(mapProperties.maxZoomPreference) { map.setMaxZoomPreference(it) }
         set(mapProperties.minZoomPreference) { map.setMinZoomPreference(it) }
         set(contentPadding) {
-            val node = this
-            with(this.density) {
-                map.setPadding(
-                    it.calculateLeftPadding(node.layoutDirection).roundToPx(),
-                    it.calculateTopPadding().roundToPx(),
-                    it.calculateRightPadding(node.layoutDirection).roundToPx(),
-                    it.calculateBottomPadding().roundToPx()
-                )
-            }
+            applyContentPadding(map, it)
         }
 
         set(mapUiSettings.compassEnabled) { map.uiSettings.isCompassEnabled = it }
@@ -163,5 +158,17 @@ internal inline fun MapUpdater(
         set(mapUiSettings.zoomGesturesEnabled) { map.uiSettings.isZoomGesturesEnabled = it }
 
         update(cameraPositionState) { this.cameraPositionState = it }
+    }
+}
+
+private fun MapPropertiesNode.applyContentPadding(map: GoogleMap, contentPadding: PaddingValues) {
+    val node = this
+    with (this.density) {
+        map.setPadding(
+            contentPadding.calculateLeftPadding(node.layoutDirection).roundToPx(),
+            contentPadding.calculateTopPadding().roundToPx(),
+            contentPadding.calculateRightPadding(node.layoutDirection).roundToPx(),
+            contentPadding.calculateBottomPadding().roundToPx()
+        )
     }
 }
