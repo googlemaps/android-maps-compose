@@ -126,6 +126,46 @@ public fun <T : ClusterItem> Clustering(
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
 ) {
+    Clustering(
+        items = items,
+        onClusterClick = onClusterClick,
+        onClusterItemClick = onClusterItemClick,
+        onClusterItemInfoWindowClick = onClusterItemInfoWindowClick,
+        onClusterItemInfoWindowLongClick = onClusterItemInfoWindowLongClick,
+        clusterContent = clusterContent,
+        clusterItemContent = clusterItemContent,
+        onClusterManager = null,
+    )
+}
+
+/**
+ * Groups many items on a map based on zoom level.
+ *
+ * @param items all items to show
+ * @param onClusterClick a lambda invoked when the user clicks a cluster of items
+ * @param onClusterItemClick a lambda invoked when the user clicks a non-clustered item
+ * @param onClusterItemInfoWindowClick a lambda invoked when the user clicks the info window of a
+ * non-clustered item
+ * @param onClusterItemInfoWindowLongClick a lambda invoked when the user long-clicks the info
+ * window of a non-clustered item
+ * @param clusterContent an optional Composable that is rendered for each [Cluster].
+ * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ * @param onClusterManager an optional lambda invoked with the clusterManager as a param when both
+ * the clusterManager and renderer are set up, allowing callers a customization hook.
+ */
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    onClusterItemInfoWindowClick: (T) -> Unit = { },
+    onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
+) {
     val clusterManager = rememberClusterManager<T>()
     val renderer = rememberClusterRenderer(clusterContent, clusterItemContent, clusterManager)
     SideEffect {
@@ -140,6 +180,8 @@ public fun <T : ClusterItem> Clustering(
         clusterManager.setOnClusterItemClickListener(onClusterItemClick)
         clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
         clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
+
+        onClusterManager?.invoke(clusterManager)
     }
 
     if (clusterManager != null) {
