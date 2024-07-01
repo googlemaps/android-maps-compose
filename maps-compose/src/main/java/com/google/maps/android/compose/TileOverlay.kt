@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.StateFactoryMarker
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileProvider
 import com.google.maps.android.ktx.addTileOverlay
@@ -122,7 +123,7 @@ public fun TileOverlay(
  *
  * [clearTileCache] can be called to request that the map refresh these tiles.
  */
-public class TileOverlayState {
+public class TileOverlayState private constructor() {
 
     internal var tileOverlay: TileOverlay? by mutableStateOf(null)
 
@@ -139,6 +140,13 @@ public class TileOverlayState {
             .clearTileCache()
     }
 
+    public companion object {
+        /**
+         * Creates a new [TileOverlayState] object
+         */
+        @StateFactoryMarker
+        public operator fun invoke(): TileOverlayState = TileOverlayState()
+    }
 }
 
 @Composable
