@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.LocationSource
+import com.google.android.gms.maps.model.MapColorScheme
 
 internal class MapPropertiesNode(
     val map: GoogleMap,
@@ -104,6 +105,7 @@ internal inline fun MapUpdater(
     locationSource: LocationSource?,
     mapProperties: MapProperties,
     mapUiSettings: MapUiSettings,
+    colorMapScheme: Int,
 ) {
     val map = (currentComposer.applier as MapApplier).map
     val mapView = (currentComposer.applier as MapApplier).mapView
@@ -139,6 +141,7 @@ internal inline fun MapUpdater(
         set(mapProperties.mapType) { map.mapType = it.value }
         set(mapProperties.maxZoomPreference) { map.setMaxZoomPreference(it) }
         set(mapProperties.minZoomPreference) { map.setMinZoomPreference(it) }
+        set(colorMapScheme) { map.mapColorScheme = it }
         set(contentPadding) {
             val node = this
             with(this.density) {
