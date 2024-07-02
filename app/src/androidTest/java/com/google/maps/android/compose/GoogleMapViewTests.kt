@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ class GoogleMapViewTests {
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)
     private lateinit var cameraPositionState: CameraPositionState
+    private var mapColorSchema = ComposeMapColorScheme.FOLLOW_SYSTEM
 
     private fun initMap(content: @Composable () -> Unit = {}) {
         check(hasValidApiKey) { "Maps API key not specified" }
@@ -50,7 +51,8 @@ class GoogleMapViewTests {
                 cameraPositionState = cameraPositionState,
                 onMapLoaded = {
                     countDownLatch.countDown()
-                }
+                },
+                mapColorSchema = mapColorSchema
             ) {
                 content.invoke()
             }
@@ -73,6 +75,19 @@ class GoogleMapViewTests {
     fun testStartingCameraPosition() {
         initMap()
         startingPosition.assertEquals(cameraPositionState.position.target)
+    }
+
+    @Test
+    fun testRightColorScheme() {
+        initMap()
+        mapColorSchema.assertEquals(ComposeMapColorScheme.FOLLOW_SYSTEM)
+    }
+
+    @Test
+    fun testRightInitialColorScheme() {
+        mapColorSchema = ComposeMapColorScheme.DARK
+        initMap()
+        mapColorSchema.assertEquals(ComposeMapColorScheme.DARK)
     }
 
     @Test
