@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ import kotlinx.coroutines.awaitCancellation
 /**
  * A compose container for a [MapView].
  *
- * @param mergeDescendants deactivates the map for accessibility purposes
  * @param modifier Modifier to be applied to the GoogleMap
+ * @param mergeDescendants deactivates the map for accessibility purposes
  * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
  * camera state
  * @param contentDescription the content description for the map used by accessibility services to
@@ -69,12 +69,13 @@ import kotlinx.coroutines.awaitCancellation
  * @param onPOIClick lambda invoked when a POI is clicked
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
+ * @param mapColorScheme Defines the color scheme for the Map. By default it will be ComposeMapColorScheme.FOLLOW_SYSTEM.
  * @param content the content of the map
  */
 @Composable
 public fun GoogleMap(
-    mergeDescendants: Boolean = false,
     modifier: Modifier = Modifier,
+    mergeDescendants: Boolean = false,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
     googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
@@ -89,6 +90,7 @@ public fun GoogleMap(
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = DefaultMapContentPadding,
+    mapColorScheme: ComposeMapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
     content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -120,6 +122,7 @@ public fun GoogleMap(
     val currentContentPadding by rememberUpdatedState(contentPadding)
     val currentUiSettings by rememberUpdatedState(uiSettings)
     val currentMapProperties by rememberUpdatedState(properties)
+    val currentColorScheme by rememberUpdatedState(mapColorScheme)
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
@@ -134,6 +137,7 @@ public fun GoogleMap(
                     locationSource = currentLocationSource,
                     mapProperties = currentMapProperties,
                     mapUiSettings = currentUiSettings,
+                    colorMapScheme = currentColorScheme.value
                 )
 
                 MapClickListenerUpdater()
@@ -271,3 +275,15 @@ public fun googleMapFactory(
     }
 }
 
+/**
+ * Enum representing a 1-1 mapping to `com.google.android.gms.maps.model.MapColorScheme`.
+ *
+ * This enum provides equivalent values to facilitate usage with `com.google.maps.android.compose.GoogleMap`.
+ *
+ * @param value The integer value corresponding to each map color scheme.
+ */
+public enum class ComposeMapColorScheme(public val value: Int) {
+    LIGHT(0),
+    DARK(1),
+    FOLLOW_SYSTEM(2);
+}

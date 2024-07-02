@@ -159,6 +159,8 @@ fun GoogleMapView(
     }
     var mapVisible by remember { mutableStateOf(true) }
 
+    var darkMode by remember { mutableStateOf(ComposeMapColorScheme.LIGHT) }
+
     if (mapVisible) {
         GoogleMap(
             modifier = modifier,
@@ -168,7 +170,8 @@ fun GoogleMapView(
             onMapLoaded = onMapLoaded,
             onPOIClick = {
                 Log.d(TAG, "POI clicked: ${it.name}")
-            }
+            },
+            mapColorScheme = darkMode
         ) {
             // Drawing on the map is accomplished with a child-based API
             val markerClick: (Marker) -> Boolean = {
@@ -267,6 +270,18 @@ fun GoogleMapView(
                 modifier = Modifier
                     .testTag("toggleMapVisibility")
             )
+            MapButton(
+                text = "Toggle Dark Mode",
+                onClick = {
+                    darkMode =
+                        if (darkMode == ComposeMapColorScheme.DARK)
+                            ComposeMapColorScheme.LIGHT
+                        else
+                            ComposeMapColorScheme.DARK
+                },
+                modifier = Modifier
+                    .testTag("toggleDarkMode")
+            )
         }
         val coroutineScope = rememberCoroutineScope()
         ZoomControls(
@@ -312,7 +327,7 @@ private fun MapTypeControls(
             .horizontalScroll(state = ScrollState(0)),
         horizontalArrangement = Arrangement.Center
     ) {
-        MapType.values().forEach {
+        MapType.entries.forEach {
             MapTypeButton(type = it) { onMapTypeClick(it) }
         }
     }
