@@ -133,7 +133,7 @@ fun GoogleMapView(
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     onMapLoaded: () -> Unit = {},
-    mapColorSchema: ComposeMapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
+    mapColorScheme: ComposeMapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
     content: @Composable () -> Unit = {}
 ) {
     val singaporeState = rememberMarkerState(position = singapore)
@@ -160,7 +160,7 @@ fun GoogleMapView(
     }
     var mapVisible by remember { mutableStateOf(true) }
 
-    var darkMode by remember { mutableStateOf(mapColorSchema) }
+    var darkMode by remember { mutableStateOf(mapColorScheme) }
 
     if (mapVisible) {
         GoogleMap(

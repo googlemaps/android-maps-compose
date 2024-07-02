@@ -40,7 +40,7 @@ class GoogleMapViewTests {
     private val startingZoom = 10f
     private val startingPosition = LatLng(1.23, 4.56)
     private lateinit var cameraPositionState: CameraPositionState
-    private var mapColorSchema = ComposeMapColorScheme.FOLLOW_SYSTEM
+    private var mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM
 
     private fun initMap(content: @Composable () -> Unit = {}) {
         check(hasValidApiKey) { "Maps API key not specified" }
@@ -52,7 +52,7 @@ class GoogleMapViewTests {
                 onMapLoaded = {
                     countDownLatch.countDown()
                 },
-                mapColorSchema = mapColorSchema
+                mapColorScheme = mapColorScheme
             ) {
                 content.invoke()
             }
@@ -80,14 +80,14 @@ class GoogleMapViewTests {
     @Test
     fun testRightColorScheme() {
         initMap()
-        mapColorSchema.assertEquals(ComposeMapColorScheme.FOLLOW_SYSTEM)
+        mapColorScheme.assertEquals(ComposeMapColorScheme.FOLLOW_SYSTEM)
     }
 
     @Test
     fun testRightInitialColorScheme() {
-        mapColorSchema = ComposeMapColorScheme.DARK
+        mapColorScheme = ComposeMapColorScheme.DARK
         initMap()
-        mapColorSchema.assertEquals(ComposeMapColorScheme.DARK)
+        mapColorScheme.assertEquals(ComposeMapColorScheme.DARK)
     }
 
     @Test
