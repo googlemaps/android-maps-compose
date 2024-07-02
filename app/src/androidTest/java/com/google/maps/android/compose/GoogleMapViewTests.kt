@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -78,13 +78,13 @@ class GoogleMapViewTests {
     }
 
     @Test
-    fun testRightColorScheme() {
+    fun testRightInitialColorScheme() {
         initMap()
         mapColorScheme.assertEquals(ComposeMapColorScheme.FOLLOW_SYSTEM)
     }
 
     @Test
-    fun testRightInitialColorScheme() {
+    fun testRighColorSchemeAfterChangingIt() {
         mapColorScheme = ComposeMapColorScheme.DARK
         initMap()
         mapColorScheme.assertEquals(ComposeMapColorScheme.DARK)
