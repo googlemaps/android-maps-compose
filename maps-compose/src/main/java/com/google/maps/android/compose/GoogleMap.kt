@@ -43,6 +43,7 @@ import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.awaitCancellation
@@ -284,7 +285,7 @@ public fun googleMapFactory(
  * @param value The integer value corresponding to each map color scheme.
  */
 public enum class ComposeMapColorScheme(public val value: Int) {
-    LIGHT(0),
-    DARK(1),
-    FOLLOW_SYSTEM(2);
+    LIGHT(MapColorScheme.LIGHT),
+    DARK(MapColorScheme.DARK),
+    FOLLOW_SYSTEM(MapColorScheme.FOLLOW_SYSTEM);
 }
