@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.StateFactoryMarker
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -59,7 +60,7 @@ public inline fun rememberCameraPositionState(
  *
  * @param position the initial camera position
  */
-public class CameraPositionState(
+public class CameraPositionState private constructor(
     position: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
 ) {
     /**
@@ -302,6 +303,16 @@ public class CameraPositionState(
     }
 
     public companion object {
+        /**
+         * Creates a new [CameraPositionState] object
+         *
+         * @param position the initial camera position
+         */
+        @StateFactoryMarker
+        public operator fun invoke(
+            position: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
+        ): CameraPositionState = CameraPositionState(position)
+
         /**
          * The default saver implementation for [CameraPositionState]
          */

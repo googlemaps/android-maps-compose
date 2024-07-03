@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.StateFactoryMarker
 import com.google.android.gms.maps.StreetViewPanorama
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.StreetViewPanoramaCamera
@@ -18,7 +19,7 @@ public inline fun rememberStreetViewCameraPositionState(
     StreetViewCameraPositionState().apply(init)
 }
 
-public class StreetViewCameraPositionState {
+public class StreetViewCameraPositionState private constructor() {
 
     /**
      * The location of the panorama.
@@ -85,5 +86,14 @@ public class StreetViewCameraPositionState {
      */
     public fun setPosition(panoId: String) {
         panorama?.setPosition(panoId)
+    }
+
+    public companion object {
+        /**
+         * Creates a new [StreetViewCameraPositionState] object
+         */
+        @StateFactoryMarker
+        public operator fun invoke(): StreetViewCameraPositionState =
+            StreetViewCameraPositionState()
     }
 }
