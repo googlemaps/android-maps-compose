@@ -247,7 +247,7 @@ internal class MapUpdaterState(
     locationSource: LocationSource?,
     mapProperties: MapProperties,
     mapUiSettings: MapUiSettings,
-    mapColorScheme: Int
+    mapColorScheme: Int,
 ) {
     var mergeDescendants by mutableStateOf(mergeDescendants)
     var contentDescription by mutableStateOf(contentDescription)
