@@ -392,7 +392,7 @@ This library provides optional utilities in the `maps-compose-utils` library fro
 The marker clustering utility helps you manage multiple markers at different zoom levels.
 When a user views the map at a high zoom level, the individual markers show on the map. When the user zooms out, the markers gather together into clusters, to make viewing the map easier.
 
-The [MarkerClusteringActivity](app/src/main/java/com/google/maps/android/compose/MarkerClusteringActivity.kt) demonstrates usage.
+The [MarkerClusteringActivity](app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt) demonstrates usage.
 
 ```kotlin
 Clustering(
