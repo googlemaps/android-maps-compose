@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.LocationSource
 
 internal class MapPropertiesNode(
     val map: GoogleMap,
@@ -85,7 +84,10 @@ internal class MapPropertiesNode(
     }
 }
 
-internal val NoPadding = PaddingValues()
+/**
+ * Default map content padding does not pad.
+ */
+public val DefaultMapContentPadding: PaddingValues = PaddingValues()
 
 /**
  * Used to keep the primary map properties up to date. This should never leave the map composition.
@@ -128,6 +130,7 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
         set(mapProperties.mapType) { map.mapType = it.value }
         set(mapProperties.maxZoomPreference) { map.setMaxZoomPreference(it) }
         set(mapProperties.minZoomPreference) { map.setMinZoomPreference(it) }
+        set(mapColorScheme) { map.mapColorScheme = it }
         set(contentPadding) {
             val node = this
             with(this.density) {

@@ -22,14 +22,14 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:5.0.1'
+    implementation 'com.google.maps.android:maps-compose:6.0.0'
 
     // Optionally, you can include the Compose utils library for Clustering,
     // Street View metadata checks, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:5.0.1'
+    implementation 'com.google.maps.android:maps-compose-utils:6.0.0'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:5.0.1'
+    implementation 'com.google.maps.android:maps-compose-widgets:6.0.0'
 }
 ```
 
@@ -392,7 +392,7 @@ This library provides optional utilities in the `maps-compose-utils` library fro
 The marker clustering utility helps you manage multiple markers at different zoom levels.
 When a user views the map at a high zoom level, the individual markers show on the map. When the user zooms out, the markers gather together into clusters, to make viewing the map easier.
 
-The [MarkerClusteringActivity](app/src/main/java/com/google/maps/android/compose/MarkerClusteringActivity.kt) demonstrates usage.
+The [MarkerClusteringActivity](app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt) demonstrates usage.
 
 ```kotlin
 Clustering(

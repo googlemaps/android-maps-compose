@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.StateFactoryMarker
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.AdvancedMarkerOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -63,6 +64,7 @@ internal class MarkerNode(
 }
 
 @Immutable
+@Deprecated("START, DRAG, END are events, not states. Avoid usage.")
 public enum class DragState {
     START, DRAG, END
 }
@@ -70,19 +72,42 @@ public enum class DragState {
 /**
  * A state object that can be hoisted to control and observe the marker state.
  *
+ * This cannot be used to preserve marker info window visibility across configuration changes.
+ *
  * @param position the initial marker position
  */
-public class MarkerState(
-    position: LatLng = LatLng(0.0, 0.0),
-) {
+public class MarkerState private constructor(position: LatLng) {
     /**
      * Current position of the marker.
+     *
+     * This property is backed by Compose state.
+     * It can be updated by the API user and by the API itself:
+     * it has two potentially competing sources of truth.
+     *
+     * The API will not update the property unless [isDragging] `== true`,
+     * which will happen if and only if a Marker is draggable and the end user
+     * is currently dragging it.
      */
     public var position: LatLng by mutableStateOf(position)
 
     /**
+     * Reflects whether the end user is currently dragging the marker.
+     * Dragging can happen only if a Marker is draggable.
+     *
+     * This property is backed by Compose state.
+     */
+    public var isDragging: Boolean by mutableStateOf(false)
+        internal set
+
+    /**
      * Current [DragState] of the marker.
      */
+    @Deprecated(
+        "Use isDragging instead - dragState is not appropriate for representing \"state\";" +
+                " it is a lossy representation of drag \"events\", promoting invalid usage.",
+        level = DeprecationLevel.WARNING
+    )
+    @Suppress("DEPRECATION")
     public var dragState: DragState by mutableStateOf(DragState.END)
         internal set
 
@@ -99,14 +124,28 @@ public class MarkerState(
         }
 
     /**
-     * Shows the info window for the underlying marker
+     * Shows the info window for the underlying marker.
+     *
+     * Not backed by Compose state to accommodate
+     * [com.google.android.gms.maps.GoogleMap] special semantics:
+     * only a single info window can be visible for the entire GoogleMap.
+     *
+     * Only use from Compose Effect APIs, never directly from composition, to avoid exceptions and
+     * unexpected behavior from cancelled compositions.
      */
     public fun showInfoWindow() {
         marker?.showInfoWindow()
     }
 
     /**
-     * Hides the info window for the underlying marker
+     * Hides the info window for the underlying marker.
+     *
+     * Not backed by observable Compose state to accommodate
+     * [com.google.android.gms.maps.GoogleMap] special semantics:
+     * only a single info window can be visible for the entire GoogleMap.
+     *
+     * Only use from Compose Effect APIs, never directly from composition, to avoid
+     * unexpected behavior from cancelled compositions.
      */
     public fun hideInfoWindow() {
         marker?.hideInfoWindow()
@@ -114,7 +153,20 @@ public class MarkerState(
 
     public companion object {
         /**
+         * Creates a new [MarkerState] object
+         *
+         * @param position the initial marker position
+         */
+        @StateFactoryMarker
+        public operator fun invoke(
+            position: LatLng = LatLng(0.0, 0.0)
+        ): MarkerState = MarkerState(position)
+
+        /**
          * The default saver implementation for [MarkerState]
+         *
+         * This cannot be used to preserve marker info window visibility across
+         * configuration changes.
          */
         public val Saver: Saver<MarkerState, LatLng> = Saver(
             save = { it.position },
@@ -123,6 +175,14 @@ public class MarkerState(
     }
 }
 
+/**
+ * Uses [rememberSaveable] to retain [MarkerState.position] across configuration changes,
+ * for simple use cases.
+ *
+ * Other use cases may be better served syncing [MarkerState.position] with a data model.
+ *
+ * This cannot be used to preserve info window visibility across configuration changes.
+ */
 @Composable
 public fun rememberMarkerState(
     key: String? = null,
@@ -200,6 +260,8 @@ public fun Marker(
 /**
  * Composable rendering the content passed as a marker.
  *
+ * This composable must have a non-zero size in both dimensions
+ *
  * @param keys unique keys representing the state of this Marker. Any changes to one of the key will
  * trigger a rendering of the content composable and thus the rendering of an updated marker.
  * @param state the [MarkerState] to be used to control or observe the marker
@@ -221,6 +283,9 @@ public fun Marker(
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
  * @param content composable lambda expression used to customize the marker's content
+ *
+ * @throws IllegalStateException if the composable is measured to have a size of zero in either
+ * dimension
  */
 @Composable
 @GoogleMapComposable

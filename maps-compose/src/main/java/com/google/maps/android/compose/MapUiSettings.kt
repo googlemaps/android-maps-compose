@@ -16,7 +16,10 @@ package com.google.maps.android.compose
 
 import java.util.Objects
 
-internal val DefaultMapUiSettings = MapUiSettings()
+/**
+ * Default settings are all enabled.
+ */
+public val DefaultMapUiSettings: MapUiSettings = MapUiSettings()
 
 /**
  * Data class for UI-related settings on the map.

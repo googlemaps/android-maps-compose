@@ -2,7 +2,6 @@ package com.google.maps.android.compose
 
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 const val timeout2 = 2_000L
 const val timeout3 = 3_000L
 const val timeout5 = 5_000L
@@ -17,7 +16,7 @@ fun LatLng.assertEquals(other: LatLng) {
     assertEquals(longitude, other.longitude, assertRoundingError)
 }
 
-fun LatLng.assertNotEquals(other: LatLng) {
-    assertNotEquals(latitude, other.latitude, assertRoundingError)
-    assertNotEquals(longitude, other.longitude, assertRoundingError)
+
+fun ComposeMapColorScheme.assertEquals(other: ComposeMapColorScheme) {
+    assertEquals(other, this)
 }

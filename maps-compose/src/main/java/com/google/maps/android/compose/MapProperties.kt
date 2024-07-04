@@ -18,7 +18,10 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MapStyleOptions
 import java.util.Objects
 
-internal val DefaultMapProperties = MapProperties()
+/**
+ * Equivalent to [MapProperties] with default values.
+ */
+public val DefaultMapProperties: MapProperties = MapProperties()
 
 /**
  * Data class for properties that can be modified on the map.

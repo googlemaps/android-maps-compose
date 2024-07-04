@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
@@ -44,6 +45,7 @@ import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
@@ -55,8 +57,8 @@ import kotlinx.coroutines.launch
 /**
  * A compose container for a [MapView].
  *
- * @param mergeDescendants deactivates the map for accessibility purposes
  * @param modifier Modifier to be applied to the GoogleMap
+ * @param mergeDescendants deactivates the map for accessibility purposes
  * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
  * camera state
  * @param contentDescription the content description for the map used by accessibility services to
@@ -74,12 +76,14 @@ import kotlinx.coroutines.launch
  * @param onPOIClick lambda invoked when a POI is clicked
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
+ * @param mapColorScheme Defines the color scheme for the Map. By default it will be
+ * [ComposeMapColorScheme.FOLLOW_SYSTEM].
  * @param content the content of the map
  */
 @Composable
 public fun GoogleMap(
-    mergeDescendants: Boolean = false,
     modifier: Modifier = Modifier,
+    mergeDescendants: Boolean = false,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
     googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
@@ -93,7 +97,8 @@ public fun GoogleMap(
     onMyLocationButtonClick: (() -> Boolean)? = null,
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
-    contentPadding: PaddingValues = NoPadding,
+    contentPadding: PaddingValues = DefaultMapContentPadding,
+    mapColorScheme: ComposeMapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
     content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -122,7 +127,8 @@ public fun GoogleMap(
             contentPadding,
             locationSource,
             properties,
-            uiSettings
+            uiSettings,
+            mapColorScheme.value,
         )
     }.also {
         it.mergeDescendants = mergeDescendants
@@ -132,6 +138,7 @@ public fun GoogleMap(
         it.locationSource = locationSource
         it.mapProperties = properties
         it.mapUiSettings = uiSettings
+        it.mapColorScheme = mapColorScheme.value
     }
 
     val parentComposition = rememberCompositionContext()
@@ -239,7 +246,8 @@ internal class MapUpdaterState(
     contentPadding: PaddingValues,
     locationSource: LocationSource?,
     mapProperties: MapProperties,
-    mapUiSettings: MapUiSettings
+    mapUiSettings: MapUiSettings,
+    mapColorScheme: Int
 ) {
     var mergeDescendants by mutableStateOf(mergeDescendants)
     var contentDescription by mutableStateOf(contentDescription)
@@ -248,6 +256,7 @@ internal class MapUpdaterState(
     var locationSource by mutableStateOf(locationSource)
     var mapProperties by mutableStateOf(mapProperties)
     var mapUiSettings by mutableStateOf(mapUiSettings)
+    var mapColorScheme by mutableIntStateOf(mapColorScheme)
 }
 
 /** Used to store things in the tag which must be retrievable across recompositions */
@@ -358,4 +367,17 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
         }
         currentLifecycleState = event.targetState
     }
+}
+
+/**
+ * Enum representing a 1-1 mapping to [com.google.android.gms.maps.model.MapColorScheme].
+ *
+ * This enum provides equivalent values to facilitate usage with [com.google.maps.android.compose.GoogleMap].
+ *
+ * @param value The integer value corresponding to each map color scheme.
+ */
+public enum class ComposeMapColorScheme(public val value: Int) {
+    LIGHT(MapColorScheme.LIGHT),
+    DARK(MapColorScheme.DARK),
+    FOLLOW_SYSTEM(MapColorScheme.FOLLOW_SYSTEM);
 }

@@ -1,20 +1,20 @@
 [versions]
 activitycompose = "1.9.0"
-agp = "8.4.0"
-androidxtest = "1.5.0"
-compose-bom = "2024.04.01"
-composecompiler = "1.5.11"
+agp = "8.4.2"
+androidxtest = "1.6.1"
+compose-bom = "2024.06.00"
 coroutines = "1.7.3"
-dokka = "1.9.10"
-espresso = "3.5.1"
+dokka = "1.9.20"
+espresso = "3.6.1"
 jacoco-plugin = "0.2.1"
-jacoco-tool-plugin = "0.8.7"
-junitktx = "1.1.5"
+junitktx = "1.2.1"
 junit = "4.13.2"
-kotlin = "1.9.23"
-material = "1.11.0"
-mapsktx = "5.0.0"
+kotlin = "2.0.0"
+material = "1.12.0"
+mapsktx = "5.1.0"
 mapsecrets = "2.0.1"
+org-jacoco-core = "0.8.11"
+
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -25,7 +25,7 @@ androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-androidx-core = { module = "androidx.core:core-ktx", version = "1.13.0" }
+androidx-core = { module = "androidx.core:core-ktx", version = "android-core" }
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxtest" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
@@ -41,7 +41,9 @@ maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "map
 maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsktx" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
+org-jacoco-core = { module = "org.jacoco:org.jacoco.core", version.ref = "org-jacoco-core" }
 test-junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
