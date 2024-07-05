@@ -36,5 +36,6 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.kotlin)
+    implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.ktx.utils)
 }

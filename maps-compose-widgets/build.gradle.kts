@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.core)
     implementation(libs.kotlin)
+    implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.ktx.std)
     api(libs.maps.ktx.utils)
 
