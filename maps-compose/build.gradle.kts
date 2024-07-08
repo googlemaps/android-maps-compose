@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.kotlin)
+    implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.ktx.std)
 
     testImplementation(libs.test.junit)
