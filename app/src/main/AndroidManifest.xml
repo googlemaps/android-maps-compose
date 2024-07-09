@@ -52,7 +52,7 @@
         android:name=".MapsInLazyColumnActivity"
         android:exported="false"/>
     <activity
-        android:name=".MarkerClusteringActivity"
+        android:name=".markerexamples.MarkerClusteringActivity"
         android:exported="false"/>
     <activity
         android:name=".LocationTrackingActivity"
