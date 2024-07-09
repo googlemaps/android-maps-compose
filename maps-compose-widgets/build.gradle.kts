@@ -13,8 +13,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildFeatures {
@@ -23,7 +23,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
         freeCompilerArgs += listOf(
             "-Xexplicit-api=strict",
             "-Xopt-in=kotlin.RequiresOptIn"
@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.core)
     implementation(libs.kotlin)
+    implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.ktx.std)
     api(libs.maps.ktx.utils)
 

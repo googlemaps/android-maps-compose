@@ -130,7 +130,11 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
         set(mapProperties.mapType) { map.mapType = it.value }
         set(mapProperties.maxZoomPreference) { map.setMaxZoomPreference(it) }
         set(mapProperties.minZoomPreference) { map.setMinZoomPreference(it) }
-        set(mapColorScheme) { map.mapColorScheme = it }
+        set(mapColorScheme) {
+            if (it != null) {
+                map.mapColorScheme = it
+            }
+        }
         set(contentPadding) {
             val node = this
             with(this.density) {

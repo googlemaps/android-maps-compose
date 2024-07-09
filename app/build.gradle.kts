@@ -29,8 +29,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildFeatures {
@@ -39,7 +39,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 }
@@ -50,6 +50,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material)
     implementation(libs.kotlin)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.material)
     implementation(libs.androidx.compose.ui.preview.tooling)
     debugImplementation(libs.androidx.compose.ui.tooling)
@@ -62,7 +63,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.junit.ktx)
     androidTestImplementation(libs.test.junit)
     androidTestImplementation(libs.androidx.test.compose.ui)
-    androidTestImplementation(libs.coroutines)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
 
     // Instead of the lines below, regular apps would load these libraries from Maven according to
     // the README installation instructions

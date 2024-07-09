@@ -3,15 +3,15 @@ activitycompose = "1.9.0"
 agp = "8.4.2"
 androidxtest = "1.6.1"
 compose-bom = "2024.06.00"
-coroutines = "1.7.3"
 dokka = "1.9.20"
 espresso = "3.6.1"
 jacoco-plugin = "0.2.1"
 junitktx = "1.2.1"
 junit = "4.13.2"
 kotlin = "2.0.0"
+kotlinxCoroutines = "1.8.1"
 material = "1.12.0"
-mapsktx = "5.1.0"
+mapsktx = "5.1.1"
 mapsecrets = "2.0.1"
 org-jacoco-core = "0.8.11"
 
@@ -32,11 +32,12 @@ androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", vers
 androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitktx" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxtest" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxtest" }
-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version.ref = "jacoco-plugin", version.require = "0.2.1" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "mapsktx" }
 maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsktx" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
