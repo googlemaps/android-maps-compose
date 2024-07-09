@@ -92,7 +92,7 @@ public fun GoogleMap(
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = DefaultMapContentPadding,
-    mapColorScheme: ComposeMapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
+    mapColorScheme: ComposeMapColorScheme? = null,
     content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -139,7 +139,7 @@ public fun GoogleMap(
                     locationSource = currentLocationSource,
                     mapProperties = currentMapProperties,
                     mapUiSettings = currentUiSettings,
-                    colorMapScheme = currentColorScheme.value
+                    colorMapScheme = currentColorScheme?.value
                 )
 
                 MapClickListenerUpdater()
