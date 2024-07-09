@@ -70,8 +70,7 @@ import kotlinx.coroutines.awaitCancellation
  * @param onPOIClick lambda invoked when a POI is clicked
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
- * @param mapColorScheme Defines the color scheme for the Map. By default it will be
- * [ComposeMapColorScheme.FOLLOW_SYSTEM].
+ * @param mapColorScheme Defines the color scheme for the Map.
  * @param content the content of the map
  */
 @Composable
