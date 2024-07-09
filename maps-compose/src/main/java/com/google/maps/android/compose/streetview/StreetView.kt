@@ -38,9 +38,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.StreetViewPanoramaView
 import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
-import com.google.maps.android.compose.disposingComposition
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.ktx.awaitStreetViewPanorama
+import kotlinx.coroutines.awaitCancellation
 
 /**
  * A composable for displaying a Street View for a given location. A location might not be available for a given
@@ -128,6 +128,15 @@ private fun StreetViewLifecycle(streetView: StreetViewPanoramaView) {
             context.unregisterComponentCallbacks(callbacks)
             streetView.onDestroy()
         }
+    }
+}
+
+private suspend inline fun disposingComposition(factory: () -> Composition) {
+    val composition = factory()
+    try {
+        awaitCancellation()
+    } finally {
+        composition.dispose()
     }
 }
 

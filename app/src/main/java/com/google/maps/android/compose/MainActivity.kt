@@ -107,6 +107,18 @@ class MainActivity : ComponentActivity() {
                                 context.startActivity(
                                     Intent(
                                         context,
+                                        MapsInLazyColumnActivity::class.java
+                                    )
+                                )
+                            }) {
+                            Text(getString(R.string.maps_in_lazy_column_activity))
+                        }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(
+                                    Intent(
+                                        context,
                                         LocationTrackingActivity::class.java
                                     )
                                 )

@@ -49,6 +49,9 @@
         android:name=".MapInColumnActivity"
         android:exported="false"/>
     <activity
+        android:name=".MapsInLazyColumnActivity"
+        android:exported="false"/>
+    <activity
         android:name=".markerexamples.MarkerClusteringActivity"
         android:exported="false"/>
     <activity

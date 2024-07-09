@@ -25,8 +25,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.LocationSource
-import com.google.android.gms.maps.model.MapColorScheme
 
 internal class MapPropertiesNode(
     val map: GoogleMap,
@@ -97,16 +95,7 @@ public val DefaultMapContentPadding: PaddingValues = PaddingValues()
 @SuppressLint("MissingPermission")
 @Suppress("NOTHING_TO_INLINE")
 @Composable
-internal inline fun MapUpdater(
-    mergeDescendants: Boolean = false,
-    contentDescription: String?,
-    cameraPositionState: CameraPositionState,
-    contentPadding: PaddingValues = DefaultMapContentPadding,
-    locationSource: LocationSource?,
-    mapProperties: MapProperties,
-    mapUiSettings: MapUiSettings,
-    colorMapScheme: Int?,
-) {
+internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdaterState) {
     val map = (currentComposer.applier as MapApplier).map
     val mapView = (currentComposer.applier as MapApplier).mapView
     if (mergeDescendants) {
@@ -141,7 +130,7 @@ internal inline fun MapUpdater(
         set(mapProperties.mapType) { map.mapType = it.value }
         set(mapProperties.maxZoomPreference) { map.setMaxZoomPreference(it) }
         set(mapProperties.minZoomPreference) { map.setMinZoomPreference(it) }
-        set(colorMapScheme) {
+        set(mapColorScheme) {
             if (it != null) {
                 map.mapColorScheme = it
             }

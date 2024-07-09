@@ -32,4 +32,5 @@
   <string name="street_view">Street View</string>
   <string name="custom_location_button">Custom Location Button</string>
   <string name="accessibility_button">Accessibility</string>
+  <string name="maps_in_lazy_column_activity">Maps in LazyColumn</string>
 </resources>
