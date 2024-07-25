@@ -14,7 +14,7 @@ material = "1.12.0"
 mapsktx = "5.1.1"
 mapsecrets = "2.0.1"
 org-jacoco-core = "0.8.11"
-
+androidx-core = "1.13.1"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -25,7 +25,7 @@ androidx-compose-material = { module = "androidx.compose.material:material" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-androidx-core = { module = "androidx.core:core-ktx", version = "android-core" }
+androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxtest" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
