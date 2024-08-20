@@ -17,7 +17,9 @@ package com.google.maps.android.compose.markerexamples.syncingdraggablemarkerwit
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,12 +73,13 @@ class SyncingDraggableMarkerWithDataModelActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             MapsComposeSampleTheme {
                 Screen(
                     dataModel = dataModel,
                     modifier = Modifier.fillMaxSize()
+                        .systemBarsPadding(),
                 )
             }
         }

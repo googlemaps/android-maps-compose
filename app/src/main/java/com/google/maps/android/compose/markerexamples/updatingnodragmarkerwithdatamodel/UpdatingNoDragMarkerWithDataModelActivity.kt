@@ -17,7 +17,9 @@ package com.google.maps.android.compose.markerexamples.updatingnodragmarkerwithd
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -71,7 +73,7 @@ class UpdatingNoDragMarkerWithDataModelActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         lifecycleScope.launch {
             // Simulate remote updates to data model
             while (true) {
@@ -93,6 +95,7 @@ class UpdatingNoDragMarkerWithDataModelActivity : ComponentActivity() {
                 GoogleMapWithSimpleMarker(
                     locationData = dataModel.locationData,
                     modifier = Modifier.fillMaxSize()
+                        .systemBarsPadding(),
                 )
             }
         }

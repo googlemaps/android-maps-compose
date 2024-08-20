@@ -18,8 +18,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +35,7 @@ class AccessibilityActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             val singaporeState = rememberMarkerState(position = singapore)
             val cameraPositionState = rememberCameraPositionState {
@@ -43,7 +46,10 @@ class AccessibilityActivity : ComponentActivity() {
                 mutableStateOf(MapProperties(mapType = MapType.NORMAL))
             }
 
-            Box(Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .systemBarsPadding(),
+            ) {
                 GoogleMap(
                     // mergeDescendants will remove accessibility from the entire map and content inside.
                     mergeDescendants = true,

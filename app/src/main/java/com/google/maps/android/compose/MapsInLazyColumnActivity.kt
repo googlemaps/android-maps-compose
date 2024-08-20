@@ -3,6 +3,7 @@ package com.google.maps.android.compose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -86,7 +88,7 @@ private val allItems = countries.mapIndexed { index, country ->
 class MapsInLazyColumnActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             var showLazyColumn by rememberSaveable { mutableStateOf(true) }
             var visibleItems by rememberSaveable { mutableStateOf(allItems) }
@@ -95,7 +97,10 @@ class MapsInLazyColumnActivity : ComponentActivity() {
                 visibleItems = allItems.take(count.coerceIn(0, allItems.size))
             }
 
-            Column {
+            Column(
+                Modifier.fillMaxSize()
+                    .systemBarsPadding(),
+            ) {
                 Row(
                     Modifier
                         .fillMaxWidth()
