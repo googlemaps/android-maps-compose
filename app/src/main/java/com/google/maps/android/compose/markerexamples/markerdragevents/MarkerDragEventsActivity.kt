@@ -18,7 +18,9 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
@@ -42,11 +44,12 @@ private val TAG = MarkerDragEventsActivity::class.simpleName
 class MarkerDragEventsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             MapsComposeSampleTheme {
                 GoogleMapWithMarker(
                     modifier = Modifier.fillMaxSize()
+                        .systemBarsPadding(),
                 )
             }
         }

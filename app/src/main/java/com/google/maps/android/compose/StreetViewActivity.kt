@@ -18,6 +18,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -59,7 +61,7 @@ class StreetViewActivity : ComponentActivity() {
     @OptIn(MapsExperimentalFeature::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             var isPanningEnabled by remember { mutableStateOf(false) }
             var isZoomEnabled by remember { mutableStateOf(false) }
@@ -86,7 +88,11 @@ class StreetViewActivity : ComponentActivity() {
                         fetchStreetViewData(singapore, BuildConfig.MAPS_API_KEY)
                 }
             }
-            Box(Modifier.fillMaxSize(), Alignment.BottomStart) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .systemBarsPadding(),
+                contentAlignment = Alignment.BottomStart,
+            ) {
                 if (streetViewResult == Status.OK) {
                     StreetView(
                         Modifier.matchParentSize(),

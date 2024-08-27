@@ -19,6 +19,7 @@ import android.util.Log
 import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -47,6 +48,7 @@ class MapInColumnActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
@@ -63,7 +65,8 @@ class MapInColumnActivity : ComponentActivity() {
             }
 
             MapInColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize()
+                    .systemBarsPadding(),
                 cameraPositionState,
                 columnScrollingEnabled = columnScrollingEnabled,
                 onMapTouched = {
