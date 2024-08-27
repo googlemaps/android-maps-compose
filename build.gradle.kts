@@ -32,7 +32,7 @@ val projectArtifactId by extra { project: Project ->
 
 allprojects {
     group = "com.google.maps.android"
-    version = "6.1.1"
+    version = "6.1.2"
     val projectArtifactId by extra { project.name }
 }
 
