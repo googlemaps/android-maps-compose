@@ -78,7 +78,7 @@ fun GoogleMapClustering() {
             items.add(MyItem(position, "Marker", "Snippet", 0f))
         }
     }
-    Surface(
+    Box(
         modifier = Modifier.fillMaxSize()
             .systemBarsPadding()
     ) {
