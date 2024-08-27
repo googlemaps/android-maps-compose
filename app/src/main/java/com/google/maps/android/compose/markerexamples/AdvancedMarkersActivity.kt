@@ -22,8 +22,10 @@ import android.util.Log
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +59,7 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapsInitializer.initialize(applicationContext, MapsInitializer.Renderer.LATEST, this)
+        enableEdgeToEdge()
         setContent {
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
@@ -78,7 +81,10 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                 }
                 false
             }
-            Box(Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .systemBarsPadding(),
+            ) {
                 GoogleMap(
                     modifier = Modifier.matchParentSize(),
                     googleMapOptionsFactory = {

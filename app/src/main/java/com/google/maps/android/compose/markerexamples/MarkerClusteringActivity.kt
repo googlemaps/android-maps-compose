@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -57,6 +59,7 @@ private val TAG = MarkerClusteringActivity::class.simpleName
 class MarkerClusteringActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             GoogleMapClustering()
         }
@@ -75,7 +78,12 @@ fun GoogleMapClustering() {
             items.add(MyItem(position, "Marker", "Snippet", 0f))
         }
     }
-    GoogleMapClustering(items = items)
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .systemBarsPadding()
+    ) {
+        GoogleMapClustering(items = items)
+    }
 }
 
 @Composable
