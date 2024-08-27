@@ -51,7 +51,6 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.kotlin)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.material)
     implementation(libs.androidx.compose.ui.preview.tooling)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
