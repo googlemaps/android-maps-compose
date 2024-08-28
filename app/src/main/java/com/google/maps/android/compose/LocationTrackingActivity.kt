@@ -18,9 +18,9 @@ package com.google.maps.android.compose
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
@@ -52,7 +52,7 @@ private const val zoom = 8f
  * This shows how to use a custom location source to show a blue dot on the map based on your own
  * locations.
  */
-class LocationTrackingActivity : AppCompatActivity() {
+class LocationTrackingActivity : ComponentActivity() {
 
     private val locationSource = MyLocationSource()
     private var counter = 0
@@ -115,7 +115,7 @@ class LocationTrackingActivity : AppCompatActivity() {
                     .systemBarsPadding(),
             ) {
                 GoogleMap(
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
                     onMapLoaded = {
                         isMapLoaded = true
