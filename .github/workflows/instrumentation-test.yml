@@ -47,7 +47,7 @@ jobs:
       env:
         MAPS_API_KEY: ${{ secrets.ACTIONS_API_KEY }}
       run: |
-        [ -z "$MAPS_API_KEY" ] && MAPS_API_KEY="YOUR_API_KEY"; echo "MAPS_API_KEY=$MAPS_API_KEY" >> ./local.default.properties
+        [ -z "$MAPS_API_KEY" ] && MAPS_API_KEY="YOUR_API_KEY"; echo "MAPS_API_KEY=$MAPS_API_KEY" >> ./local.defaults.properties
 
     - name: Build debug
       run: ./gradlew assembleDebug
