@@ -40,8 +40,13 @@ This repository includes a [sample app](app).
 To run it:
 
 1. Get a [Maps API key][api-key]
-1. Create a file in the root directory named `local.properties` with a single line that looks like this, replacing YOUR_KEY with the key from step 1: `MAPS_API_KEY=YOUR_KEY`
-1. Build and run
+2. Open the `secrets.properties` file in your top-level directory, and then add the following code. Replace YOUR_API_KEY with your API key. Store your key in this file because secrets.properties is excluded from being checked into a version control system.
+   If the `secrets.properties` file does not exist, create it in the same folder as the `local.default.properties` file.
+
+   ```
+   MAPS_API_KEY=YOUR_API_KEY
+   ```
+3. Build and run
 
 ## Documentation
 
