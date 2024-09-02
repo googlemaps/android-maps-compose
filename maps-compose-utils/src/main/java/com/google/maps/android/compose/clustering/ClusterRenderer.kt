@@ -168,11 +168,11 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         }
     }
 
-    private fun renderViewToBitmapDescriptor(view: AbstractComposeView): BitmapDescriptor {
+    private fun renderViewToBitmapDescriptor(view: AbstractComposeView?): BitmapDescriptor {
         /* AndroidComposeView triggers LayoutNode's layout phase in the View draw phase,
            so trigger a draw to an empty canvas to force that */
-        view.draw(fakeCanvas)
-        val viewParent = (view.parent as ViewGroup)
+        view?.draw(fakeCanvas)
+        val viewParent = (view?.parent as ViewGroup)
         view.measure(
             View.MeasureSpec.makeMeasureSpec(viewParent.width, View.MeasureSpec.AT_MOST),
             View.MeasureSpec.makeMeasureSpec(viewParent.height, View.MeasureSpec.AT_MOST),
@@ -186,7 +186,6 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         bitmap.applyCanvas {
             view.draw(this)
         }
-
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
