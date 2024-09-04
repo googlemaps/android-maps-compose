@@ -171,32 +171,25 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     private fun renderViewToBitmapDescriptor(view: AbstractComposeView?): BitmapDescriptor {
         /* AndroidComposeView triggers LayoutNode's layout phase in the View draw phase,
            so trigger a draw to an empty canvas to force that */
-        view?.draw(fakeCanvas)
-        if (view?.parent != null) {
-            val viewParent = (view.parent as ViewGroup)
-
-            view.measure(
-                View.MeasureSpec.makeMeasureSpec(viewParent.width, View.MeasureSpec.AT_MOST),
-                View.MeasureSpec.makeMeasureSpec(viewParent.height, View.MeasureSpec.AT_MOST),
-            )
-            view.layout(0, 0, view.measuredWidth, view.measuredHeight)
-            val bitmap = Bitmap.createBitmap(
-                view.measuredWidth.takeIf { it > 0 } ?: 1,
-                view.measuredHeight.takeIf { it > 0 } ?: 1,
-                Bitmap.Config.ARGB_8888
-            )
-            bitmap.applyCanvas {
-                view.draw(this)
-            }
-            return BitmapDescriptorFactory.fromBitmap(bitmap)
-        } else {
-            val bitmap = Bitmap.createBitmap(
-                20,
-                20,
-                Bitmap.Config.ARGB_8888
-            )
-            return BitmapDescriptorFactory.fromBitmap(bitmap)
+        view.draw(fakeCanvas)
+        val viewParent =
+            view.parent as? ViewGroup ?: return Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
+                .let(BitmapDescriptorFactory::fromBitmap)
+        view.measure(
+            View.MeasureSpec.makeMeasureSpec(viewParent.width, View.MeasureSpec.AT_MOST),
+            View.MeasureSpec.makeMeasureSpec(viewParent.height, View.MeasureSpec.AT_MOST),
+        )
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+        val bitmap = Bitmap.createBitmap(
+            view.measuredWidth.takeIf { it > 0 } ?: 1,
+            view.measuredHeight.takeIf { it > 0 } ?: 1,
+            Bitmap.Config.ARGB_8888
+        )
+        bitmap.applyCanvas {
+            view.draw(this)
         }
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     private sealed class ViewKey<T : ClusterItem> {
