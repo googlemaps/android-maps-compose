@@ -168,7 +168,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         }
     }
 
-    private fun renderViewToBitmapDescriptor(view: AbstractComposeView?): BitmapDescriptor {
+    private fun renderViewToBitmapDescriptor(view: AbstractComposeView): BitmapDescriptor {
         /* AndroidComposeView triggers LayoutNode's layout phase in the View draw phase,
            so trigger a draw to an empty canvas to force that */
         view.draw(fakeCanvas)
