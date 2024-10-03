@@ -18,7 +18,7 @@ buildscript {
 plugins {
     alias(libs.plugins.dokka) apply true
     alias(libs.plugins.compose.compiler) apply false
-    id("com.autonomousapps.dependency-analysis") version "1.32.0"
+    id("com.autonomousapps.dependency-analysis") version "2.0.0"
 
 }
 
@@ -37,5 +37,5 @@ allprojects {
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }
