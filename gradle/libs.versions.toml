@@ -1,6 +1,6 @@
 [versions]
 activitycompose = "1.9.2"
-agp = "8.4.2"
+agp = "8.7.1"
 androidxtest = "1.6.1"
 compose-bom = "2024.09.02"
 dokka = "1.9.20"
