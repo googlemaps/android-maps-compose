@@ -6,6 +6,10 @@ plugins {
 }
 
 android {
+    lint {
+        sarifOutput = file("$buildDir/reports/lint-results.sarif")
+    }
+
     buildTypes {
         getByName("debug") {
             enableUnitTestCoverage = true
