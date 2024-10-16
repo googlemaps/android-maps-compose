@@ -5,6 +5,10 @@ plugins {
 }
 
 android {
+    lint {
+        sarifOutput = file("$buildDir/reports/lint-results.sarif")
+    }
+
     namespace = "com.google.maps.android.compose.utils"
     compileSdk = 34
 
