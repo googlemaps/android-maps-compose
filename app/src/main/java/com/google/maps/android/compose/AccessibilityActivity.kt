@@ -37,7 +37,7 @@ class AccessibilityActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val singaporeState = rememberMarkerState(position = singapore)
+            val singaporeState = rememberMarkerState(initialPosition = singapore)
             val cameraPositionState = rememberCameraPositionState {
                 position = defaultCameraPosition
             }
