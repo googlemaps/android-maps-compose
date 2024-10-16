@@ -28,25 +28,21 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        val stabilityConfigurationFile = layout.projectDirectory.file("compose_compiler_stability_config.conf").asFile
         freeCompilerArgs += listOf(
             "-Xexplicit-api=strict",
             "-Xopt-in=kotlin.RequiresOptIn",
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:stabilityConfigurationPath=${stabilityConfigurationFile.absolutePath}"
         )
-        if (findProperty("composeCompilerReports") == "true") {
-            freeCompilerArgs += listOf(
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=${layout.buildDirectory.dir("compose_compiler").get()}",
-            )
-        }
-        if (findProperty("composeCompilerMetrics") == "true") {
-            freeCompilerArgs += listOf(
-                "-P",
-                "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=${layout.buildDirectory.dir("compose_compiler").get()}",
-            )
-        }
+    }
+}
+
+composeCompiler {
+    stabilityConfigurationFile =
+        layout.projectDirectory.file("compose_compiler_stability_config.conf")
+    if (findProperty("composeCompilerReports") == "true") {
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    }
+    if (findProperty("composeCompilerMetrics") == "true") {
+        metricsDestination = layout.buildDirectory.dir("compose_compiler")
     }
 }
 
