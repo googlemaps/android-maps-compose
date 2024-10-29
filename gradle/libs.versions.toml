@@ -1,8 +1,8 @@
 [versions]
-activitycompose = "1.9.2"
+activitycompose = "1.9.3"
 agp = "8.7.1"
-androidxtest = "1.6.1"
-compose-bom = "2024.09.02"
+androidxtest = "1.6.2"
+compose-bom = "2024.10.00"
 dokka = "1.9.20"
 espresso = "3.6.1"
 jacoco-plugin = "0.2.1"
