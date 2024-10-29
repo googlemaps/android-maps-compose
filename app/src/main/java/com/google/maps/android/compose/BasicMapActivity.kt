@@ -146,6 +146,7 @@ fun GoogleMapView(
     val singapore2State = rememberMarkerState(position = singapore2)
     val singapore3State = rememberMarkerState(position = singapore3)
     val singapore4State = rememberMarkerState(position = singapore4)
+    val singapore5State = rememberMarkerState(position = singapore5)
 
     var circleCenter by remember { mutableStateOf(singapore) }
     if (!singaporeState.isDragging) {
@@ -225,6 +226,29 @@ fun GoogleMapView(
                 ) {
                     Text(
                         text = "Compose Marker",
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+            MarkerInfoWindowComposable(
+                keys = arrayOf("singapore5"),
+                state = singapore5State,
+                onClick = markerClick,
+                title = "Marker with custom Composable info window",
+                infoContent = {
+                    Text(it.title ?: "Title", color = Color.Blue)
+                }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(88.dp)
+                        .height(36.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color.Red),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "Compose MarkerInfoWindow",
                         textAlign = TextAlign.Center,
                     )
                 }
