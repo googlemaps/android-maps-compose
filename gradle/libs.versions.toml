@@ -1,7 +1,7 @@
 [versions]
 activitycompose = "1.9.3"
 agp = "8.7.2"
-androidxtest = "1.6.2"
+androidxtest = "1.6.1"
 compose-bom = "2024.10.01"
 dokka = "1.9.20"
 espresso = "3.6.1"
