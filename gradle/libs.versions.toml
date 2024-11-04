@@ -1,19 +1,19 @@
 [versions]
 activitycompose = "1.9.3"
-agp = "8.7.1"
-androidxtest = "1.6.1"
-compose-bom = "2024.10.00"
+agp = "8.7.2"
+androidxtest = "1.6.2"
+compose-bom = "2024.10.01"
 dokka = "1.9.20"
 espresso = "3.6.1"
 jacoco-plugin = "0.2.1"
 junitktx = "1.2.1"
 junit = "4.13.2"
-kotlin = "2.0.20"
-kotlinxCoroutines = "1.8.1"
+kotlin = "2.0.21"
+kotlinxCoroutines = "1.9.0"
 mapsktx = "5.1.1"
 mapsecrets = "2.0.1"
 org-jacoco-core = "0.8.11"
-androidx-core = "1.13.1"
+androidx-core = "1.15.0"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
