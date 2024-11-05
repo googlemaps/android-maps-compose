@@ -41,7 +41,7 @@
 <a class="library-name--link" href="../../index.html">
                             android-maps-compose
                     </a>            </div>
-            <div class="library-version">6.0.1
+            <div class="library-version">6.2.0
             </div>
         </div>
         <div class="filter-section" id="filter-section">
@@ -75,7 +75,8 @@
                 clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
                 clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
             }
-            if (clusterManager != null) {
+            // Wait for renderer to apply before clustering
+            if (clusterManager != null &amp;&amp; clusterManager.renderer == clusterRenderer) {
                 Clustering(
                     items = items,
                     clusterManager = clusterManager,
