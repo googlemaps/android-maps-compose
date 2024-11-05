@@ -62,7 +62,8 @@ import kotlinx.coroutines.launch
                 clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
                 clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
             }
-            if (clusterManager != null) {
+            // Wait for renderer to apply before clustering
+            if (clusterManager != null && clusterManager.renderer == clusterRenderer) {
                 Clustering(
                     items = items,
                     clusterManager = clusterManager,
@@ -128,21 +129,22 @@ public fun <T : ClusterItem> Clustering(
 ) {
     val clusterManager = rememberClusterManager<T>()
     val renderer = rememberClusterRenderer(clusterContent, clusterItemContent, clusterManager)
-    SideEffect {
-        if (clusterManager?.renderer != renderer) {
-            clusterManager?.renderer = renderer ?: return@SideEffect
-        }
-    }
 
     SideEffect {
         clusterManager ?: return@SideEffect
+        renderer ?: return@SideEffect
+
+        if (clusterManager.renderer != renderer) {
+            clusterManager.renderer = renderer
+        }
+
         clusterManager.setOnClusterClickListener(onClusterClick)
         clusterManager.setOnClusterItemClickListener(onClusterItemClick)
         clusterManager.setOnClusterItemInfoWindowClickListener(onClusterItemInfoWindowClick)
         clusterManager.setOnClusterItemInfoWindowLongClickListener(onClusterItemInfoWindowLongClick)
     }
 
-    if (clusterManager != null) {
+    if (clusterManager != null && renderer != null) {
         Clustering(
             items = items,
             clusterManager = clusterManager,
