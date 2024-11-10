@@ -71,12 +71,10 @@ public class StreetViewCameraPositionState private constructor() {
      * @param source the source of the panoramas
      */
     public fun setPosition(position: LatLng, radius: Int? = null, source: StreetViewSource? = null) {
-        if (radius == null && source == null) {
-            panorama?.setPosition(position)
-        } else if (radius != null && source == null) {
-            panorama?.setPosition(position, radius)
-        } else if (radius != null) {
-            panorama?.setPosition(position, radius, source)
+        when {
+            radius != null && source != null -> panorama?.setPosition(position, radius, source)
+            radius != null -> panorama?.setPosition(position, radius)
+            else -> panorama?.setPosition(position)
         }
     }
 
