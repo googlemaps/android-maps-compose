@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Dependabot
+name: AutoMerge PR
 on: pull_request
 
 permissions:
@@ -22,7 +22,7 @@ permissions:
 jobs:
   dependabot:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'googlemaps-bot' }}
+    if: ${{ github.actor == 'googlemaps-bot' && github.ref == 'refs/heads/googlemaps-bot/update_gh_pages' }}
     env:
       PR_URL: ${{github.event.pull_request.html_url}}
       GITHUB_TOKEN: ${{secrets.SYNCED_GITHUB_TOKEN_REPO}}
