@@ -60,7 +60,7 @@ jobs:
         commit-message: 'docs: Update docs'
         author: googlemaps-bot <googlemaps-bot@google.com>
         committer: googlemaps-bot <googlemaps-bot@google.com>
-        labels: docs
+        labels: docs, automerge
         title: 'docs: Update docs'
         body: |
             Updated GitHub pages with latest from `./gradlew dokkaHtml`.
