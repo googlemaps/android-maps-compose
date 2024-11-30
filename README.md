@@ -1,4 +1,4 @@
-![Tests](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)
+1![Tests](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)
 ![Stable](https://img.shields.io/badge/stability-stable-green)
 [![Discord](https://img.shields.io/discord/676948200904589322)][Discord server]
 ![Apache-2.0](https://img.shields.io/badge/license-Apache-blue)
@@ -14,7 +14,9 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the [
 * Kotlin-enabled project
 * Jetpack Compose-enabled project (see [releases](https://github.com/googlemaps/android-maps-compose/releases) for the required version of Jetpack Compose)
 * An [API key][api-key]
-* API level 21+
+*
+*
+** API level 21+
 
 ## Installation
 
