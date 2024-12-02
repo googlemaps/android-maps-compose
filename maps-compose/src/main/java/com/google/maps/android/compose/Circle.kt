@@ -54,8 +54,8 @@ internal class CircleNode(
 public fun Circle(
     center: LatLng,
     clickable: Boolean = false,
-    fillColor: Color = Color.Transparent,
-    radius: Double = 0.0,
+    fillColor: Color = Color.Black,
+    radius: Double = 10.0,
     strokeColor: Color = Color.Black,
     strokePattern: List<PatternItem>? = null,
     strokeWidth: Float = 10f,
