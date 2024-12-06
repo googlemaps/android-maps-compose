@@ -1,7 +1,11 @@
-![Tests](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/com.google.maps.android/maps-compose)](https://maven-badges.herokuapp.com/maven-central/com.google.maps.android/maps-compose)
+![Tests/Build Status](https://github.com/googlemaps/android-maps-compose/workflows/Test/badge.svg)
+![Release](https://github.com/googlemaps/android-maps-compose/workflows/Release/badge.svg)
 ![Stable](https://img.shields.io/badge/stability-stable-green)
-[![Discord](https://img.shields.io/discord/676948200904589322)][Discord server]
-![Apache-2.0](https://img.shields.io/badge/license-Apache-blue)
+
+![GitHub contributors](https://img.shields.io/github/contributors/googlemaps/android-maps-compose?color=green)
+[![Discord](https://img.shields.io/discord/676948200904589322?color=6A7EC2&logo=discord&logoColor=ffffff)][Discord server]
+[![GitHub License](https://img.shields.io/github/license/googlemaps/android-maps-compose?color=blue)](LICENSE)
 
 # Maps Compose 🗺
 
@@ -39,18 +43,18 @@ This repository includes a [sample app](app).
 
 To run it:
 
+1. [Sign up for Google Maps Platform ][gmp-start]
 1. Get a [Maps API key][api-key]
-2. Open the `secrets.properties` file in your top-level directory, and then add the following code. Replace YOUR_API_KEY with your API key. Store your key in this file because secrets.properties is excluded from being checked into a version control system.
+1. Open the `secrets.properties` file in your top-level directory, and then add the following code. Replace YOUR_API_KEY with your API key. Store your key in this file because secrets.properties is excluded from being checked into a version control system.
    If the `secrets.properties` file does not exist, create it in the same folder as the `local.default.properties` file.
-
    ```
    MAPS_API_KEY=YOUR_API_KEY
    ```
-3. Build and run
+1. Build and run
 
 ## Documentation
 
-You can learn more about all the extensions provided by this library by reading the [reference documents][Javadoc].
+See the [documentation] for a full list of classes and their methods.
 
 ## Usage
 
@@ -474,24 +478,37 @@ The colors of the text, line, and shadow are also all configurable (e.g., based 
 
 ## Contributing
 
-Contributions are welcome and encouraged! See [contributing] for more info.
+Contributions are welcome and encouraged! If you'd like to contribute, send us a [pull request] and refer to our [code of conduct] and [contributing guide].
+
+## Terms of Service
+
+This library uses Google Maps Platform services. Use of Google Maps Platform services through this library is subject to the Google Maps Platform [Terms of Service].
+
+This library is not a Google Maps Platform Core Service. Therefore, the Google Maps Platform Terms of Service (e.g. Technical Support Services, Service Level Agreements, and Deprecation Policy) do not apply to the code in this library.
 
 ## Support
 
 This library is offered via an open source [license](LICENSE). It is not governed by the Google Maps Platform [Technical Support Services Guidelines](https://cloud.google.com/maps-platform/terms/tssg?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss), the [SLA](https://cloud.google.com/maps-platform/terms/sla?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss), or the [Deprecation Policy](https://cloud.google.com/maps-platform/terms?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss) (however, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service).
 
-This library adheres to [semantic versioning](https://semver.org/) to indicate when backwards-incompatible changes are introduced.
+This library adheres to [semantic versioning] to indicate when backwards-incompatible changes are introduced. Accordingly, while the library is in version 0.x, backwards-incompatible changes may be introduced at any time.
 
-If you find a bug, or have a feature request, please [file an issue] on GitHub.
+If you find a bug, or have a feature request, please [file an issue] on GitHub. If you would like to get answers to technical questions from other Google Maps Platform developers, ask through one of our [developer community channels]. If you'd like to contribute, please check the [contributing guide].
 
-If you would like to get answers to technical questions from other Google Maps Platform developers, ask through one of our [developer community channels](https://developers.google.com/maps/developer-community?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss) including the Google Maps Platform [Discord server].
+You can also discuss this library on our [Discord server].
 
-[maps-sdk]: https://developers.google.com/maps/documentation/android-sdk
 [api-key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
-[Discord server]: https://discord.gg/hYsWbmk
-[Javadoc]: https://googlemaps.github.io/android-maps-compose
-[contributing]: CONTRIBUTING.md
+[devsite-guide]: https://developers.google.com/maps/documentation/android-sdk/utility
+[gmp-start]: https://console.cloud.google.com/google/maps-apis/start
+[maps-sdk]: https://developers.google.com/maps/documentation/android-sdk
+[documentation]: https://googlemaps.github.io/android-maps-compose
+[jetpack-compose]: https://developer.android.com/jetpack/compose
+
 [code of conduct]: CODE_OF_CONDUCT.md
+[contributing guide]: CONTRIBUTING.md
+[developer community channels]: https://developers.google.com/maps/developer-community
+[Discord server]: https://discord.gg/hYsWbmk
 [file an issue]: https://github.com/googlemaps/android-maps-compose/issues/new/choose
 [pull request]: https://github.com/googlemaps/android-maps-compose/compare
-[jetpack-compose]: https://developer.android.com/jetpack/compose
+[semantic versioning]: https://semver.org
+[similar inquiry]: https://github.com/googlemaps/android-maps-compose/issues
+[Terms of Service]: https://cloud.google.com/maps-platform/terms
