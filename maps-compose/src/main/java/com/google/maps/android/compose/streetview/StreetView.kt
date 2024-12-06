@@ -15,6 +15,7 @@
 package com.google.maps.android.compose.streetview
 
 import android.content.ComponentCallbacks
+import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -118,7 +119,7 @@ private fun StreetViewLifecycle(streetView: StreetViewPanoramaView) {
     val previousState = remember { mutableStateOf(Lifecycle.Event.ON_CREATE) }
     DisposableEffect(context, lifecycle, streetView) {
         val streetViewLifecycleObserver = streetView.lifecycleObserver(previousState)
-        val callbacks = streetView.componentCallbacks()
+        val callbacks = streetView.componentCallbacks2()
 
         lifecycle.addObserver(streetViewLifecycleObserver)
         context.registerComponentCallbacks(callbacks)
@@ -177,11 +178,16 @@ private fun StreetViewPanoramaView.lifecycleObserver(previousState: MutableState
         previousState.value = event
     }
 
-private fun StreetViewPanoramaView.componentCallbacks(): ComponentCallbacks =
-    object : ComponentCallbacks {
+private fun StreetViewPanoramaView.componentCallbacks2(): ComponentCallbacks2 =
+    object : ComponentCallbacks2 {
         override fun onConfigurationChanged(config: Configuration) {}
 
+        @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
         override fun onLowMemory() {
-            this@componentCallbacks.onLowMemory()
+            this@componentCallbacks2.onLowMemory()
+        }
+
+        override fun onTrimMemory(level: Int) {
+            this@componentCallbacks2.onLowMemory()
         }
     }
