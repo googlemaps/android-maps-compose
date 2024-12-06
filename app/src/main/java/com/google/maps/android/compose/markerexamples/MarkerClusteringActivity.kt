@@ -81,6 +81,7 @@ fun GoogleMapClustering() {
     }
     Box(
         modifier = Modifier.fillMaxSize()
+            .systemBarsPadding()
     ) {
         GoogleMapClustering(items = items)
     }
@@ -182,7 +183,6 @@ private fun CustomUiClustering(items: List<MyItem>) {
         },
         // Optional: Custom rendering for non-clustered items
         clusterItemContent = null
-
     )
 }
 
