@@ -1,8 +1,9 @@
 [versions]
 activitycompose = "1.9.3"
 agp = "8.7.2"
-androidxtest = "1.6.1"
-compose-bom = "2024.10.01"
+androidxtest = "1.6.2"
+androidCore = "1.6.1"
+compose-bom = "2024.11.00"
 dokka = "1.9.20"
 espresso = "3.6.1"
 jacoco-plugin = "0.2.1"
@@ -14,6 +15,7 @@ mapsktx = "5.1.1"
 mapsecrets = "2.0.1"
 org-jacoco-core = "0.8.11"
 androidx-core = "1.15.0"
+screenshot = "0.0.1-alpha07"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -26,10 +28,10 @@ androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
-androidx-test-core = { module = "androidx.test:core", version.ref = "androidxtest" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidCore" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitktx" }
-androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxtest" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxtest" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version.ref = "jacoco-plugin", version.require = "0.2.1" }
@@ -46,3 +48,4 @@ test-junit = { module = "junit:junit", version.ref = "junit" }
 [plugins]
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}
