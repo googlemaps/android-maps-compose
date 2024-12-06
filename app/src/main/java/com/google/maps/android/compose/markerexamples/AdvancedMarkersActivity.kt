@@ -70,10 +70,10 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
             val mapProperties by remember {
                 mutableStateOf(MapProperties(mapType = MapType.NORMAL))
             }
-            val marker1State = rememberMarkerState(position = santiago)
-            val marker2State = rememberMarkerState(position = bogota)
-            val marker3State = rememberMarkerState(position = lima)
-            val marker4State = rememberMarkerState(position = salvador)
+            val marker1State = rememberMarkerState(initialPosition = santiago)
+            val marker2State = rememberMarkerState(initialPosition = bogota)
+            val marker3State = rememberMarkerState(initialPosition = lima)
+            val marker4State = rememberMarkerState(initialPosition = salvador)
 
             // Drawing on the map is accomplished with a child-based API
             val markerClick: (Marker) -> Boolean = {
