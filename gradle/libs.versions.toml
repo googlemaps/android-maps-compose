@@ -15,7 +15,7 @@ mapsktx = "5.1.1"
 mapsecrets = "2.0.1"
 org-jacoco-core = "0.8.11"
 androidx-core = "1.15.0"
-screenshot = "0.0.1-alpha07"
+screenshot = "0.0.1-alpha08"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
