@@ -31,13 +31,18 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 import com.google.maps.android.compose.widgets.DarkGray
 import com.google.maps.android.compose.widgets.DisappearingScaleBar
 import com.google.maps.android.compose.widgets.ScaleBar
@@ -125,5 +130,27 @@ class ScaleBarActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewScaleBar() {
+    val cameraPositionState = remember {
+        CameraPositionState(
+            position = CameraPosition(
+                LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
+                12f,
+                0f,
+                0f
+            )
+        )
+    }
+
+    MapsComposeSampleTheme {
+        ScaleBar(
+            modifier = Modifier.padding(end = 4.dp),
+            cameraPositionState = cameraPositionState
+        )
     }
 }
