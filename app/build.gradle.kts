@@ -52,7 +52,7 @@ android {
 
     testOptions {
         screenshotTests {
-            imageDifferenceThreshold = 0.05f // 1%
+            imageDifferenceThreshold = 0.02f // 2%
         }
     }
 }
