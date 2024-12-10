@@ -15,10 +15,12 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the [
 
 ## Requirements
 
+* Android API level 21+
 * Kotlin-enabled project
 * Jetpack Compose-enabled project (see [releases](https://github.com/googlemaps/android-maps-compose/releases) for the required version of Jetpack Compose)
-* An [API key][api-key]
-* API level 21+
+* [Sign up with Google Maps Platform]
+* A Google Maps Platform [project] with the **Maps SDK for Android** enabled
+* An [API key] associated with the project above
 
 ## Installation
 
@@ -41,10 +43,8 @@ dependencies {
 
 This repository includes a [sample app](app).
 
-To run it:
+To run the demo app, ensure you've met the requirements above then:
 
-1. [Sign up for Google Maps Platform ][gmp-start]
-1. Get a [Maps API key][api-key]
 1. Open the `secrets.properties` file in your top-level directory, and then add the following code. Replace YOUR_API_KEY with your API key. Store your key in this file because secrets.properties is excluded from being checked into a version control system.
    If the `secrets.properties` file does not exist, create it in the same folder as the `local.default.properties` file.
    ```
@@ -496,8 +496,7 @@ If you find a bug, or have a feature request, please [file an issue] on GitHub. 
 
 You can also discuss this library on our [Discord server].
 
-[api-key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
-[devsite-guide]: https://developers.google.com/maps/documentation/android-sdk/utility
+[API key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
 [gmp-start]: https://console.cloud.google.com/google/maps-apis/start
 [maps-sdk]: https://developers.google.com/maps/documentation/android-sdk
 [documentation]: https://googlemaps.github.io/android-maps-compose
@@ -510,8 +509,10 @@ You can also discuss this library on our [Discord server].
 [Discord server]: https://discord.gg/hYsWbmk
 [file an issue]: https://github.com/googlemaps/android-maps-compose/issues/new/choose
 [license]: LICENSE
+[project]: https://developers.google.com/maps/documentation/android-sdk/cloud-setup
 [pull request]: https://github.com/googlemaps/android-maps-compose/compare
 [semantic versioning]: https://semver.org
+[Sign up with Google Maps Platform]: https://console.cloud.google.com/google/maps-apis/start
 [similar inquiry]: https://github.com/googlemaps/android-maps-compose/issues
 [SLA]: https://cloud.google.com/maps-platform/terms/sla
 [Technical Support Services Guidelines]: https://cloud.google.com/maps-platform/terms/tssg
