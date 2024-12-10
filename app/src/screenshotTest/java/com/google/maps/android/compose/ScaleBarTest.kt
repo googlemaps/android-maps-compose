@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
+import com.google.maps.android.compose.widgets.DisappearingScaleBar
 import com.google.maps.android.compose.widgets.ScaleBar
 
 
@@ -29,6 +30,28 @@ class ScaleBarTest() {
 
         MapsComposeSampleTheme {
             ScaleBar(
+                modifier = Modifier.padding(end = 4.dp),
+                cameraPositionState = cameraPositionState
+            )
+        }
+    }
+
+    @Preview
+    @Composable
+    fun PreviewDisappearingScaleBar() {
+        val cameraPositionState = remember {
+            CameraPositionState(
+                position = CameraPosition(
+                    LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
+                    12f,
+                    0f,
+                    0f
+                )
+            )
+        }
+
+        MapsComposeSampleTheme {
+            DisappearingScaleBar(
                 modifier = Modifier.padding(end = 4.dp),
                 cameraPositionState = cameraPositionState
             )
