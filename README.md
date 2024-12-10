@@ -488,7 +488,7 @@ This library is not a Google Maps Platform Core Service. Therefore, the Google M
 
 ## Support
 
-This library is offered via an open source [license](LICENSE). It is not governed by the Google Maps Platform [Technical Support Services Guidelines](https://cloud.google.com/maps-platform/terms/tssg?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss), the [SLA](https://cloud.google.com/maps-platform/terms/sla?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss), or the [Deprecation Policy](https://cloud.google.com/maps-platform/terms?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss) (however, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service).
+This library is offered via an open source [license]. It is not governed by the Google Maps Platform Support [Technical Support Services Guidelines, the SLA, or the [Deprecation Policy]. However, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service.
 
 This library adheres to [semantic versioning] to indicate when backwards-incompatible changes are introduced. Accordingly, while the library is in version 0.x, backwards-incompatible changes may be introduced at any time.
 
@@ -505,10 +505,14 @@ You can also discuss this library on our [Discord server].
 
 [code of conduct]: CODE_OF_CONDUCT.md
 [contributing guide]: CONTRIBUTING.md
+[Deprecation Policy]: https://cloud.google.com/maps-platform/terms
 [developer community channels]: https://developers.google.com/maps/developer-community
 [Discord server]: https://discord.gg/hYsWbmk
 [file an issue]: https://github.com/googlemaps/android-maps-compose/issues/new/choose
+[license]: LICENSE
 [pull request]: https://github.com/googlemaps/android-maps-compose/compare
 [semantic versioning]: https://semver.org
 [similar inquiry]: https://github.com/googlemaps/android-maps-compose/issues
+[SLA]: https://cloud.google.com/maps-platform/terms/sla
+[Technical Support Services Guidelines]: https://cloud.google.com/maps-platform/terms/tssg
 [Terms of Service]: https://cloud.google.com/maps-platform/terms
