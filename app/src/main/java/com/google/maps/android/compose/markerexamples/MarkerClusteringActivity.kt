@@ -223,6 +223,7 @@ fun CustomRendererClustering(items: List<MyItem>) {
         },
         clusterManager = clusterManager,
     )
+
     SideEffect {
         clusterManager ?: return@SideEffect
         clusterManager.setOnClusterClickListener {
