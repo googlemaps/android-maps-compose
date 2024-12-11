@@ -155,12 +155,12 @@ public class MarkerState private constructor(position: LatLng) {
         /**
          * Creates a new [MarkerState] object
          *
-         * @param position the initial marker position
+         * @param initialPosition the initial marker position
          */
         @StateFactoryMarker
         public operator fun invoke(
-            position: LatLng = LatLng(0.0, 0.0)
-        ): MarkerState = MarkerState(position)
+            initialPosition: LatLng = LatLng(0.0, 0.0)
+        ): MarkerState = MarkerState(initialPosition)
 
         /**
          * The default saver implementation for [MarkerState]
@@ -182,13 +182,15 @@ public class MarkerState private constructor(position: LatLng) {
  * Other use cases may be better served syncing [MarkerState.position] with a data model.
  *
  * This cannot be used to preserve info window visibility across configuration changes.
+ *
+ * @param initialPosition the initial marker position
  */
 @Composable
 public fun rememberMarkerState(
     key: String? = null,
-    position: LatLng = LatLng(0.0, 0.0)
+    initialPosition: LatLng = LatLng(0.0, 0.0)
 ): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
-    MarkerState(position)
+    MarkerState(initialPosition)
 }
 
 /**
