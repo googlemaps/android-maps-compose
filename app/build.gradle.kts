@@ -3,6 +3,7 @@ plugins {
     id("kotlin-android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.screenshot)
 }
 
 android {
@@ -46,6 +47,14 @@ android {
         jvmTarget = "1.8"
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+    testOptions {
+        screenshotTests {
+            imageDifferenceThreshold = 0.035f // 3.5%
+        }
+    }
 }
 
 dependencies {
@@ -67,6 +76,8 @@ dependencies {
     androidTestImplementation(libs.test.junit)
     androidTestImplementation(libs.androidx.test.compose.ui)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 
     // Instead of the lines below, regular apps would load these libraries from Maven according to
     // the README installation instructions

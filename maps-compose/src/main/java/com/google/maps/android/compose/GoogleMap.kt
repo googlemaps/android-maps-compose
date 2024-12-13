@@ -15,6 +15,7 @@
 package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
+import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
@@ -27,7 +28,6 @@ import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
@@ -149,9 +149,11 @@ public fun GoogleMap(
         modifier = modifier,
         factory = { context ->
             MapView(context, googleMapOptionsFactory()).also { mapView ->
-                val componentCallbacks = object : ComponentCallbacks {
+                val componentCallbacks = object : ComponentCallbacks2 {
                     override fun onConfigurationChanged(newConfig: Configuration) {}
+                    @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
                     override fun onLowMemory() { mapView.onLowMemory() }
+                    override fun onTrimMemory(level: Int) { mapView.onLowMemory() }
                 }
                 context.registerComponentCallbacks(componentCallbacks)
 
@@ -255,7 +257,7 @@ internal class MapUpdaterState(
     var locationSource by mutableStateOf(locationSource)
     var mapProperties by mutableStateOf(mapProperties)
     var mapUiSettings by mutableStateOf(mapUiSettings)
-    var mapColorScheme by mutableStateOf<Int?>(mapColorScheme)
+    var mapColorScheme by mutableStateOf(mapColorScheme)
 }
 
 /** Used to store things in the tag which must be retrievable across recompositions */
