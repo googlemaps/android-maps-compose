@@ -152,6 +152,6 @@ fun rememberUpdatedMarkerState(position: LatLng): MarkerState =
     // rememberUpdatedState() uses MutableState, we use MarkerState.
     // This is more efficient than updating position in an effect,
     // as we avoid an additional recomposition.
-    remember { MarkerState(initialPosition = position) }.also {
+    remember { MarkerState(position = position) }.also {
         it.position = position
     }

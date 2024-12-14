@@ -87,7 +87,7 @@ private fun DraggableMarker(
     onDrag: (LatLng) -> Unit = {},
     onDragEnd: () -> Unit = {}
 ) {
-    val markerState = rememberMarkerState(initialPosition = singapore)
+    val markerState = rememberMarkerState(position = singapore)
 
     Marker(
         state = markerState,

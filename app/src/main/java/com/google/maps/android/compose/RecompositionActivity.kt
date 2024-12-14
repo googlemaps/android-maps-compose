@@ -70,7 +70,7 @@ class RecompositionActivity : ComponentActivity() {
         cameraPositionState: CameraPositionState = rememberCameraPositionState(),
         content: @Composable () -> Unit = {},
     ) {
-        val markerState = rememberMarkerState(initialPosition = singapore)
+        val markerState = rememberMarkerState(position = singapore)
 
         val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
         val mapProperties by remember {

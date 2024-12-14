@@ -119,7 +119,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
         }
 
         MarkerInfoWindow(
-            state = rememberMarkerState(initialPosition = singapore),
+            state = rememberMarkerState(position = singapore),
             onClick = {
                 Log.d(TAG, "Non-cluster marker clicked! $it")
                 true

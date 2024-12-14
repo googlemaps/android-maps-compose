@@ -185,7 +185,7 @@ private fun GoogleMapViewInColumn(
     cameraPositionState: CameraPositionState,
     onMapLoaded: () -> Unit,
 ) {
-    val singaporeState = rememberMarkerState(initialPosition = singapore)
+    val singaporeState = rememberMarkerState(position = singapore)
 
     var uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
     var mapProperties by remember {
