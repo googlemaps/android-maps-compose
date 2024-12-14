@@ -23,6 +23,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -195,8 +196,6 @@ public fun rememberMarkerState(
 }
 
 /**
- * Uses [rememberSaveable] to retain [MarkerState.position] across configuration changes.
- *
  * This function updates the state value according to the update of the input parameter,
  * like 'rememberUpdatedState'.
  *
@@ -204,9 +203,8 @@ public fun rememberMarkerState(
  */
 @Composable
 public fun rememberUpdatedMarkerState(
-    key: String? = null,
     position: LatLng = LatLng(0.0, 0.0)
-): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
+): MarkerState = remember {
     MarkerState(position = position)
 }.also { it.position = position }
 
