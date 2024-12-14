@@ -182,6 +182,9 @@ public class MarkerState private constructor(position: LatLng) {
  * Other use cases may be better served syncing [MarkerState.position] with a data model.
  *
  * This cannot be used to preserve info window visibility across configuration changes.
+ *
+ * This function does not automatically update the MarkerState when the input parameters change.
+ * If you need this implementation, use 'rememberUpdatedMarkerState'.
  */
 @Composable
 public fun rememberMarkerState(
