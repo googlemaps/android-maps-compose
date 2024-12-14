@@ -192,6 +192,22 @@ public fun rememberMarkerState(
 }
 
 /**
+ * Uses [rememberSaveable] to retain [MarkerState.position] across configuration changes.
+ *
+ * This function updates the state value according to the update of the input parameter,
+ * like 'rememberUpdatedState'.
+ *
+ * This cannot be used to preserve info window visibility across configuration changes.
+ */
+@Composable
+public fun rememberUpdatedMarkerState(
+    key: String? = null,
+    position: LatLng = LatLng(0.0, 0.0)
+): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
+    MarkerState(position = position)
+}.also { it.position = position }
+
+/**
  * A composable for a marker on the map.
  * @param state the [MarkerState] to be used to control or observe the marker
  * state such as its position and info window
