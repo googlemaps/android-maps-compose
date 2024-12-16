@@ -211,7 +211,7 @@ public fun rememberMarkerState(
  * This function updates the state value according to the update of the input parameter,
  * like 'rememberUpdatedState'.
  *
- * This cannot be used to preserve info window visibility across configuration changes.
+ * This cannot be used to preserve state across configuration changes.
  */
 @Composable
 public fun rememberUpdatedMarkerState(
