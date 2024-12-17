@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -279,6 +280,30 @@ class GoogleMapViewTests {
         composeTestRule.onNodeWithTag("toggleMapVisibility")
             .performClick()
             .performClick()
+    }
+
+    @Test
+    fun testRememberUpdatedMarkerStateBeUpdate() {
+        val testPoint0 = LatLng(0.0,0.0)
+        val testPoint1 = LatLng(37.6281576,-122.4264549)
+        val testPoint2 = LatLng(37.500012, 127.0364185)
+
+        val positionState = mutableStateOf(testPoint0)
+        lateinit var markerState: MarkerState
+
+        initMap {
+            markerState = rememberUpdatedMarkerState(position = positionState.value)
+        }
+
+        assertEquals(testPoint0, markerState.position)
+
+        positionState.value = testPoint1
+        composeTestRule.waitForIdle()
+        assertEquals(testPoint1, markerState.position)
+
+        positionState.value = testPoint2
+        composeTestRule.waitForIdle()
+        assertEquals(testPoint2, markerState.position)
     }
 
     private fun zoom(
