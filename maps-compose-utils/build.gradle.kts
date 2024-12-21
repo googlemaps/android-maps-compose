@@ -10,7 +10,7 @@ android {
     }
 
     namespace = "com.google.maps.android.compose.utils"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
