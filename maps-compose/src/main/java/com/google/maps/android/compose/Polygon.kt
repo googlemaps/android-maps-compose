@@ -68,6 +68,8 @@ public fun Polygon(
     zIndex: Float = 0f,
     onClick: (Polygon) -> Unit = {}
 ) {
+    if (points.isEmpty()) return // avoid SDK crash
+
     val mapApplier = currentComposer.applier as MapApplier?
     ComposeNode<PolygonNode, MapApplier>(
         factory = {
