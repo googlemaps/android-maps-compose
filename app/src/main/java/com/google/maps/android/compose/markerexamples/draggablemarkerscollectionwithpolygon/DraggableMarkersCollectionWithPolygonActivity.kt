@@ -187,9 +187,7 @@ private fun LocationMarker(
 private fun Polygon(markerPositionsModel: () -> List<() -> LatLng>) {
     val movingMarkerPositions = markerPositionsModel()
 
-    if (movingMarkerPositions.isNotEmpty()) {
-        val markerPositions = movingMarkerPositions.map { it() }
+    val markerPositions = movingMarkerPositions.map { it() }
 
-        Polygon(markerPositions)
-    }
+    Polygon(markerPositions)
 }
