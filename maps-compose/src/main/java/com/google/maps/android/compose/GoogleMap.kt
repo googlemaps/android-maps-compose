@@ -16,6 +16,7 @@ package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
 import android.content.ComponentCallbacks2
+import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
@@ -98,6 +99,7 @@ public fun GoogleMap(
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = DefaultMapContentPadding,
     mapColorScheme: ComposeMapColorScheme? = null,
+    mapViewCreator: ((Context, GoogleMapOptions) -> MapView)? = null,
     content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -148,7 +150,11 @@ public fun GoogleMap(
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            MapView(context, googleMapOptionsFactory()).also { mapView ->
+            if (mapViewCreator != null) {
+                mapViewCreator(context, googleMapOptionsFactory())
+            } else {
+                MapView(context, googleMapOptionsFactory())
+            }.also { mapView ->
                 val componentCallbacks = object : ComponentCallbacks2 {
                     override fun onConfigurationChanged(newConfig: Configuration) {}
                     @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
