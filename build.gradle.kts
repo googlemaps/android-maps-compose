@@ -18,7 +18,7 @@ buildscript {
 plugins {
     alias(libs.plugins.dokka) apply true
     alias(libs.plugins.compose.compiler) apply false
-    id("com.autonomousapps.dependency-analysis") version "1.32.0"
+    id("com.autonomousapps.dependency-analysis") version "2.0.0"
 
 }
 
@@ -32,10 +32,10 @@ val projectArtifactId by extra { project: Project ->
 
 allprojects {
     group = "com.google.maps.android"
-    version = "6.1.3"
+    version = "6.4.1"
     val projectArtifactId by extra { project.name }
 }
 
 tasks.register("clean", Delete::class) {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }

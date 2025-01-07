@@ -3,9 +3,14 @@ plugins {
     id("kotlin-android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.screenshot)
 }
 
 android {
+    lint {
+        sarifOutput = file("$buildDir/reports/lint-results.sarif")
+    }
+
     buildTypes {
         getByName("debug") {
             enableUnitTestCoverage = true
@@ -18,11 +23,11 @@ android {
     }
 
     namespace = "com.google.maps.android.compose"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -42,6 +47,14 @@ android {
         jvmTarget = "1.8"
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+    testOptions {
+        screenshotTests {
+            imageDifferenceThreshold = 0.035f // 3.5%
+        }
+    }
 }
 
 dependencies {
@@ -51,7 +64,6 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.kotlin)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.material)
     implementation(libs.androidx.compose.ui.preview.tooling)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
@@ -64,6 +76,8 @@ dependencies {
     androidTestImplementation(libs.test.junit)
     androidTestImplementation(libs.androidx.test.compose.ui)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 
     // Instead of the lines below, regular apps would load these libraries from Maven according to
     // the README installation instructions

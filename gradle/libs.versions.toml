@@ -1,20 +1,21 @@
 [versions]
-activitycompose = "1.9.0"
-agp = "8.4.2"
-androidxtest = "1.6.1"
-compose-bom = "2024.06.00"
+activitycompose = "1.9.3"
+agp = "8.7.2"
+androidxtest = "1.6.2"
+androidCore = "1.6.1"
+compose-bom = "2024.11.00"
 dokka = "1.9.20"
 espresso = "3.6.1"
 jacoco-plugin = "0.2.1"
 junitktx = "1.2.1"
 junit = "4.13.2"
-kotlin = "2.0.0"
-kotlinxCoroutines = "1.8.1"
-material = "1.12.0"
+kotlin = "2.0.21"
+kotlinxCoroutines = "1.9.0"
 mapsktx = "5.1.1"
 mapsecrets = "2.0.1"
 org-jacoco-core = "0.8.11"
-androidx-core = "1.13.1"
+androidx-core = "1.15.0"
+screenshot = "0.0.1-alpha08"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -27,10 +28,10 @@ androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
-androidx-test-core = { module = "androidx.test:core", version.ref = "androidxtest" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidCore" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitktx" }
-androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidxtest" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxtest" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version.ref = "jacoco-plugin", version.require = "0.2.1" }
@@ -41,10 +42,10 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "mapsktx" }
 maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsktx" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
-material = { module = "com.google.android.material:material", version.ref = "material" }
 org-jacoco-core = { module = "org.jacoco:org.jacoco.core", version.ref = "org-jacoco-core" }
 test-junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}

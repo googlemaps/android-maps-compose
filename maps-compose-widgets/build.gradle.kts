@@ -5,8 +5,12 @@ plugins {
 }
 
 android {
+    lint {
+        sarifOutput = file("$buildDir/reports/lint-results.sarif")
+    }
+
     namespace = "com.google.maps.android.compose.widgets"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 21

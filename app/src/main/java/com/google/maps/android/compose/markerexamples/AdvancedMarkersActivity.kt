@@ -16,6 +16,7 @@ package com.google.maps.android.compose.markerexamples
 
 
 import android.R.drawable.ic_menu_myplaces
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -56,6 +57,7 @@ private val center = LatLng(-18.000, -58.000)
 private val defaultCameraPosition1 = CameraPosition.fromLatLngZoom(center, 2f)
 class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapsInitializer.initialize(applicationContext, MapsInitializer.Renderer.LATEST, this)

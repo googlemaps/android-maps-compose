@@ -15,7 +15,11 @@
  limitations under the License.
 -->
 
-<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-  <background android:drawable="@drawable/ic_launcher_background" />
-  <foreground android:drawable="@drawable/ic_launcher_foreground" />
+<adaptive-icon xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="MonochromeLauncherIcon">
+  <background android:drawable="@drawable/ic_launcher_background"
+      tools:ignore="MonochromeLauncherIcon" />
+  <foreground android:drawable="@drawable/ic_launcher_foreground"
+      tools:ignore="MonochromeLauncherIcon" />
 </adaptive-icon>
