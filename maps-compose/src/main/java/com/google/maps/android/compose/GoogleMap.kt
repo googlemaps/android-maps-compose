@@ -36,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.viewinterop.AndroidView
@@ -149,6 +150,11 @@ public fun GoogleMap(
     var subcompositionJob by remember { mutableStateOf<Job?>(null) }
     val parentCompositionScope = rememberCoroutineScope()
 
+    var delegate by remember {
+        // TODO: this could leak the view?
+        mutableStateOf<AbstractMapViewDelegate<*>?>(null)
+    }
+
     AndroidView(
         modifier = modifier,
         factory = { context ->
@@ -157,6 +163,7 @@ public fun GoogleMap(
             } else {
                 MapViewDelegate(MapView(context, googleMapOptionsFactory()))
             }.also { mapViewDelegate: AbstractMapViewDelegate<*> ->
+                delegate = mapViewDelegate
                 val mapView = mapViewDelegate.mapView
 
                 val componentCallbacks = object : ComponentCallbacks2 {
@@ -193,12 +200,11 @@ public fun GoogleMap(
         },
         onReset = { /* View is detached. */ },
         onRelease = { mapView ->
-            mapView.toDelegate()
-
-            val (componentCallbacks, lifecycleObserver) = when {
-                mapView is MapView -> mapView.tagData
-                else -> TODO("not yet implemented!")
-            }
+            val (componentCallbacks, lifecycleObserver) = delegate!!.tagData
+//            val (componentCallbacks, lifecycleObserver) = when {
+//                mapView is MapView -> mapView.tagData
+//                else -> TODO("not yet implemented!")
+//            }
             mapView.context.unregisterComponentCallbacks(componentCallbacks)
             lifecycleObserver.moveToDestroyedState()
             mapView.tag = null
@@ -208,7 +214,7 @@ public fun GoogleMap(
                 subcompositionJob = parentCompositionScope.launchSubcomposition(
                     mapUpdaterState,
                     parentComposition,
-                    mapView.toDelegate(),
+                    delegate!!,  // TODO: not sure about this.  Maybe just remember a factory method?
                     mapClickListeners,
                     currentContent,
                 )
@@ -339,10 +345,22 @@ public interface AbstractMapViewDelegate<T : View> {
     public fun onLowMemory()
     public fun onDestroy()
     public suspend fun awaitMap(): GoogleMap
-    public fun renderComposeViewOnce(view: ComposeView, parentContext: CompositionContext)
+    public fun renderComposeViewOnce(
+        view: AbstractComposeView,
+        parentContext: CompositionContext,
+        onAddedToWindow: ((View) -> Unit)? = null,
+    )
+
+    public fun startRenderingComposeView(
+        view: AbstractComposeView,
+        parentContext: CompositionContext,
+    ): ComposeUiViewRenderer.RenderHandle
 
     public val mapView: T
 }
+
+private val <T : View> AbstractMapViewDelegate<T>.tagData: MapTagData
+    get() = mapView.tag as MapTagData
 
 public class MapViewDelegate(override val mapView: MapView) : AbstractMapViewDelegate<MapView> {
     override fun onCreate(savedInstanceState: Bundle?): Unit = mapView.onCreate(savedInstanceState)
@@ -353,8 +371,26 @@ public class MapViewDelegate(override val mapView: MapView) : AbstractMapViewDel
     override fun onLowMemory(): Unit = mapView.onLowMemory()
     override fun onDestroy(): Unit = mapView.onDestroy()
     override suspend fun awaitMap(): GoogleMap = mapView.awaitMap()
-    override fun renderComposeViewOnce(view: ComposeView, parentContext: CompositionContext) {
-        mapView.renderComposeViewOnce(view, parentContext = parentContext)
+    override fun renderComposeViewOnce(
+        view: AbstractComposeView,
+        parentContext: CompositionContext,
+        onAddedToWindow: ((View) -> Unit)?
+    ) {
+        mapView.renderComposeViewOnce(
+            view = view,
+            parentContext = parentContext,
+            onAddedToWindow = onAddedToWindow
+        )
+    }
+
+    override fun startRenderingComposeView(
+        view: AbstractComposeView,
+        parentContext: CompositionContext
+    ): ComposeUiViewRenderer.RenderHandle {
+        return mapView.startRenderingComposeView(
+            view = view,
+            parentContext = parentContext,
+        )
     }
 }
 
