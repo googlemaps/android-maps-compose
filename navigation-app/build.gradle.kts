@@ -83,7 +83,6 @@ dependencies {
 
     implementation(libs.play.services.location)
 
-//    testImplementation(libs.robolectric)
     testImplementation(libs.androidx.core)
     testImplementation(libs.truth)
 
@@ -94,7 +93,6 @@ dependencies {
 
     // Accompanist permission helper
     implementation(libs.accompanist.permissions)
-
 }
 
 secrets {
