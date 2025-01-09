@@ -23,6 +23,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.navigation.NavigationApi
 import com.google.maps.android.compose.navigation.ui.theme.AndroidmapscomposeTheme
 import kotlinx.coroutines.launch
 
@@ -30,7 +31,7 @@ val defaultLocation = LatLng(39.9828503662161, -105.71835147137016)
 
 @OptIn(ExperimentalPermissionsApi::class)
 class MainActivity : ComponentActivity() {
-    private val myViewModel: MainViewModel by viewModels { MainViewModel.Factory }
+    private val myViewModel: NavigationViewModel by viewModels { NavigationViewModel.Factory }
 
     override fun onResume() {
         super.onResume()
@@ -40,6 +41,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        NavigationApi.getNavigator(this, myViewModel)
+
         setContent {
             val context = LocalContext.current
             val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
