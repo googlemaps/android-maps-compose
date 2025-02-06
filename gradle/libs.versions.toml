@@ -2,7 +2,6 @@
 accompanistPermissions = "0.37.0"
 activitycompose = "1.9.3"
 agp = "8.7.2"
-agpVersion = "8.7.2"
 androidCore = "1.6.1"
 androidx-core = "1.15.0"
 androidxtest = "1.6.2"
@@ -69,7 +68,7 @@ test-junit = { module = "junit:junit", version.ref = "junit" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "agpVersion" }
+android-application = { id = "com.android.application", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
