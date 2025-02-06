@@ -172,7 +172,9 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         /* AndroidComposeView triggers LayoutNode's layout phase in the View draw phase,
            so trigger a draw to an empty canvas to force that */
         view.draw(fakeCanvas)
-        val viewParent = (view.parent as ViewGroup)
+        val viewParent =
+            view.parent as? ViewGroup ?: return Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
+                .let(BitmapDescriptorFactory::fromBitmap)
         view.measure(
             View.MeasureSpec.makeMeasureSpec(viewParent.width, View.MeasureSpec.AT_MOST),
             View.MeasureSpec.makeMeasureSpec(viewParent.height, View.MeasureSpec.AT_MOST),

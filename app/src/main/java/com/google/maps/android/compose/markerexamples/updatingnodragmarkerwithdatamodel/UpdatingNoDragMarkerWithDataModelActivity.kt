@@ -24,17 +24,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.defaultCameraPosition
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.singapore2
 import com.google.maps.android.compose.singapore3
@@ -128,30 +126,10 @@ fun Marker(
     position: LatLng,
     onClick: () -> Boolean = { false },
 ) {
-    val markerState = rememberUpdatedMarkerState(position)
+    val markerState = rememberUpdatedMarkerState(position = position)
 
     Marker(
         state = markerState,
         onClick = { onClick() }
     )
 }
-
-/**
- * Standard API pattern for remembering, initializing, and updating MarkerState for a
- * non-draggable Marker, where [position] comes from a data model.
- *
- * Implementation modeled after `rememberUpdatedState`.
- *
- * This one uses [remember] behind the scenes, not [rememberMarkerState], which uses
- * `rememberSaveable`. Our data model is the source of truth - `rememberSaveable` would
- * create a conflicting source of truth.
- */
-@Composable
-fun rememberUpdatedMarkerState(position: LatLng): MarkerState =
-    // This pattern is equivalent to what rememberUpdatedState() does:
-    // rememberUpdatedState() uses MutableState, we use MarkerState.
-    // This is more efficient than updating position in an effect,
-    // as we avoid an additional recomposition.
-    remember { MarkerState(position = position) }.also {
-        it.position = position
-    }
