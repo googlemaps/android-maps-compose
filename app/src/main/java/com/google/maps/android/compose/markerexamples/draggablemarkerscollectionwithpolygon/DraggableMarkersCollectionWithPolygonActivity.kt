@@ -25,10 +25,10 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -64,11 +64,10 @@ private class DraggableMarkersModel(dataModel: Map<LocationKey, LocationData>) {
     // This initializes MarkerState from our model once (model is initial source of truth)
     // and never updates it from the model afterwards.
     // See SyncingDraggableMarkerWithDataModelActivity for rationale.
-    private val markerDataMap: SnapshotStateMap<LocationKey, MarkerState> = mutableStateMapOf(
-        *dataModel.entries.map { (locationKey, locationData) ->
+    private val markerDataMap: SnapshotStateMap<LocationKey, MarkerState> =
+        dataModel.entries.map { (locationKey, locationData) ->
             locationKey to MarkerState(locationData.position)
-        }.toTypedArray()
-    )
+        }.toMutableStateMap()
 
     /** Add new marker location to model */
     fun addLocation(locationData: LocationData) {
@@ -165,20 +164,18 @@ private fun GoogleMapWithLocations(
  * A draggable GoogleMap Marker representing a location on the map
  */
 @Composable
-private fun LocationMarker(
+private inline fun LocationMarker(
     markerState: MarkerState,
-    onClick: () -> Unit
-) {
-    Marker(
-        state = markerState,
-        draggable = true,
-        onClick = {
-            onClick()
+    crossinline onClick: () -> Unit
+) = Marker(
+    state = markerState,
+    draggable = true,
+    onClick = {
+        onClick()
 
-            true
-        }
-    )
-}
+        true
+    }
+)
 
 /**
  * A Polygon. Helps isolate recompositions while a Marker is being dragged.

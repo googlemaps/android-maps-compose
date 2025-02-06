@@ -23,6 +23,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -182,14 +183,42 @@ public class MarkerState private constructor(position: LatLng) {
  * Other use cases may be better served syncing [MarkerState.position] with a data model.
  *
  * This cannot be used to preserve info window visibility across configuration changes.
+ *
+ * This function does not automatically update the MarkerState when the input parameters change.
+ * If you need this implementation, use 'rememberUpdatedMarkerState'.
  */
 @Composable
+@Deprecated(
+    message = "Use 'rememberUpdatedMarkerState' instead - It may be confusing to think " +
+            "that the state is automatically updated as the position changes, " +
+            "so it will be changed or removed.",
+    replaceWith = ReplaceWith(
+        expression = """
+            val markerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
+                MarkerState(position)
+            }
+        """
+    )
+)
 public fun rememberMarkerState(
     key: String? = null,
     position: LatLng = LatLng(0.0, 0.0)
 ): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
     MarkerState(position)
 }
+
+/**
+ * This function updates the state value according to the update of the input parameter,
+ * like 'rememberUpdatedState'.
+ *
+ * This cannot be used to preserve state across configuration changes.
+ */
+@Composable
+public fun rememberUpdatedMarkerState(
+    position: LatLng = LatLng(0.0, 0.0)
+): MarkerState = remember {
+    MarkerState(position = position)
+}.also { it.position = position }
 
 /**
  * A composable for a marker on the map.
