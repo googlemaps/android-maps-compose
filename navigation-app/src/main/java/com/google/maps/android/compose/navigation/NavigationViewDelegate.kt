@@ -24,7 +24,6 @@ class NavigationViewDelegate(override val mapView: NavigationView) :
     override fun onStop(): Unit = mapView.onStop()
 
     override fun onLowMemory() {
-        // TODO(): what is the correct value here?
         mapView.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
     }
 

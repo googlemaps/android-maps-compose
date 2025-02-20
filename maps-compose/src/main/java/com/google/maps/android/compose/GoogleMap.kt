@@ -151,7 +151,6 @@ public fun GoogleMap(
     val parentCompositionScope = rememberCoroutineScope()
 
     var delegate by remember {
-        // TODO: this could leak the view?
         mutableStateOf<AbstractMapViewDelegate<*>?>(null)
     }
 
@@ -201,10 +200,6 @@ public fun GoogleMap(
         onReset = { /* View is detached. */ },
         onRelease = { mapView ->
             val (componentCallbacks, lifecycleObserver) = delegate!!.tagData
-//            val (componentCallbacks, lifecycleObserver) = when {
-//                mapView is MapView -> mapView.tagData
-//                else -> TODO("not yet implemented!")
-//            }
             mapView.context.unregisterComponentCallbacks(componentCallbacks)
             lifecycleObserver.moveToDestroyedState()
             mapView.tag = null
@@ -214,20 +209,13 @@ public fun GoogleMap(
                 subcompositionJob = parentCompositionScope.launchSubcomposition(
                     mapUpdaterState,
                     parentComposition,
-                    delegate!!,  // TODO: not sure about this.  Maybe just remember a factory method?
+                    delegate!!,
                     mapClickListeners,
                     currentContent,
                 )
             }
         }
     )
-}
-
-private fun View.toDelegate(): MapViewDelegate {
-    return when (this) {
-        is MapView -> MapViewDelegate(this)
-        else -> error("View cannot be used as an AbstractMapViewDelegate")
-    }
 }
 
 /**

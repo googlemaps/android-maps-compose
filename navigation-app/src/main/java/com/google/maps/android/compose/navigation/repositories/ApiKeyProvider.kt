@@ -30,7 +30,6 @@ class ApiKeyProvider(private val context: Context) {
                 error("Unable to find package: ${e.message}")
             }
         if (mapsApiKey.isBlank()) {
-            // TODO: get the right error message/behavior.
             error("MapsApiKey missing from AndroidManifest.")
         }
         return mapsApiKey

@@ -14,6 +14,7 @@ junitVersion = "1.2.1"
 junitktx = "1.2.1"
 kotlin = "2.0.21"
 kotlinxCoroutines = "1.9.0"
+leakcanaryAndroid = "2.12"
 lifecycleRuntimeKtx = "2.8.7"
 mapsecrets = "2.0.1"
 mapsktx = "5.1.1"
@@ -57,6 +58,7 @@ kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "ko
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "mapsktx" }
 maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsktx" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
