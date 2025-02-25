@@ -47,6 +47,8 @@ android {
 
 configurations.all {
     resolutionStrategy {
+        // IMPORTANT: This actually is done to exclude all the packages from the play-services-maps, since they will
+        // conflict with the ones from Play the Navigation App.
         exclude(group = "com.google.android.gms", module = "play-services-maps")
     }
 }
