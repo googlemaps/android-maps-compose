@@ -42,15 +42,21 @@ dependencies {
 
 ## Sample App
 
-This repository includes a [sample app](app).
+Currently, there are two sample apps in the repository: [maps-app](app) and [navigation-app](navigation-app). Each of them run a different version of the Android Maps Compose SDK, where either the maps or the navigation SDK are run, respectively.
 
-To run the demo app, ensure you've met the requirements above then:
+To run the maps demo app, ensure you've met the requirements above then:
 
 1. Open the `secrets.properties` file in your top-level directory, and then add the following code. Replace YOUR_API_KEY with your API key. Store your key in this file because secrets.properties is excluded from being checked into a version control system.
    If the `secrets.properties` file does not exist, create it in the same folder as the `local.default.properties` file.
    ```
    MAPS_API_KEY=YOUR_API_KEY
    ```
+   
+   If you want to use also the Navigation SDK, make sure the PLACES_API_KEY also contains an entry.
+   ```
+   PLACES_API_KEY=DEFAULT_API_KEY
+   ```
+   
 1. Build and run
 
 ## Documentation
@@ -390,6 +396,18 @@ GoogleMap(
     }
 }
 ```
+
+## Using the Navigation SDK
+
+In order to use the Navigation SDK, make sure to include the Composable `NavigationScreen` as follows:
+
+```kotlin
+NavigationScreen(
+   modifier = Modifier.padding(innerPadding),
+   deviceLocation = location
+)
+```
+
 
 </details>
 
