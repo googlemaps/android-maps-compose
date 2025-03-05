@@ -31,10 +31,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.libraries.navigation.ListenableResultFuture
+import com.google.android.libraries.places.api.model.EncodedPolyline
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.SearchAlongRouteParameters
+import com.google.android.libraries.places.api.net.kotlin.awaitSearchByText
+import com.google.maps.android.ktx.utils.latLngListEncode
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-import com.google.maps.android.compose.navigation.BuildConfig
 
 class NavigationViewModel(
     private val placesClient: PlacesClient,
@@ -59,6 +63,12 @@ class NavigationViewModel(
     private val _hasLocationPermission = MutableStateFlow(false)
 
     private var navigator: Navigator? = null
+
+    private val _placesAlongRoute = MutableStateFlow<List<Place>>(emptyList())
+    val placesAlongRoute = _placesAlongRoute.asStateFlow()
+
+    private val _routeReady = MutableStateFlow(false)
+    val routeReady = _routeReady.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -204,7 +214,41 @@ class NavigationViewModel(
             travelMode(RoutingOptions.TravelMode.DRIVING)
         }
 
+        // Listen for route changes
+        navigator.addRouteChangedListener {
+            Log.d("NavigationContainer", "Route changed")
+            _routeReady.value = true
+            //            viewModelScope.launch {
+            //                val placeFields = listOf(Place.Field.ID, Place.Field.DISPLAY_NAME)
+            //                searchAlongRoute("Spicy Vegetarian Food", placeFields)
+            //            }
+        }
+
         navigateToPlace(chautauquaDinningHall, routingOptions)
+    }
+
+    private suspend fun searchAlongRoute(searchText: String, placeFields: List<Place.Field>) {
+        val route = navigator?.currentRouteSegment?.latLngs
+
+        if (route.isNullOrEmpty()) {
+            Log.d("NavigationContainer", "No route found")
+            return
+        }
+
+        val encodedPolyline = EncodedPolyline.newInstance(route.latLngListEncode())
+
+        val searchAlongRouteParameters = SearchAlongRouteParameters.newInstance(encodedPolyline)
+
+        val response = placesClient.awaitSearchByText(searchText, placeFields) {
+            setSearchAlongRouteParameters(searchAlongRouteParameters)
+            maxResultCount = 10
+        }
+
+        response.places.forEach {
+            Log.d("Gollum", "Place ID: ${it.id}, Display Name: ${it.displayName}")
+        }
+
+        _placesAlongRoute.value = response.places
     }
 
     override fun onError(@NavigationApi.ErrorCode errorCode: Int) {
@@ -235,5 +279,14 @@ class NavigationViewModel(
             _uiEvent.emit(UiEvent.ShowSnackbar(message))
         }
     }
-}
 
+    fun clearSearchResults() {
+        _placesAlongRoute.value = emptyList()
+    }
+
+    fun searchAlongRoute(searchText: String) {
+        viewModelScope.launch {
+            searchAlongRoute(searchText, listOf(Place.Field.ID, Place.Field.DISPLAY_NAME))
+        }
+    }
+}

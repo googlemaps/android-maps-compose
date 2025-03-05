@@ -53,6 +53,8 @@ class MainActivity : ComponentActivity() {
             )
 
             val location by myViewModel.location.collectAsStateWithLifecycle()
+            val placesAlongRoute by myViewModel.placesAlongRoute.collectAsStateWithLifecycle()
+            val routeReady by myViewModel.routeReady.collectAsStateWithLifecycle()
 
             fun onShowSnackbar(message: String) {
                 scope.launch {
@@ -80,11 +82,18 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavigationScreen(
                         modifier = Modifier.padding(innerPadding),
-                        deviceLocation = location
+                        deviceLocation = location,
+                        placesAlongRoute = placesAlongRoute,
+                        routeReady = routeReady,
+                        onClearSearchResults = {
+                            myViewModel.clearSearchResults()
+                        },
+                        onSearchClicked = {
+                            myViewModel.searchAlongRoute(it)
+                        }
                     )
                 }
             }
         }
     }
 }
-
