@@ -42,7 +42,7 @@ dependencies {
 
 ## Sample App
 
-Currently, there are two sample apps in the repository: [maps-app](app) and [navigation-app](navigation-app). Each of them run a different version of the Android Maps Compose SDK, where either the maps or the navigation SDK are run, respectively.
+Currently, there are two sample apps in the repository: [maps-app](maps-app) and [navigation-app](navigation-app). Each of them run a different version of the Android Maps Compose SDK, where either the maps or the navigation SDK are run, respectively.
 
 To run the maps demo app, ensure you've met the requirements above then:
 
