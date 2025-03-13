@@ -42,21 +42,15 @@ dependencies {
 
 ## Sample App
 
-Currently, there are two sample apps in the repository: [maps-app](maps-app) and [navigation-app](navigation-app). Each of them run a different version of the Android Maps Compose SDK, where either the maps or the navigation SDK are run, respectively.
+This repository includes a [sample app](maps-app).
 
-To run the maps demo app, ensure you've met the requirements above then:
+To run the demo app, ensure you've met the requirements above then:
 
 1. Open the `secrets.properties` file in your top-level directory, and then add the following code. Replace YOUR_API_KEY with your API key. Store your key in this file because secrets.properties is excluded from being checked into a version control system.
    If the `secrets.properties` file does not exist, create it in the same folder as the `local.default.properties` file.
    ```
    MAPS_API_KEY=YOUR_API_KEY
    ```
-   
-   If you want to use also the Navigation SDK, make sure the PLACES_API_KEY also contains an entry.
-   ```
-   PLACES_API_KEY=DEFAULT_API_KEY
-   ```
-   
 1. Build and run
 
 ## Documentation
@@ -397,18 +391,6 @@ GoogleMap(
 }
 ```
 
-## Using the Navigation SDK
-
-In order to use the Navigation SDK, make sure to include the Composable `NavigationScreen` as follows:
-
-```kotlin
-NavigationScreen(
-   modifier = Modifier.padding(innerPadding),
-   deviceLocation = location
-)
-```
-
-
 </details>
 
 ## Maps Compose Utility Library
@@ -420,7 +402,7 @@ This library provides optional utilities in the `maps-compose-utils` library fro
 The marker clustering utility helps you manage multiple markers at different zoom levels.
 When a user views the map at a high zoom level, the individual markers show on the map. When the user zooms out, the markers gather together into clusters, to make viewing the map easier.
 
-The [MarkerClusteringActivity](maps-app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt) demonstrates usage.
+The [MarkerClusteringActivity](app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt) demonstrates usage.
 
 ```kotlin
 Clustering(
@@ -444,7 +426,7 @@ The `fetchStreetViewData` method provides functionality to check whether a locat
 > Be sure to [enable Street View Static API](https://goo.gle/enable-sv-static-api) on the project associated with your API key.
 
 You can see example usage
-in the [`StreetViewActivity`](maps-app/src/main/java/com/google/maps/android/compose/StreetViewActivity.kt) of the demo app:
+in the [`StreetViewActivity`](https://github.com/googlemaps/android-maps-compose/blob/main/app/src/main/java/com/google/maps/android/compose/StreetViewActivity.kt) of the demo app:
 
 ```kotlin
  streetViewResult =
@@ -459,7 +441,7 @@ This library also provides optional composable widgets in the `maps-compose-widg
 
 This widget shows the current scale of the map in feet and meters when zoomed into the map, changing to miles and kilometers, respectively, when zooming out. A `DisappearingScaleBar` is also included, which appears when the zoom level of the map changes, and then disappears after a configurable timeout period.
 
-The [ScaleBarActivity](maps-app/src/main/java/com/google/maps/android/compose/ScaleBarActivity.kt) demonstrates both of these, with the `DisappearingScaleBar` in the upper left corner and the normal base `ScaleBar` in the upper right:
+The [ScaleBarActivity](app/src/main/java/com/google/maps/android/compose/ScaleBarActivity.kt) demonstrates both of these, with the `DisappearingScaleBar` in the upper left corner and the normal base `ScaleBar` in the upper right:
 
 ![maps-compose-scale-bar-cropped](https://user-images.githubusercontent.com/928045/175665891-a0635004-2201-4392-83b3-0c6553b96926.gif)
 
@@ -507,7 +489,7 @@ This library is not a Google Maps Platform Core Service. Therefore, the Google M
 
 ## Support
 
-This library is offered via an open source [license]. It is not governed by the Google Maps Platform Support [Technical Support Services Guidelines], the [SLA], or the [Deprecation Policy]. However, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service.
+This library is offered via an open source [license]. It is not governed by the Google Maps Platform Support [Technical Support Services Guidelines, the SLA, or the [Deprecation Policy]. However, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service.
 
 This library adheres to [semantic versioning] to indicate when backwards-incompatible changes are introduced. Accordingly, while the library is in version 0.x, backwards-incompatible changes may be introduced at any time.
 

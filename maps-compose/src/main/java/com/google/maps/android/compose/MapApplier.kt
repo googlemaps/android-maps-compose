@@ -16,6 +16,7 @@ package com.google.maps.android.compose
 
 import androidx.compose.runtime.AbstractApplier
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.GroundOverlay
 import com.google.android.gms.maps.model.Marker
@@ -37,7 +38,7 @@ private object MapNodeRoot : MapNode
 // for that particular listener; yet MapClickListeners never actually changes.
 internal class MapApplier(
     val map: GoogleMap,
-    internal val mapViewDelegate: AbstractMapViewDelegate<*>,
+    internal val mapView: MapView,
     val mapClickListeners: MapClickListeners,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
@@ -210,7 +211,7 @@ internal class MapApplier(
         })
         map.setInfoWindowAdapter(
             ComposeInfoWindowAdapter(
-                mapViewDelegate,
+                mapView,
                 markerNodeFinder = { marker ->
                     decorations.firstOrNull { it is MarkerNode && it.marker == marker }
                             as MarkerNode?
