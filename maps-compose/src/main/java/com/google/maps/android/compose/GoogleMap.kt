@@ -20,6 +20,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -150,66 +151,68 @@ public fun GoogleMap(
     var subcompositionJob by remember { mutableStateOf<Job?>(null) }
     val parentCompositionScope = rememberCoroutineScope()
 
-    var delegate by remember {
-        mutableStateOf<AbstractMapViewDelegate<*>?>(null)
-    }
+    val delegate = remember { mutableStateOf<AbstractMapViewDelegate<*>?>(null) }
 
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            if (mapViewCreator != null) {
+            val mapViewDelegate = if (mapViewCreator != null) {
                 mapViewCreator(context, googleMapOptionsFactory())
             } else {
                 MapViewDelegate(MapView(context, googleMapOptionsFactory()))
-            }.also { mapViewDelegate: AbstractMapViewDelegate<*> ->
-                delegate = mapViewDelegate
-                val mapView = mapViewDelegate.mapView
+            }
 
-                val componentCallbacks = object : ComponentCallbacks2 {
-                    override fun onConfigurationChanged(newConfig: Configuration) {}
-                    @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
-                    override fun onLowMemory() { mapViewDelegate.onLowMemory() }
-                    override fun onTrimMemory(level: Int) { mapViewDelegate.onLowMemory() }
+            delegate.value = mapViewDelegate
+
+            val mapView = mapViewDelegate.mapView
+            val componentCallbacks = object : ComponentCallbacks2 {
+                override fun onConfigurationChanged(newConfig: Configuration) {}
+                override fun onLowMemory() {
+                    mapViewDelegate.onLowMemory()
                 }
-                context.registerComponentCallbacks(componentCallbacks)
 
-                val lifecycleObserver = MapLifecycleEventObserver(mapViewDelegate)
+                override fun onTrimMemory(level: Int) {
+                    mapViewDelegate.onLowMemory()
+                }
+            }
+            context.registerComponentCallbacks(componentCallbacks)
 
-                mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
+            val lifecycleObserver = MapLifecycleEventObserver(mapViewDelegate)
+            mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
 
-                // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
-                val onAttachStateListener = object : View.OnAttachStateChangeListener {
-                    private var lifecycle: Lifecycle? = null
+            val onAttachStateListener = object : View.OnAttachStateChangeListener {
+                private var lifecycle: Lifecycle? = null
 
-                    override fun onViewAttachedToWindow(mapView: View) {
-                        lifecycle = mapView.findViewTreeLifecycleOwner()!!.lifecycle.also {
-                            it.addObserver(lifecycleObserver)
-                        }
-                    }
-
-                    override fun onViewDetachedFromWindow(v: View) {
-                        lifecycle?.removeObserver(lifecycleObserver)
-                        lifecycle = null
-                        lifecycleObserver.moveToBaseState()
+                override fun onViewAttachedToWindow(mapView: View) {
+                    lifecycle = mapView.findViewTreeLifecycleOwner()?.lifecycle?.also {
+                        it.addObserver(lifecycleObserver)
                     }
                 }
 
-                mapView.addOnAttachStateChangeListener(onAttachStateListener)
-            }.mapView
+                override fun onViewDetachedFromWindow(v: View) {
+                    lifecycle?.removeObserver(lifecycleObserver)
+                    lifecycle = null
+                    lifecycleObserver.moveToBaseState()
+                }
+            }
+
+            mapView.addOnAttachStateChangeListener(onAttachStateListener)
+            mapView
         },
-        onReset = { /* View is detached. */ },
         onRelease = { mapView ->
-            val (componentCallbacks, lifecycleObserver) = delegate!!.tagData
+            val safeDelegate = delegate.value ?: throw IllegalStateException("Delegate is null in onRelease")
+            val (componentCallbacks, lifecycleObserver) = safeDelegate.tagData
             mapView.context.unregisterComponentCallbacks(componentCallbacks)
             lifecycleObserver.moveToDestroyedState()
             mapView.tag = null
         },
         update = { mapView ->
+            val safeDelegate = delegate.value ?: throw IllegalStateException("Delegate is null in update")
             if (subcompositionJob == null) {
                 subcompositionJob = parentCompositionScope.launchSubcomposition(
                     mapUpdaterState,
                     parentComposition,
-                    delegate!!,
+                    safeDelegate,
                     mapClickListeners,
                     currentContent,
                 )
