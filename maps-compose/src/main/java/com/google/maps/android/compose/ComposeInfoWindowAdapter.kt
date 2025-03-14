@@ -17,6 +17,7 @@ package com.google.maps.android.compose
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Marker
 
 /**
@@ -35,7 +36,7 @@ import com.google.android.gms.maps.model.Marker
  * implementation should be updated.
  */
 internal class ComposeInfoWindowAdapter(
-    private val mapViewDelegate: AbstractMapViewDelegate<*>,
+    private val mapView: MapView,
     private val markerNodeFinder: (Marker) -> MarkerNode?
 ) : GoogleMap.InfoWindowAdapter {
 
@@ -45,10 +46,10 @@ internal class ComposeInfoWindowAdapter(
         if (content == null) {
             return null
         }
-        val view = ComposeView(mapViewDelegate.mapView.context).apply {
+        val view = ComposeView(mapView.context).apply {
             setContent { content(marker) }
         }
-        mapViewDelegate.renderComposeViewOnce(view, parentContext = markerNode.compositionContext)
+        mapView.renderComposeViewOnce(view, parentContext = markerNode.compositionContext)
         return view
     }
 
@@ -58,10 +59,11 @@ internal class ComposeInfoWindowAdapter(
         if (infoWindow == null) {
             return null
         }
-        val view = ComposeView(mapViewDelegate.mapView.context).apply {
+        val view = ComposeView(mapView.context).apply {
             setContent { infoWindow(marker) }
         }
-        mapViewDelegate.renderComposeViewOnce(view, parentContext = markerNode.compositionContext)
+        mapView.renderComposeViewOnce(view, parentContext = markerNode.compositionContext)
         return view
     }
+
 }

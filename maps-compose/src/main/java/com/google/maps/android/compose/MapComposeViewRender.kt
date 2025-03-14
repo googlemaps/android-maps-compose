@@ -22,7 +22,7 @@ import java.io.Closeable
  * to a window. [onAddedToWindow] is called in place, and then [view] is removed from the window
  * before returning.
  */
-public fun MapView.renderComposeViewOnce(
+internal fun MapView.renderComposeViewOnce(
     view: AbstractComposeView,
     onAddedToWindow: ((View) -> Unit)? = null,
     parentContext: CompositionContext,
@@ -38,7 +38,7 @@ public fun MapView.renderComposeViewOnce(
  * to a window. A [ComposeUiViewRenderer.RenderHandle] is returned, which must be disposed after
  * this view no longer needs to render. Disposing removes [view] from the [MapView].
  */
-public fun MapView.startRenderingComposeView(
+internal fun MapView.startRenderingComposeView(
     view: AbstractComposeView,
     parentContext: CompositionContext,
 ): ComposeUiViewRenderer.RenderHandle {
@@ -69,7 +69,7 @@ private fun MapView.ensureContainerView(): NoDrawContainerView {
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Composable
 public fun rememberComposeUiViewRenderer(): ComposeUiViewRenderer {
-    val mapView = (currentComposer.applier as MapApplier).mapViewDelegate
+    val mapView = (currentComposer.applier as MapApplier).mapView
     val compositionContext = rememberCompositionContext()
 
     return remember(compositionContext) {
