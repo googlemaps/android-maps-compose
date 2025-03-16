@@ -19,7 +19,6 @@ import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -76,7 +75,7 @@ import kotlinx.coroutines.launch
  * @param onMyLocationClick lambda invoked when the my location dot is clicked
  * @param onPOIClick lambda invoked when a POI is clicked
  * @param contentPadding the padding values used to signal that portions of the map around the edges
- * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
+ * may be obscured. The map will move the Google o, etc. to avoid overlapping the padding.
  * @param mapColorScheme Defines the color scheme for the Map.
  * @param content the content of the map
  */
@@ -191,7 +190,6 @@ public fun GoogleMap(
         },
         update = { mapView ->
             if (subcompositionJob == null) {
-                Log.d("Gollum", "subcomposition running")
                 subcompositionJob = parentCompositionScope.launchSubcomposition(
                     mapUpdaterState,
                     parentComposition,
