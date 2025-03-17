@@ -24,7 +24,7 @@ jobs:
   dependabot:
     needs: test
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'googlemaps-bot' || github.actor == 'googlemaps-bot[bot]' }}
+    if: ${{ github.actor == 'googlemaps-bot[bot]' }}
     env:
       PR_URL: ${{github.event.pull_request.html_url}}
       GITHUB_TOKEN: ${{secrets.SYNCED_GITHUB_TOKEN_REPO}}
