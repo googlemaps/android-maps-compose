@@ -19,7 +19,6 @@ import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -191,7 +190,6 @@ public fun GoogleMap(
         },
         update = { mapView ->
             if (subcompositionJob == null) {
-                Log.d("Gollum", "subcomposition running")
                 subcompositionJob = parentCompositionScope.launchSubcomposition(
                     mapUpdaterState,
                     parentComposition,
