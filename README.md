@@ -1,7 +1,12 @@
-![Tests](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/com.google.maps.android/maps-compose)](https://maven-badges.herokuapp.com/maven-central/com.google.maps.android/maps-compose)
+![Release](https://github.com/googlemaps/android-maps-compose/workflows/Release/badge.svg)
 ![Stable](https://img.shields.io/badge/stability-stable-green)
-[![Discord](https://img.shields.io/discord/676948200904589322)][Discord server]
-![Apache-2.0](https://img.shields.io/badge/license-Apache-blue)
+[![Tests/Build](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml)
+
+![Contributors](https://img.shields.io/github/contributors/googlemaps/android-maps-compose?color=green)
+[![License](https://img.shields.io/github/license/googlemaps/android-maps-compose?color=blue)][license]
+[![StackOverflow](https://img.shields.io/stackexchange/stackoverflow/t/google-maps?color=orange&label=google-maps&logo=stackoverflow)](https://stackoverflow.com/questions/tagged/google-maps)
+[![Discord](https://img.shields.io/discord/676948200904589322?color=6A7EC2&logo=discord&logoColor=ffffff)][Discord server]
 
 # Maps Compose 🗺
 
@@ -11,10 +16,12 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the [
 
 ## Requirements
 
+* Android API level 21+
 * Kotlin-enabled project
 * Jetpack Compose-enabled project (see [releases](https://github.com/googlemaps/android-maps-compose/releases) for the required version of Jetpack Compose)
-* An [API key][api-key]
-* API level 21+
+* [Sign up with Google Maps Platform]
+* A Google Maps Platform [project] with the **Maps SDK for Android** enabled
+- An [API key] associated with the project above ... follow the [API key instructions] if you're new to the process
 
 ## Installation
 
@@ -22,35 +29,33 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:6.4.3'
+    implementation 'com.google.maps.android:maps-compose:6.5.2'
 
     // Optionally, you can include the Compose utils library for Clustering,
     // Street View metadata checks, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:6.4.3'
+    implementation 'com.google.maps.android:maps-compose-utils:6.5.2'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:6.4.3'
+    implementation 'com.google.maps.android:maps-compose-widgets:6.5.2'
 }
 ```
 
 ## Sample App
 
-This repository includes a [sample app](app).
+This repository includes a [sample app](maps-app).
 
-To run it:
+To run the demo app, ensure you've met the requirements above then:
 
-1. Get a [Maps API key][api-key]
-2. Open the `secrets.properties` file in your top-level directory, and then add the following code. Replace YOUR_API_KEY with your API key. Store your key in this file because secrets.properties is excluded from being checked into a version control system.
+1. Open the `secrets.properties` file in your top-level directory, and then add the following code. Replace YOUR_API_KEY with your API key. Store your key in this file because secrets.properties is excluded from being checked into a version control system.
    If the `secrets.properties` file does not exist, create it in the same folder as the `local.default.properties` file.
-
    ```
    MAPS_API_KEY=YOUR_API_KEY
    ```
-3. Build and run
+1. Build and run
 
 ## Documentation
 
-You can learn more about all the extensions provided by this library by reading the [reference documents][Javadoc].
+See the [documentation] for a full list of classes and their methods.
 
 ## Usage
 
@@ -397,7 +402,7 @@ This library provides optional utilities in the `maps-compose-utils` library fro
 The marker clustering utility helps you manage multiple markers at different zoom levels.
 When a user views the map at a high zoom level, the individual markers show on the map. When the user zooms out, the markers gather together into clusters, to make viewing the map easier.
 
-The [MarkerClusteringActivity](app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt) demonstrates usage.
+The [MarkerClusteringActivity](maps-app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt) demonstrates usage.
 
 ```kotlin
 Clustering(
@@ -421,7 +426,7 @@ The `fetchStreetViewData` method provides functionality to check whether a locat
 > Be sure to [enable Street View Static API](https://goo.gle/enable-sv-static-api) on the project associated with your API key.
 
 You can see example usage
-in the [`StreetViewActivity`](https://github.com/googlemaps/android-maps-compose/blob/main/app/src/main/java/com/google/maps/android/compose/StreetViewActivity.kt) of the demo app:
+in the [`StreetViewActivity`](https://github.com/googlemaps/android-maps-compose/blob/main/maps-app/src/main/java/com/google/maps/android/compose/StreetViewActivity.kt) of the demo app:
 
 ```kotlin
  streetViewResult =
@@ -436,7 +441,7 @@ This library also provides optional composable widgets in the `maps-compose-widg
 
 This widget shows the current scale of the map in feet and meters when zoomed into the map, changing to miles and kilometers, respectively, when zooming out. A `DisappearingScaleBar` is also included, which appears when the zoom level of the map changes, and then disappears after a configurable timeout period.
 
-The [ScaleBarActivity](app/src/main/java/com/google/maps/android/compose/ScaleBarActivity.kt) demonstrates both of these, with the `DisappearingScaleBar` in the upper left corner and the normal base `ScaleBar` in the upper right:
+The [ScaleBarActivity](maps-app/src/main/java/com/google/maps/android/compose/ScaleBarActivity.kt) demonstrates both of these, with the `DisappearingScaleBar` in the upper left corner and the normal base `ScaleBar` in the upper right:
 
 ![maps-compose-scale-bar-cropped](https://user-images.githubusercontent.com/928045/175665891-a0635004-2201-4392-83b3-0c6553b96926.gif)
 
@@ -474,24 +479,42 @@ The colors of the text, line, and shadow are also all configurable (e.g., based 
 
 ## Contributing
 
-Contributions are welcome and encouraged! See [contributing] for more info.
+Contributions are welcome and encouraged! If you'd like to contribute, send us a [pull request] and refer to our [code of conduct] and [contributing guide].
+
+## Terms of Service
+
+This library uses Google Maps Platform services. Use of Google Maps Platform services through this library is subject to the Google Maps Platform [Terms of Service].
+
+This library is not a Google Maps Platform Core Service. Therefore, the Google Maps Platform Terms of Service (e.g. Technical Support Services, Service Level Agreements, and Deprecation Policy) do not apply to the code in this library.
 
 ## Support
 
-This library is offered via an open source [license](LICENSE). It is not governed by the Google Maps Platform [Technical Support Services Guidelines](https://cloud.google.com/maps-platform/terms/tssg?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss), the [SLA](https://cloud.google.com/maps-platform/terms/sla?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss), or the [Deprecation Policy](https://cloud.google.com/maps-platform/terms?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss) (however, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service).
+This library is offered via an open source [license]. It is not governed by the Google Maps Platform Support [Technical Support Services Guidelines, the SLA, or the [Deprecation Policy]. However, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service.
 
-This library adheres to [semantic versioning](https://semver.org/) to indicate when backwards-incompatible changes are introduced.
+This library adheres to [semantic versioning] to indicate when backwards-incompatible changes are introduced. Accordingly, while the library is in version 0.x, backwards-incompatible changes may be introduced at any time.
 
-If you find a bug, or have a feature request, please [file an issue] on GitHub.
+If you find a bug, or have a feature request, please [file an issue] on GitHub. If you would like to get answers to technical questions from other Google Maps Platform developers, ask through one of our [developer community channels]. If you'd like to contribute, please check the [contributing guide].
 
-If you would like to get answers to technical questions from other Google Maps Platform developers, ask through one of our [developer community channels](https://developers.google.com/maps/developer-community?utm_source=github&utm_medium=documentation&utm_campaign=&utm_content=android_oss) including the Google Maps Platform [Discord server].
+You can also discuss this library on our [Discord server].
 
+[API key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
+[API key instructions]: https://developers.google.com/maps/documentation/android-sdk/config#step_3_add_your_api_key_to_the_project
 [maps-sdk]: https://developers.google.com/maps/documentation/android-sdk
-[api-key]: https://developers.google.com/maps/documentation/android-sdk/get-api-key
-[Discord server]: https://discord.gg/hYsWbmk
-[Javadoc]: https://googlemaps.github.io/android-maps-compose
-[contributing]: CONTRIBUTING.md
-[code of conduct]: CODE_OF_CONDUCT.md
-[file an issue]: https://github.com/googlemaps/android-maps-compose/issues/new/choose
-[pull request]: https://github.com/googlemaps/android-maps-compose/compare
+[documentation]: https://googlemaps.github.io/android-maps-compose
 [jetpack-compose]: https://developer.android.com/jetpack/compose
+
+[code of conduct]: ?tab=coc-ov-file#readme
+[contributing guide]: CONTRIBUTING.md
+[Deprecation Policy]: https://cloud.google.com/maps-platform/terms
+[developer community channels]: https://developers.google.com/maps/developer-community
+[Discord server]: https://discord.gg/hYsWbmk
+[file an issue]: https://github.com/googlemaps/android-maps-compose/issues/new/choose
+[license]: LICENSE
+[project]: https://developers.google.com/maps/documentation/android-sdk/cloud-setup
+[pull request]: https://github.com/googlemaps/android-maps-compose/compare
+[semantic versioning]: https://semver.org
+[Sign up with Google Maps Platform]: https://console.cloud.google.com/google/maps-apis/start
+[similar inquiry]: https://github.com/googlemaps/android-maps-compose/issues
+[SLA]: https://cloud.google.com/maps-platform/terms/sla
+[Technical Support Services Guidelines]: https://cloud.google.com/maps-platform/terms/tssg
+[Terms of Service]: https://cloud.google.com/maps-platform/terms

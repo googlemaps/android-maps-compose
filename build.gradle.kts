@@ -19,6 +19,8 @@ plugins {
     alias(libs.plugins.dokka) apply true
     alias(libs.plugins.compose.compiler) apply false
     id("com.autonomousapps.dependency-analysis") version "2.0.0"
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
 
 }
 
@@ -32,7 +34,7 @@ val projectArtifactId by extra { project: Project ->
 
 allprojects {
     group = "com.google.maps.android"
-    version = "6.4.3"
+    version = "6.5.2"
     val projectArtifactId by extra { project.name }
 }
 
