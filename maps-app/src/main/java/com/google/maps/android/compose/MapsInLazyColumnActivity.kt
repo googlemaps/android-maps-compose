@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,12 +52,16 @@ import com.google.android.gms.maps.model.LatLng
 
 private data class CountryLocation(val name: String, val latLng: LatLng, val zoom: Float)
 
-private typealias MapItemId = String
+typealias MapItemId = String
 
 // From https://developers.google.com/public-data/docs/canonical/countries_csv
 private val countries = listOf(
     CountryLocation("Hong Kong", LatLng(22.396428, 114.109497), 5f),
-    CountryLocation("Madison Square Garden (has indoor mode)", LatLng(40.7504656, -73.9937246), 19.33f),
+    CountryLocation(
+        "Madison Square Garden (has indoor mode)",
+        LatLng(40.7504656, -73.9937246),
+        19.33f
+    ),
     CountryLocation("Bolivia", LatLng(-16.290154, -63.588653), 5f),
     CountryLocation("Ecuador", LatLng(-1.831239, -78.183406), 5f),
     CountryLocation("Sweden", LatLng(60.128161, 18.643501), 5f),
@@ -74,7 +79,7 @@ private val countries = listOf(
     CountryLocation("Burundi", LatLng(-3.373056, 29.918886), 5f)
 )
 
-private data class MapListItem(
+data class MapListItem(
     val title: String,
     val location: LatLng,
     val zoom: Float,
@@ -98,7 +103,8 @@ class MapsInLazyColumnActivity : ComponentActivity() {
             }
 
             Column(
-                Modifier.fillMaxSize()
+                Modifier
+                    .fillMaxSize()
                     .systemBarsPadding(),
             ) {
                 Row(
@@ -125,7 +131,7 @@ class MapsInLazyColumnActivity : ComponentActivity() {
                 }
                 if (showLazyColumn) {
                     Box(Modifier.border(1.dp, Color.LightGray.copy(0.5f))) {
-                        MapsInLazyColumn(visibleItems)
+                        MapsInLazyColumn(visibleItems, onMapLoaded = { })
                     }
                 }
             }
@@ -134,7 +140,13 @@ class MapsInLazyColumnActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MapsInLazyColumn(mapItems: List<MapListItem>) {
+fun MapsInLazyColumn(
+    mapItems: List<MapListItem>,
+    onMapLoaded: () -> Unit
+) {
+
+    var isMapLoaded by remember { mutableStateOf(false) }
+
     val lazyListState = rememberLazyListState()
 
     val cameraPositionStates = mapItems.associate { item ->
@@ -168,7 +180,10 @@ private fun MapsInLazyColumn(mapItems: List<MapListItem>) {
                         .height(300.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    MapCard(item, cameraPositionState)
+                    MapCard(item, cameraPositionState, onMapLoaded = {
+                        isMapLoaded = true
+                        onMapLoaded()
+                    })
                 }
             }
         }
@@ -177,7 +192,11 @@ private fun MapsInLazyColumn(mapItems: List<MapListItem>) {
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
-private fun MapCard(item: MapListItem, cameraPositionState: CameraPositionState) {
+private fun MapCard(
+    item: MapListItem,
+    cameraPositionState: CameraPositionState,
+    onMapLoaded: () -> Unit,
+) {
     Card(
         Modifier.padding(16.dp),
         elevation = 4.dp
@@ -192,11 +211,13 @@ private fun MapCard(item: MapListItem, cameraPositionState: CameraPositionState)
         var map: GoogleMap? by remember { mutableStateOf(null) }
 
         fun updateIndoorLevel() {
-            activatedIndoorLevel = map!!.focusedBuilding?.run { levels.getOrNull(activeLevelIndex)?.name }
+            activatedIndoorLevel =
+                map!!.focusedBuilding?.run { levels.getOrNull(activeLevelIndex)?.name }
         }
 
         Box {
             GoogleMap(
+                modifier = Modifier.testTag("Map"),
                 onMapClick = {
                     onMapClickCount++
                 },
@@ -207,7 +228,10 @@ private fun MapCard(item: MapListItem, cameraPositionState: CameraPositionState)
                     )
                 },
                 cameraPositionState = cameraPositionState,
-                onMapLoaded = { mapLoaded = true },
+                onMapLoaded = {
+                    onMapLoaded.invoke()
+                    mapLoaded = true
+                },
                 indoorStateChangeListener = object : IndoorStateChangeListener {
                     override fun onIndoorBuildingFocused() {
                         super.onIndoorBuildingFocused()
