@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -41,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -142,12 +142,13 @@ class MapsInLazyColumnActivity : ComponentActivity() {
 @Composable
 fun MapsInLazyColumn(
     mapItems: List<MapListItem>,
+    lazyListState: LazyListState = rememberLazyListState(),
     onMapLoaded: () -> Unit
 ) {
 
     var isMapLoaded by remember { mutableStateOf(false) }
 
-    val lazyListState = rememberLazyListState()
+    val lazyListState = lazyListState
 
     val cameraPositionStates = mapItems.associate { item ->
         item.id to rememberCameraPositionState(
@@ -266,7 +267,7 @@ private fun MapCard(
             @Composable
             fun TextWithBackground(text: String, fontWeight: FontWeight = FontWeight.Medium) {
                 Text(
-                    modifier = Modifier.background(Color.White.copy(0.7f)),
+                    modifier = Modifier.background(Color.White.copy(0.7f)).testTag(text),
                     text = text,
                     fontWeight = fontWeight,
                     fontSize = 10.sp
