@@ -1,7 +1,7 @@
 [versions]
 accompanistPermissions = "0.37.0"
 activitycompose = "1.10.1"
-agp = "8.7.3"
+agp = "8.9.1"
 androidCore = "1.6.1"
 androidx-core = "1.15.0"
 androidxtest = "1.6.2"
