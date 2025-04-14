@@ -23,7 +23,7 @@ org-jacoco-core = "0.8.12"
 places = "4.2.0"
 playServicesLocation = "21.3.0"
 robolectric = "4.14.1"
-screenshot = "0.0.1-alpha09"
+screenshot = "0.0.1-alpha08"
 secretsGradlePlugin = "2.0.1"
 truth = "1.4.4"
 
