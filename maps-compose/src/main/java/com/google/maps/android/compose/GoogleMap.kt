@@ -44,9 +44,12 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsApiSettings
+
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
+import com.google.maps.android.compose.meta.AttributionId
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -148,7 +151,8 @@ public fun GoogleMap(
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            MapView(context, googleMapOptionsFactory()).also { mapView ->
+            MapView(context, googleMapOptionsFactory()) .also { mapView ->
+                MapsApiSettings.addInternalUsageAttributionId(context, AttributionId.VALUE )
                 val componentCallbacks = object : ComponentCallbacks2 {
                     override fun onConfigurationChanged(newConfig: Configuration) {}
                     @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
