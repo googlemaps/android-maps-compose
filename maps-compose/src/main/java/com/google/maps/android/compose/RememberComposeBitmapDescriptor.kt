@@ -1,7 +1,5 @@
 package com.google.maps.android.compose
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
@@ -15,6 +13,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.applyCanvas
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import androidx.core.graphics.createBitmap
 
 @Composable
 internal fun rememberComposeBitmapDescriptor(
@@ -37,7 +36,6 @@ private fun renderComposableToBitmapDescriptor(
     compositionContext: CompositionContext,
     content: @Composable () -> Unit,
 ): BitmapDescriptor {
-    val fakeCanvas = Canvas()
     val composeView =
         ComposeView(parent.context)
             .apply {
@@ -50,8 +48,6 @@ private fun renderComposableToBitmapDescriptor(
             }
             .also(parent::addView)
 
-    composeView.draw(fakeCanvas)
-
     composeView.measure(measureSpec, measureSpec)
 
     if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
@@ -62,12 +58,7 @@ private fun renderComposableToBitmapDescriptor(
     composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
 
     val bitmap =
-        Bitmap
-            .createBitmap(
-                composeView.measuredWidth,
-                composeView.measuredHeight,
-                Bitmap.Config.ARGB_8888,
-            )
+        createBitmap(composeView.measuredWidth, composeView.measuredHeight)
 
     bitmap.applyCanvas { composeView.draw(this) }
 
