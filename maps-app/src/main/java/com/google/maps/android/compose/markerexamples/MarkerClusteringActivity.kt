@@ -50,7 +50,7 @@ import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.singapore2
 import kotlin.random.Random
@@ -119,7 +119,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
         }
 
         MarkerInfoWindow(
-            state = rememberMarkerState(position = singapore),
+            state = rememberUpdatedMarkerState(position = singapore),
             onClick = {
                 Log.d(TAG, "Non-cluster marker clicked! $it")
                 true

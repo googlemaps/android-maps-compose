@@ -142,11 +142,11 @@ fun GoogleMapView(
     mapColorScheme: ComposeMapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
     content: @Composable () -> Unit = {}
 ) {
-    val singaporeState = rememberMarkerState(position = singapore)
-    val singapore2State = rememberMarkerState(position = singapore2)
-    val singapore3State = rememberMarkerState(position = singapore3)
-    val singapore4State = rememberMarkerState(position = singapore4)
-    val singapore5State = rememberMarkerState(position = singapore5)
+    val singaporeState = rememberUpdatedMarkerState(position = singapore)
+    val singapore2State = rememberUpdatedMarkerState(position = singapore2)
+    val singapore3State = rememberUpdatedMarkerState(position = singapore3)
+    val singapore4State = rememberUpdatedMarkerState(position = singapore4)
+    val singapore5State = rememberUpdatedMarkerState(position = singapore5)
 
     var circleCenter by remember { mutableStateOf(singapore) }
     if (!singaporeState.isDragging) {

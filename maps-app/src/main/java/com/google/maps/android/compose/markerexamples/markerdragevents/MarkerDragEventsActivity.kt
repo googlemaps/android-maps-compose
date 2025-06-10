@@ -30,7 +30,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.defaultCameraPosition
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 import kotlinx.coroutines.flow.dropWhile
@@ -87,7 +87,7 @@ private fun DraggableMarker(
     onDrag: (LatLng) -> Unit = {},
     onDragEnd: () -> Unit = {}
 ) {
-    val markerState = rememberMarkerState(position = singapore)
+    val markerState = rememberUpdatedMarkerState(position = singapore)
 
     Marker(
         state = markerState,
