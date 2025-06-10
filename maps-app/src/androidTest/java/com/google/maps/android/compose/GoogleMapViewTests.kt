@@ -218,7 +218,7 @@ class GoogleMapViewTests {
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateCannotBeReused() {
         initMap {
-            val markerState = rememberMarkerState()
+            val markerState = rememberUpdatedMarkerState()
             Marker(
                 state = markerState
             )
@@ -231,7 +231,7 @@ class GoogleMapViewTests {
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateInsideMarkerComposableCannotBeReused() {
         initMap {
-            val markerState = rememberMarkerState()
+            val markerState = rememberUpdatedMarkerState()
             MarkerComposable(
                 keys = arrayOf("marker1"),
                 state = markerState,
@@ -254,7 +254,7 @@ class GoogleMapViewTests {
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateInsideMarkerInfoWindowComposableCannotBeReused() {
         initMap {
-            val markerState = rememberMarkerState()
+            val markerState = rememberUpdatedMarkerState()
             MarkerInfoWindowComposable(
                 keys = arrayOf("marker1"),
                 state = markerState,

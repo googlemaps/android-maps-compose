@@ -44,7 +44,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
 
 
 private const val TAG = "AdvancedMarkersActivity"
@@ -70,10 +70,10 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
             val mapProperties by remember {
                 mutableStateOf(MapProperties(mapType = MapType.NORMAL))
             }
-            val marker1State = rememberMarkerState(position = santiago)
-            val marker2State = rememberMarkerState(position = bogota)
-            val marker3State = rememberMarkerState(position = lima)
-            val marker4State = rememberMarkerState(position = salvador)
+            val marker1State = rememberUpdatedMarkerState(position = santiago)
+            val marker2State = rememberUpdatedMarkerState(position = bogota)
+            val marker3State = rememberUpdatedMarkerState(position = lima)
+            val marker4State = rememberUpdatedMarkerState(position = salvador)
 
             // Drawing on the map is accomplished with a child-based API
             val markerClick: (Marker) -> Boolean = {

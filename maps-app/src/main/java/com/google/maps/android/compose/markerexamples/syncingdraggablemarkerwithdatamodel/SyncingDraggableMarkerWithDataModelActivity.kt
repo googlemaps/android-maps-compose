@@ -148,7 +148,7 @@ private fun LocationMarker(
     // It is the price we pay for having source of truth baked into
     // com.google.android.gms.maps.model.Marker, and consequently MarkerState.
     //
-    // Do not use rememberMarkerState() here, because it uses rememberSaveable();
+    // Do not use rememberUpdatedMarkerState() here, because it uses rememberSaveable();
     // we want to save the position to persistent storage as part of our data model
     // instead - rememberSaveable() would add a conflicting source of truth.
     val markerState = remember { MarkerState(locationData.position) }

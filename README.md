@@ -296,7 +296,7 @@ Circle(
 Markers and other elements need to be recomposed in the screen. To achieve recomposition, you can set mutable properties of state objects:
 
 ```kotlin
-val markerState = rememberMarkerState(position = singapore)
+val markerState = rememberUpdatedMarkerState(position = singapore)
 
 //...
 
