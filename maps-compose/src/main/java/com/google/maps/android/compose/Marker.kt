@@ -245,7 +245,7 @@ public fun rememberUpdatedMarkerState(
 @Composable
 @GoogleMapComposable
 public fun Marker(
-    state: MarkerState = rememberMarkerState(),
+    state: MarkerState = rememberUpdatedMarkerState(),
     contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -320,7 +320,7 @@ public fun Marker(
 @GoogleMapComposable
 public fun MarkerComposable(
     vararg keys: Any,
-    state: MarkerState = rememberMarkerState(),
+    state: MarkerState = rememberUpdatedMarkerState(),
     contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -392,7 +392,7 @@ public fun MarkerComposable(
 @Composable
 @GoogleMapComposable
 public fun MarkerInfoWindow(
-    state: MarkerState = rememberMarkerState(),
+    state: MarkerState = rememberUpdatedMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -465,7 +465,7 @@ public fun MarkerInfoWindow(
 @GoogleMapComposable
 public fun MarkerInfoWindowComposable(
     vararg keys: Any,
-    state: MarkerState = rememberMarkerState(),
+    state: MarkerState = rememberUpdatedMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -537,7 +537,7 @@ public fun MarkerInfoWindowComposable(
 @Composable
 @GoogleMapComposable
 public fun MarkerInfoWindowContent(
-    state: MarkerState = rememberMarkerState(),
+    state: MarkerState = rememberUpdatedMarkerState(),
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
@@ -609,7 +609,7 @@ public fun MarkerInfoWindowContent(
 @Composable
 @GoogleMapComposable
 private fun MarkerImpl(
-    state: MarkerState = rememberMarkerState(),
+    state: MarkerState = rememberUpdatedMarkerState(),
     contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -726,7 +726,7 @@ private fun MarkerImpl(
 @Composable
 @GoogleMapComposable
 public fun AdvancedMarker(
-    state: MarkerState = rememberMarkerState(),
+    state: MarkerState = rememberUpdatedMarkerState(),
     contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
@@ -804,7 +804,7 @@ public fun AdvancedMarker(
 @Composable
 @GoogleMapComposable
 private fun AdvancedMarkerImpl(
-    state: MarkerState = rememberMarkerState(),
+    state: MarkerState = rememberUpdatedMarkerState(),
     contentDescription: String? = "",
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
