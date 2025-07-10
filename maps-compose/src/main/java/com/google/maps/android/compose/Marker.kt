@@ -719,6 +719,7 @@ private fun MarkerImpl(
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param icon  sets the icon for the marker
  * @param pinConfig the PinConfig object that will be used for the advanced marker
  * @param iconView the custom view to be used on the advanced marker
  * @param collisionBehavior the expected collision behavior
@@ -743,6 +744,7 @@ public fun AdvancedMarker(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
+    icon: BitmapDescriptor? = null,
     pinConfig: PinConfig? = null,
     iconView: View? = null,
     collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED
@@ -765,6 +767,7 @@ public fun AdvancedMarker(
         onInfoWindowClick = onInfoWindowClick,
         onInfoWindowClose = onInfoWindowClose,
         onInfoWindowLongClick = onInfoWindowLongClick,
+        icon = icon,
         pinConfig = pinConfig,
         iconView = iconView,
         collisionBehavior = collisionBehavior
@@ -797,6 +800,7 @@ public fun AdvancedMarker(
  * will be ignored.
  * @param infoContent optional composable lambda expression for customizing
  * the info window's content. If this value is non-null, [infoWindow] must be null.
+ * @param icon sets the icon for the marker
  * @param pinConfig the PinConfig object that will be used for the advanced marker
  * @param iconView the custom view to be used on the advanced marker
  * @param collisionBehavior the expected collision behavior
@@ -823,6 +827,7 @@ private fun AdvancedMarkerImpl(
     onInfoWindowLongClick: (Marker) -> Unit = {},
     infoWindow: (@Composable (Marker) -> Unit)? = null,
     infoContent: (@Composable (Marker) -> Unit)? = null,
+    icon: BitmapDescriptor? = null,
     pinConfig: PinConfig? = null,
     iconView: View? = null,
     collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED
@@ -840,6 +845,8 @@ private fun AdvancedMarkerImpl(
                 advancedMarkerOptions.iconView(iconView)
             } else if (pinConfig != null) {
                 advancedMarkerOptions.icon(BitmapDescriptorFactory.fromPinConfig(pinConfig))
+            } else if (icon != null) {
+                advancedMarkerOptions.icon(icon)
             }
             advancedMarkerOptions.contentDescription(contentDescription)
             advancedMarkerOptions.alpha(alpha)
@@ -897,12 +904,17 @@ private fun AdvancedMarkerImpl(
                 }
             }
             update(pinConfig) {
-                if (iconView == null) {
+                if (icon == null && iconView == null) {
                     this.marker.setIcon(pinConfig?.let { it1 ->
                         BitmapDescriptorFactory.fromPinConfig(
                             it1
                         )
                     })
+                }
+            }
+            update(icon) {
+                if (iconView == null) {
+                    this.marker.setIcon(it)
                 }
             }
 
