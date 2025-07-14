@@ -250,6 +250,7 @@ fun CustomRendererClustering(items: List<MyItem>) {
             clusterManager = clusterManager,
         )
     }
+
 }
 
 @Composable
