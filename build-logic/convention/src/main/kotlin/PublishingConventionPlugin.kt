@@ -88,11 +88,7 @@ class PublishingConventionPlugin : Plugin<Project> {
             }
             repositories {
                 maven {
-                    val releasesRepoUrl =
-                        uri("https://central.sonatype.com/repository/maven-snapshots/")
-                    val snapshotsRepoUrl =
-                        uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-                    url = if (project.version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                    url = uri("https://central.sonatype.com/repository/maven-snapshots/")
                     credentials {
                         username = project.findProperty("sonatypeToken") as String?
                         password = project.findProperty("sonatypeTokenPassword") as String?
