@@ -38,6 +38,4 @@ allprojects {
     val projectArtifactId by extra { project.name }
 }
 
-tasks.register("clean", Delete::class) {
-    delete(rootProject.layout.buildDirectory)
-}
+
