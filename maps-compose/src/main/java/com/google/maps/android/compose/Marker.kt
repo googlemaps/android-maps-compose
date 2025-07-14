@@ -841,6 +841,12 @@ private fun AdvancedMarkerImpl(
             val advancedMarkerOptions = AdvancedMarkerOptions()
                 .position(state.position)
                 .collisionBehavior(collisionBehavior)
+
+            // Determine the icon for the marker in order of precedence:
+            // 1. Use iconView if provided (takes full precedence and overrides all).
+            // 2. If no iconView, use pinConfig to generate a BitmapDescriptor.
+            // 3. If neither iconView nor pinConfig are available, fall back to the raw icon.
+
             if (iconView != null) {
                 advancedMarkerOptions.iconView(iconView)
             } else if (pinConfig != null) {
