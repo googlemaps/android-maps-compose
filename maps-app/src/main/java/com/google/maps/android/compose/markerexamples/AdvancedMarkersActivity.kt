@@ -45,6 +45,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
+import com.google.maps.android.ui.IconGenerator
 
 
 private const val TAG = "AdvancedMarkersActivity"
@@ -53,6 +54,7 @@ private val santiago = LatLng(-33.4489, -70.6693)
 private val bogota = LatLng(-4.7110, -74.0721)
 private val lima = LatLng(-12.0464, -77.0428)
 private val salvador = LatLng(-12.9777, -38.5016)
+private val caracas = LatLng(10.4785, -66.9016)
 private val center = LatLng(-18.000, -58.000)
 private val defaultCameraPosition1 = CameraPosition.fromLatLngZoom(center, 2f)
 class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
@@ -74,6 +76,7 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
             val marker2State = rememberUpdatedMarkerState(position = bogota)
             val marker3State = rememberUpdatedMarkerState(position = lima)
             val marker4State = rememberUpdatedMarkerState(position = salvador)
+            val marker5State = rememberUpdatedMarkerState(position = caracas)
 
             // Drawing on the map is accomplished with a child-based API
             val markerClick: (Marker) -> Boolean = {
@@ -110,6 +113,25 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                         collisionBehavior = 1,
                         iconView = textView,
                         title="Marker 4"
+                    )
+
+                    val icon = remember {
+                        val iconGenerator = IconGenerator(this@AdvancedMarkersActivity)
+                        val contentView = TextView(this@AdvancedMarkersActivity)
+                        contentView.text = "Caracas"
+                        contentView.setBackgroundColor(Color.BLACK)
+                        contentView.setTextColor(Color.YELLOW)
+                        iconGenerator.setBackground(null)
+                        iconGenerator.setContentView(contentView)
+                        val bitmap = iconGenerator.makeIcon()
+                        BitmapDescriptorFactory.fromBitmap(bitmap)
+                    }
+                    AdvancedMarker(
+                        state = marker5State,
+                        onClick = markerClick,
+                        collisionBehavior = 1,
+                        icon = icon,
+                        title = "Marker 5"
                     )
 
                     val pinConfig = PinConfig.builder()
