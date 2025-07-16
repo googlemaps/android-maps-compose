@@ -32,7 +32,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'adopt'
-      - name: Set up Gradle Publishing Environment Variabless
+      - name: Set up Gradle Publishing Environment Variables
         run: |
           echo $GPG_KEY_ARMOR | base64 --decode > ./release.asc
           gpg --quiet --output $GITHUB_WORKSPACE/release.gpg --dearmor ./release.asc
