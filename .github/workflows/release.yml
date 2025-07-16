@@ -38,15 +38,15 @@ jobs:
           echo "ORG_GRADLE_PROJECT_mavenCentralPassword=${{ secrets.SONATYPE_TOKEN_PASSWORD }}" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_signingInMemoryKey=${{ secrets.SYNCED_GPG_KEY_ARMOR }}" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=${{ secrets.SYNCED_GPG_KEY_PASSWORD }}" >> $GITHUB_ENV
-          env:
+        env:
           SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
           SONATYPE_TOKEN_PASSWORD: ${{ secrets.SONATYPE_TOKEN_PASSWORD }}
           SYNCED_GPG_KEY_ARMOR: ${{ secrets.SYNCED_GPG_KEY_ARMOR }}
           SYNCED_GPG_KEY_PASSWORD: ${{ secrets.SYNCED_GPG_KEY_PASSWORD }}
 
-          - uses: actions/setup-node@v4
-            with:
-              node-version: '14'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '14'
 
       - name: Install conventionalcommits
         run: npm i -D conventional-changelog-conventionalcommits
