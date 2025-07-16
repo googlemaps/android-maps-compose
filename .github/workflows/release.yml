@@ -15,7 +15,7 @@
 name: Release
 on:
   push:
-    branches: [ main ]
+    branches: [ chore/migrate_to_vanniktech_plugin ]
   workflow_dispatch:
 
 jobs:
