@@ -36,16 +36,13 @@ jobs:
         run: |
           echo "ORG_GRADLE_PROJECT_mavenCentralUsername=${{ secrets.SONATYPE_TOKEN }}" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_mavenCentralPassword=${{ secrets.SONATYPE_TOKEN_PASSWORD }}" >> $GITHUB_ENV
-          
-          DECODED_GPG_KEY=$(echo "$GPG_KEY_ARMOR" | base64 --decode)
-          
-          echo "ORG_GRADLE_PROJECT_signingInMemoryKey=$DECODED_GPG_KEY" >> $GITHUB_ENV
-          echo "ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=$GPG_PASSWORD" >> $GITHUB_ENV
+          echo "ORG_GRADLE_PROJECT_signingInMemoryKey=${{ secrets.SYNCED_GPG_KEY_ARMOR }}" >> $GITHUB_ENV
+          echo "ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=${{ secrets.SYNCED_GPG_KEY_PASSWORD }}" >> $GITHUB_ENV
         env:
           SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
           SONATYPE_TOKEN_PASSWORD: ${{ secrets.SONATYPE_TOKEN_PASSWORD }}
-          GPG_KEY_ARMOR: ${{ secrets.SYNCED_GPG_KEY_ARMOR }} 
-          GPG_PASSWORD: ${{ secrets.SYNCED_GPG_KEY_PASSWORD }}
+          SYNCED_GPG_KEY_ARMOR: ${{ secrets.SYNCED_GPG_KEY_ARMOR }}
+          SYNCED_GPG_KEY_PASSWORD: ${{ secrets.SYNCED_GPG_KEY_PASSWORD }}
 
       - uses: actions/setup-node@v4
         with:
