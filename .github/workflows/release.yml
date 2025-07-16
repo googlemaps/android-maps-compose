@@ -32,7 +32,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'adopt'
-      - name: Set up Gradle Publishing Environment Variables
+      - name: Set up Gradle Publishing Environment Variabless
         run: |
           echo "ORG_GRADLE_PROJECT_mavenCentralUsername=${{ secrets.SONATYPE_TOKEN }}" >> $GITHUB_ENV
           echo "ORG_GRADLE_PROJECT_mavenCentralPassword=${{ secrets.SONATYPE_TOKEN_PASSWORD }}" >> $GITHUB_ENV
