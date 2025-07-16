@@ -49,7 +49,8 @@ jobs:
           SONATYPE_TOKEN_USERNAME: ${{ secrets.SONATYPE_TOKEN }}
           SONATYPE_TOKEN_PASSWORD: ${{ secrets.SONATYPE_TOKEN_PASSWORD }}
           GPG_KEY_ARMOR: ${{ secrets.SYNCED_GPG_KEY_ARMOR }}
-          $GPG_PASSWORD: ${{ secrets.SYNCED_GPG_KEY_PASSWORD }}
+          GPG_PASSWORD: ${{ secrets.SYNCED_GPG_KEY_PASSWORD }}
+          GPG_KEY_ID: ${{ secrets.SYNCED_GPG_KEY_ID }}
 
       - uses: actions/setup-node@v4
         with:
