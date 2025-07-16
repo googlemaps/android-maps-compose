@@ -34,10 +34,17 @@ jobs:
           distribution: 'adopt'
       - name: Set up Gradle Publishing Environment Variabless
         run: |
-          echo "ORG_GRADLE_PROJECT_mavenCentralUsername=${{ secrets.SONATYPE_TOKEN }}" >> $GITHUB_ENV
-          echo "ORG_GRADLE_PROJECT_mavenCentralPassword=${{ secrets.SONATYPE_TOKEN_PASSWORD }}" >> $GITHUB_ENV
-          echo "ORG_GRADLE_PROJECT_signingInMemoryKey=${{ secrets.SYNCED_GPG_KEY_ARMOR }}" >> $GITHUB_ENV
-          echo "ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=${{ secrets.SYNCED_GPG_KEY_PASSWORD }}" >> $GITHUB_ENV
+          echo $GPG_KEY_ARMOR | base64 --decode > ./release.asc
+          gpg --quiet --output $GITHUB_WORKSPACE/release.gpg --dearmor ./release.asc
+
+          echo "Build and publish"
+          sed -i -e "s,mavenCentralUsername=,mavenCentralUsername=$SONATYPE_TOKEN_USERNAME,g" gradle.properties
+          SONATYPE_TOKEN_PASSWORD_ESCAPED=$(printf '%s\n' "$SONATYPE_TOKEN_PASSWORD" | sed -e 's/[\/&]/\\&/g')
+          sed -i -e "s,mavenCentralPassword=,mavenCentralPassword=$SONATYPE_TOKEN_PASSWORD_ESCAPED,g" gradle.properties
+          sed -i -e "s,signing.keyId=,signing.keyId=$GPG_KEY_ID,g" gradle.properties
+          sed -i -e "s,signing.password=,signing.password=$GPG_PASSWORD,g" gradle.properties
+          sed -i -e "s,signing.secretKeyRingFile=,signing.secretKeyRingFile=$GITHUB_WORKSPACE/release.gpg,g" gradle.properties
+
         env:
           SONATYPE_TOKEN: ${{ secrets.SONATYPE_TOKEN }}
           SONATYPE_TOKEN_PASSWORD: ${{ secrets.SONATYPE_TOKEN_PASSWORD }}
