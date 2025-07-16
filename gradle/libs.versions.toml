@@ -7,6 +7,7 @@ androidxtest = "1.6.2"
 compose-bom = "2025.04.00"
 dokka = "2.0.0"
 espresso = "3.6.1"
+gradleMavenPublishPlugin = "0.34.0"
 jacoco-plugin = "0.2.1"
 junit = "4.13.2"
 junitktx = "1.2.1"
@@ -35,6 +36,7 @@ androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref 
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxtest" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+gradle-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "gradleMavenPublishPlugin" }
 jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version.ref = "jacoco-plugin", version.require = "0.2.1" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
