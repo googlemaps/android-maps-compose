@@ -1,5 +1,5 @@
 branches:
-  - main
+  - chore/migrate_to_vanniktech_plugin
 plugins:
   - "@semantic-release/commit-analyzer"
   - "@semantic-release/release-notes-generator"
