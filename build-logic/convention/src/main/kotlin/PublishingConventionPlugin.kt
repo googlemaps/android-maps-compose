@@ -75,6 +75,10 @@ class PublishingConventionPlugin : Plugin<Project> {
                         name.set("Google Inc.")
                     }
                 }
+                organization {
+                    name.set("Google Inc")
+                    url.set("http://developers.google.com/maps")
+                }
             }
         }
     }
