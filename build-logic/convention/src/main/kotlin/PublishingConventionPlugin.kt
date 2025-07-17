@@ -1,6 +1,5 @@
 // buildSrc/src/main/kotlin/PublishingConventionPlugin.kt
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -74,6 +73,10 @@ class PublishingConventionPlugin : Plugin<Project> {
                         id.set("google")
                         name.set("Google Inc.")
                     }
+                }
+                organization {
+                    name.set("Google Inc")
+                    url.set("http://developers.google.com/maps")
                 }
             }
         }
