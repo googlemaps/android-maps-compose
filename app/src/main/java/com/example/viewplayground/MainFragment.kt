@@ -20,10 +20,7 @@ class MainFragment : Fragment() {
         setViewCompositionStrategy(
             ViewCompositionStrategy.DisposeOnDetachedFromWindow
         )
-        layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
+
         setContent {
             GoogleMap {
                 MarkerComposable {
