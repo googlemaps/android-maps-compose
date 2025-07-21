@@ -199,6 +199,13 @@ class MainActivity : ComponentActivity() {
                             }) {
                             Text(getString(R.string.draggable_markers_collection_with_polygon))
                         }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, FragmentDemoActivity::class.java))
+                            }) {
+                            Text(getString(R.string.fragment_demo_activity))
+                        }
                     }
                 }
             }

@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.kotlin)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.compose.ui.preview.tooling)
+    implementation(libs.androidx.constraintlayout)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.leakcanary.android)
 

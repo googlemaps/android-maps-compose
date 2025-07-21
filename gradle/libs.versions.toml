@@ -18,6 +18,7 @@ mapsecrets = "2.0.1"
 mapsktx = "5.2.0"
 org-jacoco-core = "0.8.12"
 screenshot = "0.0.1-alpha10"
+constraintlayout = "2.2.1"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -48,6 +49,7 @@ maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.re
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
 org-jacoco-core = { module = "org.jacoco:org.jacoco.core", version.ref = "org-jacoco-core" }
 test-junit = { module = "junit:junit", version.ref = "junit" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
