@@ -219,10 +219,7 @@ private fun CoroutineScope.launchSubcomposition(
     content: @Composable @GoogleMapComposable () -> Unit,
 ): Job {
     // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
-    return launch(
-        context = Dispatchers.Main,
-        start = CoroutineStart.UNDISPATCHED
-    ) {
+    return launch(start = CoroutineStart.UNDISPATCHED) {
         val map = mapView.awaitMap()
         val composition = Composition(
             applier = MapApplier(map, mapView, mapClickListeners),
@@ -242,7 +239,9 @@ private fun CoroutineScope.launchSubcomposition(
             }
             awaitCancellation()
         } finally {
-            composition.dispose()
+            withContext(context = Dispatchers.Main) {
+                composition.dispose()
+            }
         }
     }
 }
