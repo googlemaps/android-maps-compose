@@ -12,7 +12,7 @@ class FragmentDemoActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_fragment_demo)
 
         viewPager = findViewById(R.id.view_pager)
 

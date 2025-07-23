@@ -5,8 +5,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.gms.maps.model.LatLng
 
-private const val NUM_MAP_FRAGMENTS = 2
-
 class MapFragmentPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
 
     private val mapConfigs = listOf(
@@ -27,7 +25,7 @@ class MapFragmentPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStat
         )
     )
 
-    override fun getItemCount(): Int = NUM_MAP_FRAGMENTS
+    override fun getItemCount(): Int = mapConfigs.size
 
     override fun createFragment(position: Int): Fragment {
         return GoogleMapComposeFragment.newInstance(mapConfigs[position])
