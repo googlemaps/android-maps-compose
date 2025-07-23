@@ -73,6 +73,9 @@
         android:name=".RecompositionActivity"
         android:exported="false"/>
     <activity
+        android:name=".FragmentDemoActivity"
+        android:exported="false"/>
+    <activity
         android:name=".markerexamples.markerdragevents.MarkerDragEventsActivity"
         android:exported="false"/>
     <activity
