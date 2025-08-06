@@ -200,7 +200,7 @@ public class MarkerState private constructor(position: LatLng) {
         """
     )
 )
-public fun rememberUpdatedMarkerState(
+public fun rememberMarkerState(
     key: String? = null,
     position: LatLng = LatLng(0.0, 0.0)
 ): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
