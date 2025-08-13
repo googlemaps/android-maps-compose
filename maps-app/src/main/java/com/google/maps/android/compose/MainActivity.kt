@@ -16,6 +16,7 @@ package com.google.maps.android.compose
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.StrictMode
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -48,6 +49,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectDiskReads()
+                .penaltyLog()
+                .penaltyDeath()
+                .build()
+        )
+
         setContent {
             MapsComposeSampleTheme {
                 Surface(
