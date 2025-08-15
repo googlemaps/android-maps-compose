@@ -46,20 +46,18 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.MapsApiSettings
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
+import com.google.maps.android.compose.internal.MapsApiAttribution
 import com.google.maps.android.compose.meta.AttributionId
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * A compose container for a [MapView].
@@ -113,14 +111,11 @@ public fun GoogleMap(
         return
     }
 
-    var isInitialized by remember { mutableStateOf(false) }
+    val isInitialized by MapsApiAttribution.isInitialized
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            MapsApiSettings.addInternalUsageAttributionId(context, AttributionId.VALUE)
-        }
-        isInitialized = true
+        MapsApiAttribution.addAttributionId(context)
     }
 
     if (isInitialized) {
