@@ -167,7 +167,6 @@ public fun GoogleMap(
             modifier = modifier,
             factory = { context ->
                 MapView(context, googleMapOptionsFactory()).also { mapView ->
-                    MapsApiSettings.addInternalUsageAttributionId(context, AttributionId.VALUE)
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
 
