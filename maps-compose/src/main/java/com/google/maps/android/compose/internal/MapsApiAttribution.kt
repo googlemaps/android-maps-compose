@@ -28,14 +28,11 @@ internal object MapsApiAttribution {
      * @param context The context to use to add the attribution ID.
      */
     fun addAttributionId(context: Context) {
-        if (hasBeenCalled.get()) {
-            return
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-            if (hasBeenCalled.compareAndSet(false, true)) {
+        if (hasBeenCalled.compareAndSet(false, true)) {
+            CoroutineScope(Dispatchers.IO).launch {
                 MapsApiSettings.addInternalUsageAttributionId(context, AttributionId.VALUE)
+                _isInitialized.value = true
             }
-            _isInitialized.value = true
         }
     }
 }

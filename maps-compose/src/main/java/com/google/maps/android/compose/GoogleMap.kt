@@ -112,10 +112,12 @@ public fun GoogleMap(
     }
 
     val isInitialized by MapsApiAttribution.isInitialized
-    val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        MapsApiAttribution.addAttributionId(context)
+    if (!isInitialized) {
+        val context = LocalContext.current
+        LaunchedEffect(Unit) {
+            MapsApiAttribution.addAttributionId(context)
+        }
     }
 
     if (isInitialized) {
