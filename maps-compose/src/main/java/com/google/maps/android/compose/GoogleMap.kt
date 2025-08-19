@@ -55,6 +55,7 @@ import com.google.maps.android.compose.meta.AttributionId
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
@@ -255,7 +256,9 @@ private fun CoroutineScope.launchSubcomposition(
             }
             awaitCancellation()
         } finally {
-            composition.dispose()
+            withContext(context = Dispatchers.Main) {
+                composition.dispose()
+            }
         }
     }
 }
