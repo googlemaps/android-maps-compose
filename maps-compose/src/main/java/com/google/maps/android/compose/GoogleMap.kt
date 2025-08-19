@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -44,11 +46,11 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.MapsApiSettings
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
+import com.google.maps.android.compose.internal.MapsApiAttribution
 import com.google.maps.android.compose.meta.AttributionId
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
@@ -109,101 +111,116 @@ public fun GoogleMap(
         return
     }
 
-    // rememberUpdatedState and friends are used here to make these values observable to
-    // the subcomposition without providing a new content function each recomposition
-    val mapClickListeners = remember { MapClickListeners() }.also {
-        it.indoorStateChangeListener = indoorStateChangeListener
-        it.onMapClick = onMapClick
-        it.onMapLongClick = onMapLongClick
-        it.onMapLoaded = onMapLoaded
-        it.onMyLocationButtonClick = onMyLocationButtonClick
-        it.onMyLocationClick = onMyLocationClick
-        it.onPOIClick = onPOIClick
+    val isInitialized by MapsApiAttribution.isInitialized
+
+    if (!isInitialized) {
+        val context = LocalContext.current
+        LaunchedEffect(Unit) {
+            MapsApiAttribution.addAttributionId(context)
+        }
     }
 
-    val mapUpdaterState = remember {
-        MapUpdaterState(
-            mergeDescendants,
-            contentDescription,
-            cameraPositionState,
-            contentPadding,
-            locationSource,
-            properties,
-            uiSettings,
-            mapColorScheme?.value,
-        )
-    }.also {
-        it.mergeDescendants = mergeDescendants
-        it.contentDescription = contentDescription
-        it.cameraPositionState = cameraPositionState
-        it.contentPadding = contentPadding
-        it.locationSource = locationSource
-        it.mapProperties = properties
-        it.mapUiSettings = uiSettings
-        it.mapColorScheme = mapColorScheme?.value
-    }
+    if (isInitialized) {
+        // rememberUpdatedState and friends are used here to make these values observable to
+        // the subcomposition without providing a new content function each recomposition
+        val mapClickListeners = remember { MapClickListeners() }.also {
+            it.indoorStateChangeListener = indoorStateChangeListener
+            it.onMapClick = onMapClick
+            it.onMapLongClick = onMapLongClick
+            it.onMapLoaded = onMapLoaded
+            it.onMyLocationButtonClick = onMyLocationButtonClick
+            it.onMyLocationClick = onMyLocationClick
+            it.onPOIClick = onPOIClick
+        }
 
-    val parentComposition = rememberCompositionContext()
-    val currentContent by rememberUpdatedState(content)
-    var subcompositionJob by remember { mutableStateOf<Job?>(null) }
-    val parentCompositionScope = rememberCoroutineScope()
+        val mapUpdaterState = remember {
+            MapUpdaterState(
+                mergeDescendants,
+                contentDescription,
+                cameraPositionState,
+                contentPadding,
+                locationSource,
+                properties,
+                uiSettings,
+                mapColorScheme?.value,
+            )
+        }.also {
+            it.mergeDescendants = mergeDescendants
+            it.contentDescription = contentDescription
+            it.cameraPositionState = cameraPositionState
+            it.contentPadding = contentPadding
+            it.locationSource = locationSource
+            it.mapProperties = properties
+            it.mapUiSettings = uiSettings
+            it.mapColorScheme = mapColorScheme?.value
+        }
 
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            MapView(context, googleMapOptionsFactory()) .also { mapView ->
-                MapsApiSettings.addInternalUsageAttributionId(context, AttributionId.VALUE )
-                val componentCallbacks = object : ComponentCallbacks2 {
-                    override fun onConfigurationChanged(newConfig: Configuration) {}
-                    @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
-                    override fun onLowMemory() { mapView.onLowMemory() }
-                    override fun onTrimMemory(level: Int) { mapView.onLowMemory() }
-                }
-                context.registerComponentCallbacks(componentCallbacks)
+        val parentComposition = rememberCompositionContext()
+        val currentContent by rememberUpdatedState(content)
+        var subcompositionJob by remember { mutableStateOf<Job?>(null) }
+        val parentCompositionScope = rememberCoroutineScope()
 
-                val lifecycleObserver = MapLifecycleEventObserver(mapView)
+        AndroidView(
+            modifier = modifier,
+            factory = { context ->
+                MapView(context, googleMapOptionsFactory()).also { mapView ->
+                    val componentCallbacks = object : ComponentCallbacks2 {
+                        override fun onConfigurationChanged(newConfig: Configuration) {}
 
-                mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
+                        @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
+                        override fun onLowMemory() {
+                            mapView.onLowMemory()
+                        }
 
-                // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
-                val onAttachStateListener = object : View.OnAttachStateChangeListener {
-                    private var lifecycle: Lifecycle? = null
+                        override fun onTrimMemory(level: Int) {
+                            mapView.onLowMemory()
+                        }
+                    }
+                    context.registerComponentCallbacks(componentCallbacks)
 
-                    override fun onViewAttachedToWindow(mapView: View) {
-                        lifecycle = mapView.findViewTreeLifecycleOwner()!!.lifecycle.also {
-                            it.addObserver(lifecycleObserver)
+                    val lifecycleObserver = MapLifecycleEventObserver(mapView)
+
+                    mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
+
+                    // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
+                    val onAttachStateListener = object : View.OnAttachStateChangeListener {
+                        private var lifecycle: Lifecycle? = null
+
+                        override fun onViewAttachedToWindow(mapView: View) {
+                            lifecycle = mapView.findViewTreeLifecycleOwner()!!.lifecycle.also {
+                                it.addObserver(lifecycleObserver)
+                            }
+                        }
+
+                        override fun onViewDetachedFromWindow(v: View) {
+                            lifecycle?.removeObserver(lifecycleObserver)
+                            lifecycle = null
+                            lifecycleObserver.moveToBaseState()
                         }
                     }
 
-                    override fun onViewDetachedFromWindow(v: View) {
-                        lifecycle?.removeObserver(lifecycleObserver)
-                        lifecycle = null
-                        lifecycleObserver.moveToBaseState()
-                    }
+                    mapView.addOnAttachStateChangeListener(onAttachStateListener)
                 }
-
-                mapView.addOnAttachStateChangeListener(onAttachStateListener)
-            }
-        },
-        onReset = { /* View is detached. */ },
-        onRelease = { mapView ->
-            val (componentCallbacks, lifecycleObserver) = mapView.tagData
-            mapView.context.unregisterComponentCallbacks(componentCallbacks)
-            lifecycleObserver.moveToDestroyedState()
-            mapView.tag = null
-        },
-        update = { mapView ->
-            if (subcompositionJob == null) {
-                subcompositionJob = parentCompositionScope.launchSubcomposition(
-                    mapUpdaterState,
-                    parentComposition,
-                    mapView,
-                    mapClickListeners,
-                    currentContent,
-                )
-            }
-        }
-    )
+            },
+            onReset = { /* View is detached. */ },
+            onRelease = { mapView ->
+                val (componentCallbacks, lifecycleObserver) = mapView.tagData
+                mapView.context.unregisterComponentCallbacks(componentCallbacks)
+                lifecycleObserver.moveToDestroyedState()
+                mapView.tag = null
+            },
+            update = { mapView ->
+                if (subcompositionJob == null) {
+                    subcompositionJob = parentCompositionScope.launchSubcomposition(
+                        mapUpdaterState,
+                        parentComposition,
+                        mapView,
+                        mapClickListeners,
+                        currentContent,
+                    )
+                }
+            })
+    }
 }
 
 /**
