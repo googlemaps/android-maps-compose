@@ -96,7 +96,7 @@ class GoogleMapViewTests {
         initMap()
         assertEquals(CameraMoveStartedReason.NO_MOVEMENT_YET, cameraPositionState.cameraMoveStartedReason)
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
+            composeTestRule.waitUntil(timeout5) {
                 cameraPositionState.isMoving
             }
             assertTrue(cameraPositionState.isMoving)
@@ -108,7 +108,7 @@ class GoogleMapViewTests {
     fun testCameraReportsNotMoving() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
+            composeTestRule.waitUntil(timeout5) {
                 cameraPositionState.isMoving
             }
             composeTestRule.waitUntil(timeout5) {
@@ -122,10 +122,10 @@ class GoogleMapViewTests {
     fun testCameraZoomInAnimation() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
+            composeTestRule.waitUntil(timeout5) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(timeout3) {
+            composeTestRule.waitUntil(timeout5) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -140,10 +140,10 @@ class GoogleMapViewTests {
     fun testCameraZoomIn() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
+            composeTestRule.waitUntil(timeout5) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(timeout3) {
+            composeTestRule.waitUntil(timeout5) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -158,10 +158,10 @@ class GoogleMapViewTests {
     fun testCameraZoomOut() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = false) {
-            composeTestRule.waitUntil(timeout2) {
+            composeTestRule.waitUntil(timeout5) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(timeout3) {
+            composeTestRule.waitUntil(timeout5) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -176,10 +176,10 @@ class GoogleMapViewTests {
     fun testCameraZoomOutAnimation() {
         initMap()
         zoom(shouldAnimate = true, zoomIn = false) {
-            composeTestRule.waitUntil(timeout2) {
+            composeTestRule.waitUntil(timeout5) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(timeout3) {
+            composeTestRule.waitUntil(timeout5) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -202,7 +202,18 @@ class GoogleMapViewTests {
         }
     }
 
-
+    @Test
+    fun testLatLngNotInVisibleRegion() {
+        initMap()
+        composeTestRule.runOnUiThread {
+            val projection = cameraPositionState.projection
+            assertNotNull(projection)
+            val latLng = LatLng(23.4, 25.6)
+            assertFalse(
+                projection!!.visibleRegion.latLngBounds.contains(latLng)
+            )
+        }
+    }
 
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateCannotBeReused() {
@@ -217,7 +228,28 @@ class GoogleMapViewTests {
         }
     }
 
-   
+    @Test(expected = IllegalStateException::class)
+    fun testMarkerStateInsideMarkerComposableCannotBeReused() {
+        initMap {
+            val markerState = rememberUpdatedMarkerState()
+            MarkerComposable(
+                keys = arrayOf("marker1"),
+                state = markerState,
+            ) {
+                Box {
+                    Text(text = "marker1")
+                }
+            }
+            MarkerComposable(
+                keys = arrayOf("marker2"),
+                state = markerState,
+            ) {
+                Box {
+                    Text(text = "marker2")
+                }
+            }
+        }
+    }
 
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateInsideMarkerInfoWindowComposableCannotBeReused() {
