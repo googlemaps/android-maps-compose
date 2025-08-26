@@ -209,6 +209,7 @@ class GoogleMapViewTests {
             val projection = cameraPositionState.projection
             assertNotNull(projection)
             val latLng = LatLng(23.4, 25.6)
+            composeTestRule.waitForIdle()
             assertFalse(
                 projection!!.visibleRegion.latLngBounds.contains(latLng)
             )
