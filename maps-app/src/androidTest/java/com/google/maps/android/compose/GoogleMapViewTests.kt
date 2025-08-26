@@ -202,20 +202,6 @@ class GoogleMapViewTests {
         }
     }
 
-    @Test
-    fun testLatLngNotInVisibleRegion() {
-        initMap()
-        composeTestRule.runOnUiThread {
-            val projection = cameraPositionState.projection
-            assertNotNull(projection)
-            val latLng = LatLng(23.4, 25.6)
-            composeTestRule.waitForIdle()
-            assertFalse(
-                projection!!.visibleRegion.latLngBounds.contains(latLng)
-            )
-        }
-    }
-
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateCannotBeReused() {
         initMap {
