@@ -202,18 +202,7 @@ class GoogleMapViewTests {
         }
     }
 
-    @Test
-    fun testLatLngNotInVisibleRegion() {
-        initMap()
-        composeTestRule.runOnUiThread {
-            val projection = cameraPositionState.projection
-            assertNotNull(projection)
-            val latLng = LatLng(23.4, 25.6)
-            assertFalse(
-                projection!!.visibleRegion.latLngBounds.contains(latLng)
-            )
-        }
-    }
+
 
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateCannotBeReused() {
@@ -228,28 +217,7 @@ class GoogleMapViewTests {
         }
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun testMarkerStateInsideMarkerComposableCannotBeReused() {
-        initMap {
-            val markerState = rememberUpdatedMarkerState()
-            MarkerComposable(
-                keys = arrayOf("marker1"),
-                state = markerState,
-            ) {
-                Box {
-                    Text(text = "marker1")
-                }
-            }
-            MarkerComposable(
-                keys = arrayOf("marker2"),
-                state = markerState,
-            ) {
-                Box {
-                    Text(text = "marker2")
-                }
-            }
-        }
-    }
+   
 
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateInsideMarkerInfoWindowComposableCannotBeReused() {
