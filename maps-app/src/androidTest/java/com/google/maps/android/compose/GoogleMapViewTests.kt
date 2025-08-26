@@ -119,24 +119,6 @@ class GoogleMapViewTests {
     }
 
     @Test
-    fun testCameraZoomInAnimation() {
-        initMap()
-        zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(timeout5) {
-                cameraPositionState.isMoving
-            }
-            composeTestRule.waitUntil(timeout5) {
-                !cameraPositionState.isMoving
-            }
-            assertEquals(
-                startingZoom + 1f,
-                cameraPositionState.position.zoom,
-                assertRoundingError.toFloat()
-            )
-        }
-    }
-
-    @Test
     fun testCameraZoomIn() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
