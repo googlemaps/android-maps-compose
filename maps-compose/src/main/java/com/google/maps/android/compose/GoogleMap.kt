@@ -55,9 +55,11 @@ import com.google.maps.android.compose.meta.AttributionId
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * A compose container for a [MapView].
@@ -235,7 +237,10 @@ private fun CoroutineScope.launchSubcomposition(
     content: @Composable @GoogleMapComposable () -> Unit,
 ): Job {
     // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
-    return launch(start = CoroutineStart.UNDISPATCHED) {
+    return launch(
+        context = Dispatchers.Main,
+        start = CoroutineStart.UNDISPATCHED
+    ) {
         val map = mapView.awaitMap()
         val composition = Composition(
             applier = MapApplier(map, mapView, mapClickListeners),
