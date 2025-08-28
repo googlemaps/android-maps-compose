@@ -6,9 +6,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.google.android.gms.maps.MapsApiSettings
 import com.google.maps.android.compose.meta.AttributionId
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -38,11 +37,10 @@ internal object MapsApiAttribution {
      *
      * @param context The context to use to add the attribution ID.
      */
-    fun addAttributionId(context: Context) {
+    suspend fun addAttributionId(context: Context) {
         if (hasBeenCalled.compareAndSet(false, true)) {
-            CoroutineScope(Dispatchers.IO).launch {
-                // See https://developers.google.com/maps/documentation/android-sdk/reference/com/google/android/gms/maps/MapsApiSettings#addInternalUsageAttributionId(android.content.Context,java.lang.String)
-                MapsApiSettings.addInternalUsageAttributionId(context, AttributionId.VALUE)
+            withContext(Dispatchers.IO) {
+                MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
                 _isInitialized.value = true
             }
         }
