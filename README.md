@@ -57,13 +57,6 @@ To run the demo app, ensure you've met the requirements above then:
 
 See the [documentation] for a full list of classes and their methods.
 
-## Internal usage attribution ID
-
-This library calls the MapsApiSettings.addInternalUsageAttributionId method, which helps Google
-understand which libraries and samples are helpful to developers and is optional. Instructions for
-opting out of the identifier are provided in
-[reference documentation](maps-compose/src/main/java/com/google/maps/android/compose/internal/MapsApiAttribution.kt).
-
 ## Usage
 
 Adding a map to your app looks like the following:
@@ -503,6 +496,13 @@ Box(Modifier.fillMaxSize()) {
 ```
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
+
+## Internal usage attribution ID
+
+This library calls the MapsApiSettings.addInternalUsageAttributionId method, which helps Google
+understand which libraries and samples are helpful to developers and is optional. Instructions for
+opting out of the identifier are provided in
+[reference documentation](maps-compose/src/main/java/com/google/maps/android/compose/internal/MapsApiAttribution.kt).
 
 ## Contributing
 
