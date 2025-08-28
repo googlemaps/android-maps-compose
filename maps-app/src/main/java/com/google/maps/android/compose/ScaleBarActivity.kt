@@ -38,8 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.android.tools.screenshot.PreviewTest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
@@ -133,7 +133,7 @@ class ScaleBarActivity : ComponentActivity() {
     }
 }
 
-@Preview
+@PreviewTest
 @Composable
 fun PreviewScaleBar() {
     val cameraPositionState = remember {
