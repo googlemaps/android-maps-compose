@@ -22,6 +22,8 @@ internal object MapsApiAttribution {
 
     /**
      * The value of the attribution ID.  Set this to the empty string to opt out of attribution.
+     *
+     * This must be set before calling the GoogleMap composable.
      */
     var attributionId: String = AttributionId.VALUE
 
