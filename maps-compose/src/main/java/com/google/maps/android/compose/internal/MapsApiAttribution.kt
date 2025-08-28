@@ -12,12 +12,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Internal singleton to ensure that the Maps API attribution ID is added only once.
- *
- * Adds a usage attribution ID to the initializer, which helps Google understand which libraries and
- * samples are helpful to developers, such as usage of this library.
- * To opt out of sending the usage attribution ID, it is safe to delete this function call
- * or replace the value with an empty string.
- *
  */
 internal object MapsApiAttribution {
 
@@ -34,6 +28,13 @@ internal object MapsApiAttribution {
     /**
      * Adds the attribution ID to the Maps API settings. This is done on a background thread
      * using [Dispatchers.IO]. The attribution ID is only added once.
+     *
+     * Adds a usage attribution ID to the initializer, which helps Google understand which libraries
+     * and samples are helpful to developers, such as usage of this library.
+     * To opt out of sending the usage attribution ID, it is safe to delete this function call
+     * or replace the value with an empty string.
+     *
+     * See https://developers.google.com/android/reference/com/google/android/gms/maps/MapsApiSettings#addInternalUsageAttributionId(android.content.Context,%20java.lang.String)
      *
      * @param context The context to use to add the attribution ID.
      */
