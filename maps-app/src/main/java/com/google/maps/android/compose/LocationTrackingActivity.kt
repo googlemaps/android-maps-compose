@@ -93,14 +93,16 @@ class LocationTrackingActivity : ComponentActivity() {
             // Collect location updates
             val locationState = locationFlow.collectAsState(initial = newLocation())
 
-            // Update blue dot and camera when the location changes
-            LaunchedEffect(locationState.value) {
-                Log.d(TAG, "Updating blue dot on map...")
-                locationSource.onLocationChanged(locationState.value)
+            if (isMapLoaded) {
+                // Update blue dot and camera when the location changes
+                LaunchedEffect(locationState.value) {
+                    Log.d(TAG, "Updating blue dot on map...")
+                    locationSource.onLocationChanged(locationState.value)
 
-                Log.d(TAG, "Updating camera position...")
-                val cameraPosition = CameraPosition.fromLatLngZoom(LatLng(locationState.value.latitude, locationState.value.longitude), zoom)
-                cameraPositionState.animate(CameraUpdateFactory.newCameraPosition(cameraPosition), 1_000)
+                    Log.d(TAG, "Updating camera position...")
+                    val cameraPosition = CameraPosition.fromLatLngZoom(LatLng(locationState.value.latitude, locationState.value.longitude), zoom)
+                    cameraPositionState.animate(CameraUpdateFactory.newCameraPosition(cameraPosition), 1_000)
+                }
             }
 
             // Detect when the map starts moving and print the reason
