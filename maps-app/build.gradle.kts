@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.preview.tooling)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.material)
+    implementation(libs.screenshot.validation.api)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.leakcanary.android)
 
