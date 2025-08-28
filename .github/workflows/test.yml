@@ -51,5 +51,5 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: my-artifact
+        name: screenshot-report
         path: maps-app/build/reports
