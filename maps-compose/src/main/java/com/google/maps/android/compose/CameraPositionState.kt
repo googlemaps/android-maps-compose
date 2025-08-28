@@ -43,7 +43,8 @@ import kotlin.coroutines.resumeWithException
 /**
  * Create and [rememberSaveable] a [CameraPositionState] using [CameraPositionState.Saver].
  * [init] will be called when the [CameraPositionState] is first created to configure its
- * initial state.
+ * initial state. Remember that the camera state can be applied when the map has been
+ * loaded.
  */
 @Composable
 public inline fun rememberCameraPositionState(

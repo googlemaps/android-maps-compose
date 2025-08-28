@@ -157,6 +157,26 @@ Box(Modifier.fillMaxSize()) {
 }
 ```
 
+Remember that the map must load before any camera state can be set. If you are using a LaunchedEffect, you must wait until the map has been loaded:
+
+```kotlin
+@Composable
+fun MapScreen() {
+var mapLoaded by remember { mutableStateOf(false) }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        onMapLoaded = { mapLoaded = true }
+    )
+
+    if (mapLoaded) {
+        LaunchedEffect(Unit) {
+            // here the camera operations
+        }
+    }
+}
+```
+
 </details>
 
 <details>
