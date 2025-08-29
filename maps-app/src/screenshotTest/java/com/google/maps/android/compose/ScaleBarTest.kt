@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.android.tools.screenshot.PreviewTest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
@@ -14,7 +15,8 @@ import com.google.maps.android.compose.widgets.ScaleBar
 
 
 class ScaleBarTest() {
-    @Preview
+    @PreviewTest
+    @Preview(showBackground = true)
     @Composable
     fun PreviewScaleBar() {
         val cameraPositionState = remember {
@@ -36,7 +38,8 @@ class ScaleBarTest() {
         }
     }
 
-    @Preview
+    @PreviewTest
+    @Preview(showBackground = true)
     @Composable
     fun PreviewDisappearingScaleBar() {
         val cameraPositionState = remember {
