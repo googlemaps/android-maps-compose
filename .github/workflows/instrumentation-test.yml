@@ -24,7 +24,7 @@ on:
 
 jobs:
   run-instrumentation-test:
-    runs-on: macOS-latest-large # enables hardware acceleration in the virtual machine
+    runs-on: macos-14-large # enables hardware acceleration in the virtual machine
     permissions:
       pull-requests: write
     timeout-minutes: 30
