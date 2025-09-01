@@ -277,6 +277,15 @@ fun GoogleMapView(
                 fillColor = Color.Black.copy(alpha = 0.5f)
             )
 
+            MapEffect(Unit) { map ->
+                map.setOnCameraIdleListener {
+                    Log.d("MapView", "camera idle ${cameraPositionState.position}")
+                }
+                map.setOnCameraMoveListener {
+                    Log.d("MapView", "camera move ${cameraPositionState.position}")
+                }
+            }
+
             content()
         }
     }
