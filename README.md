@@ -497,6 +497,13 @@ Box(Modifier.fillMaxSize()) {
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
 
+## Internal usage attribution ID
+
+This library calls the MapsApiSettings.addInternalUsageAttributionId method, which helps Google
+understand which libraries and samples are helpful to developers and is optional. Instructions for
+opting out of the identifier are provided in
+[reference documentation](maps-compose/src/main/java/com/google/maps/android/compose/internal/MapsApiAttribution.kt).
+
 ## Contributing
 
 Contributions are welcome and encouraged! If you'd like to contribute, send us a [pull request] and refer to our [code of conduct] and [contributing guide].
