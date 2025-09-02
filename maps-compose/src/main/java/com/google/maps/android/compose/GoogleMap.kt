@@ -16,6 +16,7 @@ package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks
 import android.content.ComponentCallbacks2
+import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
@@ -46,18 +47,18 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
-
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
 import com.google.maps.android.compose.internal.MapsApiAttribution
-import com.google.maps.android.compose.meta.AttributionId
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * A compose container for a [MapView].
@@ -103,6 +104,7 @@ public fun GoogleMap(
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = DefaultMapContentPadding,
     mapColorScheme: ComposeMapColorScheme? = null,
+    mapViewFactory: (Context, GoogleMapOptions) -> MapView = ::MapView,
     content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
@@ -163,7 +165,7 @@ public fun GoogleMap(
         AndroidView(
             modifier = modifier,
             factory = { context ->
-                MapView(context, googleMapOptionsFactory()).also { mapView ->
+                mapViewFactory(context, googleMapOptionsFactory()).also { mapView ->
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
 
@@ -235,7 +237,10 @@ private fun CoroutineScope.launchSubcomposition(
     content: @Composable @GoogleMapComposable () -> Unit,
 ): Job {
     // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
-    return launch(start = CoroutineStart.UNDISPATCHED) {
+    return launch(
+        context = Dispatchers.Main,
+        start = CoroutineStart.UNDISPATCHED
+    ) {
         val map = mapView.awaitMap()
         val composition = Composition(
             applier = MapApplier(map, mapView, mapClickListeners),

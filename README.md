@@ -29,14 +29,14 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:6.7.2'
+    implementation 'com.google.maps.android:maps-compose:6.8.0'
 
     // Optionally, you can include the Compose utils library for Clustering,
     // Street View metadata checks, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:6.7.2'
+    implementation 'com.google.maps.android:maps-compose-utils:6.8.0'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:6.7.2'
+    implementation 'com.google.maps.android:maps-compose-widgets:6.8.0'
 }
 ```
 
@@ -154,6 +154,26 @@ Box(Modifier.fillMaxSize()) {
   }) {
       Text(text = "Zoom In")
   }
+}
+```
+
+Remember that the map must load before any camera state can be set. If you are using a LaunchedEffect, you must wait until the map has been loaded:
+
+```kotlin
+@Composable
+fun MapScreen() {
+var mapLoaded by remember { mutableStateOf(false) }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        onMapLoaded = { mapLoaded = true }
+    )
+
+    if (mapLoaded) {
+        LaunchedEffect(Unit) {
+            // here the camera operations
+        }
+    }
 }
 ```
 
@@ -476,6 +496,13 @@ Box(Modifier.fillMaxSize()) {
 ```
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
+
+## Internal usage attribution ID
+
+This library calls the MapsApiSettings.addInternalUsageAttributionId method, which helps Google
+understand which libraries and samples are helpful to developers and is optional. Instructions for
+opting out of the identifier are provided in
+[reference documentation](maps-compose/src/main/java/com/google/maps/android/compose/internal/MapsApiAttribution.kt).
 
 ## Contributing
 

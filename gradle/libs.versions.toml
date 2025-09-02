@@ -1,23 +1,23 @@
 [versions]
 activitycompose = "1.10.1"
-agp = "8.10.1"
-androidCore = "1.6.1"
-androidx-core = "1.16.0"
-androidxtest = "1.6.2"
-compose-bom = "2025.04.00"
+agp = "8.12.1"
+androidCore = "1.7.0"
+androidx-core = "1.17.0"
+androidxtest = "1.7.0"
+compose-bom = "2025.08.01"
 dokka = "2.0.0"
-espresso = "3.6.1"
+espresso = "3.7.0"
 gradleMavenPublishPlugin = "0.34.0"
 jacoco-plugin = "0.2.1"
 junit = "4.13.2"
-junitktx = "1.2.1"
-kotlin = "2.2.0"
+junitktx = "1.3.0"
+kotlin = "2.2.10"
 kotlinxCoroutines = "1.10.2"
-leakcanaryAndroid = "2.12"
+leakcanaryAndroid = "2.14"
 mapsecrets = "2.0.1"
 mapsktx = "5.2.0"
-org-jacoco-core = "0.8.12"
-screenshot = "0.0.1-alpha10"
+org-jacoco-core = "0.8.13"
+screenshot = "0.0.1-alpha11"
 constraintlayout = "2.2.1"
 material = "1.12.0"
 
@@ -52,6 +52,7 @@ org-jacoco-core = { module = "org.jacoco:org.jacoco.core", version.ref = "org-ja
 test-junit = { module = "junit:junit", version.ref = "junit" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
