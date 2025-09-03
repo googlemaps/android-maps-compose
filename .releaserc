@@ -14,7 +14,7 @@ plugins:
           from: ":([0-9]+).([0-9]+).([0-9]+)"
           to: ":${nextRelease.version}"
   - - "@semantic-release/exec"
-    - prepareCmd: "./gradlew build --warn --stacktrace"
+    - prepareCmd: "./gradlew build jacocoTestReport -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:testDebugScreenshotTest -x :maps-app:generateReleaseScreenshotTestConfig -x :maps-app:testReleaseScreenshotTest --stacktrace"
       publishCmd: "./gradlew publishToMavenCentral --warn --stacktrace"
   - - "@semantic-release/git"
     - assets:
