@@ -23,10 +23,11 @@ import com.google.android.gms.maps.MapsApiSettings
 import com.google.maps.android.compose.meta.AttributionId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 /**
  * Enum representing the initialization state of the Google Maps SDK.
@@ -72,7 +73,6 @@ public object GoogleMapsInitializer {
     private val _state = mutableStateOf(InitializationState.UNINITIALIZED)
     public val state: State<InitializationState> = _state
 
-    private var initializationJob: Job? = null
     private val mutex = Mutex()
 
     /**
@@ -93,24 +93,28 @@ public object GoogleMapsInitializer {
      *
      * @param context The context to use for initialization.
      */
-    public fun initialize(context: Context) {
-        CoroutineScope(Dispatchers.IO).launch {
+    public suspend fun initialize(context: Context) {
+        if (_state.value != InitializationState.UNINITIALIZED) {
+            return
+        }
+        coroutineScope {
             mutex.withLock {
+                // Re-check state to prevent re-initialization even when calling this function in parallel
                 if (_state.value != InitializationState.UNINITIALIZED) {
                     return@withLock
                 }
-
                 _state.value = InitializationState.INITIALIZING
-                initializationJob = launch {
-                    try {
-                        if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
-                            MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
-                            _state.value = InitializationState.SUCCESS
-                        }
-                    } catch (e: Exception) {
-                        // In tests where the map is mocked, this can fail.
-                        _state.value = InitializationState.FAILURE
+            }
+
+            launch(Dispatchers.IO) {
+                try {
+                    if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
+                        MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
+                        _state.value = InitializationState.SUCCESS
                     }
+                } catch (e: Exception) {
+                    // In tests where the map is mocked, this can fail.
+                    _state.value = InitializationState.FAILURE
                 }
             }
         }
@@ -123,13 +127,9 @@ public object GoogleMapsInitializer {
      * This is useful in test environments where you might need to re-initialize the SDK
      * multiple times.
      */
-    public fun reset() {
-        CoroutineScope(Dispatchers.IO).launch {
-            mutex.withLock {
-                initializationJob?.cancel()
-                initializationJob = null
-                _state.value = InitializationState.UNINITIALIZED
-            }
+    public suspend fun reset() {
+        mutex.withLock {
+            _state.value = InitializationState.UNINITIALIZED
         }
     }
 }

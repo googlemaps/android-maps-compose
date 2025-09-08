@@ -87,6 +87,7 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 
