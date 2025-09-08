@@ -21,10 +21,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.MapsApiSettings
 import com.google.maps.android.compose.meta.AttributionId
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -94,29 +91,47 @@ public object GoogleMapsInitializer {
      * @param context The context to use for initialization.
      */
     public suspend fun initialize(context: Context) {
+        // 1. Quick exit if already initialized or in progress.
         if (_state.value != InitializationState.UNINITIALIZED) {
             return
         }
-        coroutineScope {
-            mutex.withLock {
-                // Re-check state to prevent re-initialization even when calling this function in parallel
-                if (_state.value != InitializationState.UNINITIALIZED) {
-                    return@withLock
-                }
-                _state.value = InitializationState.INITIALIZING
-            }
 
-            launch(Dispatchers.IO) {
-                try {
-                    if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
-                        MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
-                        _state.value = InitializationState.SUCCESS
-                    }
-                } catch (e: Exception) {
-                    // In tests where the map is mocked, this can fail.
+        // 2. Acquire the mutex, perform a double-check (in case another
+        //    coroutine was also waiting), and set the state.
+        //    This block is synchronous and ensures only one coroutine
+        //    proceeds to the IO operation.
+        mutex.withLock {
+            if (_state.value != InitializationState.UNINITIALIZED) {
+                return // Another coroutine won the race while this one was suspended on the lock.
+            }
+            _state.value = InitializationState.INITIALIZING
+        }
+
+        // The lock is now released.
+
+        // 3. Run the blocking initialization code on the IO dispatcher.
+        //    This function will SUSPEND until the withContext(Dispatchers.IO) block completes.
+        //    If the calling scope is cancelled while waiting, withContext will throw
+        //    a CancellationException, and the state will remain INITIALIZING
+        //    (which the catch block will update to FAILURE).
+        try {
+            withContext(Dispatchers.IO) {
+                // This is the blocking call. The thread will be blocked here.
+                // If cancellation happens, the thread STILL finishes this call,
+                // but the coroutine will immediately throw CancellationException
+                // *after* this call returns, skipping the state assignments below.
+                if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
+                    MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
+                    _state.value = InitializationState.SUCCESS
+                } else {
+                    // Handle cases where initialize() returns a non-SUCCESS code
                     _state.value = InitializationState.FAILURE
                 }
             }
+        } catch (_: Exception) {
+            // This will catch any exceptions from the init process (like from mocks in tests)
+            // Note: By default, this does NOT catch CancellationException.
+            _state.value = InitializationState.FAILURE
         }
     }
 
