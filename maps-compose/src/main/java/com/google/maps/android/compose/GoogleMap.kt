@@ -50,7 +50,8 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
-import com.google.maps.android.compose.internal.MapsApiAttribution
+import com.google.maps.android.compose.internal.GoogleMapsInitializer
+import com.google.maps.android.compose.internal.InitializationState
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -113,16 +114,16 @@ public fun GoogleMap(
         return
     }
 
-    val isInitialized by MapsApiAttribution.isInitialized
+    val initializationState by GoogleMapsInitializer.state
 
-    if (!isInitialized) {
+    if (initializationState != InitializationState.SUCCESS) {
         val context = LocalContext.current
         LaunchedEffect(Unit) {
-            MapsApiAttribution.addAttributionId(context)
+            GoogleMapsInitializer.initialize(context)
         }
     }
 
-    if (isInitialized) {
+    if (initializationState == InitializationState.SUCCESS) {
         // rememberUpdatedState and friends are used here to make these values observable to
         // the subcomposition without providing a new content function each recomposition
         val mapClickListeners = remember { MapClickListeners() }.also {

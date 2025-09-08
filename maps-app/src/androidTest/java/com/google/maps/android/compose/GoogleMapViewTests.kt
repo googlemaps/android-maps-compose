@@ -85,7 +85,7 @@ class GoogleMapViewTests {
     }
 
     @Test
-    fun testRighColorSchemeAfterChangingIt() {
+    fun testRightColorSchemeAfterChangingIt() {
         mapColorScheme = ComposeMapColorScheme.DARK
         initMap()
         mapColorScheme.assertEquals(ComposeMapColorScheme.DARK)
