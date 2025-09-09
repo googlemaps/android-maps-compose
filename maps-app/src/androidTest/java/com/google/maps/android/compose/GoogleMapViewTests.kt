@@ -14,6 +14,7 @@
 
 package com.google.maps.android.compose
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
@@ -25,9 +26,14 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import org.junit.Assert.*
+import com.google.common.truth.Truth.assertThat
+import com.google.maps.android.compose.LatLngSubject.Companion.assertThat
+import com.google.maps.android.compose.internal.GoogleMapsInitializer
+import com.google.maps.android.compose.internal.InitializationState
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -46,6 +52,15 @@ class GoogleMapViewTests {
     private fun initMap(content: @Composable () -> Unit = {}) {
         check(hasValidApiKey) { "Maps API key not specified" }
         val countDownLatch = CountDownLatch(1)
+
+        val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        runBlocking {
+            GoogleMapsInitializer.initialize(appContext)
+        }
+
+        assertThat(GoogleMapsInitializer.state.value).isEqualTo(InitializationState.SUCCESS)
+
         composeTestRule.setContent {
             GoogleMapView(
                 modifier = Modifier.fillMaxSize(),
@@ -59,7 +74,7 @@ class GoogleMapViewTests {
             }
         }
         val mapLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
-        assertTrue("Map loaded", mapLoaded)
+        assertThat(mapLoaded).isTrue()
     }
 
     @Before
@@ -75,32 +90,32 @@ class GoogleMapViewTests {
     @Test
     fun testStartingCameraPosition() {
         initMap()
-        startingPosition.assertEquals(cameraPositionState.position.target)
+        assertThat(cameraPositionState.position.target).isEqualTo(startingPosition)
     }
 
     @Test
     fun testRightInitialColorScheme() {
         initMap()
-        mapColorScheme.assertEquals(ComposeMapColorScheme.FOLLOW_SYSTEM)
+        assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.FOLLOW_SYSTEM)
     }
 
     @Test
     fun testRightColorSchemeAfterChangingIt() {
         mapColorScheme = ComposeMapColorScheme.DARK
         initMap()
-        mapColorScheme.assertEquals(ComposeMapColorScheme.DARK)
+        assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.DARK)
     }
 
     @Test
     fun testCameraReportsMoving() {
         initMap()
-        assertEquals(CameraMoveStartedReason.NO_MOVEMENT_YET, cameraPositionState.cameraMoveStartedReason)
+        assertThat(cameraPositionState.cameraMoveStartedReason).isEqualTo(CameraMoveStartedReason.NO_MOVEMENT_YET)
         zoom(shouldAnimate = true, zoomIn = true) {
             composeTestRule.waitUntil(timeout2) {
                 cameraPositionState.isMoving
             }
-            assertTrue(cameraPositionState.isMoving)
-            assertEquals(CameraMoveStartedReason.DEVELOPER_ANIMATION, cameraPositionState.cameraMoveStartedReason)
+            assertThat(cameraPositionState.isMoving).isTrue()
+            assertThat(cameraPositionState.cameraMoveStartedReason).isEqualTo(CameraMoveStartedReason.DEVELOPER_ANIMATION)
         }
     }
 
@@ -114,7 +129,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(timeout5) {
                 !cameraPositionState.isMoving
             }
-            assertFalse(cameraPositionState.isMoving)
+            assertThat(cameraPositionState.isMoving).isFalse()
         }
     }
 
@@ -128,11 +143,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertEquals(
-                startingZoom + 1f,
-                cameraPositionState.position.zoom,
-                assertRoundingError.toFloat()
-            )
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom + 1f)
         }
     }
 
@@ -146,11 +157,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertEquals(
-                startingZoom + 1f,
-                cameraPositionState.position.zoom,
-                assertRoundingError.toFloat()
-            )
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom + 1f)
         }
     }
 
@@ -164,11 +171,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertEquals(
-                startingZoom - 1f,
-                cameraPositionState.position.zoom,
-                assertRoundingError.toFloat()
-            )
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom - 1f)
         }
     }
 
@@ -182,11 +185,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertEquals(
-                startingZoom - 1f,
-                cameraPositionState.position.zoom,
-                assertRoundingError.toFloat()
-            )
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom - 1f)
         }
     }
 
@@ -195,10 +194,10 @@ class GoogleMapViewTests {
         initMap()
         composeTestRule.runOnUiThread {
             val projection = cameraPositionState.projection
-            assertNotNull(projection)
-            assertTrue(
+            assertThat(projection).isNotNull()
+            assertThat(
                 projection!!.visibleRegion.latLngBounds.contains(startingPosition)
-            )
+            ).isTrue()
         }
     }
 
@@ -207,11 +206,11 @@ class GoogleMapViewTests {
         initMap()
         composeTestRule.runOnUiThread {
             val projection = cameraPositionState.projection
-            assertNotNull(projection)
+            assertThat(projection).isNotNull()
             val latLng = LatLng(23.4, 25.6)
-            assertFalse(
+            assertThat(
                 projection!!.visibleRegion.latLngBounds.contains(latLng)
-            )
+            ).isFalse()
         }
     }
 
@@ -295,15 +294,15 @@ class GoogleMapViewTests {
             markerState = rememberUpdatedMarkerState(position = positionState.value)
         }
 
-        assertEquals(testPoint0, markerState.position)
+        assertThat(markerState.position).isEqualTo(testPoint0)
 
         positionState.value = testPoint1
         composeTestRule.waitForIdle()
-        assertEquals(testPoint1, markerState.position)
+        assertThat(markerState.position).isEqualTo(testPoint1)
 
         positionState.value = testPoint2
         composeTestRule.waitForIdle()
-        assertEquals(testPoint2, markerState.position)
+        assertThat(markerState.position).isEqualTo(testPoint2)
     }
 
     private fun zoom(
