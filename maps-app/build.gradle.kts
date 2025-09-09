@@ -81,6 +81,13 @@ dependencies {
     androidTestImplementation(libs.test.junit)
     androidTestImplementation(libs.androidx.test.compose.ui)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.truth)
+
+    testImplementation(libs.test.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 
