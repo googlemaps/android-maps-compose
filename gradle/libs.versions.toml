@@ -1,6 +1,6 @@
 [versions]
 activitycompose = "1.10.1"
-agp = "8.12.1"
+agp = "8.13.0"
 androidCore = "1.7.0"
 androidx-core = "1.17.0"
 androidxtest = "1.7.0"
