@@ -108,6 +108,7 @@ public fun TileOverlay(
                     visible(visible)
                     zIndex(zIndex)
                 } ?: error("Error adding tile overlay")
+                this.tileOverlayState.tileOverlay = this.tileOverlay
             }
             update(fadeIn) { this.tileOverlay.fadeIn = it }
             update(transparency) { this.tileOverlay.transparency = it }
