@@ -52,7 +52,7 @@ jobs:
           GPG_PASSWORD: ${{ secrets.SYNCED_GPG_KEY_PASSWORD }}
           GPG_KEY_ID: ${{ secrets.SYNCED_GPG_KEY_ID }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '14'
 
