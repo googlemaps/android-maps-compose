@@ -72,29 +72,25 @@ public fun ScaleBar(
     lineColor: Color = DarkGray,
     shadowColor: Color = Color.White,
 ) {
-    Box(
-        modifier = modifier
-            .size(width = width, height = height)
-    ) {
-        var horizontalLineWidthMeters by remember {
-            mutableIntStateOf(0)
-        }
+    var horizontalLineWidthMeters by remember {
+        mutableIntStateOf(0)
+    }
 
+    LaunchedEffect(key1 = cameraPositionState.position) {
+        val upperLeftLatLng = cameraPositionState.projection?.fromScreenLocation(Point(0, 0)) ?: LatLng(0.0, 0.0)
+        val upperRightLatLng = cameraPositionState.projection?.fromScreenLocation(Point(0, width.value.toInt())) ?: LatLng(0.0, 0.0)
+        val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
+        val eightNinthsCanvasMeters = (canvasWidthMeters * 8 / 9).toInt()
+
+        horizontalLineWidthMeters = eightNinthsCanvasMeters
+    }
+
+    Box(
+        modifier = modifier.size(width = width, height = height)
+    ) {
         Canvas(
             modifier = Modifier.fillMaxSize(),
             onDraw = {
-                // Get width of canvas in meters
-                val upperLeftLatLng =
-                    cameraPositionState.projection?.fromScreenLocation(Point(0, 0))
-                        ?: LatLng(0.0, 0.0)
-                val upperRightLatLng =
-                    cameraPositionState.projection?.fromScreenLocation(Point(0, size.width.toInt()))
-                        ?: LatLng(0.0, 0.0)
-                val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
-                val eightNinthsCanvasMeters = (canvasWidthMeters * 8 / 9).toInt()
-
-                horizontalLineWidthMeters = eightNinthsCanvasMeters
-
                 val oneNinthWidth = size.width / 9
                 val midHeight = size.height / 2
                 val oneThirdHeight = size.height / 3
@@ -189,13 +185,6 @@ public fun ScaleBar(
     }
 }
 
-/**
- * An animated scale bar that appears when the zoom level of the map changes, and then disappears
- * after [visibilityDurationMillis]. This composable wraps [ScaleBar] with visibility animations.
- *
- * Implement your own observer on camera move events using [CameraPositionState] and pass it in
- * as [cameraPositionState].
- */
 @Composable
 public fun DisappearingScaleBar(
     modifier: Modifier = Modifier,
@@ -212,12 +201,10 @@ public fun DisappearingScaleBar(
     val visible = remember {
         MutableTransitionState(true)
     }
-
-    LaunchedEffect(key1 = cameraPositionState.position.zoom) {
-        // Show ScaleBar
+    // This effect controls visibility, not data updates
+    LaunchedEffect(key1 = cameraPositionState.position) {
         visible.targetState = true
         delay(visibilityDurationMillis.toLong())
-        // Hide ScaleBar after timeout period
         visible.targetState = false
     }
 
