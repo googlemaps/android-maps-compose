@@ -185,6 +185,13 @@ public fun ScaleBar(
     }
 }
 
+/**
+ * An animated scale bar that appears when the zoom level of the map changes, and then disappears
+ * after [visibilityDurationMillis]. This composable wraps [ScaleBar] with visibility animations.
+ *
+ * Implement your own observer on camera move events using [CameraPositionState] and pass it in
+ * as [cameraPositionState].
+ */
 @Composable
 public fun DisappearingScaleBar(
     modifier: Modifier = Modifier,
