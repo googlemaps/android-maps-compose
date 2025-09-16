@@ -41,11 +41,34 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /**
+ * Creates and remembers a [CameraPositionState] using [rememberSaveable].
+ *
+ * The camera position state is saved across configuration changes and process death,
+ * ensuring the map retains its last position.
+ *
+ * @param init A lambda that is called when the [CameraPositionState] is first created to
+ * configure its initial state, such as its position or zoom level.
+ */
+@Composable
+public inline fun rememberCameraPositionState(
+    crossinline init: CameraPositionState.() -> Unit = {}
+): CameraPositionState = rememberSaveable(saver = CameraPositionState.Saver) {
+    CameraPositionState().apply(init)
+}
+
+/**
  * Create and [rememberSaveable] a [CameraPositionState] using [CameraPositionState.Saver].
  * [init] will be called when the [CameraPositionState] is first created to configure its
  * initial state. Remember that the camera state can be applied when the map has been
  * loaded.
  */
+@Deprecated(
+    message = "The 'key' parameter is deprecated. Please use the new `rememberCameraPositionState` function without a key.",
+    replaceWith = ReplaceWith(
+        "rememberCameraPositionState(init)",
+        "com.google.maps.android.compose.rememberCameraPositionState"
+    )
+)
 @Composable
 public inline fun rememberCameraPositionState(
     key: String? = null,
