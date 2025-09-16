@@ -373,6 +373,7 @@ public fun MarkerComposable(
  * @param alpha the alpha (opacity) of the marker
  * @param anchor the anchor for the marker image
  * @param draggable sets the draggability for the marker
+ * @param contentDescription the content description for accessibility purposes
  * @param flat sets if the marker should be flat against the map
  * @param icon sets the icon for the marker
  * @param infoWindowAnchor the anchor point of the info window on the marker image
@@ -396,6 +397,7 @@ public fun MarkerInfoWindow(
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
+    contentDescription: String,
     flat: Boolean = false,
     icon: BitmapDescriptor? = null,
     infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
@@ -416,6 +418,7 @@ public fun MarkerInfoWindow(
         alpha = alpha,
         anchor = anchor,
         draggable = draggable,
+        contentDescription = contentDescription,
         flat = flat,
         icon = icon,
         infoWindowAnchor = infoWindowAnchor,
