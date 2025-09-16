@@ -225,7 +225,8 @@ val allActivityGroups = listOf(
 fun DemoList(
     onActivityClick: (KClass<out ComponentActivity>) -> Unit
 ) {
-    // State to keep track of the currently expanded group.
+    // Tracks the currently expanded group to ensure only one is open at a time,
+    // creating a clean, accordion-style user interface.
     var expandedGroup by remember { mutableStateOf<ActivityGroup?>(null) }
 
     LazyColumn {
