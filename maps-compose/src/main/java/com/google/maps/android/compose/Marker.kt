@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.StateFactoryMarker
+import androidx.compose.ui.UiComposable
 import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.model.AdvancedMarkerOptions
 import com.google.android.gms.maps.model.BitmapDescriptor
@@ -337,7 +338,7 @@ public fun MarkerComposable(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    content: @Composable () -> Unit,
+    content: @UiComposable @Composable () -> Unit,
 ) {
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
 
@@ -409,7 +410,7 @@ public fun MarkerInfoWindow(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    content: (@Composable (Marker) -> Unit)? = null
+    content: (@UiComposable @Composable (Marker) -> Unit)? = null
 ) {
     MarkerImpl(
         state = state,
@@ -481,8 +482,8 @@ public fun MarkerInfoWindowComposable(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    infoContent: (@Composable (Marker) -> Unit)? = null,
-    content: @Composable () -> Unit,
+    infoContent: (@UiComposable @Composable (Marker) -> Unit)? = null,
+    content: @UiComposable @Composable () -> Unit,
 ) {
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
 
@@ -554,7 +555,7 @@ public fun MarkerInfoWindowContent(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    content: (@Composable (Marker) -> Unit)? = null
+    content: (@UiComposable @Composable (Marker) -> Unit)? = null
 ) {
     MarkerImpl(
         state = state,

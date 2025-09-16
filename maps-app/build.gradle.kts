@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -8,7 +10,7 @@ plugins {
 
 android {
     lint {
-        sarifOutput = file("$buildDir/reports/lint-results.sarif")
+        sarifOutput = layout.buildDirectory.file("reports/lint-results.sarif").get().asFile
     }
 
     buildTypes {
@@ -43,9 +45,14 @@ android {
         compose = true
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+            freeCompilerArgs.addAll(
+                "-opt-in=kotlin.RequiresOptIn"
+            )
+        }
     }
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true

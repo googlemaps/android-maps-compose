@@ -183,7 +183,6 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
         when (renderer) {
             MapsInitializer.Renderer.LATEST -> Log.d("MapsDemo", "The latest version of the renderer is used.")
             MapsInitializer.Renderer.LEGACY -> Log.d("MapsDemo", "The legacy version of the renderer is used.")
-            else -> {}
         }
     }
 }
