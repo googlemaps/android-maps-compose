@@ -70,6 +70,13 @@ class MainActivity : ComponentActivity() {
                         DemoList {
                             context.startActivity(Intent(context, it.java))
                         }
+                        Spacer(modifier = Modifier.padding(5.dp))
+                        Button(
+                            onClick = {
+                                context.startActivity(Intent(context, TileOverlayActivity::class.java))
+                            }) {
+                            Text(getString(R.string.tile_overlay_activity))
+                        }
                     }
                 }
             }
