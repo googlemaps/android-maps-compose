@@ -397,7 +397,7 @@ public fun MarkerInfoWindow(
     alpha: Float = 1.0f,
     anchor: Offset = Offset(0.5f, 1.0f),
     draggable: Boolean = false,
-    contentDescription: String,
+    contentDescription: String? = "",
     flat: Boolean = false,
     icon: BitmapDescriptor? = null,
     infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
