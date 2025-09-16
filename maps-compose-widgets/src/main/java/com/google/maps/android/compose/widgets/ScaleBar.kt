@@ -254,11 +254,7 @@ public fun DisappearingScaleBar(
         MutableTransitionState(true)
     }
 
-    // `LaunchedEffect` is a coroutine-based effect that is launched when the composable
-    // enters the composition. The `key1` parameter is used to re-launch the effect
-    // whenever the value of the key changes. In this case, we are using
-    // `cameraPositionState.position` as the key, so the effect will be re-launched
-    // every time the camera position changes.
+    // This effect is re-launched every time the camera position changes.
     //
     // The effect itself makes the scale bar visible, waits for the specified duration,
     // and then makes it invisible again. This creates the "disappearing" effect.
