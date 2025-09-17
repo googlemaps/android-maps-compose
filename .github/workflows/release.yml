@@ -54,13 +54,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '14'
 
       - name: Install conventionalcommits
         run: npm i -D conventional-changelog-conventionalcommits
 
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v5.0.0
+        uses: cycjimmy/semantic-release-action@v4.2.1
         with:
           extra_plugins: |
             "@semantic-release/commit-analyzer@8.0.1"
