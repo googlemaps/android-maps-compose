@@ -1,4 +1,5 @@
 import org.gradle.kotlin.dsl.sourceSets
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.jetbrains.kotlin.android")
@@ -8,7 +9,7 @@ plugins {
 
 android {
     lint {
-        sarifOutput = file("$buildDir/reports/lint-results.sarif")
+        sarifOutput = layout.buildDirectory.file("reports/lint-results.sarif").get().asFile
     }
 
     namespace = "com.google.maps.android.compose"
@@ -28,20 +29,24 @@ android {
         compose = true
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += listOf(
-            "-Xexplicit-api=strict",
-            "-Xopt-in=kotlin.RequiresOptIn",
-        )
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+            freeCompilerArgs.addAll(
+                "-Xexplicit-api=strict",
+                "-Xopt-in=kotlin.RequiresOptIn"
+            )
+        }
     }
 
     sourceSets["main"].java.srcDir("build/generated/source/artifactId")
 }
 
 composeCompiler {
-    stabilityConfigurationFile =
-        layout.projectDirectory.file("compose_compiler_stability_config.conf")
+    stabilityConfigurationFiles.set(
+        listOf(layout.projectDirectory.file("compose_compiler_stability_config.conf"))
+    )
+
     if (findProperty("composeCompilerReports") == "true") {
         reportsDestination = layout.buildDirectory.dir("compose_compiler")
     }
@@ -49,6 +54,7 @@ composeCompiler {
         metricsDestination = layout.buildDirectory.dir("compose_compiler")
     }
 }
+
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
