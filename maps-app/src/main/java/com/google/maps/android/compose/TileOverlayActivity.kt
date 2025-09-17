@@ -66,15 +66,26 @@ private fun UpdatedTileOverlay() {
     TileOverlay(tileProvider = tileProvider, state = state, fadeIn = false)
 
     LaunchedEffect(Unit) {
+        // This LaunchedEffect demonstrates two ways to update a tile overlay.
+
+        // 1. Invalidate the cache to redraw tiles with new data.
+        // Here, we're calling `state.clearTileCache()` every second for 5 seconds.
+        // This tells the map to request new tiles from the *existing* TileProvider,
+        // which will then re-render them using the latest `renderedIndex`.
         repeat(5) {
             delay(1000)
             renderedIndex += 1
             state.clearTileCache()
         }
 
-        // update the tile provider
+        // 2. Update the TileProvider instance itself.
+        // After 5 seconds, we update `tileProviderIndex`. Because this is a key
+        // to the `remember` block for our TileProvider, Compose will discard the
+        // old provider and create a new one.
         tileProviderIndex += 1
 
+        // Now, we continue invalidating the cache to demonstrate that the *new*
+        // TileProvider is the one responding to the `clearTileCache` calls.
         while (true) {
             delay(1000)
             renderedIndex += 1
@@ -84,7 +95,10 @@ private fun UpdatedTileOverlay() {
 }
 
 /**
- * This function renders a tile with the given index and size.
+ * Helper function to dynamically generate a tile image.
+ * The [TileProvider] interface requires that a [ByteArray] is returned for each tile.
+ * This function creates a [Bitmap], draws the current [index] on it, and then compresses
+ * it into a [ByteArray] to be returned by the provider.
  */
 private fun renderTiles(index: Int, size: Int): ByteArray {
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
