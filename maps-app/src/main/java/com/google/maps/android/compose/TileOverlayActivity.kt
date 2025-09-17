@@ -3,6 +3,7 @@ package com.google.maps.android.compose
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +25,9 @@ import com.google.android.gms.maps.model.TileProvider
 import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.delay
 
+/**
+ * This activity demonstrates how to use Tile Overlays with Jetpack Compose.
+ */
 class TileOverlayActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +46,10 @@ private fun Content() {
     }
 }
 
+/**
+ * This composable demonstrates how to use a [TileOverlay] with a [TileProvider] that
+ * updates its content periodically.
+ */
 @Composable
 private fun UpdatedTileOverlay() {
     var tileProviderIndex by remember { mutableIntStateOf(0) }
@@ -75,15 +83,27 @@ private fun UpdatedTileOverlay() {
     }
 }
 
+/**
+ * This function renders a tile with the given index and size.
+ */
 private fun renderTiles(index: Int, size: Int): ByteArray {
-    val bitmap = createBitmap(size, size)
-
-    val canvas = Canvas(bitmap)
-    canvas.drawText(index.toString(), (size / 2).toFloat(), (size / 2).toFloat(), Paint().apply {
+    val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textAlign = Paint.Align.CENTER
         color = Color.Black.toArgb()
         textSize = 100f
-    })
-    val outputStream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS, 0, outputStream)
-    return outputStream.toByteArray()
+    }
+    val bitmap = createBitmap(size, size).also {
+        Canvas(it).drawText(index.toString(), size / 2f, size / 2f, paint)
+    }
+
+    val format = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        Bitmap.CompressFormat.WEBP_LOSSLESS
+    } else {
+        Bitmap.CompressFormat.PNG
+    }
+
+    return ByteArrayOutputStream().use { stream ->
+        bitmap.compress(format, 0, stream)
+        stream.toByteArray()
+    }
 }
