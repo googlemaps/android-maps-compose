@@ -106,6 +106,11 @@ sealed class ActivityGroup(
                 R.string.accessibility_activity_description,
                 AccessibilityActivity::class
             ),
+            Activity(
+                R.string.tile_overlay_activity,
+                R.string.tile_overlay_activity_description,
+                TileOverlayActivity::class
+            ),
         )
     )
 
