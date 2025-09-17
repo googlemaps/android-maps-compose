@@ -54,7 +54,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: '24'
+          node-version: '24.7.0'
 
       - name: Install conventionalcommits
         run: npm i -D conventional-changelog-conventionalcommits
