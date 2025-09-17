@@ -39,57 +39,67 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+
+    <!--
+      All activities in this sample are exported. This is for demonstration
+      purposes, to make it easy to launch each sample activity directly.
+
+      In a real-world application, you should carefully consider which activities
+      to export. In most cases, only the main launcher activity should be exported.
+      Exporting an activity means that any other app on the device can launch it.
+    -->
+    
     <activity
         android:name=".BasicMapActivity"
-        android:exported="false" />
+        android:exported="true" />
     <activity
         android:name=".markerexamples.AdvancedMarkersActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".MapInColumnActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".MapsInLazyColumnActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".markerexamples.MarkerClusteringActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".LocationTrackingActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".ScaleBarActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".StreetViewActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".CustomControlsActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".AccessibilityActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".RecompositionActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".FragmentDemoActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".markerexamples.markerdragevents.MarkerDragEventsActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".markerexamples.markerscollection.MarkersCollectionActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".markerexamples.syncingdraggablemarkerwithdatamodel.SyncingDraggableMarkerWithDataModelActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".markerexamples.updatingnodragmarkerwithdatamodel.UpdatingNoDragMarkerWithDataModelActivity"
-        android:exported="false"/>
+        android:exported="true"/>
     <activity
         android:name=".markerexamples.draggablemarkerscollectionwithpolygon.DraggableMarkersCollectionWithPolygonActivity"
-        android:exported="false"/>
+        android:exported="true"/>
 
     <!-- Used by createComponentActivity() for unit testing -->
     <activity android:name="androidx.activity.ComponentActivity" />

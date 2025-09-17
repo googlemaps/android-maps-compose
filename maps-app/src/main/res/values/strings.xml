@@ -17,21 +17,62 @@
 <resources>
   <string name="app_name">android-maps-compose</string>
   <string name="main_activity_title">"Maps Compose Demos \uD83D\uDDFA"</string>
+
   <string name="basic_map_activity">Basic Map</string>
-  <string name="advanced_markers">Advanced Markers</string>
-  <string name="map_in_column_activity">Map In Column</string>
-  <string name="marker_clustering_activity">Marker Clustering</string>
-  <string name="marker_drag_events_activity">Marker Drag Events</string>
-  <string name="markers_collection_activity">Markers Collection</string>
+  <string name="basic_map_activity_description">A simple map showing the default configuration.</string>
+
+  <string name="street_view_activity">Street View</string>
+  <string name="street_view_activity_description">A simple Street View.</string>
+
   <string name="location_tracking_activity">Location Tracking</string>
+  <string name="location_tracking_activity_description">Tracking your location on the map.</string>
+
   <string name="scale_bar_activity">Scale Bar</string>
-  <string name="syncing_draggable_marker_with_data_model">Syncing Draggable Marker With Model</string>
-  <string name="updating_non_draggable_marker_with_data_model">Updating Non-Draggable Marker With Model</string>
-  <string name="draggable_markers_collection_with_polygon">Polygon around draggable markers</string>
-  <string name="fragment_demo_activity">Fragment Demo Activity</string>
-  <string name="recomposition_activity">Recomposition Map</string>
-  <string name="street_view">Street View</string>
-  <string name="custom_location_button">Custom Location Button</string>
-  <string name="accessibility_button">Accessibility</string>
+  <string name="scale_bar_activity_description">Displaying a scale bar on the map.</string>
+
+  <string name="custom_controls_activity">Custom Controls</string>
+  <string name="custom_controls_activity_description">Replacing the default location button with a custom one.</string>
+
+  <string name="accessibility_activity">Accessibility</string>
+  <string name="accessibility_activity_description">Making your map more accessible.</string>
+
+  <string name="advanced_markers_activity">Advanced Markers</string>
+  <string name="advanced_markers_activity_description">Adding advanced markers to your map.</string>
+
+  <string name="marker_clustering_activity">Marker Clustering</string>
+  <string name="marker_clustering_activity_description">Clustering markers on your map.</string>
+
+  <string name="marker_drag_events_activity">Marker Drag Events</string>
+  <string name="marker_drag_events_activity_description">Listening to marker drag events.</string>
+
+  <string name="markers_collection_activity">Markers Collection</string>
+  <string name="markers_collection_activity_description">Adding a collection of markers to your map.</string>
+
+  <string name="syncing_draggable_marker_with_data_model_activity">Syncing Draggable Marker With Data Model</string>
+  <string name="syncing_draggable_marker_with_data_model_activity_description">Keeping a draggable marker in sync with a data model.</string>
+
+  <string name="updating_no_drag_marker_with_data_model_activity">Updating No-Drag Marker With Data Model</string>
+  <string name="updating_no_drag_marker_with_data_model_activity_description">Updating a non-draggable marker with a data model.</string>
+
+  <string name="draggable_markers_collection_with_polygon_activity">Draggable Markers Collection With Polygon</string>
+  <string name="draggable_markers_collection_with_polygon_activity_description">Dragging a collection of markers that form a polygon.</string>
+
+  <string name="map_in_column_activity">Map in Column</string>
+  <string name="map_in_column_activity_description">Displaying a map within a column.</string>
+
   <string name="maps_in_lazy_column_activity">Maps in LazyColumn</string>
+  <string name="maps_in_lazy_column_activity_description">Displaying multiple maps in a LazyColumn.</string>
+
+  <string name="fragment_demo_activity">Fragment Demo</string>
+  <string name="fragment_demo_activity_description">Using the map compose components in a fragment.</string>
+
+  <string name="recomposition_activity">Recomposition</string>
+  <string name="recomposition_activity_description">Understanding how recomposition works with maps.</string>
+
+  <!-- Demo group titles -->
+  <string name="map_types_title">Map Types</string>
+  <string name="map_features_title">Map Features</string>
+  <string name="markers_title">Markers</string>
+  <string name="ui_integration_title">UI Integration</string>
+  <string name="performance_title">Performance</string>
 </resources>
