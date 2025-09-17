@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
       - uses: gradle/actions/wrapper-validation@v4
@@ -54,13 +54,13 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: '24'
 
       - name: Install conventionalcommits
         run: npm i -D conventional-changelog-conventionalcommits
 
       - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4.2.1
+        uses: cycjimmy/semantic-release-action@v5.0.0
         with:
           extra_plugins: |
             "@semantic-release/commit-analyzer@8.0.1"
