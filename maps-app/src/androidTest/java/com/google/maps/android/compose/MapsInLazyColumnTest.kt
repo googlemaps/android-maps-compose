@@ -108,6 +108,6 @@ class MapsInLazyColumnTests {
         initMaps()
         composeTestRule.onRoot().performTouchInput { swipeUp(durationMillis = 1000) }
         composeTestRule.waitForIdle()
-        //We do not need to check anything on the test, just to make sure the scroll down doesnt crash
+        //We do not need to check anything on the test, just to make sure the scroll down doesn't crash
     }
 }

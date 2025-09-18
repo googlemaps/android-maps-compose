@@ -3,7 +3,7 @@ package com.google.maps.android.compose.streetview
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.google.android.gms.maps.model.StreetViewPanoramaCamera
+import com.google.android.gms.maps.StreetViewPanorama
 import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
 
 /**

@@ -1,7 +1,6 @@
 package com.google.maps.android.compose.clustering
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +26,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.core.graphics.createBitmap
 
 /**
  * Implementation of [ClusterRenderer] that renders marker bitmaps from Compose UI content.
@@ -173,18 +173,14 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
            so trigger a draw to an empty canvas to force that */
         view.draw(fakeCanvas)
         val viewParent =
-            view.parent as? ViewGroup ?: return Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
+            view.parent as? ViewGroup ?: return createBitmap(20, 20)
                 .let(BitmapDescriptorFactory::fromBitmap)
         view.measure(
             View.MeasureSpec.makeMeasureSpec(viewParent.width, View.MeasureSpec.AT_MOST),
             View.MeasureSpec.makeMeasureSpec(viewParent.height, View.MeasureSpec.AT_MOST),
         )
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
-        val bitmap = Bitmap.createBitmap(
-            view.measuredWidth.takeIf { it > 0 } ?: 1,
-            view.measuredHeight.takeIf { it > 0 } ?: 1,
-            Bitmap.Config.ARGB_8888
-        )
+        val bitmap = createBitmap(view.measuredWidth.takeIf { it > 0 } ?: 1, view.measuredHeight.takeIf { it > 0 } ?: 1)
         bitmap.applyCanvas {
             view.draw(this)
         }

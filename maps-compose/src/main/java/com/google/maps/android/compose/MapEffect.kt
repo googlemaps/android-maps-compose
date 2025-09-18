@@ -1,10 +1,10 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.currentComposer
 import com.google.android.gms.maps.GoogleMap
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -13,7 +13,7 @@ import kotlinx.coroutines.CoroutineScope
  * re-launched when a different [key1] is provided.
  *
  * Note: This effect should be used with caution as the [GoogleMap]'s properties is managed by the
- * [_root_ide_package_.com.google.maps.android.compose.GoogleMap()] composable function. However,
+ * [com.google.maps.android.compose.GoogleMap] composable function. However,
  * there are use cases when obtaining a raw reference to the map is desirable for extensibility
  * (e.g. using the utility library for clustering).
  */
@@ -33,7 +33,7 @@ public fun MapEffect(key1: Any?, block: suspend CoroutineScope.(GoogleMap) -> Un
  * re-launched when a different [key1] or [key2] is provided.
  *
  * Note: This effect should be used with caution as the [GoogleMap]'s properties is managed by the
- * [_root_ide_package_.com.google.maps.android.compose.GoogleMap()] composable function. However,
+ * [com.google.maps.android.compose.GoogleMap] composable function. However,
  * there are use cases when obtaining a raw reference to the map is desirable for extensibility
  * (e.g. using the utility library for clustering).
  */
@@ -53,7 +53,7 @@ public fun MapEffect(key1: Any?, key2: Any?, block: suspend CoroutineScope.(Goog
  * re-launched when a different [key1], [key2], or [key3] is provided.
  *
  * Note: This effect should be used with caution as the [GoogleMap]'s properties is managed by the
- * [_root_ide_package_.com.google.maps.android.compose.GoogleMap()] composable function. However,
+ * [com.google.maps.android.compose.GoogleMap] composable function. However,
  * there are use cases when obtaining a raw reference to the map is desirable for extensibility
  * (e.g. using the utility library for clustering).
  */
@@ -78,7 +78,7 @@ public fun MapEffect(
  * re-launched with any different [keys].
  *
  * Note: This effect should be used with caution as the [GoogleMap]'s properties is managed by the
- * [_root_ide_package_.com.google.maps.android.compose.GoogleMap()] composable function. However,
+ * [com.google.maps.android.compose.GoogleMap] composable function. However,
  * there are use cases when obtaining a raw reference to the map is desirable for extensibility
  * (e.g. using the utility library for clustering).
  */

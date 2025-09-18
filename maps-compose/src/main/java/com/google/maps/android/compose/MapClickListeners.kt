@@ -84,7 +84,6 @@ internal class MapClickListenerNode<L : Any>(
     private fun setListener(listenerOrNull: L?) = map.setter(listenerOrNull)
 }
 
-@Suppress("ComplexRedundantLet")
 @Composable
 internal fun MapClickListenerUpdater() {
     // The mapClickListeners container object is not allowed to ever change
