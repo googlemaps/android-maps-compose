@@ -221,7 +221,7 @@ public class CameraPositionState private constructor(
     public suspend fun animate(update: CameraUpdate, durationMs: Int = MAX_VALUE) {
         val myJob = currentCoroutineContext()[Job]
         try {
-            suspendCancellableCoroutine<Unit> { continuation ->
+            suspendCancellableCoroutine { continuation ->
                 synchronized(lock) {
                     movementOwner = myJob
                     val map = map

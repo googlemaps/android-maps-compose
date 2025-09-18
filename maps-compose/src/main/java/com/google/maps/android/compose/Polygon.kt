@@ -46,7 +46,7 @@ internal class PolygonNode(
  * @param strokeJointType the joint type for all vertices of the polygon's outline
  * @param strokePattern the stroke pattern for the polygon's outline
  * @param strokeWidth specifies the polygon's stroke width, in display pixels
- * @param tag optional tag to associate wiht the polygon
+ * @param tag optional tag to associate with the polygon
  * @param visible the visibility of the polygon
  * @param zIndex the z-index of the polygon
  * @param onClick a lambda invoked when the polygon is clicked

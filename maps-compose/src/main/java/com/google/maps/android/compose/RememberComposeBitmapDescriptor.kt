@@ -51,14 +51,13 @@ private fun renderComposableToBitmapDescriptor(
     composeView.measure(measureSpec, measureSpec)
 
     if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
-        throw IllegalStateException("The ComposeView was measured to have a width or height of " +
+        error("The ComposeView was measured to have a width or height of " +
                 "zero. Make sure that the content has a non-zero size.")
     }
 
     composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
 
-    val bitmap =
-        createBitmap(composeView.measuredWidth, composeView.measuredHeight)
+    val bitmap = createBitmap(composeView.measuredWidth, composeView.measuredHeight)
 
     bitmap.applyCanvas { composeView.draw(this) }
 
