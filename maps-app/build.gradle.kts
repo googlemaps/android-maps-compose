@@ -1,18 +1,12 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-    alias(libs.plugins.compose.compiler)
+    id("android.maps.compose.application")
+    alias(libs.plugins.maps.secrets.gradle.plugin)
     alias(libs.plugins.screenshot)
 }
 
 android {
-    lint {
-        sarifOutput = layout.buildDirectory.file("reports/lint-results.sarif").get().asFile
-    }
-
     buildTypes {
         getByName("debug") {
             enableUnitTestCoverage = true
@@ -25,34 +19,15 @@ android {
     }
 
     namespace = "com.google.maps.android.compose"
-    compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
 
     buildFeatures {
         buildConfig = true
-        compose = true
-    }
-
-
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            freeCompilerArgs.addAll(
-                "-opt-in=kotlin.RequiresOptIn"
-            )
-        }
     }
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
@@ -65,7 +40,6 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.activity)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material)
@@ -79,7 +53,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.leakcanary.android)
 
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.runner)
