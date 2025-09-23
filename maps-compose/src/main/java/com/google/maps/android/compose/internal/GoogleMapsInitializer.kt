@@ -15,6 +15,7 @@
 package com.google.maps.android.compose.internal
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.google.android.gms.common.ConnectionResult
@@ -90,10 +91,11 @@ public object GoogleMapsInitializer {
      *
      * @param context The context to use for initialization.
      */
-    public suspend fun initialize(context: Context) {
+    public suspend fun initialize(context: Context, forceInitialization: Boolean = false) {
         // 1. Quick exit if already initialized or in progress.
-        if (_state.value != InitializationState.UNINITIALIZED) {
-            return
+        if (!forceInitialization &&
+            (_state.value == InitializationState.INITIALIZING || _state.value == InitializationState.SUCCESS)) {
+            return // Already initialized or initializing, and not forced.
         }
 
         // 2. Acquire the mutex, perform a double-check (in case another
@@ -128,10 +130,20 @@ public object GoogleMapsInitializer {
                     _state.value = InitializationState.FAILURE
                 }
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            when (e) {
+                is com.google.android.gms.common.GooglePlayServicesMissingManifestValueException -> {
+                    // This is an unrecoverable error.
+                    Log.w("GoogleMapsInitializer", "Initialization failed", e)
+                    _state.value = InitializationState.FAILURE
+                }
+                else -> {
+                    Log.w("GoogleMapsInitializer", "Initialization failed", e)
+                    _state.value = InitializationState.UNINITIALIZED
+                }
+            }
             // This will catch any exceptions from the init process (like from mocks in tests)
             // Note: By default, this does NOT catch CancellationException.
-            _state.value = InitializationState.FAILURE
         }
     }
 
