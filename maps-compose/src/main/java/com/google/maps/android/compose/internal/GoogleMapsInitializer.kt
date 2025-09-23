@@ -81,17 +81,24 @@ public object GoogleMapsInitializer {
     public var attributionId: String = AttributionId.VALUE
 
     /**
-     * Initializes the Google Maps SDK.
+     * Initializes Google Maps. This function must be called before using any other
+     * functions in this library.
      *
-     * This function starts the initialization process on a background thread. The process is
-     * performed only once. If the initialization is already in progress or has completed,
-     * this function does nothing.
-     *
-     * The initialization state can be observed via the `state` property.
+     * If initialization fails with a recoverable error, the state will be reset
+     * to [InitializationState.UNINITIALIZED], allowing for a subsequent retry.
+     * In the case of an unrecoverable error, such as a missing manifest value,
+     * the state will be set to [InitializationState.FAILURE].
      *
      * @param context The context to use for initialization.
+     * @param forceInitialization When true, initialization will be attempted even if it
+     * has already succeeded or is in progress. This can be useful for retrying a
+     * failed initialization.
      */
-    public suspend fun initialize(context: Context, forceInitialization: Boolean = false) {
+    public suspend fun initialize(
+        context: Context,
+        forceInitialization: Boolean = false,
+        preferredRenderer: MapsInitializer.Renderer = MapsInitializer.Renderer.LATEST
+    ) {
         // 1. Quick exit if already initialized or in progress.
         if (!forceInitialization &&
             (_state.value == InitializationState.INITIALIZING || _state.value == InitializationState.SUCCESS)) {
@@ -116,7 +123,7 @@ public object GoogleMapsInitializer {
         //    If the calling scope is cancelled while waiting, withContext will throw
         //    a CancellationException, and the state will remain INITIALIZING
         //    (which the catch block will update to FAILURE).
-        try {
+        _state.value = try {
             withContext(Dispatchers.IO) {
                 // This is the blocking call. The thread will be blocked here.
                 // If cancellation happens, the thread STILL finishes this call,
@@ -124,22 +131,21 @@ public object GoogleMapsInitializer {
                 // *after* this call returns, skipping the state assignments below.
                 if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
                     MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
-                    _state.value = InitializationState.SUCCESS
+                    InitializationState.SUCCESS
                 } else {
                     // Handle cases where initialize() returns a non-SUCCESS code
-                    _state.value = InitializationState.FAILURE
+                    InitializationState.FAILURE
                 }
             }
         } catch (e: Exception) {
             when (e) {
                 is com.google.android.gms.common.GooglePlayServicesMissingManifestValueException -> {
                     // This is an unrecoverable error.
-                    Log.w("GoogleMapsInitializer", "Initialization failed", e)
-                    _state.value = InitializationState.FAILURE
+                    Log.w("GoogleMapsInitializer", "Initialization failed: missing Google Play Services", e)
+                    InitializationState.FAILURE
                 }
                 else -> {
-                    Log.w("GoogleMapsInitializer", "Initialization failed", e)
-                    _state.value = InitializationState.UNINITIALIZED
+                    InitializationState.UNINITIALIZED
                 }
             }
             // This will catch any exceptions from the init process (like from mocks in tests)
