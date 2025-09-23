@@ -97,7 +97,6 @@ public object GoogleMapsInitializer {
     public suspend fun initialize(
         context: Context,
         forceInitialization: Boolean = false,
-        preferredRenderer: MapsInitializer.Renderer = MapsInitializer.Renderer.LATEST
     ) {
         // 1. Quick exit if already initialized or in progress.
         if (!forceInitialization &&

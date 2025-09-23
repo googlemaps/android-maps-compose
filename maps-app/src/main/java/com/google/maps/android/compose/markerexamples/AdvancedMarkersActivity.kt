@@ -27,7 +27,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,8 +43,6 @@ import com.google.maps.android.compose.AdvancedMarker
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.internal.GoogleMapsInitializer
-import com.google.maps.android.compose.internal.InitializationState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.ui.IconGenerator
@@ -67,14 +64,6 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val initializationState by GoogleMapsInitializer.state
-
-            if (initializationState != InitializationState.SUCCESS) {
-                LaunchedEffect(Unit) {
-                    GoogleMapsInitializer.initialize(applicationContext, preferredRenderer = MapsInitializer.Renderer.LATEST)
-                }
-            }
-
             // Observing and controlling the camera's state can be done with a CameraPositionState
             val cameraPositionState = rememberCameraPositionState {
                 position = defaultCameraPosition1
