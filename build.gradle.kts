@@ -22,14 +22,6 @@ plugins {
 
 }
 
-val projectArtifactId by extra { project: Project ->
-    if (project.name in listOf("maps-compose", "maps-compose-widgets", "maps-compose-utils")) {
-        project.name
-    } else {
-        null
-    }
-}
-
 allprojects {
     group = "com.google.maps.android"
     version = "6.11.0"
