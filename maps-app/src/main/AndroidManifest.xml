@@ -100,6 +100,9 @@
     <activity
         android:name=".markerexamples.draggablemarkerscollectionwithpolygon.DraggableMarkersCollectionWithPolygonActivity"
         android:exported="true"/>
+    <activity
+        android:name=".TileOverlayActivity"
+        android:exported="true"/>
 
     <!-- Used by createComponentActivity() for unit testing -->
     <activity android:name="androidx.activity.ComponentActivity" />

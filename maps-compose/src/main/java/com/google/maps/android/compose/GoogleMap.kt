@@ -59,7 +59,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * A compose container for a [MapView].
@@ -170,7 +169,10 @@ public fun GoogleMap(
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
 
-                        @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
+                        @Deprecated(
+                            "Deprecated in Java",
+                            ReplaceWith("onTrimMemory(level)")
+                        )
                         override fun onLowMemory() {
                             mapView.onLowMemory()
                         }

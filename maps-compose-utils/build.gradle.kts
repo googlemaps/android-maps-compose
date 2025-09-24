@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("kotlin-android")
     alias(libs.plugins.compose.compiler)
@@ -6,7 +8,7 @@ plugins {
 
 android {
     lint {
-        sarifOutput = file("$buildDir/reports/lint-results.sarif")
+        sarifOutput = layout.buildDirectory.file("reports/lint-results.sarif").get().asFile
     }
 
     namespace = "com.google.maps.android.compose.utils"
@@ -26,10 +28,14 @@ android {
         compose = true
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs += "-Xexplicit-api=strict"
-        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+            freeCompilerArgs.addAll(
+                "-Xexplicit-api=strict",
+                "-Xopt-in=kotlin.RequiresOptIn"
+            )
+        }
     }
 }
 
