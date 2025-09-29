@@ -23,6 +23,7 @@ constraintlayout = "2.2.1"
 material = "1.13.0"
 robolectric = "4.16"
 truth = "1.4.5"
+mockk = "1.13.10" # Added MockK version
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -59,6 +60,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
+mockk = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

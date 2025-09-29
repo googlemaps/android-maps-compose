@@ -40,14 +40,35 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.Projection
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.ktx.utils.sphericalDistance
 import kotlinx.coroutines.delay
+
+internal fun calculateDistance(
+    projection: Projection,
+    width: Dp,
+    density: Density
+): Int {
+    val widthInPixels = with(density) {
+        width.toPx().toInt()
+    }
+
+    val upperLeftLatLng = projection.fromScreenLocation(Point(0, 0))
+    val upperRightLatLng =
+        projection.fromScreenLocation(Point(widthInPixels, 0))
+
+    val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
+
+    return (canvasWidthMeters * 8 / 9).toInt()
+}
 
 public val DarkGray: Color = Color(0xFF3a3c3b)
 private val defaultWidth: Dp = 65.dp
@@ -75,37 +96,12 @@ public fun ScaleBar(
     lineColor: Color = DarkGray,
     shadowColor: Color = Color.White,
 ) {
-    // This is the core logic for calculating the scale of the map.
-    //
-    // `remember` with a key (`cameraPositionState.position.zoom`) is used for performance.
-    // It ensures that the calculation inside is only re-executed when the zoom level changes.
-    // This is important because we don't need to recalculate the scale every time the map pans,
-    // only when the zoom level changes.
-    //
-    // `derivedStateOf` is a Compose state function that creates a new state object that is
-    // derived from other state objects. The calculation inside `derivedStateOf` is only
-    // re-executed when one of the state objects it reads from changes. In this case, it's
-    // `cameraPositionState.projection`. This is another performance optimization that
-    // prevents unnecessary recalculations.
+    val density = LocalDensity.current
     val horizontalLineWidthMeters by remember(cameraPositionState.position.zoom) {
         derivedStateOf {
-            // The projection is used to convert between screen coordinates (pixels) and
-            // geographical coordinates (LatLng). It can be null if the map is not ready yet.
-            val projection = cameraPositionState.projection ?: return@derivedStateOf 0
-
-            // We get the geographical coordinates of two points on the screen: the top-left
-            // corner (0, 0) and a point to the right of it, at the width of the scale bar.
-            val upperLeftLatLng = projection.fromScreenLocation(Point(0, 0))
-            val upperRightLatLng =
-                projection.fromScreenLocation(Point(0, width.value.toInt()))
-
-            // We then calculate the spherical distance between these two points in meters.
-            // This gives us the distance that the scale bar represents on the map.
-            val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
-
-            // We take 8/9th of the canvas width to provide some padding on the right side
-            // of the scale bar.
-            (canvasWidthMeters * 8 / 9).toInt()
+            cameraPositionState.projection?.let {
+                calculateDistance(it, width, density)
+            } ?: 0
         }
     }
 
