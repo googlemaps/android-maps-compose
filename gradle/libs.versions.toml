@@ -23,7 +23,7 @@ constraintlayout = "2.2.1"
 material = "1.13.0"
 robolectric = "4.16"
 truth = "1.4.5"
-mockk = "1.13.10" # Added MockK version
+mockk = "1.14.5"
 
 [libraries]
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
