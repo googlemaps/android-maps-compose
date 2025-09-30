@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>GoogleMapsInitializer</title>
+    <title>DefaultGoogleMapsInitializer</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js","js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -90,43 +90,62 @@
                 </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="maps-compose::com.google.maps.android.compose.internal/GoogleMapsInitializer///PointingToDeclaration//508926583">
-  <div class="breadcrumbs"><a href="../../index.html">maps-compose</a><span class="delimiter">/</span><a href="../index.html">com.google.maps.android.compose.internal</a><span class="delimiter">/</span><span class="current">GoogleMapsInitializer</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageids="maps-compose::com.google.maps.android.compose.internal/DefaultGoogleMapsInitializer///PointingToDeclaration//508926583">
+  <div class="breadcrumbs"><a href="../../index.html">maps-compose</a><span class="delimiter">/</span><a href="../index.html">com.google.maps.android.compose.internal</a><span class="delimiter">/</span><span class="current">DefaultGoogleMapsInitializer</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Google</span><wbr><span>Maps</span><wbr><span><span>Initializer</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">GoogleMapsInitializer</a></div><p class="paragraph">A singleton object to manage the initialization of the Google Maps SDK.</p><p class="paragraph">This object provides a state machine to track the initialization process and ensures that the initialization is performed only once. It also provides a mechanism to reset the initialization state, which can be useful in test environments.</p><p class="paragraph">The initialization process consists of two main steps:</p><ol><li><p class="paragraph">Calling <code class="lang-kotlin">MapsInitializer.initialize(context)</code> to initialize the Google Maps SDK.</p></li><li><p class="paragraph">Calling <code class="lang-kotlin">MapsApiSettings.addInternalUsageAttributionId(context, attributionId)</code> to add     the library's attribution ID to the Maps API settings.</p></li></ol><p class="paragraph">The state of the initialization is exposed via the <code class="lang-kotlin">state</code> property, which is a <a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a> object that can be observed for changes.</p><h4 class="">Inheritors</h4><div class="table"><div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-default-google-maps-initializer/index.html">DefaultGoogleMapsInitializer</a></div></span></div><div></div></div></div></div></div></div>
+    <h1 class="cover"><span>Default</span><wbr><span>Google</span><wbr><span>Maps</span><wbr><span><span>Initializer</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">DefaultGoogleMapsInitializer</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">ioDispatcher<span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines/CoroutineDispatcher///PointingToDeclaration/">CoroutineDispatcher</span><span class="token operator"> = </span>Dispatchers.IO</span></span><span class="token punctuation">)</span> : <a href="../-google-maps-initializer/index.html">GoogleMapsInitializer</a></div><p class="paragraph">The default implementation of <a href="../-google-maps-initializer/index.html">GoogleMapsInitializer</a>.</p><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>io</span><wbr><span><span>Dispatcher</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The dispatcher to use for IO operations.</p></div></div></div></div></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
-      <div data-togglable="PROPERTY">
-        <h2 class="">Properties</h2>
-        <div class="table"><a data-name="386349192%2FProperties%2F508926583" anchor-label="attributionId" id="386349192%2FProperties%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="1473168979%2FConstructors%2F508926583" anchor-label="DefaultGoogleMapsInitializer" id="1473168979%2FConstructors%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="attribution-id.html"><span>attribution</span><wbr><span><span>Id</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="386349192%2FProperties%2F508926583"></span>
+                  <div><a href="-default-google-maps-initializer.html"><span>Default</span><wbr><span>Google</span><wbr><span>Maps</span><wbr><span><span>Initializer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1473168979%2FConstructors%2F508926583"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">var </span><a href="attribution-id.html">attributionId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The value of the attribution ID. Set this to the empty string to opt out of attribution.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">ioDispatcher<span class="token operator">: </span><span data-unresolved-link="kotlinx.coroutines/CoroutineDispatcher///PointingToDeclaration/">CoroutineDispatcher</span><span class="token operator"> = </span>Dispatchers.IO</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1839859409%2FProperties%2F508926583" anchor-label="state" id="1839859409%2FProperties%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="1250376729%2FProperties%2F508926583" anchor-label="attributionId" id="1250376729%2FProperties%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="state.html"><span><span>state</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1839859409%2FProperties%2F508926583"></span>
+                  <div><a href="attribution-id.html"><span>attribution</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1250376729%2FProperties%2F508926583"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="state.html">state</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="../-initialization-state/index.html">InitializationState</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">var </span><a href="attribution-id.html">attributionId</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div><div class="brief "><p class="paragraph">The value of the attribution ID. Set this to the empty string to opt out of attribution.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1211421854%2FProperties%2F508926583" anchor-label="state" id="-1211421854%2FProperties%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="state.html"><span><span>state</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1211421854%2FProperties%2F508926583"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">val </span><a href="state.html">state</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/State.html">State</a><span class="token operator">&lt;</span><a href="../-initialization-state/index.html">InitializationState</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -135,32 +154,32 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-393075675%2FFunctions%2F508926583" anchor-label="initialize" id="-393075675%2FFunctions%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+        <div class="table"><a data-name="-1702220044%2FFunctions%2F508926583" anchor-label="initialize" id="-1702220044%2FFunctions%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="initialize.html"><span><span>initialize</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-393075675%2FFunctions%2F508926583"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1702220044%2FFunctions%2F508926583"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="initialize.html"><span class="token function">initialize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">forceInitialization<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Initializes Google Maps. This function must be called before using any other functions in this library.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend override </span><span class="token keyword">fun </span><a href="initialize.html"><span class="token function">initialize</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">forceInitialization<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Initializes Google Maps. This function must be called before using any other functions in this library.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1342349357%2FFunctions%2F508926583" anchor-label="reset" id="-1342349357%2FFunctions%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
+<a data-name="-98663324%2FFunctions%2F508926583" anchor-label="reset" id="-98663324%2FFunctions%2F508926583" data-filterable-set=":maps-compose:dokkaHtmlPartial/release"></a>
           <div class="table-row" data-filterable-current=":maps-compose:dokkaHtmlPartial/release" data-filterable-set=":maps-compose:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="reset.html"><span><span>reset</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1342349357%2FFunctions%2F508926583"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-98663324%2FFunctions%2F508926583"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="reset.html"><span class="token function">reset</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Resets the initialization state.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":maps-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">suspend override </span><span class="token keyword">fun </span><a href="reset.html"><span class="token function">reset</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Resets the initialization state.</p></div></div></div>
                 </div>
               </div>
             </div>
