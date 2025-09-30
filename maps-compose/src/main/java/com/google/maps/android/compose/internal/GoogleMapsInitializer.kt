@@ -15,13 +15,15 @@
 package com.google.maps.android.compose.internal
 
 import android.content.Context
-import android.util.Log
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.State
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.MapsApiSettings
 import com.google.maps.android.compose.meta.AttributionId
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -67,101 +69,112 @@ public enum class InitializationState {
  * The state of the initialization is exposed via the `state` property, which is a [State] object
  * that can be observed for changes.
  */
-public object GoogleMapsInitializer {
-    private val _state = mutableStateOf(InitializationState.UNINITIALIZED)
-    public val state: State<InitializationState> = _state
-
-    private val mutex = Mutex()
+public interface GoogleMapsInitializer {
+    public val state: State<InitializationState>
 
     /**
      * The value of the attribution ID. Set this to the empty string to opt out of attribution.
      *
      * This must be set before calling the `initialize` function.
      */
-    public var attributionId: String = AttributionId.VALUE
+    public var attributionId: String
 
     /**
      * Initializes Google Maps. This function must be called before using any other
      * functions in this library.
      *
-     * If initialization fails with a recoverable error, the state will be reset
-     * to [InitializationState.UNINITIALIZED], allowing for a subsequent retry.
-     * In the case of an unrecoverable error, such as a missing manifest value,
-     * the state will be set to [InitializationState.FAILURE].
+     * If initialization fails with a recoverable error (e.g., a network issue),
+     * the state will be reset to [InitializationState.UNINITIALIZED], allowing for a
+     * subsequent retry. In the case of an unrecoverable error (e.g., a missing
+     * manifest value), the state will be set to [InitializationState.FAILURE] and the
+     * original exception will be re-thrown.
      *
      * @param context The context to use for initialization.
      * @param forceInitialization When true, initialization will be attempted even if it
-     * has already succeeded or is in progress. This can be useful for retrying a
-     * failed initialization.
+     * has already succeeded or is in progress. This is useful for retrying a
+     * previously failed initialization.
      */
     public suspend fun initialize(
         context: Context,
         forceInitialization: Boolean = false,
-    ) {
-        // 1. Quick exit if already initialized or in progress.
-        if (!forceInitialization &&
-            (_state.value == InitializationState.INITIALIZING || _state.value == InitializationState.SUCCESS)) {
-            return // Already initialized or initializing, and not forced.
-        }
-
-        // 2. Acquire the mutex, perform a double-check (in case another
-        //    coroutine was also waiting), and set the state.
-        //    This block is synchronous and ensures only one coroutine
-        //    proceeds to the IO operation.
-        mutex.withLock {
-            if (_state.value != InitializationState.UNINITIALIZED) {
-                return // Another coroutine won the race while this one was suspended on the lock.
-            }
-            _state.value = InitializationState.INITIALIZING
-        }
-
-        // The lock is now released.
-
-        // 3. Run the blocking initialization code on the IO dispatcher.
-        //    This function will SUSPEND until the withContext(Dispatchers.IO) block completes.
-        //    If the calling scope is cancelled while waiting, withContext will throw
-        //    a CancellationException, and the state will remain INITIALIZING
-        //    (which the catch block will update to FAILURE).
-        _state.value = try {
-            withContext(Dispatchers.IO) {
-                // This is the blocking call. The thread will be blocked here.
-                // If cancellation happens, the thread STILL finishes this call,
-                // but the coroutine will immediately throw CancellationException
-                // *after* this call returns, skipping the state assignments below.
-                if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
-                    MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
-                    InitializationState.SUCCESS
-                } else {
-                    // Handle cases where initialize() returns a non-SUCCESS code
-                    InitializationState.FAILURE
-                }
-            }
-        } catch (e: Exception) {
-            when (e) {
-                is com.google.android.gms.common.GooglePlayServicesMissingManifestValueException -> {
-                    // This is an unrecoverable error.
-                    Log.w("GoogleMapsInitializer", "Initialization failed: missing Google Play Services", e)
-                    InitializationState.FAILURE
-                }
-                else -> {
-                    InitializationState.UNINITIALIZED
-                }
-            }
-            // This will catch any exceptions from the init process (like from mocks in tests)
-            // Note: By default, this does NOT catch CancellationException.
-        }
-    }
+    )
 
     /**
      * Resets the initialization state.
      *
      * This function cancels any ongoing initialization and resets the state to `UNINITIALIZED`.
-     * This is useful in test environments where you might need to re-initialize the SDK
-     * multiple times.
+     * This is primarily useful in test environments where the SDK might need to be
+     * re-initialized multiple times.
      */
-    public suspend fun reset() {
+    public suspend fun reset()
+}
+
+/**
+ * The default implementation of [GoogleMapsInitializer].
+ *
+ * @param ioDispatcher The dispatcher to use for IO operations.
+ */
+public class DefaultGoogleMapsInitializer(
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : GoogleMapsInitializer {
+    private val _state = mutableStateOf(InitializationState.UNINITIALIZED)
+    override val state: State<InitializationState> = _state
+
+    private val mutex = Mutex()
+
+    override var attributionId: String = AttributionId.VALUE
+
+    override suspend fun initialize(
+        context: Context,
+        forceInitialization: Boolean,
+    ) {
+        try {
+            if (!forceInitialization &&
+                (_state.value == InitializationState.INITIALIZING || _state.value == InitializationState.SUCCESS)
+            ) {
+                return
+            }
+
+            mutex.withLock {
+                if (_state.value != InitializationState.UNINITIALIZED) {
+                    return
+                }
+                _state.value = InitializationState.INITIALIZING
+            }
+
+            withContext(ioDispatcher) {
+                if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
+                    MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
+                    _state.value = InitializationState.SUCCESS
+                } else {
+                    _state.value = InitializationState.FAILURE
+                }
+            }
+        } catch (e: com.google.android.gms.common.GooglePlayServicesMissingManifestValueException) {
+            // This is an unrecoverable error. Play Services is not available (could be a test?)
+            // Set the state to FAILURE to prevent further attempts.
+            _state.value = InitializationState.FAILURE
+            throw e
+        } catch (e: Exception) {
+            // This could be a transient error.
+            // Reset to UNINITIALIZED to allow for a retry.
+            _state.value = InitializationState.UNINITIALIZED
+            throw e
+        }
+    }
+
+    override suspend fun reset() {
         mutex.withLock {
             _state.value = InitializationState.UNINITIALIZED
         }
     }
 }
+
+/**
+ * CompositionLocal that provides a [GoogleMapsInitializer].
+ */
+public val LocalGoogleMapsInitializer: ProvidableCompositionLocal<GoogleMapsInitializer> =
+    compositionLocalOf {
+        // Default implementation of the initializer
+        DefaultGoogleMapsInitializer()
+    }
