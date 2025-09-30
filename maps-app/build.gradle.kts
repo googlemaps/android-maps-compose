@@ -45,7 +45,6 @@ android {
         compose = true
     }
 
-
     kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_1_8)
@@ -75,6 +74,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.preview.tooling)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.material)
+    implementation(libs.androidx.compose.material.icons.extended.android)
+
     implementation(libs.screenshot.validation.api)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.leakcanary.android)
@@ -103,6 +104,10 @@ dependencies {
     implementation(project(":maps-compose"))
     implementation(project(":maps-compose-widgets"))
     implementation(project(":maps-compose-utils"))
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
+    testImplementation(kotlin("test"))
 }
 
 secrets {
