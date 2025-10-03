@@ -4,7 +4,7 @@ agp = "8.13.0"
 androidCore = "1.7.0"
 androidx-core = "1.17.0"
 androidxtest = "1.7.0"
-compose-bom = "2025.08.01"
+compose-bom = "2025.09.01"
 dokka = "2.0.0"
 espresso = "3.7.0"
 gradleMavenPublishPlugin = "0.34.0"
@@ -16,7 +16,10 @@ kotlinxCoroutines = "1.10.2"
 leakcanaryAndroid = "2.14"
 mapsecrets = "2.0.1"
 mapsktx = "5.2.0"
-material3 = "1.3.2"
+material3 = "1.4.0"
+materialIconsExtendedAndroid = "1.7.8"
+mockk = "1.14.5"
+mockkAndroid = "1.14.5"
 org-jacoco-core = "0.8.13"
 screenshot = "0.0.1-alpha11"
 constraintlayout = "2.2.1"
@@ -31,6 +34,7 @@ androidx-compose-activity = { module = "androidx.activity:activity-compose", ver
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 androidx-compose-material = { module = "androidx.compose.material:material" }
+androidx-compose-material-icons-extended-android = { module = "androidx.compose.material:material-icons-extended-android", version.ref = "materialIconsExtendedAndroid" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling-preview" }
@@ -53,6 +57,8 @@ leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", ve
 maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "mapsktx" }
 maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsktx" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
 org-jacoco-core = { module = "org.jacoco:org.jacoco.core", version.ref = "org-jacoco-core" }
 test-junit = { module = "junit:junit", version.ref = "junit" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }

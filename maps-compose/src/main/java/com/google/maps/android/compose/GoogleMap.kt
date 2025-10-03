@@ -50,8 +50,8 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
-import com.google.maps.android.compose.internal.GoogleMapsInitializer
 import com.google.maps.android.compose.internal.InitializationState
+import com.google.maps.android.compose.internal.LocalGoogleMapsInitializer
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -113,12 +113,15 @@ public fun GoogleMap(
         return
     }
 
-    val initializationState by GoogleMapsInitializer.state
+    val googleMapsInitializer = LocalGoogleMapsInitializer.current
+    val initializationState by googleMapsInitializer.state
 
     if (initializationState != InitializationState.SUCCESS) {
         val context = LocalContext.current
         LaunchedEffect(Unit) {
-            GoogleMapsInitializer.initialize(context)
+            // Coroutine to initialize Google Maps SDK.
+            // This will run once when the composable is first displayed.
+            googleMapsInitializer.initialize(context)
         }
     }
 
