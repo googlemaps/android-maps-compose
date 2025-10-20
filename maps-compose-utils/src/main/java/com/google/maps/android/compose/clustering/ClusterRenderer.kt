@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import com.google.android.gms.maps.GoogleMap
@@ -18,7 +19,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
-import com.google.maps.android.clustering.view.ClusterRenderer
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.ComposeUiViewRenderer
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
- * Implementation of [ClusterRenderer] that renders marker bitmaps from Compose UI content.
+ * Implementation of [com.google.maps.android.clustering.view.ClusterRenderer] that renders marker bitmaps from Compose UI content.
  * [clusterContentState] renders clusters, and [clusterItemContentState] renders non-clustered
  * items.
  */
@@ -54,15 +54,16 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         super.onClustersChanged(clusters)
         val keys = clusters.flatMap { it.computeViewKeys() }
 
-        with(keysToViews.iterator()) {
-            forEach { (key, viewInfo) ->
-                if (key !in keys) {
-                    remove()
-                    viewInfo.onRemove()
-                }
+        val iterator = keysToViews.iterator()
+        while (iterator.hasNext()) {
+            val (key, viewInfo) = iterator.next()
+            if (key !in keys) {
+                iterator.remove()
+                viewInfo.onRemove()
             }
         }
-        keys.forEach { key ->
+
+        for (key in keys) {
             if (key !in keysToViews.keys) {
                 createAndAddView(key)
             }
@@ -173,14 +174,14 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
            so trigger a draw to an empty canvas to force that */
         view.draw(fakeCanvas)
         val viewParent =
-            view.parent as? ViewGroup ?: return Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
+            view.parent as? ViewGroup ?: return createBitmap(20, 20, Bitmap.Config.ARGB_8888)
                 .let(BitmapDescriptorFactory::fromBitmap)
         view.measure(
             View.MeasureSpec.makeMeasureSpec(viewParent.width, View.MeasureSpec.AT_MOST),
             View.MeasureSpec.makeMeasureSpec(viewParent.height, View.MeasureSpec.AT_MOST),
         )
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
-        val bitmap = Bitmap.createBitmap(
+        val bitmap = createBitmap(
             view.measuredWidth.takeIf { it > 0 } ?: 1,
             view.measuredHeight.takeIf { it > 0 } ?: 1,
             Bitmap.Config.ARGB_8888
