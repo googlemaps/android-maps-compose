@@ -62,7 +62,6 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MapsInitializer.initialize(applicationContext, MapsInitializer.Renderer.LATEST, this)
         enableEdgeToEdge()
         setContent {
             // Observing and controlling the camera's state can be done with a CameraPositionState
