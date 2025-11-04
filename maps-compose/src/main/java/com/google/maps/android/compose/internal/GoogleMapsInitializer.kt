@@ -142,9 +142,11 @@ public class DefaultGoogleMapsInitializer(
                 _state.value = InitializationState.INITIALIZING
             }
 
-            withContext(ioDispatcher) {
+            withContext(Dispatchers.Main) {
                 if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
-                    MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
+                    withContext(ioDispatcher) {
+                        MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
+                    }
                     _state.value = InitializationState.SUCCESS
                 } else {
                     _state.value = InitializationState.FAILURE
