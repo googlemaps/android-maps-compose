@@ -15,6 +15,7 @@
 package com.google.maps.android.compose.internal
 
 import android.content.Context
+import android.os.StrictMode
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.State
 import androidx.compose.runtime.compositionLocalOf
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.MapsApiSettings
 import com.google.maps.android.compose.meta.AttributionId
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -115,7 +117,8 @@ public interface GoogleMapsInitializer {
  * @param ioDispatcher The dispatcher to use for IO operations.
  */
 public class DefaultGoogleMapsInitializer(
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
 ) : GoogleMapsInitializer {
     private val _state = mutableStateOf(InitializationState.UNINITIALIZED)
     override val state: State<InitializationState> = _state
@@ -142,12 +145,24 @@ public class DefaultGoogleMapsInitializer(
                 _state.value = InitializationState.INITIALIZING
             }
 
-            withContext(ioDispatcher) {
-                if (MapsInitializer.initialize(context) == ConnectionResult.SUCCESS) {
-                    MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
-                    _state.value = InitializationState.SUCCESS
-                } else {
-                    _state.value = InitializationState.FAILURE
+            withContext(mainDispatcher) {
+                val scope = this
+
+                val policy = StrictMode.getThreadPolicy()
+                try {
+                    StrictMode.allowThreadDiskReads()
+                    val result = MapsInitializer.initialize(context, null) {
+                        scope.launch(ioDispatcher) {
+                            MapsApiSettings.addInternalUsageAttributionId(context, attributionId)
+                            _state.value = InitializationState.SUCCESS
+                        }
+                    }
+
+                    if (result != ConnectionResult.SUCCESS) {
+                        _state.value = InitializationState.FAILURE
+                    }
+                } finally {
+                    StrictMode.setThreadPolicy(policy)
                 }
             }
         } catch (e: com.google.android.gms.common.GooglePlayServicesMissingManifestValueException) {
