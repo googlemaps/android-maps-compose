@@ -23,11 +23,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -51,6 +53,7 @@ class GoogleMapsInitializerTest {
         every { MapsApiSettings.addInternalUsageAttributionId(any(), any()) } returns Unit
 
         testDispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
         googleMapsInitializer = DefaultGoogleMapsInitializer(testDispatcher)
     }
 
