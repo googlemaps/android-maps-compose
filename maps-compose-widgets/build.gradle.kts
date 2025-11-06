@@ -11,11 +11,19 @@ android {
         sarifOutput = layout.buildDirectory.file("reports/lint-results.sarif").get().asFile
     }
 
+    packaging {
+        resources {
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
+        }
+    }
+
     namespace = "com.google.maps.android.compose.widgets"
     compileSdk = 36
 
     defaultConfig {
         minSdk = 21
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -55,4 +63,6 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.espresso)
     androidTestImplementation(libs.androidx.test.junit.ktx)
+    androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.truth)
 }
