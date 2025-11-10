@@ -37,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.viewinterop.AndroidView
@@ -44,6 +45,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
@@ -104,6 +106,7 @@ public fun GoogleMap(
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = DefaultMapContentPadding,
     mapColorScheme: ComposeMapColorScheme? = null,
+    mapViewCreator: ((Context, GoogleMapOptions) -> AbstractMapViewDelegate<*>)? = null,
     mapViewFactory: (Context, GoogleMapOptions) -> MapView = ::MapView,
     content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
@@ -164,6 +167,11 @@ public fun GoogleMap(
         val currentContent by rememberUpdatedState(content)
         var subcompositionJob by remember { mutableStateOf<Job?>(null) }
         val parentCompositionScope = rememberCoroutineScope()
+
+        var delegate by remember {
+            mutableStateOf<AbstractMapViewDelegate<*>?>(null)
+        }
+
 
         AndroidView(
             modifier = modifier,
@@ -339,6 +347,65 @@ public fun googleMapFactory(
         }
     }
 }
+
+public interface AbstractMapViewDelegate<T : View> {
+    public fun onCreate(savedInstanceState: Bundle?)
+    public fun onStart()
+    public fun onResume()
+    public fun onPause()
+    public fun onStop()
+    public fun onLowMemory()
+    public fun onDestroy()
+    public suspend fun awaitMap(): GoogleMap
+    public fun renderComposeViewOnce(
+        view: AbstractComposeView,
+        parentContext: CompositionContext,
+        onAddedToWindow: ((View) -> Unit)? = null,
+    )
+
+    public fun startRenderingComposeView(
+        view: AbstractComposeView,
+        parentContext: CompositionContext,
+    ): ComposeUiViewRenderer.RenderHandle
+
+    public val mapView: T
+}
+
+private val <T : View> AbstractMapViewDelegate<T>.tagData: MapTagData
+    get() = mapView.tag as MapTagData
+
+public class MapViewDelegate(override val mapView: MapView) : AbstractMapViewDelegate<MapView> {
+    override fun onCreate(savedInstanceState: Bundle?): Unit = mapView.onCreate(savedInstanceState)
+    override fun onStart(): Unit = mapView.onStart()
+    override fun onResume(): Unit = mapView.onResume()
+    override fun onPause(): Unit = mapView.onPause()
+    override fun onStop(): Unit = mapView.onStop()
+    override fun onLowMemory(): Unit = mapView.onLowMemory()
+    override fun onDestroy(): Unit = mapView.onDestroy()
+    override suspend fun awaitMap(): GoogleMap = mapView.awaitMap()
+    override fun renderComposeViewOnce(
+        view: AbstractComposeView,
+        parentContext: CompositionContext,
+        onAddedToWindow: ((View) -> Unit)?
+    ) {
+        mapView.renderComposeViewOnce(
+            view = view,
+            parentContext = parentContext,
+            onAddedToWindow = onAddedToWindow
+        )
+    }
+
+    override fun startRenderingComposeView(
+        view: AbstractComposeView,
+        parentContext: CompositionContext
+    ): ComposeUiViewRenderer.RenderHandle {
+        return mapView.startRenderingComposeView(
+            view = view,
+            parentContext = parentContext,
+        )
+    }
+}
+
 
 private class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
     private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
