@@ -38,7 +38,7 @@ private object MapNodeRoot : MapNode
 // for that particular listener; yet MapClickListeners never actually changes.
 internal class MapApplier(
     val map: GoogleMap,
-    internal val mapView: MapView,
+    internal val mapViewDelegate: AbstractMapViewDelegate<*>,
     val mapClickListeners: MapClickListeners,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
@@ -211,7 +211,7 @@ internal class MapApplier(
         })
         map.setInfoWindowAdapter(
             ComposeInfoWindowAdapter(
-                mapView,
+                mapViewDelegate,
                 markerNodeFinder = { marker ->
                     decorations.firstOrNull { it is MarkerNode && it.marker == marker }
                             as MarkerNode?

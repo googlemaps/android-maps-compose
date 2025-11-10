@@ -119,7 +119,7 @@ public fun GoogleMap(
     val googleMapsInitializer = LocalGoogleMapsInitializer.current
     val initializationState by googleMapsInitializer.state
 
-    if (initializationState != InitializationState.SUCCESS) {
+    if (initializationState != InitializationState.SUCCESS && mapViewCreator == null) {
         val context = LocalContext.current
         LaunchedEffect(Unit) {
             // Coroutine to initialize Google Maps SDK.
@@ -176,7 +176,13 @@ public fun GoogleMap(
         AndroidView(
             modifier = modifier,
             factory = { context ->
-                mapViewFactory(context, googleMapOptionsFactory()).also { mapView ->
+                if (mapViewCreator != null) {
+                    mapViewCreator(context, googleMapOptionsFactory())
+                } else {
+                    MapViewDelegate(MapView(context, googleMapOptionsFactory()))
+                }.also { mapViewDelegate: AbstractMapViewDelegate<*> ->
+                    delegate = mapViewDelegate
+                    val mapView = mapViewDelegate.mapView
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
 
@@ -185,16 +191,16 @@ public fun GoogleMap(
                             ReplaceWith("onTrimMemory(level)")
                         )
                         override fun onLowMemory() {
-                            mapView.onLowMemory()
+                            mapViewDelegate.onLowMemory()
                         }
 
                         override fun onTrimMemory(level: Int) {
-                            mapView.onLowMemory()
+                            mapViewDelegate.onLowMemory()
                         }
                     }
                     context.registerComponentCallbacks(componentCallbacks)
 
-                    val lifecycleObserver = MapLifecycleEventObserver(mapView)
+                    val lifecycleObserver = MapLifecycleEventObserver(mapViewDelegate)
 
                     mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
 
@@ -216,11 +222,11 @@ public fun GoogleMap(
                     }
 
                     mapView.addOnAttachStateChangeListener(onAttachStateListener)
-                }
+                }.mapView
             },
             onReset = { /* View is detached. */ },
             onRelease = { mapView ->
-                val (componentCallbacks, lifecycleObserver) = mapView.tagData
+                val (componentCallbacks, lifecycleObserver) = delegate!!.tagData
                 mapView.context.unregisterComponentCallbacks(componentCallbacks)
                 lifecycleObserver.moveToDestroyedState()
                 mapView.tag = null
@@ -230,7 +236,7 @@ public fun GoogleMap(
                     subcompositionJob = parentCompositionScope.launchSubcomposition(
                         mapUpdaterState,
                         parentComposition,
-                        mapView,
+                        delegate!!,
                         mapClickListeners,
                         currentContent,
                     )
@@ -246,7 +252,7 @@ public fun GoogleMap(
 private fun CoroutineScope.launchSubcomposition(
     mapUpdaterState: MapUpdaterState,
     parentComposition: CompositionContext,
-    mapView: MapView,
+    mapViewDelegate: AbstractMapViewDelegate<*>,
     mapClickListeners: MapClickListeners,
     content: @Composable @GoogleMapComposable () -> Unit,
 ): Job {
@@ -255,9 +261,9 @@ private fun CoroutineScope.launchSubcomposition(
         context = Dispatchers.Main,
         start = CoroutineStart.UNDISPATCHED
     ) {
-        val map = mapView.awaitMap()
+        val map = mapViewDelegate.awaitMap()
         val composition = Composition(
-            applier = MapApplier(map, mapView, mapClickListeners),
+            applier = MapApplier(map, mapViewDelegate, mapClickListeners),
             parent = parentComposition
         )
 
@@ -407,7 +413,7 @@ public class MapViewDelegate(override val mapView: MapView) : AbstractMapViewDel
 }
 
 
-private class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
+private class MapLifecycleEventObserver(private val mapView: AbstractMapViewDelegate<*>) : LifecycleEventObserver {
     private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

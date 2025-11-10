@@ -16,6 +16,7 @@ pluginManagement {
 rootProject.name = "android-maps-compose"
 
 include(":maps-app")
+include(":navigation-app")
 include(":maps-compose")
 include(":maps-compose-widgets")
 include(":maps-compose-utils")

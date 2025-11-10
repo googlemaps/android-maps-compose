@@ -69,7 +69,7 @@ private fun MapView.ensureContainerView(): NoDrawContainerView {
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Composable
 public fun rememberComposeUiViewRenderer(): ComposeUiViewRenderer {
-    val mapView = (currentComposer.applier as MapApplier).mapView
+    val mapView = (currentComposer.applier as MapApplier).mapViewDelegate
     val compositionContext = rememberCompositionContext()
 
     return remember(compositionContext) {

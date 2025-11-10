@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.37.0"
 activitycompose = "1.11.0"
 agp = "8.13.0"
 androidCore = "1.7.0"
@@ -10,17 +11,22 @@ espresso = "3.7.0"
 gradleMavenPublishPlugin = "0.34.0"
 jacoco-plugin = "0.2.1"
 junit = "4.13.2"
+junitVersion = "1.2.1"
 junitktx = "1.3.0"
 kotlin = "2.2.20"
 kotlinxCoroutines = "1.10.2"
 leakcanaryAndroid = "2.14"
+lifecycleRuntimeKtx = "2.8.7"
 mapsecrets = "2.0.1"
 mapsktx = "5.2.0"
 material3 = "1.4.0"
 materialIconsExtendedAndroid = "1.7.8"
 mockk = "1.14.5"
 mockkAndroid = "1.14.5"
+navigation = "6.1.0"
 org-jacoco-core = "0.8.13"
+playServicesLocation = "21.3.0"
+places = "4.1.0"
 screenshot = "0.0.1-alpha11"
 constraintlayout = "2.2.1"
 material = "1.13.0"
@@ -28,6 +34,7 @@ robolectric = "4.16"
 truth = "1.4.5"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 androidx-compose-activity = { module = "androidx.activity:activity-compose", version.ref = "activitycompose" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
@@ -39,12 +46,19 @@ androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-preview-tooling = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidCore" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitktx" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxtest" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "gradleMavenPublishPlugin" }
 jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version.ref = "jacoco-plugin", version.require = "0.2.1" }
@@ -58,7 +72,10 @@ maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.re
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
+navigation = { module = "com.google.android.libraries.navigation:navigation", version.ref = "navigation" }
 org-jacoco-core = { module = "org.jacoco:org.jacoco.core", version.ref = "org-jacoco-core" }
+places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 test-junit = { module = "junit:junit", version.ref = "junit" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
