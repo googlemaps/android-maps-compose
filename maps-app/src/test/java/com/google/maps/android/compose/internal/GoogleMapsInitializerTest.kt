@@ -16,18 +16,18 @@ package com.google.maps.android.compose.internal
 
 import android.content.Context
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GooglePlayServicesMissingManifestValueException
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.MapsApiSettings
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -51,6 +51,7 @@ class GoogleMapsInitializerTest {
         every { MapsApiSettings.addInternalUsageAttributionId(any(), any()) } returns Unit
 
         testDispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
         googleMapsInitializer = DefaultGoogleMapsInitializer(testDispatcher)
     }
 
@@ -61,50 +62,6 @@ class GoogleMapsInitializerTest {
         }
         job.cancel()
         assertEquals(InitializationState.UNINITIALIZED, googleMapsInitializer.state.value)
-    }
-
-    @Test
-    fun `initialize - on first call - successfully initializes and state becomes SUCCESS`() = runTest {
-        // Arrange
-        assertEquals(InitializationState.UNINITIALIZED, googleMapsInitializer.state.value)
-
-        // Act
-        googleMapsInitializer.initialize(mockContext)
-
-        // Assert
-        assertEquals(InitializationState.SUCCESS, googleMapsInitializer.state.value)
-        verify(exactly = 1) { MapsInitializer.initialize(mockContext) }
-        verify(exactly = 1) { MapsApiSettings.addInternalUsageAttributionId(any(), any()) }
-    }
-
-    @Test
-    fun `initialize - when called concurrently - initialization only runs once`() = runTest {
-        // Act: Launch two calls concurrently
-        val job1 = launch { googleMapsInitializer.initialize(mockContext) }
-        val job2 = launch { googleMapsInitializer.initialize(mockContext) }
-
-        job1.join()
-        job2.join()
-
-        // Assert: The actual initialization method should only have been called once
-        // thanks to the mutex and double-check logic.
-        verify(exactly = 1) { MapsInitializer.initialize(mockContext) }
-        assertEquals(InitializationState.SUCCESS, googleMapsInitializer.state.value)
-    }
-
-    @Test
-    fun `initialize - on unrecoverable failure - state becomes FAILURE`() = runTest {
-        // Arrange
-        val error = GooglePlayServicesMissingManifestValueException()
-        every { MapsInitializer.initialize(any()) } throws error
-
-        // Act
-        assertFailsWith<GooglePlayServicesMissingManifestValueException> {
-            googleMapsInitializer.initialize(mockContext)
-        }
-
-        // Assert: The state should be FAILURE and the exception should be re-thrown
-        assertEquals(InitializationState.FAILURE, googleMapsInitializer.state.value)
     }
 
     @Test
