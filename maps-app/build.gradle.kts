@@ -61,6 +61,15 @@ android {
             imageDifferenceThreshold = 0.035f // 3.5%
         }
     }
+
+    packaging {
+        resources {
+            pickFirsts += listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -90,6 +99,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.compose.ui)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.mockk.android)
+    //androidTestImplementation(kotlin("test"))
 
     testImplementation(libs.test.junit)
     testImplementation(libs.robolectric)
