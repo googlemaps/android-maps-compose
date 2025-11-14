@@ -16,18 +16,20 @@ package com.google.maps.android.compose
 
 import android.app.Application
 import com.google.maps.android.compose.internal.DefaultGoogleMapsInitializer
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 class MapsComposeApplication : Application() {
-    @OptIn(DelicateCoroutinesApi::class)
+
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     override fun onCreate() {
         super.onCreate()
-        // Note: that this is not a singleton, but it should still effectively load the SDK once
+        // The DefaultGoogleMapsInitializer is not a singleton, but the Maps SDK is initialized just once.
 
-        GlobalScope.launch(Dispatchers.Main) {
+        applicationScope.launch {
             DefaultGoogleMapsInitializer().initialize(
                 context = this@MapsComposeApplication,
                 forceInitialization = false
