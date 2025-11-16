@@ -13,13 +13,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.platform.LocalContext
-import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.ClusterRenderer
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.InputHandler
 import com.google.maps.android.compose.MapEffect
@@ -355,12 +353,12 @@ private fun <T : ClusterItem> rememberClusterManager(
 
 /**
  * This is a hack.
- * [ClusterManager] instantiates a [MarkerManager], which posts a runnable to the UI thread that
- * overwrites a bunch of [GoogleMap]'s listeners. Many Maps composables rely on those listeners
+ * [ClusterManager] instantiates a [com.google.maps.android.collections.MarkerManager], which posts a runnable to the UI thread that
+ * overwrites a bunch of [com.google.android.gms.maps.GoogleMap]'s listeners. Many Maps composables rely on those listeners
  * being set by [com.google.maps.android.compose.MapApplier].
  * This posts _another_ runnable which effectively undoes that, signaling MapApplier to set the
  * listeners again.
- * This is heavily coupled to implementation details of [MarkerManager].
+ * This is heavily coupled to implementation details of [com.google.maps.android.collections.MarkerManager].
  */
 @Composable
 private fun ResetMapListeners(
