@@ -172,76 +172,52 @@ public fun GoogleMap(
             mutableStateOf<AbstractMapViewDelegate<*>?>(null)
         }
 
-
-        AndroidView(
-            modifier = modifier,
-            factory = { context ->
-                if (mapViewCreator != null) {
-                    mapViewCreator(context, googleMapOptionsFactory())
-                } else {
-                    MapViewDelegate(MapView(context, googleMapOptionsFactory()))
-                }.also { mapViewDelegate: AbstractMapViewDelegate<*> ->
-                    delegate = mapViewDelegate
-                    val mapView = mapViewDelegate.mapView
-                    val componentCallbacks = object : ComponentCallbacks2 {
-                        override fun onConfigurationChanged(newConfig: Configuration) {}
-
-                        @Deprecated(
-                            "Deprecated in Java",
-                            ReplaceWith("onTrimMemory(level)")
-                        )
-                        override fun onLowMemory() {
-                            mapViewDelegate.onLowMemory()
-                        }
-
-                        override fun onTrimMemory(level: Int) {
-                            mapViewDelegate.onLowMemory()
-                        }
-                    }
-                    context.registerComponentCallbacks(componentCallbacks)
-
-                    val lifecycleObserver = MapLifecycleEventObserver(mapViewDelegate)
-
-                    mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
-
-                    // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
-                    val onAttachStateListener = object : View.OnAttachStateChangeListener {
-                        private var lifecycle: Lifecycle? = null
-
-                        override fun onViewAttachedToWindow(mapView: View) {
-                            lifecycle = mapView.findViewTreeLifecycleOwner()!!.lifecycle.also {
-                                it.addObserver(lifecycleObserver)
-                            }
-                        }
-
-                        override fun onViewDetachedFromWindow(v: View) {
-                            lifecycle?.removeObserver(lifecycleObserver)
-                            lifecycle = null
-                            lifecycleObserver.moveToBaseState()
-                        }
-                    }
-
-                    mapView.addOnAttachStateChangeListener(onAttachStateListener)
-                }.mapView
-            },
-            onReset = { /* View is detached. */ },
-            onRelease = { mapView ->
-                val (componentCallbacks, lifecycleObserver) = delegate!!.tagData
+        val onRelease: (View) -> Unit = { mapView ->
+            delegate?.let { d ->
+                val (componentCallbacks, lifecycleObserver) = d.tagData
                 mapView.context.unregisterComponentCallbacks(componentCallbacks)
                 lifecycleObserver.moveToDestroyedState()
                 mapView.tag = null
-            },
-            update = { mapView ->
-                if (subcompositionJob == null) {
-                    subcompositionJob = parentCompositionScope.launchSubcomposition(
-                        mapUpdaterState,
-                        parentComposition,
-                        delegate!!,
-                        mapClickListeners,
-                        currentContent,
-                    )
-                }
-            })
+            }
+        }
+
+        val update: (View) -> Unit = {
+            if (subcompositionJob == null) {
+                subcompositionJob = parentCompositionScope.launchSubcomposition(
+                    mapUpdaterState,
+                    parentComposition,
+                    delegate!!,
+                    mapClickListeners,
+                    currentContent,
+                )
+            }
+        }
+
+        if (mapViewCreator == null) {
+            AndroidView(
+                modifier = modifier,
+                factory = { context ->
+                    MapViewDelegate(mapViewFactory(context, googleMapOptionsFactory())).also {
+                        delegate = it
+                    }.setupMapView(context)
+                },
+                onReset = { /* View is detached. */ },
+                onRelease = onRelease,
+                update = update,
+            )
+        } else {
+            AndroidView(
+                modifier = modifier,
+                factory = { context ->
+                    mapViewCreator.invoke(context, googleMapOptionsFactory()).also {
+                        delegate = it
+                    }.setupMapView(context)
+                },
+                onReset = { /* View is detached. */ },
+                onRelease = onRelease,
+                update = update
+            )
+        }
     }
 }
 
@@ -283,6 +259,52 @@ private fun CoroutineScope.launchSubcomposition(
             composition.dispose()
         }
     }
+}
+
+private fun <T : View> AbstractMapViewDelegate<T>.setupMapView(
+    context: Context,
+): T {
+    val mapView = this.mapView
+    val componentCallbacks = object : ComponentCallbacks2 {
+        override fun onConfigurationChanged(newConfig: Configuration) {}
+
+        @Deprecated(
+            "Deprecated in Java",
+            ReplaceWith("onTrimMemory(level)")
+        )
+        override fun onLowMemory() {
+            this@setupMapView.onLowMemory()
+        }
+
+        override fun onTrimMemory(level: Int) {
+            this@setupMapView.onLowMemory()
+        }
+    }
+    context.registerComponentCallbacks(componentCallbacks)
+
+    val lifecycleObserver = MapLifecycleEventObserver(this)
+
+    mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
+
+    // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
+    val onAttachStateListener = object : View.OnAttachStateChangeListener {
+        private var lifecycle: Lifecycle? = null
+
+        override fun onViewAttachedToWindow(mapView: View) {
+            lifecycle = mapView.findViewTreeLifecycleOwner()!!.lifecycle.also {
+                it.addObserver(lifecycleObserver)
+            }
+        }
+
+        override fun onViewDetachedFromWindow(v: View) {
+            lifecycle?.removeObserver(lifecycleObserver)
+            lifecycle = null
+            lifecycleObserver.moveToBaseState()
+        }
+    }
+
+    mapView.addOnAttachStateChangeListener(onAttachStateListener)
+    return mapView
 }
 
 @Stable
