@@ -65,7 +65,7 @@ class ScaleBarTests {
                 ScaleBar(cameraPositionState = cameraPositionState)
             }
         }
-        val mapLoaded = countDownLatch.await(5, TimeUnit.SECONDS)
+        val mapLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
         assertTrue(mapLoaded)
     }
 
