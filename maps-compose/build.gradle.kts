@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.sourceSets
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {

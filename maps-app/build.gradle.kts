@@ -56,11 +56,10 @@ android {
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
-    testOptions {
-        screenshotTests {
-            imageDifferenceThreshold = 0.035f // 3.5%
-        }
+    screenshotTests {
+        imageDifferenceThreshold = 0.035f // 3.5%
     }
+
 
     packaging {
         resources {
@@ -100,7 +99,6 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.mockk.android)
-    //androidTestImplementation(kotlin("test"))
 
     testImplementation(libs.test.junit)
     testImplementation(libs.robolectric)
