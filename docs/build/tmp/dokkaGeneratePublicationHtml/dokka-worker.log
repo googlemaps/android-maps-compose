@@ -1,0 +1,152 @@
+[PROGRESS] Executing DokkaGeneratorWorker with dokkaParameters: DokkaConfigurationImpl(moduleName=Android Maps Compose, moduleVersion=6.12.2, outputDir=/home/runner/work/android-maps-compose/android-maps-compose/docs/build/dokka/html, cacheRoot=null, offlineMode=false, sourceSets=[], pluginsClasspath=[/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.dokka/templating-plugin/2.1.0/c3c13a48444b9c22e5286e88581ce0334e25352d/templating-plugin-2.1.0.jar, /home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.dokka/dokka-base/2.1.0/3379db5f1799a2ae6c98603214367743d4d6863f/dokka-base-2.1.0.jar, /home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.dokka/all-modules-page-plugin/2.1.0/aab1a50ed5cea24c393542e09bfc699decae910f/all-modules-page-plugin-2.1.0.jar], pluginsConfiguration=[PluginConfigurationImpl(fqPluginName=org.jetbrains.dokka.base.DokkaBase, serializationFormat=JSON, values={"customAssets":[],"customStyleSheets":[],"separateInheritedMembers":false,"mergeImplicitExpectActualDeclarations":false}), PluginConfigurationImpl(fqPluginName=org.jetbrains.dokka.versioning.VersioningPlugin, serializationFormat=JSON, values={"olderVersions":[],"renderVersionsNavigationOnAllPages":true})], modules=[DokkaModuleDescriptionImpl(name=maps-compose, relativePathToOutputDirectory=maps-compose, includes=[], sourceOutputDirectory=/home/runner/work/android-maps-compose/android-maps-compose/maps-compose/build/dokka-module/html/module), DokkaModuleDescriptionImpl(name=maps-compose-utils, relativePathToOutputDirectory=maps-compose-utils, includes=[], sourceOutputDirectory=/home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/dokka-module/html/module), DokkaModuleDescriptionImpl(name=maps-compose-widgets, relativePathToOutputDirectory=maps-compose-widgets, includes=[], sourceOutputDirectory=/home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/build/dokka-module/html/module)], failOnWarning=false, delayTemplateSubstitution=false, suppressObviousFunctions=true, includes=[], suppressInheritedMembers=false, finalizeCoroutines=false)
+[PROGRESS] Initializing plugins
+[INFO] Loaded plugins: [org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin, org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin, org.jetbrains.dokka.templates.TemplatingPlugin, org.jetbrains.dokka.base.DokkaBase, org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin]
+[INFO] Loaded: [
+	ExtensionPoint: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/externalModuleLinkResolver,
+	ExtensionPoint: org.jetbrains.dokka.templates.TemplatingPlugin/directiveBasedCommandHandlers,
+	ExtensionPoint: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/partialLocationProviderFactory,
+	ExtensionPoint: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/allModulesPageCreator,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/preGenerationCheck,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/immediateHtmlCommandConsumer,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/pageTransformer,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/htmlPreprocessors,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/outputWriter,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/externalLocationProviderFactory,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/locationProviderFactory,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/renderer,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/pageMergerStrategy,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/commentsToContentConverter,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/documentableToPageTranslator,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/documentableTransformer,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/signatureProvider,
+	ExtensionPoint: org.jetbrains.dokka.base.DokkaBase/preMergeDocumentableTransformer,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/documentableMerger,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/generation,
+	ExtensionPoint: org.jetbrains.dokka.templates.TemplatingPlugin/substitutor,
+	ExtensionPoint: org.jetbrains.dokka.templates.TemplatingPlugin/templateProcessingStrategy,
+	ExtensionPoint: org.jetbrains.dokka.templates.TemplatingPlugin/multimoduleTemplateProcessor,
+	ExtensionPoint: org.jetbrains.dokka.templates.TemplatingPlugin/submoduleTemplateProcessor,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/sourceToDocumentableTranslator,
+	ExtensionPoint: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/docCommentParsers,
+	ExtensionPoint: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/docCommentCreators,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.KotlinAnalysisPlugin/sampleAnalysisEnvironmentCreator,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.KotlinAnalysisPlugin/externalDocumentableProvider,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.internal.InternalKotlinAnalysisPlugin/inheritanceBuilder,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.internal.InternalKotlinAnalysisPlugin/kotlinToJavaService,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.internal.InternalKotlinAnalysisPlugin/moduleAndPackageDocumentationReader,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.internal.InternalKotlinAnalysisPlugin/syntheticDocumentableDetector,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.internal.InternalKotlinAnalysisPlugin/fullClassHierarchyBuilder,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.internal.InternalKotlinAnalysisPlugin/documentableSourceLanguageParser,
+	ExtensionPoint: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/kotlinLightMethodChecker,
+	ExtensionPoint: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/inheritDocTagContentProviders,
+	ExtensionPoint: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/sourceRootsExtractor,
+	ExtensionPoint: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/projectProvider,
+	ExtensionPoint: org.jetbrains.dokka.CoreExtensions/postActions,
+	ExtensionPoint: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/kotlinAnalysis,
+	Extension: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/multiModuleLinkResolver,
+	Extension: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/resolveLinkCommandHandler,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/replaceVersionCommandHandler,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/substitutionCommandHandler,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/addToNavigationCommandHandler,
+	Extension: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/baseLocationProviderFactory,
+	Extension: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/allModulesPageCreators,
+	Extension: org.jetbrains.dokka.base.DokkaBase/sourceSetIdUniquenessChecker,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/sourceRootIndependentChecker,
+	Extension: org.jetbrains.dokka.base.DokkaBase/pathToRootConsumer,
+	Extension: org.jetbrains.dokka.base.DokkaBase/replaceVersionConsumer,
+	Extension: org.jetbrains.dokka.base.DokkaBase/resolveLinkConsumer,
+	Extension: org.jetbrains.dokka.base.DokkaBase/defaultSamplesTransformer,
+	Extension: org.jetbrains.dokka.base.DokkaBase/sourceSetMerger,
+	Extension: org.jetbrains.dokka.base.DokkaBase/pageMerger,
+	Extension: org.jetbrains.dokka.base.DokkaBase/rootCreator,
+	Extension: org.jetbrains.dokka.base.DokkaBase/sourcesetDependencyAppender,
+	Extension: org.jetbrains.dokka.base.DokkaBase/packageListCreator,
+	Extension: org.jetbrains.dokka.base.DokkaBase/assetsInstaller,
+	Extension: org.jetbrains.dokka.base.DokkaBase/stylesInstaller,
+	Extension: org.jetbrains.dokka.base.DokkaBase/scriptsInstaller,
+	Extension: org.jetbrains.dokka.base.DokkaBase/customResourceInstaller,
+	Extension: org.jetbrains.dokka.base.DokkaBase/navigationPageInstaller,
+	Extension: org.jetbrains.dokka.base.DokkaBase/sourceLinksTransformer,
+	Extension: org.jetbrains.dokka.base.DokkaBase/baseSearchbarDataInstaller,
+	Extension: org.jetbrains.dokka.base.DokkaBase/fileWriter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/dokkaLocationProvider,
+	Extension: org.jetbrains.dokka.base.DokkaBase/javadocLocationProvider,
+	Extension: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/multimoduleLocationProvider,
+	Extension: org.jetbrains.dokka.base.DokkaBase/htmlRenderer,
+	Extension: org.jetbrains.dokka.base.DokkaBase/sameMethodNameMerger,
+	Extension: org.jetbrains.dokka.base.DokkaBase/fallbackMerger,
+	Extension: org.jetbrains.dokka.base.DokkaBase/docTagToContentConverter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/documentableToPageTranslator,
+	Extension: org.jetbrains.dokka.base.DokkaBase/extensionsExtractor,
+	Extension: org.jetbrains.dokka.base.DokkaBase/undocumentedCodeReporter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/inheritorsExtractor,
+	Extension: org.jetbrains.dokka.base.DokkaBase/actualTypealiasAdder,
+	Extension: org.jetbrains.dokka.base.DokkaBase/kotlinSignatureProvider,
+	Extension: org.jetbrains.dokka.base.DokkaBase/modulesAndPackagesDocumentation,
+	Extension: org.jetbrains.dokka.base.DokkaBase/inheritedEntriesVisbilityFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/obviousFunctionsVisbilityFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/documentableVisibilityFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/jvmMappedMethodsFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/kotlinArrayDocumentableReplacer,
+	Extension: org.jetbrains.dokka.base.DokkaBase/suppressedBySuppressTagDocumentableFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/suppressedDocumentableFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/deprecatedDocumentableFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/emptyPackagesFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/emptyModulesFilter,
+	Extension: org.jetbrains.dokka.base.DokkaBase/documentableMerger,
+	Extension: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/allModulesPageGeneration,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/projectNameSubstitutor,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/pathToRootSubstitutor,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/packageListProcessingStrategy,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/pagesSearchTemplateStrategy,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/sourcesetDependencyProcessingStrategy,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/directiveBasedHtmlTemplateProcessingStrategy,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/fallbackProcessingStrategy,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/defaultMultiModuleTemplateProcessor,
+	Extension: org.jetbrains.dokka.templates.TemplatingPlugin/defaultSubmoduleTemplateProcessor,
+	Extension: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/psiToDocumentableTranslator,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/symbolToDocumentableTranslator,
+	Extension: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/javaDocCommentParser,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/kotlinDocCommentParser,
+	Extension: org.jetbrains.dokka.analysis.java.JavaAnalysisPlugin/javaDocCommentCreator,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/kotlinDocCommentCreator,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/symbolSampleAnalysisEnvironmentCreator,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/symbolExternalDocumentableProvider,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/symbolInheritanceBuilder,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/kotlinToJavaMapper,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/moduleAndPackageDocumentationReader,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/symbolSyntheticDocumentableDetector,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/symbolFullClassHierarchyBuilder,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/symbolAnalyzerImpl,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/kotlinLightMethodChecker,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/inheritDocTagProvider,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/sourceRootsExtractor,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/projectProvider,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/disposeKotlinAnalysisPostAction,
+	Extension: org.jetbrains.dokka.analysis.kotlin.symbols.plugin.SymbolsAnalysisPlugin/defaultKotlinAnalysis
+]
+[INFO] Suppressed: [
+	Extension: org.jetbrains.dokka.base.DokkaBase/locationProvider by Extension: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/multimoduleLocationProvider,
+	Extension: org.jetbrains.dokka.base.DokkaBase/singleGeneration by Extension: org.jetbrains.dokka.allModulesPage.AllModulesPagePlugin/allModulesPageGeneration
+]
+[PROGRESS] Dokka is performing: index page for project
+[PROGRESS] Processing submodules
+[PROGRESS] Creating all modules page
+[PROGRESS] Transforming pages
+[PROGRESS] Rendering
+[PROGRESS] Processing multimodule
+[PROGRESS] Finish submodule processing
+[PROGRESS] Running post-actions
+[INFO] 
+
+ === TIME MEASUREMENT ===
+
+       Initializing plugins: 133
+      Processing submodules: 725
+  Creating all modules page: 934
+         Transforming pages:   0
+                  Rendering: 338
+     Processing multimodule:   1
+Finish submodule processing:  53
+
+[INFO] DokkaGeneratorWorker completed in PT2.983245352S
