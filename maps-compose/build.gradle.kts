@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.compose.compiler)
+    id("org.jetbrains.dokka")
     id("android.maps.compose.PublishingConventionPlugin")
 }
 
@@ -97,4 +98,10 @@ val generateArtifactIdFile = tasks.register("generateArtifactIdFile") {
 
 tasks.named("preBuild") {
     dependsOn(generateArtifactIdFile)
+}
+
+dokka {
+    dokkaSourceSets.configureEach {
+
+    }
 }
