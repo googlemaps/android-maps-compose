@@ -1,0 +1,56 @@
+{
+  "moduleName": "Android Maps Compose",
+  "moduleVersion": "6.12.2",
+  "outputDir": "/home/runner/work/android-maps-compose/android-maps-compose/docs/build/dokka/html",
+  "cacheRoot": null,
+  "offlineMode": false,
+  "sourceSets": [
+  ],
+  "pluginsClasspath": [
+    "/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.dokka/templating-plugin/2.1.0/c3c13a48444b9c22e5286e88581ce0334e25352d/templating-plugin-2.1.0.jar",
+    "/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.dokka/dokka-base/2.1.0/3379db5f1799a2ae6c98603214367743d4d6863f/dokka-base-2.1.0.jar",
+    "/home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.dokka/all-modules-page-plugin/2.1.0/aab1a50ed5cea24c393542e09bfc699decae910f/all-modules-page-plugin-2.1.0.jar"
+  ],
+  "pluginsConfiguration": [
+    {
+      "fqPluginName": "org.jetbrains.dokka.base.DokkaBase",
+      "serializationFormat": "JSON",
+      "values": "{\"customAssets\":[],\"customStyleSheets\":[],\"separateInheritedMembers\":false,\"mergeImplicitExpectActualDeclarations\":false}"
+    },
+    {
+      "fqPluginName": "org.jetbrains.dokka.versioning.VersioningPlugin",
+      "serializationFormat": "JSON",
+      "values": "{\"olderVersions\":[],\"renderVersionsNavigationOnAllPages\":true}"
+    }
+  ],
+  "modules": [
+    {
+      "name": "maps-compose",
+      "relativePathToOutputDirectory": "maps-compose",
+      "includes": [
+      ],
+      "sourceOutputDirectory": "/home/runner/work/android-maps-compose/android-maps-compose/maps-compose/build/dokka-module/html/module"
+    },
+    {
+      "name": "maps-compose-utils",
+      "relativePathToOutputDirectory": "maps-compose-utils",
+      "includes": [
+      ],
+      "sourceOutputDirectory": "/home/runner/work/android-maps-compose/android-maps-compose/maps-compose-utils/build/dokka-module/html/module"
+    },
+    {
+      "name": "maps-compose-widgets",
+      "relativePathToOutputDirectory": "maps-compose-widgets",
+      "includes": [
+      ],
+      "sourceOutputDirectory": "/home/runner/work/android-maps-compose/android-maps-compose/maps-compose-widgets/build/dokka-module/html/module"
+    }
+  ],
+  "failOnWarning": false,
+  "delayTemplateSubstitution": false,
+  "suppressObviousFunctions": true,
+  "includes": [
+  ],
+  "suppressInheritedMembers": false,
+  "finalizeCoroutines": false
+}

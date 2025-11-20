@@ -1,0 +1,1 @@
+{"@class":"org.jetbrains.dokka.base.templating.AddToSourcesetDependencies","moduleName":"maps-compose-utils","content":{":maps-compose-utils/debug":[],":maps-compose-utils/main":[],":maps-compose-utils/release":[]}}
