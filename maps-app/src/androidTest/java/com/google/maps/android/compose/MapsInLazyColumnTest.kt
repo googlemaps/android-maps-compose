@@ -69,7 +69,7 @@ class MapsInLazyColumnTests {
             )
 
             LaunchedEffect(Unit) {
-                val mapsLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
+                val mapsLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 assertTrue("Visible maps loaded", mapsLoaded)
             }
         }

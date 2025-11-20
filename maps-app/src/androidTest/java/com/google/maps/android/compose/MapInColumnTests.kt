@@ -68,7 +68,7 @@ class MapInColumnTests {
                 }
             )
         }
-        val mapLoaded = countDownLatch.await(30, TimeUnit.SECONDS)
+        val mapLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
         assertTrue("Map loaded", mapLoaded)
     }
 
