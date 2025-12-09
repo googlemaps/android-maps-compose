@@ -26,6 +26,15 @@ import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.time.Duration.Companion.milliseconds
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GooglePlayServicesMissingManifestValueException
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.MapsApiSettings
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockkStatic
+import io.mockk.Runs
+import io.mockk.just
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
@@ -118,5 +127,109 @@ class GoogleMapsInitializerTest {
         StrictMode.setVmPolicy(vmPolicy)
 
         assertThat(googleMapsInitializer.state.value).isEqualTo(InitializationState.UNINITIALIZED)
+    }
+
+    @Test
+    fun testInitializeSuccessState() = runTest {
+        // Arrange
+        mockkStatic(MapsInitializer::class)
+        assertThat(googleMapsInitializer.state.value).isEqualTo(InitializationState.UNINITIALIZED)
+
+        coEvery { MapsInitializer.initialize(any()) } returns ConnectionResult.SUCCESS
+
+        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        // Act
+        // Direct call pattern matching original successful test structure
+        googleMapsInitializer.initialize(context)
+
+        // Assert
+        assertThat(googleMapsInitializer.state.value).isEqualTo(InitializationState.SUCCESS)
+        coVerify(exactly = 1) {  MapsInitializer.initialize(
+            eq(context),
+            any(),
+            any(),
+        )}
+    }
+
+    @Test
+    fun testInitializeConcurrentCallsOnlyRunOnce() = runTest {
+        mockkStatic(MapsInitializer::class)
+        coEvery { MapsInitializer.initialize(any()) } returns ConnectionResult.SUCCESS
+
+        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        val job1 = launch { googleMapsInitializer.initialize(context) }
+        val job2 = launch { googleMapsInitializer.initialize(context) }
+
+        job1.join()
+        job2.join()
+
+        // Assert: The actual initialization method should only have been called once
+        coVerify(exactly = 1) {  MapsInitializer.initialize(
+            eq(context),
+            any(),
+            any(),
+        )}
+        assertThat(googleMapsInitializer.state.value).isEqualTo(InitializationState.SUCCESS)
+    }
+
+    @Test
+    fun testInitializeUnrecoverableFailureSetsFailureState() = runTest {
+        // Arrange
+        mockkStatic(MapsInitializer::class)
+        val error = GooglePlayServicesMissingManifestValueException()
+
+        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+        var caughtException: Throwable? = null
+
+        coEvery {
+            MapsInitializer.initialize(
+                eq(context),
+                isNull(),
+                any()
+            )
+        } throws error
+
+        // Act
+        val job = launch {
+            try {
+                googleMapsInitializer.initialize(context)
+            } catch (e: GooglePlayServicesMissingManifestValueException) {
+                caughtException = e
+            }
+        }
+        job.join()
+
+        // Assert: The exception was caught, and the state became FAILURE
+        assertThat(caughtException).isInstanceOf(GooglePlayServicesMissingManifestValueException::class.java)
+        assertThat(caughtException).isEqualTo(error)
+
+        // 2. Assert the state was set to FAILURE
+        assertThat(googleMapsInitializer.state.value).isEqualTo(InitializationState.FAILURE)
+    }
+
+    @Test
+    fun testInitializeSuccessAlsoSetsAttributionId() = runTest {
+        // Arrange: Mock MapsApiSettings locally
+        mockkStatic(MapsInitializer::class, MapsApiSettings::class)
+
+        coEvery { MapsInitializer.initialize(any()) } returns ConnectionResult.SUCCESS
+        coEvery { MapsApiSettings.addInternalUsageAttributionId(any(), any()) } just Runs
+
+        val context: Context = InstrumentationRegistry.getInstrumentation().targetContext
+
+        // Act
+        // Direct call pattern matching original successful test structure
+        googleMapsInitializer.initialize(context)
+
+        // Assert: Verify both the primary initialization and the attribution call occurred
+        coVerify(exactly = 1) {
+            MapsInitializer.initialize(
+                eq(context),
+                any(),
+                any(),
+            )
+        }
+        coVerify(exactly = 1) { MapsApiSettings.addInternalUsageAttributionId(any(), any()) }
+        assertThat(googleMapsInitializer.state.value).isEqualTo(InitializationState.SUCCESS)
     }
 }

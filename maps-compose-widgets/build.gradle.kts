@@ -4,6 +4,7 @@ plugins {
     id("kotlin-android")
     alias (libs.plugins.compose.compiler)
     id("android.maps.compose.PublishingConventionPlugin")
+    id("org.jetbrains.dokka")
 }
 
 android {
@@ -22,7 +23,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

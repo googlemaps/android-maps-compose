@@ -1,7 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    val kotlinVersion by extra(libs.versions.kotlin.get())
-    val androidxTestVersion by extra(libs.versions.androidxtest.get())
     repositories {
         google()
         mavenCentral()
@@ -16,9 +14,9 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.dokka) apply true
+    id("org.jetbrains.dokka") version "2.1.0"
     alias(libs.plugins.compose.compiler) apply false
-    id("com.autonomousapps.dependency-analysis") version "2.0.0"
+    id("com.autonomousapps.dependency-analysis") version "3.4.1"
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
 
@@ -34,10 +32,5 @@ val projectArtifactId by extra { project: Project ->
 
 allprojects {
     group = "com.google.maps.android"
-    version = "6.12.1"
-    val projectArtifactId by extra { project.name }
-}
-
-tasks.register("clean", Delete::class) {
-    delete(rootProject.layout.buildDirectory)
+    version = "6.12.2"
 }

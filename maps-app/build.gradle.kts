@@ -28,7 +28,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -56,9 +56,17 @@ android {
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
-    testOptions {
-        screenshotTests {
-            imageDifferenceThreshold = 0.035f // 3.5%
+    screenshotTests {
+        imageDifferenceThreshold = 0.035f // 3.5%
+    }
+
+
+    packaging {
+        resources {
+            pickFirsts += listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md"
+            )
         }
     }
 }
@@ -90,6 +98,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.compose.ui)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.mockk.android)
 
     testImplementation(libs.test.junit)
     testImplementation(libs.robolectric)

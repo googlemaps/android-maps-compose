@@ -1,9 +1,9 @@
-import org.gradle.kotlin.dsl.sourceSets
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.compose.compiler)
+    id("org.jetbrains.dokka")
     id("android.maps.compose.PublishingConventionPlugin")
 }
 
@@ -16,7 +16,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 23
     }
 
     compileOptions {
@@ -98,4 +98,10 @@ val generateArtifactIdFile = tasks.register("generateArtifactIdFile") {
 
 tasks.named("preBuild") {
     dependsOn(generateArtifactIdFile)
+}
+
+dokka {
+    dokkaSourceSets.configureEach {
+
+    }
 }

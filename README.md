@@ -29,14 +29,14 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:6.12.1'
+    implementation 'com.google.maps.android:maps-compose:6.12.2'
 
     // Optionally, you can include the Compose utils library for Clustering,
     // Street View metadata checks, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:6.12.1'
+    implementation 'com.google.maps.android:maps-compose-utils:6.12.2'
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:6.12.1'
+    implementation 'com.google.maps.android:maps-compose-widgets:6.12.2'
 }
 ```
 
@@ -518,7 +518,7 @@ This library is not a Google Maps Platform Core Service. Therefore, the Google M
 
 ## Support
 
-This library is offered via an open source [license]. It is not governed by the Google Maps Platform Support [Technical Support Services Guidelines, the SLA, or the [Deprecation Policy]. However, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service.
+This library is offered via an open source [license]. It is not governed by the Google Maps Platform Support [Technical Support Services Guidelines], the [SLA], or the [Deprecation Policy]. However, any Google Maps Platform services used by the library remain subject to the Google Maps Platform Terms of Service.
 
 This library adheres to [semantic versioning] to indicate when backwards-incompatible changes are introduced. Accordingly, while the library is in version 0.x, backwards-incompatible changes may be introduced at any time.
 

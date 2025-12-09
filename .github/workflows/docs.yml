@@ -43,10 +43,10 @@ jobs:
     # Run dokka and create tar
     - name: Generate documentation
       run: |
-        ./gradlew dokkaHtmlMultiModule
+        ./gradlew docs:dokkaGenerate
 
         echo "Creating tar for generated docs"
-        cd $GITHUB_WORKSPACE/build/dokka/htmlMultiModule && tar cvf ~/maps-compose-docs.tar .
+        cd $GITHUB_WORKSPACE/docs/build/dokka/html && tar cvf ~/maps-compose-docs.tar .
 
         echo "Unpacking tar into gh-pages branch"
         git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
