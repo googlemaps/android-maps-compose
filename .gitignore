@@ -18,3 +18,7 @@ build/
 local.properties
 .java-version
 secrets.properties
+
+# This covers new IDEs, like Antigravity
+.vscode/
+**/bin/
