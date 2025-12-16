@@ -21,7 +21,9 @@ permissions:
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'googlemaps-bot' }}
+    if: >
+      github.actor == 'googlemaps-bot' && 
+      github.event.pull_request.title == 'docs: Update docs'
     env:
       PR_URL: ${{github.event.pull_request.html_url}}
       GITHUB_TOKEN: ${{secrets.SYNCED_GITHUB_TOKEN_REPO}}
