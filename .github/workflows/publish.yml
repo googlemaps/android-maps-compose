@@ -22,14 +22,6 @@ jobs:
           gpg --quiet --output $GITHUB_WORKSPACE/release.gpg --dearmor ./release.asc
 
           echo "Build and publish"
-          # Inject secrets into gradle.properties
-          # Note: It is often safer to pass these as ./gradlew -P... properties or env vars if the build script supports it, 
-          # but we are replicating the previous behavior of sed replacements to minimize build script changes unless necessary.
-          # However, typical best practice is environment variables.
-          # Let's check how build.gradle.kts and gradle.properties interact.
-          # The previous workflow used sed to replace values in gradle.properties.
-          # We will replicate that for stability.
-          
           sed -i -e "s,mavenCentralUsername=,mavenCentralUsername=$SONATYPE_TOKEN_USERNAME,g" gradle.properties
           SONATYPE_TOKEN_PASSWORD_ESCAPED=$(printf '%s\n' "$SONATYPE_TOKEN_PASSWORD" | sed -e 's/[\/&]/\\&/g')
           sed -i -e "s,mavenCentralPassword=,mavenCentralPassword=$SONATYPE_TOKEN_PASSWORD_ESCAPED,g" gradle.properties

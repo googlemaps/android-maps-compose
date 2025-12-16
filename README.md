@@ -29,14 +29,18 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
+    // {x-release-please-start-version}
     implementation 'com.google.maps.android:maps-compose:6.12.2'
-
+    // {x-release-please-end}
     // Optionally, you can include the Compose utils library for Clustering,
     // Street View metadata checks, etc.
+    // {x-release-please-start-version}
     implementation 'com.google.maps.android:maps-compose-utils:6.12.2'
-
+    // {x-release-please-end}
     // Optionally, you can include the widgets library for ScaleBar, etc.
+    // {x-release-please-start-version}
     implementation 'com.google.maps.android:maps-compose-widgets:6.12.2'
+    // {x-release-please-end}
 }
 ```
 
