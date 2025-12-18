@@ -500,7 +500,7 @@ The colors of the text, line, and shadow are also all configurable (e.g., based 
 This library calls the MapsApiSettings.addInternalUsageAttributionId method, which helps Google
 understand which libraries and samples are helpful to developers and is optional. Instructions for
 opting out of the identifier are provided in
-[reference documentation](maps-compose/src/main/java/com/google/maps/android/compose/internal/MapsApiAttribution.kt).
+[reference documentation](maps-compose/src/main/java/com/google/maps/android/compose/internal/GoogleMapsInitializer.kt#L77-L82).
 
 ## Contributing
 
