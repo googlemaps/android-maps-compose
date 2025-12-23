@@ -45,7 +45,7 @@ jobs:
       run: ./gradlew build jacocoTestReport -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:testDebugScreenshotTest -x :maps-app:generateReleaseScreenshotTestConfig -x :maps-app:testReleaseScreenshotTest --stacktrace
 
     - name: Run Screenshot Tests
-      run: ./gradlew validateDebugScreenshotTest
+      run: ./gradlew :maps-app:validateDebugScreenshotTest
 
     - name: Upload build reports
       uses: actions/upload-artifact@v4

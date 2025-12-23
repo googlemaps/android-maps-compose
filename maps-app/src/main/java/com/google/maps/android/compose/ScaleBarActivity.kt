@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.android.tools.screenshot.PreviewTest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
@@ -130,27 +129,5 @@ class ScaleBarActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-@PreviewTest
-@Composable
-fun PreviewScaleBar() {
-    val cameraPositionState = remember {
-        CameraPositionState(
-            position = CameraPosition(
-                LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
-                12f,
-                0f,
-                0f
-            )
-        )
-    }
-
-    MapsComposeSampleTheme {
-        ScaleBar(
-            modifier = Modifier.padding(end = 4.dp),
-            cameraPositionState = cameraPositionState
-        )
     }
 }

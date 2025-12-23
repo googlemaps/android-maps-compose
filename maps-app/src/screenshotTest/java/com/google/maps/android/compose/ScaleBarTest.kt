@@ -14,50 +14,48 @@ import com.google.maps.android.compose.widgets.DisappearingScaleBar
 import com.google.maps.android.compose.widgets.ScaleBar
 
 
-class ScaleBarTest() {
-    @PreviewTest
-    @Preview(showBackground = true)
-    @Composable
-    fun PreviewScaleBar() {
-        val cameraPositionState = remember {
-            CameraPositionState(
-                position = CameraPosition(
-                    LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
-                    12f,
-                    0f,
-                    0f
-                )
+@PreviewTest
+@Preview(showBackground = true)
+@Composable
+fun PreviewScaleBar() {
+    val cameraPositionState = remember {
+        CameraPositionState(
+            position = CameraPosition(
+                LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
+                12f,
+                0f,
+                0f
             )
-        }
-
-        MapsComposeSampleTheme {
-            ScaleBar(
-                modifier = Modifier.padding(end = 4.dp),
-                cameraPositionState = cameraPositionState
-            )
-        }
+        )
     }
 
-    @PreviewTest
-    @Preview(showBackground = true)
-    @Composable
-    fun PreviewDisappearingScaleBar() {
-        val cameraPositionState = remember {
-            CameraPositionState(
-                position = CameraPosition(
-                    LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
-                    12f,
-                    0f,
-                    0f
-                )
-            )
-        }
+    MapsComposeSampleTheme {
+        ScaleBar(
+            modifier = Modifier.padding(end = 4.dp),
+            cameraPositionState = cameraPositionState
+        )
+    }
+}
 
-        MapsComposeSampleTheme {
-            DisappearingScaleBar(
-                modifier = Modifier.padding(end = 4.dp),
-                cameraPositionState = cameraPositionState
+@PreviewTest
+@Preview(showBackground = true)
+@Composable
+fun PreviewDisappearingScaleBar() {
+    val cameraPositionState = remember {
+        CameraPositionState(
+            position = CameraPosition(
+                LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
+                12f,
+                0f,
+                0f
             )
-        }
+        )
+    }
+
+    MapsComposeSampleTheme {
+        DisappearingScaleBar(
+            modifier = Modifier.padding(end = 4.dp),
+            cameraPositionState = cameraPositionState
+        )
     }
 }
