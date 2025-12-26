@@ -59,7 +59,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.android.tools.screenshot.PreviewTest
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -433,7 +432,6 @@ private fun DebugView(
 }
 
 
-@PreviewTest
 @Composable
 fun GoogleMapViewPreview() {
     MapsComposeSampleTheme {

@@ -84,7 +84,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.compose.material.icons.extended.android)
 
-    implementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.screenshot.validation.api)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.leakcanary.android)
 
