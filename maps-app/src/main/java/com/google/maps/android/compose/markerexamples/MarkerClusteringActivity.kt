@@ -2,6 +2,7 @@ package com.google.maps.android.compose.markerexamples
 
 import android.os.Bundle
 import android.util.Log
+import java.util.Locale
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,11 +18,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -177,7 +178,7 @@ private fun CustomUiClustering(items: List<MyItem>) {
         clusterContent = { cluster ->
             CircleContent(
                 modifier = Modifier.size(40.dp),
-                text = "%,d".format(cluster.size),
+                text = "%,d".format(Locale.getDefault(), cluster.size),
                 color = Color.Blue,
             )
         },
@@ -210,7 +211,7 @@ fun CustomRendererClustering(items: List<MyItem>) {
         clusterContent = { cluster ->
             CircleContent(
                 modifier = Modifier.size(40.dp),
-                text = "%,d".format(cluster.size),
+                text = "%,d".format(Locale.getDefault(), cluster.size),
                 color = Color.Green,
             )
         },
@@ -306,12 +307,12 @@ private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Mo
     Button(
         modifier = modifier.padding(4.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.onPrimary,
-            contentColor = MaterialTheme.colors.primary
+            containerColor = MaterialTheme.colorScheme.onPrimary,
+            contentColor = MaterialTheme.colorScheme.primary
         ),
         onClick = onClick
     ) {
-        Text(text = text, style = MaterialTheme.typography.body1)
+        Text(text = text, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
