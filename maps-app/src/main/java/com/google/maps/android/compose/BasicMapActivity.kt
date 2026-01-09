@@ -38,12 +38,12 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -123,7 +123,7 @@ class BasicMapActivity : ComponentActivity() {
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
-                                .background(MaterialTheme.colors.background)
+                                .background(MaterialTheme.colorScheme.background)
                                 .wrapContentSize()
                         )
                     }
@@ -255,8 +255,8 @@ fun GoogleMapView(
 
             Circle(
                 center = circleCenter,
-                fillColor = MaterialTheme.colors.secondary,
-                strokeColor = MaterialTheme.colors.secondaryVariant,
+                fillColor = MaterialTheme.colorScheme.secondary,
+                strokeColor = MaterialTheme.colorScheme.secondary,
                 radius = 1000.0,
             )
 
@@ -400,12 +400,12 @@ private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Mo
     Button(
         modifier = modifier.padding(4.dp),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.onPrimary,
-            contentColor = MaterialTheme.colors.primary
+            containerColor = MaterialTheme.colorScheme.onPrimary,
+            contentColor = MaterialTheme.colorScheme.primary
         ),
         onClick = onClick
     ) {
-        Text(text = text, style = MaterialTheme.typography.body1)
+        Text(text = text, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
