@@ -16,8 +16,10 @@ package com.google.maps.android.compose
 
 import android.graphics.Point
 import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -44,6 +46,7 @@ class ScaleBarTests {
     val composeTestRule = createComposeRule()
 
     private lateinit var cameraPositionState: CameraPositionState
+    private lateinit var density: Density
 
     private fun initScaleBar(initialZoom: Float, initialPosition: LatLng) {
         check(hasValidApiKey) { "Maps API key not specified" }
@@ -55,6 +58,7 @@ class ScaleBarTests {
         )
 
         composeTestRule.setContent {
+            density = LocalDensity.current
             Box {
                 GoogleMap(
                     cameraPositionState = cameraPositionState,
@@ -87,7 +91,9 @@ class ScaleBarTests {
             val projection = cameraPositionState.projection
             projection?.let { proj ->
                 val widthInDp = 65.dp
-                val widthInPixels = widthInDp.value.toInt()
+                val widthInPixels = with(density) {
+                    widthInDp.toPx().toInt()
+                }
 
                 val upperLeftLatLng = proj.fromScreenLocation(Point(0, 0))
                 val upperRightLatLng = proj.fromScreenLocation(Point(0, widthInPixels))

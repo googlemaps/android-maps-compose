@@ -50,8 +50,7 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
-import com.google.maps.android.compose.internal.InitializationState
-import com.google.maps.android.compose.internal.LocalGoogleMapsInitializer
+
 import com.google.maps.android.ktx.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -113,30 +112,17 @@ public fun GoogleMap(
         return
     }
 
-    val googleMapsInitializer = LocalGoogleMapsInitializer.current
-    val initializationState by googleMapsInitializer.state
-
-    if (initializationState != InitializationState.SUCCESS) {
-        val context = LocalContext.current
-        LaunchedEffect(Unit) {
-            // Coroutine to initialize Google Maps SDK.
-            // This will run once when the composable is first displayed.
-            googleMapsInitializer.initialize(context)
-        }
+    // rememberUpdatedState and friends are used here to make these values observable to
+    // the subcomposition without providing a new content function each recomposition
+    val mapClickListeners = remember { MapClickListeners() }.also {
+        it.indoorStateChangeListener = indoorStateChangeListener
+        it.onMapClick = onMapClick
+        it.onMapLongClick = onMapLongClick
+        it.onMapLoaded = onMapLoaded
+        it.onMyLocationButtonClick = onMyLocationButtonClick
+        it.onMyLocationClick = onMyLocationClick
+        it.onPOIClick = onPOIClick
     }
-
-    if (initializationState == InitializationState.SUCCESS) {
-        // rememberUpdatedState and friends are used here to make these values observable to
-        // the subcomposition without providing a new content function each recomposition
-        val mapClickListeners = remember { MapClickListeners() }.also {
-            it.indoorStateChangeListener = indoorStateChangeListener
-            it.onMapClick = onMapClick
-            it.onMapLongClick = onMapLongClick
-            it.onMapLoaded = onMapLoaded
-            it.onMyLocationButtonClick = onMyLocationButtonClick
-            it.onMyLocationClick = onMyLocationClick
-            it.onPOIClick = onPOIClick
-        }
 
         val mapUpdaterState = remember {
             MapUpdaterState(
@@ -228,7 +214,6 @@ public fun GoogleMap(
                     )
                 }
             })
-    }
 }
 
 /**

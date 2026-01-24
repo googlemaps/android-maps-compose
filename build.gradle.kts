@@ -36,3 +36,10 @@ allprojects {
     version = "7.0.0"
     // {x-release-please-end}
 }
+
+tasks.register<Exec>("installAndLaunch") {
+    description = "Installs and launches the demo app."
+    group = "install"
+    dependsOn(":maps-app:installDebug")
+    commandLine("adb", "shell", "am", "start", "-n", "com.google.maps.android.compose/.MainActivity")
+}

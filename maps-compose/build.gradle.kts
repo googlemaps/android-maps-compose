@@ -60,6 +60,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.startup.runtime)
     implementation(libs.kotlin)
     implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.ktx.std)
@@ -76,7 +77,7 @@ val attributionId = "gmp_git_androidmapscompose_v$version"
 
 val generateArtifactIdFile = tasks.register("generateArtifactIdFile") {
     val outputDir = layout.buildDirectory.dir("generated/source/artifactId")
-    val packageName = "com.google.maps.android.compose.meta"
+    val packageName = "com.google.maps.android.compose.utils.meta"
     val packagePath = packageName.replace('.', '/')
     val outputFile = outputDir.get().file("$packagePath/ArtifactId.kt").asFile
 
