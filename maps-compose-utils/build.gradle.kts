@@ -13,10 +13,10 @@ android {
     }
 
     namespace = "com.google.maps.android.compose.utils"
-    compileSdk = 36
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.androidMinSdk.get().toInt()
     }
 
     compileOptions {

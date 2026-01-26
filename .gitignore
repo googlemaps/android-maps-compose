@@ -21,4 +21,5 @@ secrets.properties
 
 # This covers new IDEs, like Antigravity
 .vscode/
-**/bin/
+**/bin/BOB_DATA/
+build-logic/**/bin/
