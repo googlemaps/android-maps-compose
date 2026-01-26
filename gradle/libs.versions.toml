@@ -1,8 +1,13 @@
 # This file is organized into functional groups: Base, Android, Material, Google Maps Platform (GMP), and Testing.
 # Please maintain this structure when adding new dependencies or versions.
+
 [versions]
 # Base
-agp = "8.13.2" # Do not upgrade to 9.0.0 yet
+androidCompileSdk = "36"
+androidMinSdk = "23"
+androidTargetSdk = "36"
+
+agp = "9.0.0"
 dokka = "2.1.0"
 gradleMavenPublishPlugin = "0.36.0"
 jacoco-plugin = "0.2.1"
@@ -11,9 +16,6 @@ kotlinxCoroutines = "1.10.2"
 
 # Android
 activitycompose = "1.12.2"
-androidCompileSdk = "36"
-androidMinSdk = "23"
-androidTargetSdk = "36"
 androidx-core = "1.17.0"
 androidx-startup = "1.2.0"
 compose-bom = "2026.01.00"
@@ -39,7 +41,7 @@ mockk = "1.14.9"
 mockkAndroid = "1.14.9"
 org-jacoco-core = "0.8.14"
 robolectric = "4.16.1"
-screenshot = "0.0.1-alpha12" # Do not upgrade to alpha13 (broken)
+screenshot = "0.0.1-alpha13"
 truth = "1.4.5"
 
 [libraries]
