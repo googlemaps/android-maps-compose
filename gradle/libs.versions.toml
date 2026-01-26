@@ -7,10 +7,10 @@ androidCompileSdk = "36"
 androidMinSdk = "23"
 androidTargetSdk = "36"
 
-agp = "9.0.0"
+agp = "8.13.1"
 dokka = "2.1.0"
 gradleMavenPublishPlugin = "0.36.0"
-kotlin = "2.3.0"
+kotlin = "2.2.21"
 kotlinxCoroutines = "1.10.2"
 
 # Android
@@ -39,8 +39,9 @@ leakcanaryAndroid = "2.14"
 mockk = "1.14.9"
 mockkAndroid = "1.14.9"
 org-jacoco-core = "0.8.14"
+jacoco-plugin = "0.2.1"
 robolectric = "4.16.1"
-screenshot = "0.0.1-alpha13"
+screenshot = "0.0.1-alpha12"
 truth = "1.4.5"
 
 [libraries]
@@ -81,6 +82,7 @@ androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", vers
 androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitktx" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxtest" }
+jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version.ref = "jacoco-plugin" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
