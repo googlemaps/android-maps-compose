@@ -10,7 +10,6 @@ androidTargetSdk = "36"
 agp = "9.0.0"
 dokka = "2.1.0"
 gradleMavenPublishPlugin = "0.36.0"
-jacoco-plugin = "0.2.1"
 kotlin = "2.3.0"
 kotlinxCoroutines = "1.10.2"
 
@@ -49,7 +48,6 @@ truth = "1.4.5"
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "gradleMavenPublishPlugin" }
-jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version.ref = "jacoco-plugin", version.require = "0.2.1" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }

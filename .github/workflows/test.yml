@@ -42,7 +42,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Build modules
-      run: ./gradlew build jacocoTestReport -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:generateReleaseScreenshotTestConfig --stacktrace
+      run: ./gradlew build -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:generateReleaseScreenshotTestConfig --stacktrace
 
     - name: Run Screenshot Tests
       run: ./gradlew :maps-app:validateDebugScreenshotTest
