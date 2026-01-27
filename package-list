@@ -3,7 +3,6 @@ $dokka.linkExtension:html
 
 module:maps-compose
 com.google.maps.android.compose
-com.google.maps.android.compose.internal
 com.google.maps.android.compose.streetview
 module:maps-compose-utils
 com.google.maps.android.compose.clustering
