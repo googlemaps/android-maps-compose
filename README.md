@@ -497,10 +497,21 @@ The colors of the text, line, and shadow are also all configurable (e.g., based 
 
 ## Internal usage attribution ID
 
-This library calls the MapsApiSettings.addInternalUsageAttributionId method, which helps Google
-understand which libraries and samples are helpful to developers and is optional. Instructions for
-opting out of the identifier are provided in
-[reference documentation](maps-compose/src/main/java/com/google/maps/android/compose/internal/GoogleMapsInitializer.kt#L77-L82).
+This library calls the `addInternalUsageAttributionId` method, which helps Google understand which libraries and samples are helpful to developers and is optional. Instructions for opting out of the identifier are provided below.
+
+If you wish to disable this, you can do so by removing the initializer in your `AndroidManifest.xml` using the `tools:node="remove"` attribute:
+
+```xml
+<provider
+    android:name="androidx.startup.InitializationProvider"
+    android:authorities="${applicationId}.androidx-startup"
+    android:exported="false"
+    tools:node="merge">
+    <meta-data
+        android:name="com.google.maps.android.compose.utils.attribution.AttributionIdInitializer"
+        tools:node="remove" />
+</provider>
+```
 
 ## Contributing
 

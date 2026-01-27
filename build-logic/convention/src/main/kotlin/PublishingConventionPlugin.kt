@@ -7,6 +7,7 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
+import org.gradle.testing.jacoco.tasks.JacocoReport
 
 class PublishingConventionPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -20,22 +21,40 @@ class PublishingConventionPlugin : Plugin<Project> {
 
     private fun Project.applyPlugins() {
         apply(plugin = "com.android.library")
-        apply(plugin = "com.mxalbert.gradle.jacoco-android")
         apply(plugin = "org.jetbrains.dokka")
+        apply(plugin = "org.gradle.jacoco")
         apply(plugin = "com.vanniktech.maven.publish")
     }
 
     private fun Project.configureJacoco() {
         configure<JacocoPluginExtension> {
-            toolVersion = "0.8.7"
-
+            toolVersion = "0.8.11" // Compatible with newer JDKs
         }
 
-        tasks.withType<Test>().configureEach {
-            extensions.configure(JacocoTaskExtension::class.java) {
-                isIncludeNoLocationClasses = true
-                excludes = listOf("jdk.internal.*")
-            }
+        // AGP 9.0+ built-in Jacoco support or manual configuration.
+        // We create a "jacocoTestReport" task to match the CI workflow.
+        
+        tasks.register<JacocoReport>("jacocoTestReport") {
+             // Dependencies
+             dependsOn("testDebugUnitTest")
+             
+             reports {
+                 xml.required.set(true)
+                 html.required.set(true)
+             }
+             
+             // Source directories
+             val mainSrc = "${layout.projectDirectory}/src/main/java"
+             sourceDirectories.setFrom(files(mainSrc))
+             
+             // Class directories - we need to point to where Kotlin compiles to
+             val debugTree = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug")
+             classDirectories.setFrom(files(debugTree))
+             
+             // Execution data from the unit test task
+             executionData.setFrom(fileTree(layout.buildDirectory.get()) {
+                 include("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
+             })
         }
     }
 
