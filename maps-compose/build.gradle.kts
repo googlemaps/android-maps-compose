@@ -40,6 +40,13 @@ android {
     }
 
     sourceSets["main"].java.srcDir("build/generated/source/artifactId")
+
+    buildTypes {
+        getByName("debug") {
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+        }
+    }
 }
 
 composeCompiler {

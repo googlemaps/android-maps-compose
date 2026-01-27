@@ -7,10 +7,10 @@ androidCompileSdk = "36"
 androidMinSdk = "23"
 androidTargetSdk = "36"
 
-agp = "8.13.1"
+agp = "9.0.0"
 dokka = "2.1.0"
 gradleMavenPublishPlugin = "0.36.0"
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 kotlinxCoroutines = "1.10.2"
 
 # Android
@@ -41,7 +41,7 @@ mockkAndroid = "1.14.9"
 org-jacoco-core = "0.8.14"
 jacoco-plugin = "0.2.1"
 robolectric = "4.16.1"
-screenshot = "0.0.1-alpha12"
+screenshot = "0.0.1-alpha13"
 truth = "1.4.5"
 
 [libraries]
