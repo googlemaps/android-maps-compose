@@ -37,7 +37,6 @@ junit = "4.13.2"
 junitktx = "1.3.0"
 leakcanaryAndroid = "2.14"
 mockk = "1.14.9"
-mockkAndroid = "1.14.9"
 org-jacoco-core = "0.8.14"
 jacoco-plugin = "0.2.1"
 robolectric = "4.16.1"
@@ -86,7 +85,8 @@ jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
+#mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
+mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 org-jacoco-core = { module = "org.jacoco:org.jacoco.core", version.ref = "org-jacoco-core" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }

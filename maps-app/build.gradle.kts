@@ -86,7 +86,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.compose.material.icons.extended.android)
 
-    screenshotTestImplementation(libs.screenshot.validation.api)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.leakcanary.android)
 
@@ -102,23 +101,24 @@ dependencies {
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.mockk.android)
 
-    testImplementation(libs.test.junit)
-    testImplementation(libs.robolectric)
+    testImplementation(kotlin("test"))
     testImplementation(libs.androidx.test.core)
-    testImplementation(libs.truth)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.test.junit)
+    testImplementation(libs.truth)
 
+    screenshotTestImplementation(kotlin("test"))
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+    screenshotTestImplementation(libs.mockk.android)
+    screenshotTestImplementation(libs.screenshot.validation.api)
 
     // Instead of the lines below, regular apps would load these libraries from Maven according to
     // the README installation instructions
     implementation(project(":maps-compose"))
     implementation(project(":maps-compose-widgets"))
     implementation(project(":maps-compose-utils"))
-
-    testImplementation(libs.mockk)
-    testImplementation(libs.mockk.android)
-    testImplementation(kotlin("test"))
 }
 
 secrets {
