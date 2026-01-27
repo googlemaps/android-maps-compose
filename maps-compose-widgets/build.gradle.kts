@@ -42,7 +42,7 @@ android {
             jvmTarget.set(JvmTarget.JVM_1_8)
             freeCompilerArgs.addAll(
                 "-Xexplicit-api=strict",
-                "-Xopt-in=kotlin.RequiresOptIn"
+                "-opt-in=kotlin.RequiresOptIn"
             )
         }
     }
