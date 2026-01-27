@@ -27,6 +27,8 @@ android {
     namespace = "com.google.maps.android.compose"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
+    useLibrary("org.apache.http.legacy")
+
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
