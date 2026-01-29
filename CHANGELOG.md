@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.0.1](https://github.com/googlemaps/android-maps-compose/compare/v8.0.0...v8.0.1) (2026-01-29)
+
+
+### Bug Fixes
+
+* GroundOverlay ([#826](https://github.com/googlemaps/android-maps-compose/issues/826)) ([f54d4ea](https://github.com/googlemaps/android-maps-compose/commit/f54d4eaf8f61c5da725dd80898d42fa9adf8e126))
+
 ## [8.0.0](https://github.com/googlemaps/android-maps-compose/compare/v7.0.0...v8.0.0) (2026-01-27)
 
 
