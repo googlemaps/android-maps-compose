@@ -72,6 +72,9 @@
   <string name="tile_overlay_activity">Tile Overlay</string>
   <string name="tile_overlay_activity_description">Adding a tile overlay to the map.</string>
 
+  <string name="ground_overlay_activity">Ground Overlay</string>
+  <string name="ground_overlay_activity_description">Adding a ground overlay to the map.</string>
+
   <!-- Demo group titles -->
   <string name="map_types_title">Map Types</string>
   <string name="map_features_title">Map Features</string>
