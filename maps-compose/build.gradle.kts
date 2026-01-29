@@ -13,10 +13,10 @@ android {
     }
 
     namespace = "com.google.maps.android.compose"
-    compileSdk = 36
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 23
+        minSdk = libs.versions.androidMinSdk.get().toInt()
     }
 
     compileOptions {
@@ -34,12 +34,19 @@ android {
             jvmTarget.set(JvmTarget.JVM_1_8)
             freeCompilerArgs.addAll(
                 "-Xexplicit-api=strict",
-                "-Xopt-in=kotlin.RequiresOptIn"
+                "-opt-in=kotlin.RequiresOptIn"
             )
         }
     }
 
     sourceSets["main"].java.srcDir("build/generated/source/artifactId")
+
+    buildTypes {
+        getByName("debug") {
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+        }
+    }
 }
 
 composeCompiler {
@@ -60,6 +67,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.startup.runtime)
     implementation(libs.kotlin)
     implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.ktx.std)
@@ -76,7 +84,7 @@ val attributionId = "gmp_git_androidmapscompose_v$version"
 
 val generateArtifactIdFile = tasks.register("generateArtifactIdFile") {
     val outputDir = layout.buildDirectory.dir("generated/source/artifactId")
-    val packageName = "com.google.maps.android.compose.meta"
+    val packageName = "com.google.maps.android.compose.utils.meta"
     val packagePath = packageName.replace('.', '/')
     val outputFile = outputDir.get().file("$packagePath/ArtifactId.kt").asFile
 

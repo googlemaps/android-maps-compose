@@ -25,11 +25,13 @@ android {
     }
 
     namespace = "com.google.maps.android.compose"
-    compileSdk = 36
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
+
+    useLibrary("org.apache.http.legacy")
 
     defaultConfig {
-        minSdk = 23
-        targetSdk = 36
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+        targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -73,7 +75,7 @@ android {
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.activity)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material3)
@@ -84,7 +86,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.compose.material.icons.extended.android)
 
-    screenshotTestImplementation(libs.screenshot.validation.api)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.leakcanary.android)
 
@@ -100,23 +101,24 @@ dependencies {
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.mockk.android)
 
-    testImplementation(libs.test.junit)
-    testImplementation(libs.robolectric)
+    testImplementation(kotlin("test"))
     testImplementation(libs.androidx.test.core)
-    testImplementation(libs.truth)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.test.junit)
+    testImplementation(libs.truth)
 
+    screenshotTestImplementation(kotlin("test"))
     screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+    screenshotTestImplementation(libs.mockk.android)
+    screenshotTestImplementation(libs.screenshot.validation.api)
 
     // Instead of the lines below, regular apps would load these libraries from Maven according to
     // the README installation instructions
     implementation(project(":maps-compose"))
     implementation(project(":maps-compose-widgets"))
     implementation(project(":maps-compose-utils"))
-
-    testImplementation(libs.mockk)
-    testImplementation(libs.mockk.android)
-    testImplementation(kotlin("test"))
 }
 
 secrets {

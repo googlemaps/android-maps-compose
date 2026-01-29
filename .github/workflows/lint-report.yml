@@ -32,6 +32,9 @@ jobs:
           distribution: 'adopt'
           java-version: '21'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
       - name: Run Android Lint
         run: ./gradlew lint
 

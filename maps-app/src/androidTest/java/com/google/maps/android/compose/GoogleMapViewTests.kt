@@ -31,8 +31,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.common.truth.Truth.assertThat
 import com.google.maps.android.compose.LatLngSubject.Companion.assertThat
-import com.google.maps.android.compose.internal.DefaultGoogleMapsInitializer
-import com.google.maps.android.compose.internal.InitializationState
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -54,13 +52,7 @@ class GoogleMapViewTests {
         val countDownLatch = CountDownLatch(1)
 
         val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
-        val googleMapsInitializer = DefaultGoogleMapsInitializer()
 
-        runBlocking {
-            googleMapsInitializer.initialize(appContext)
-        }
-
-        assertThat(googleMapsInitializer.state.value).isEqualTo(InitializationState.SUCCESS)
 
         composeTestRule.setContent {
             GoogleMapView(
