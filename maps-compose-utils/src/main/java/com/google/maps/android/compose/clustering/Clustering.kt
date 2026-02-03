@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.UiComposable
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.GoogleMap
 import com.google.maps.android.clustering.Cluster
@@ -42,6 +43,10 @@ import kotlinx.coroutines.launch
  * window of a non-clustered item
  * @param clusterContent an optional Composable that is rendered for each [Cluster].
  * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ * @param clusterContentAnchor the anchor for the cluster image
+ * @param clusterItemContentAnchor the anchor for the non-clustered item image
+ * @param clusterContentZIndex the z-index of the cluster
+ * @param clusterItemContentZIndex the z-index of the non-clustered item
  * @param clusterRenderer an optional ClusterRenderer that can be used to specify the algorithm used by the rendering.
  */
 @Composable
@@ -85,10 +90,21 @@ public fun <T : ClusterItem> Clustering(
     onClusterItemInfoWindowLongClick: (T) -> Unit = { },
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
 ) {
-    val clusterManager = rememberClusterManager(clusterContent, clusterItemContent, clusterRenderer)
-        ?: return
+    val clusterManager = rememberClusterManager(
+        clusterContent,
+        clusterItemContent,
+        clusterContentAnchor,
+        clusterItemContentAnchor,
+        clusterContentZIndex,
+        clusterItemContentZIndex,
+        clusterRenderer
+    ) ?: return
 
     SideEffect {
         clusterManager.setOnClusterClickListener(onClusterClick)
@@ -114,6 +130,10 @@ public fun <T : ClusterItem> Clustering(
  * window of a non-clustered item
  * @param clusterContent an optional Composable that is rendered for each [Cluster].
  * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ * @param clusterContentAnchor the anchor for the cluster image
+ * @param clusterItemContentAnchor the anchor for the non-clustered item image
+ * @param clusterContentZIndex the z-index of the cluster
+ * @param clusterItemContentZIndex the z-index of the non-clustered item
  */
 @Composable
 @GoogleMapComposable
@@ -126,6 +146,10 @@ public fun <T : ClusterItem> Clustering(
     onClusterItemInfoWindowLongClick: (T) -> Unit = { },
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
 ) {
     Clustering(
         items = items,
@@ -135,6 +159,10 @@ public fun <T : ClusterItem> Clustering(
         onClusterItemInfoWindowLongClick = onClusterItemInfoWindowLongClick,
         clusterContent = clusterContent,
         clusterItemContent = clusterItemContent,
+        clusterContentAnchor = clusterContentAnchor,
+        clusterItemContentAnchor = clusterItemContentAnchor,
+        clusterContentZIndex = clusterContentZIndex,
+        clusterItemContentZIndex = clusterItemContentZIndex,
         onClusterManager = null,
     )
 }
@@ -151,6 +179,10 @@ public fun <T : ClusterItem> Clustering(
  * window of a non-clustered item
  * @param clusterContent an optional Composable that is rendered for each [Cluster].
  * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ * @param clusterContentAnchor the anchor for the cluster image
+ * @param clusterItemContentAnchor the anchor for the non-clustered item image
+ * @param clusterContentZIndex the z-index of the cluster
+ * @param clusterItemContentZIndex the z-index of the non-clustered item
  * @param onClusterManager an optional lambda invoked with the clusterManager as a param when both
  * the clusterManager and renderer are set up, allowing callers a customization hook.
  */
@@ -165,10 +197,22 @@ public fun <T : ClusterItem> Clustering(
     onClusterItemInfoWindowLongClick: (T) -> Unit = { },
     clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
     clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ) {
     val clusterManager = rememberClusterManager<T>()
-    val renderer = rememberClusterRenderer(clusterContent, clusterItemContent, clusterManager)
+    val renderer = rememberClusterRenderer(
+        clusterContent,
+        clusterItemContent,
+        clusterContentAnchor,
+        clusterItemContentAnchor,
+        clusterContentZIndex,
+        clusterItemContentZIndex,
+        clusterManager
+    )
 
     SideEffect {
         clusterManager ?: return@SideEffect
@@ -266,6 +310,10 @@ public fun <T : ClusterItem> rememberClusterRenderer(
  *
  * @param clusterContent an optional Composable that is rendered for each [Cluster].
  * @param clusterItemContent an optional Composable that is rendered for each non-clustered item.
+ * @param clusterContentAnchor the anchor for the cluster image
+ * @param clusterItemContentAnchor the anchor for the non-clustered item image
+ * @param clusterContentZIndex the z-index of the cluster
+ * @param clusterItemContentZIndex the z-index of the non-clustered item
  */
 @Composable
 @GoogleMapComposable
@@ -273,10 +321,18 @@ public fun <T : ClusterItem> rememberClusterRenderer(
 public fun <T : ClusterItem> rememberClusterRenderer(
     clusterContent: @Composable ((Cluster<T>) -> Unit)?,
     clusterItemContent: @Composable ((T) -> Unit)?,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
     clusterManager: ClusterManager<T>?,
 ): ClusterRenderer<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
     val clusterItemContentState = rememberUpdatedState(clusterItemContent)
+    val clusterContentAnchorState = rememberUpdatedState(clusterContentAnchor)
+    val clusterItemContentAnchorState = rememberUpdatedState(clusterItemContentAnchor)
+    val clusterContentZIndexState = rememberUpdatedState(clusterContentZIndex)
+    val clusterItemContentZIndexState = rememberUpdatedState(clusterItemContentZIndex)
     val context = LocalContext.current
     val viewRendererState = rememberUpdatedState(rememberComposeUiViewRenderer())
     val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
@@ -291,6 +347,10 @@ public fun <T : ClusterItem> rememberClusterRenderer(
             viewRendererState,
             clusterContentState,
             clusterItemContentState,
+            clusterContentAnchorState,
+            clusterItemContentAnchorState,
+            clusterContentZIndexState,
+            clusterItemContentZIndexState,
         )
         clusterRendererState.value = renderer
         awaitCancellation()
@@ -315,10 +375,18 @@ public fun <T : ClusterItem> rememberClusterManager(): ClusterManager<T>? {
 private fun <T : ClusterItem> rememberClusterManager(
     clusterContent: @Composable ((Cluster<T>) -> Unit)?,
     clusterItemContent: @Composable ((T) -> Unit)?,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
 ): ClusterManager<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
     val clusterItemContentState = rememberUpdatedState(clusterItemContent)
+    val clusterContentAnchorState = rememberUpdatedState(clusterContentAnchor)
+    val clusterItemContentAnchorState = rememberUpdatedState(clusterItemContentAnchor)
+    val clusterContentZIndexState = rememberUpdatedState(clusterContentZIndex)
+    val clusterItemContentZIndexState = rememberUpdatedState(clusterItemContentZIndex)
     val context = LocalContext.current
     val viewRendererState = rememberUpdatedState(rememberComposeUiViewRenderer())
     val clusterManagerState: MutableState<ClusterManager<T>?> = remember { mutableStateOf(null) }
@@ -332,7 +400,7 @@ private fun <T : ClusterItem> rememberClusterManager(
                 .collect { hasCustomContent ->
                     val renderer = clusterRenderer
                         ?: if (hasCustomContent) {
-                            ComposeUiClusterRenderer(
+                            ComposeUiClusterRenderer<T>(
                                 context,
                                 scope = this,
                                 map,
@@ -340,6 +408,10 @@ private fun <T : ClusterItem> rememberClusterManager(
                                 viewRendererState,
                                 clusterContentState,
                                 clusterItemContentState,
+                                clusterContentAnchorState,
+                                clusterItemContentAnchorState,
+                                clusterContentZIndexState,
+                                clusterItemContentZIndexState,
                             )
                         } else {
                             DefaultClusterRenderer(context, map, clusterManager)

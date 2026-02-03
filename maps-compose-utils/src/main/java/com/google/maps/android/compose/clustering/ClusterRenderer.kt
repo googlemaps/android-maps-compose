@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.AbstractComposeView
 import androidx.core.graphics.applyCanvas
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
+import androidx.compose.ui.geometry.Offset
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -41,6 +42,10 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     private val viewRendererState: State<ComposeUiViewRenderer>,
     private val clusterContentState: State<@Composable ((Cluster<T>) -> Unit)?>,
     private val clusterItemContentState: State<@Composable ((T) -> Unit)?>,
+    private val clusterContentAnchorState: State<Offset>,
+    private val clusterItemContentAnchorState: State<Offset>,
+    private val clusterContentZIndexState: State<Float>,
+    private val clusterItemContentZIndexState: State<Float>,
 ) : DefaultClusterRenderer<T>(
     context,
     map,
@@ -144,6 +149,16 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
     }
 
+    override fun onBeforeClusterRendered(cluster: Cluster<T>, markerOptions: MarkerOptions) {
+        super.onBeforeClusterRendered(cluster, markerOptions)
+
+        if (clusterContentState.value != null) {
+            val anchor = clusterContentAnchorState.value
+            markerOptions.anchor(anchor.x, anchor.y)
+            markerOptions.zIndex(clusterContentZIndexState.value)
+        }
+    }
+
     override fun getDescriptorForCluster(cluster: Cluster<T>): BitmapDescriptor {
         return if (clusterContentState.value != null) {
             val viewInfo = keysToViews.entries
@@ -165,6 +180,10 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                 ?.value
                 ?: createAndAddView(ViewKey.Item(item))
             markerOptions.icon(renderViewToBitmapDescriptor(viewInfo.view))
+
+            val anchor = clusterItemContentAnchorState.value
+            markerOptions.anchor(anchor.x, anchor.y)
+            markerOptions.zIndex(clusterItemContentZIndexState.value)
         }
     }
 

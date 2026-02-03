@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -184,6 +185,7 @@ private fun CustomUiClustering(items: List<MyItem>) {
         },
         // Optional: Custom rendering for non-clustered items
         clusterItemContent = null,
+        clusterContentAnchor = Offset(0.5f, 0.5f),
         // Optional: Customization hook for clusterManager and renderer when they're ready
         onClusterManager = { clusterManager ->
             (clusterManager.renderer as DefaultClusterRenderer).minClusterSize = 2
