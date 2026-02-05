@@ -39,9 +39,10 @@ jobs:
           echo "labels=$labels" >> $GITHUB_OUTPUT
 
       - name: Apply Labels
-        if: steps.run_script.outputs.labels != ''
+        if: steps.run_script.outputs.labels != '' && (github.event.issue.number || github.event.pull_request.number)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
         run: |
           # Convert comma-separated labels to gh command arguments
           IFS=',' read -ra ADDR <<< "${{ steps.run_script.outputs.labels }}"
@@ -49,6 +50,6 @@ jobs:
             # Trim whitespace and only add if not empty
             label=$(echo "$i" | xargs)
             if [ -n "$label" ]; then
-              gh issue edit ${{ github.event.issue.number }} --add-label "$label"
+              gh issue edit "$ISSUE_NUMBER" --add-label "$label"
             fi
           done
