@@ -63,7 +63,7 @@ public val LocalClusteringMarkerProperties: androidx.compose.runtime.ProvidableC
  * will be used.
  */
 @Composable
-public fun clusteringMarkerProperties(
+public fun ClusteringMarkerProperties(
     anchor: Offset? = null,
     zIndex: Float? = null,
 ) {

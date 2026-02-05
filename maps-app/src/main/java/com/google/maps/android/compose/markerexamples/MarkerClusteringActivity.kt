@@ -49,7 +49,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.clustering.Clustering
-import com.google.maps.android.compose.clustering.clusteringMarkerProperties
+import com.google.maps.android.compose.clustering.ClusteringMarkerProperties
 import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -190,7 +190,7 @@ private fun CustomUiClustering(items: List<MyItem>) {
         clusterItemContent = { item ->
             val isSelected = item == selectedItem
             if (isSelected) {
-                clusteringMarkerProperties(
+                ClusteringMarkerProperties(
                     anchor = Offset(0.5f, 0.5f),
                     zIndex = 1.0f
                 )
