@@ -42,6 +42,7 @@ jobs:
         if: steps.run_script.outputs.labels != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NUMBER: ${{ github.event.number }}
         run: |
           # Convert comma-separated labels to gh command arguments
           IFS=',' read -ra ADDR <<< "${{ steps.run_script.outputs.labels }}"
@@ -49,6 +50,6 @@ jobs:
             # Trim whitespace and only add if not empty
             label=$(echo "$i" | xargs)
             if [ -n "$label" ]; then
-              gh issue edit ${{ github.event.issue.number }} --add-label "$label"
+              gh issue edit ${{ env.EVENT_NUMBER }} --add-label "$label"
             fi
           done

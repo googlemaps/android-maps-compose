@@ -4,7 +4,7 @@ import urllib.request
 import sys
 
 def get_gemini_response(api_key, prompt):
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     headers = {'Content-Type': 'application/json'}
     data = {
         "contents": [{
@@ -34,6 +34,7 @@ def get_gemini_response(api_key, prompt):
 
 def main():
     api_key = os.getenv("GEMINI_API_KEY")
+    print(f"DEBUG: Using API Key: {api_key}", file=sys.stderr)
     issue_title = os.getenv("ISSUE_TITLE")
     issue_body = os.getenv("ISSUE_BODY")
 
@@ -47,7 +48,7 @@ def main():
 
     prompt = f"""
     You are an expert software engineer and triage assistant. 
-    Analyze the following GitHub Issue details and suggest appropriate labels.
+    Analyze the following GitHub Issue details and suggest appropriate labels and a brief reasoning.
     
     Issue Title: {issue_title}
     Issue Description: {issue_body}
@@ -68,9 +69,12 @@ def main():
     - Environment:
         - environment: no-google-play: If the issue specifically mentions devices without Google Play services, Huawei devices, or microG.
 
-    Return a JSON object with a 'labels' key containing an array of suggested label names.
+    Return a JSON object with two keys:
+    1. "labels": an array of suggested label names.
+    2. "reasoning": a brief, one-sentence explanation for your choice of labels, particularly the priority.
+    
     The response MUST be valid JSON.
-    Example: {{"labels": ["priority: p2", "type: bug"]}}
+    Example: {{"labels": ["priority: p0", "type: bug"], "reasoning": "The issue describes a fatal exception and includes a stack trace, indicating a critical crash that should be addressed immediately."}}
     """
 
     response_text = get_gemini_response(api_key, prompt)
@@ -80,10 +84,9 @@ def main():
             if response_text.startswith("```json"):
                 response_text = response_text.replace("```json", "", 1).replace("```", "", 1).strip()
             
-            result = json.loads(response_text)
-            labels = result.get("labels", [])
-            # Print labels as a comma-separated string for GitHub Actions
-            print(",".join(labels))
+            # Validate that the response is valid JSON before printing
+            json.loads(response_text)
+            print(response_text)
         except Exception as e:
             print(f"Error parsing Gemini response: {e}", file=sys.stderr)
             print(f"Raw response: {response_text}", file=sys.stderr)
