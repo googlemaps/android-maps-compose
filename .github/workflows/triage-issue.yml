@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
+      pull-requests: write
       contents: read
     steps:
       - name: Checkout code
@@ -39,17 +40,18 @@ jobs:
           echo "labels=$labels" >> $GITHUB_OUTPUT
 
       - name: Apply Labels
-        if: steps.run_script.outputs.labels != ''
+        if: steps.run_script.outputs.labels != '' && (github.event.issue.number || github.event.pull_request.number)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EVENT_NUMBER: ${{ github.event.number }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
         run: |
           # Convert comma-separated labels to gh command arguments
           IFS=',' read -ra ADDR <<< "${{ steps.run_script.outputs.labels }}"
           for i in "${ADDR[@]}"; do
-            # Trim whitespace and only add if not empty
+            # Trim whitespace
             label=$(echo "$i" | xargs)
-            if [ -n "$label" ]; then
-              gh issue edit ${{ env.EVENT_NUMBER }} --add-label "$label"
+            # Only add priority labels as requested
+            if [[ "$label" == priority:* ]]; then
+              gh issue edit "$ISSUE_NUMBER" --add-label "$label"
             fi
           done

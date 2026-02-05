@@ -4,6 +4,7 @@ import urllib.request
 import sys
 
 def get_gemini_response(api_key, prompt):
+# Using the stable Gemini 2.5 Flash
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     headers = {'Content-Type': 'application/json'}
     data = {
@@ -60,14 +61,6 @@ def main():
         - priority: p2: Normal priority bugs or improvements.
         - priority: p3: Minor enhancements or non-critical fixes.
         - priority: p4: Low priority, nice-to-have eventually.
-    - Type:
-        - type: docs: Documentation issues or requests.
-        - type: typo: Mentioning typos in the codebase or UI.
-        - type: test: Issues related to testing.
-        - type: feature: Feature requests.
-        - type: bug: Bug reports.
-    - Environment:
-        - environment: no-google-play: If the issue specifically mentions devices without Google Play services, Huawei devices, or microG.
 
     Return a JSON object with two keys:
     1. "labels": an array of suggested label names.
