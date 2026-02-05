@@ -60,14 +60,6 @@ def main():
         - priority: p2: Normal priority bugs or improvements.
         - priority: p3: Minor enhancements or non-critical fixes.
         - priority: p4: Low priority, nice-to-have eventually.
-    - Type:
-        - type: docs: Documentation issues or requests.
-        - type: typo: Mentioning typos in the codebase or UI.
-        - type: test: Issues related to testing.
-        - type: feature: Feature requests.
-        - type: bug: Bug reports.
-    - Environment:
-        - environment: no-google-play: If the issue specifically mentions devices without Google Play services, Huawei devices, or microG.
 
     Return a JSON object with a 'labels' key containing an array of suggested label names.
     The response MUST be valid JSON.
