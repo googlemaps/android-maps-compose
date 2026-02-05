@@ -144,7 +144,11 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                 when (key) {
                     is ViewKey.Cluster -> getMarker(key.cluster)
                     is ViewKey.Item -> getMarker(key.item)
-                }?.setIcon(renderViewToBitmapDescriptor(view))
+                }?.apply {
+                    setIcon(renderViewToBitmapDescriptor(view))
+                    view.properties.anchor?.let { setAnchor(it.x, it.y) }
+                    view.properties.zIndex?.let { zIndex = it }
+                }
             }
 
     }
@@ -235,10 +239,20 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         private val content: @Composable () -> Unit,
     ) : AbstractComposeView(context) {
 
+        val properties = ClusteringMarkerProperties()
         var onInvalidate: (() -> Unit)? = null
 
         @Composable
-        override fun Content() = content()
+        override fun Content() {
+            androidx.compose.runtime.LaunchedEffect(properties.anchor, properties.zIndex) {
+                invalidate()
+            }
+            androidx.compose.runtime.CompositionLocalProvider(
+                LocalClusteringMarkerProperties provides properties
+            ) {
+                content()
+            }
+        }
 
         override fun onDescendantInvalidated(child: View, target: View) {
             super.onDescendantInvalidated(child, target)

@@ -11,6 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
@@ -30,6 +36,43 @@ import com.google.maps.android.compose.rememberComposeUiViewRenderer
 import com.google.maps.android.compose.rememberReattachClickListenersHandle
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
+
+/**
+ * Properties for a marker in [Clustering].
+ */
+public class ClusteringMarkerProperties {
+    public var anchor: Offset? by mutableStateOf(null)
+        internal set
+    public var zIndex: Float? by mutableStateOf(null)
+        internal set
+}
+
+/**
+ * [CompositionLocal] used to provide [ClusteringMarkerProperties] to the content of a cluster or
+ * cluster item.
+ */
+public val LocalClusteringMarkerProperties: androidx.compose.runtime.ProvidableCompositionLocal<ClusteringMarkerProperties> =
+    staticCompositionLocalOf { ClusteringMarkerProperties() }
+
+/**
+ * Helper function to specify properties for the marker representing a cluster or cluster item.
+ *
+ * @param anchor the anchor for the marker image. If null, the default anchor specified in
+ * [Clustering] will be used.
+ * @param zIndex the z-index of the marker. If null, the default z-index specified in [Clustering]
+ * will be used.
+ */
+@Composable
+public fun clusteringMarkerProperties(
+    anchor: Offset? = null,
+    zIndex: Float? = null,
+) {
+    val properties = LocalClusteringMarkerProperties.current
+    SideEffect {
+        properties.anchor = anchor
+        properties.zIndex = zIndex
+    }
+}
 
 /**
  * Groups many items on a map based on zoom level.
