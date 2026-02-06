@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -48,6 +49,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.clustering.Clustering
+import com.google.maps.android.compose.clustering.ClusteringMarkerProperties
 import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -160,6 +162,7 @@ private fun DefaultClustering(items: List<MyItem>) {
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 private fun CustomUiClustering(items: List<MyItem>) {
+    var selectedItem by remember { mutableStateOf<MyItem?>(null) }
     Clustering(
         items = items,
         // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
@@ -169,6 +172,7 @@ private fun CustomUiClustering(items: List<MyItem>) {
         },
         onClusterItemClick = {
             Log.d(TAG, "Cluster item clicked! $it")
+            selectedItem = if (selectedItem == it) null else it
             false
         },
         onClusterItemInfoWindowClick = {
@@ -183,7 +187,21 @@ private fun CustomUiClustering(items: List<MyItem>) {
             )
         },
         // Optional: Custom rendering for non-clustered items
-        clusterItemContent = null,
+        clusterItemContent = { item ->
+            val isSelected = item == selectedItem
+            if (isSelected) {
+                ClusteringMarkerProperties(
+                    anchor = Offset(0.5f, 0.5f),
+                    zIndex = 1.0f
+                )
+            }
+            CircleContent(
+                modifier = Modifier.size(if (isSelected) 40.dp else 20.dp),
+                text = "",
+                color = if (isSelected) Color.Red else Color.Green,
+            )
+        },
+        clusterContentAnchor = Offset(0.5f, 0.5f),
         // Optional: Customization hook for clusterManager and renderer when they're ready
         onClusterManager = { clusterManager ->
             (clusterManager.renderer as DefaultClusterRenderer).minClusterSize = 2
