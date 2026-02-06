@@ -3,7 +3,6 @@ name: Issue Triage with Gemini
 on:
   issues:
     types: [opened, edited]
-  pull_request:
   workflow_dispatch:
     inputs:
       title:
@@ -18,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-      pull-requests: write
       contents: read
     steps:
       - name: Checkout code
@@ -33,17 +31,17 @@ jobs:
         id: run_script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          ISSUE_TITLE: ${{ github.event.issue.title || github.event.pull_request.title || github.event.inputs.title }}
-          ISSUE_BODY: ${{ github.event.issue.body || github.event.pull_request.body || github.event.inputs.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title || github.event.inputs.title }}
+          ISSUE_BODY: ${{ github.event.issue.body || github.event.inputs.body }}
         run: |
           labels=$(python .github/scripts/triage_issue.py)
           echo "labels=$labels" >> $GITHUB_OUTPUT
 
       - name: Apply Labels
-        if: steps.run_script.outputs.labels != '' && (github.event.issue.number || github.event.pull_request.number)
+        if: steps.run_script.outputs.labels != '' && (github.event.issue.number)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           # Convert comma-separated labels to gh command arguments
           IFS=',' read -ra ADDR <<< "${{ steps.run_script.outputs.labels }}"
