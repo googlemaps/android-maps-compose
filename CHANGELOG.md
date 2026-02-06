@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.1.0](https://github.com/googlemaps/android-maps-compose/compare/v8.0.1...v8.1.0) (2026-02-06)
+
+
+### Features
+
+* added anchor and zIndex to Cluster ([#839](https://github.com/googlemaps/android-maps-compose/issues/839)) ([c2f19e4](https://github.com/googlemaps/android-maps-compose/commit/c2f19e45c9dfad7060b47f4b51d43ff5dca326f7))
+
 ## [8.0.1](https://github.com/googlemaps/android-maps-compose/compare/v8.0.0...v8.0.1) (2026-01-29)
 
 
