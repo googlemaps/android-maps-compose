@@ -35,7 +35,6 @@ def get_gemini_response(api_key, prompt):
 
 def main():
     api_key = os.getenv("GEMINI_API_KEY")
-    print(f"DEBUG: Using API Key: {api_key}", file=sys.stderr)
     issue_title = os.getenv("ISSUE_TITLE")
     issue_body = os.getenv("ISSUE_BODY")
 
@@ -49,7 +48,7 @@ def main():
 
     prompt = f"""
     You are an expert software engineer and triage assistant. 
-    Analyze the following GitHub Issue details and suggest appropriate labels and a brief reasoning.
+    Analyze the following GitHub Issue details and suggest appropriate labels.
     
     Issue Title: {issue_title}
     Issue Description: {issue_body}
@@ -62,12 +61,9 @@ def main():
         - priority: p3: Minor enhancements or non-critical fixes.
         - priority: p4: Low priority, nice-to-have eventually.
 
-    Return a JSON object with two keys:
-    1. "labels": an array of suggested label names.
-    2. "reasoning": a brief, one-sentence explanation for your choice of labels, particularly the priority.
-    
+    Return a JSON object with a 'labels' key containing an array of suggested label names.
     The response MUST be valid JSON.
-    Example: {{"labels": ["priority: p0", "type: bug"], "reasoning": "The issue describes a fatal exception and includes a stack trace, indicating a critical crash that should be addressed immediately."}}
+    Example: {{"labels": ["priority: p2", "type: bug"]}}
     """
 
     response_text = get_gemini_response(api_key, prompt)
@@ -77,9 +73,10 @@ def main():
             if response_text.startswith("```json"):
                 response_text = response_text.replace("```json", "", 1).replace("```", "", 1).strip()
             
-            # Validate that the response is valid JSON before printing
-            json.loads(response_text)
-            print(response_text)
+            result = json.loads(response_text)
+            labels = result.get("labels", [])
+            # Print labels as a comma-separated string for GitHub Actions
+            print(",".join(labels))
         except Exception as e:
             print(f"Error parsing Gemini response: {e}", file=sys.stderr)
             print(f"Raw response: {response_text}", file=sys.stderr)
