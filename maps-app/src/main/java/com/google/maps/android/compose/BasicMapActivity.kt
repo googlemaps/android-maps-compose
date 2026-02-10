@@ -162,7 +162,7 @@ fun GoogleMapView(
     var shouldAnimateZoom by remember { mutableStateOf(true) }
     var ticker by remember { mutableIntStateOf(0) }
     var mapProperties by remember {
-        mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+        mutableStateOf(MapProperties(isTrafficEnabled = true, mapType = MapType.NORMAL))
     }
     var mapVisible by remember { mutableStateOf(true) }
 
