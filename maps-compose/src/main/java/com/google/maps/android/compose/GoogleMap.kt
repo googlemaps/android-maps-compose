@@ -37,7 +37,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -241,8 +240,6 @@ private fun CoroutineScope.launchSubcomposition(
         try {
             composition.setContent {
                 MapUpdater(mapUpdaterState)
-
-                MapClickListenerUpdater()
 
                 CompositionLocalProvider(
                     LocalCameraPositionState provides mapUpdaterState.cameraPositionState,
