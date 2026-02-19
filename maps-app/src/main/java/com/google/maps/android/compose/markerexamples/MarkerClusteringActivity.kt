@@ -54,6 +54,7 @@ import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.singapore2
 import kotlin.random.Random
@@ -98,7 +99,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(singapore, 6f)
+            position = CameraPosition.fromLatLngZoom(singapore2, 6f)
         }
     ) {
         when (clusteringType) {
@@ -119,10 +120,16 @@ fun GoogleMapClustering(items: List<MyItem>) {
                     items = items,
                 )
             }
+
+            ClusteringType.Decorations -> {
+                DecorationsClustering(
+                    items = items,
+                )
+            }
         }
 
         MarkerInfoWindow(
-            state = rememberUpdatedMarkerState(position = singapore),
+            state = rememberUpdatedMarkerState(position = singapore2),
             onClick = {
                 Log.d(TAG, "Non-cluster marker clicked! $it")
                 true
@@ -272,6 +279,23 @@ fun CustomRendererClustering(items: List<MyItem>) {
 
 }
 
+@OptIn(MapsComposeExperimentalApi::class)
+@Composable
+private fun DecorationsClustering(items: List<MyItem>) {
+    Clustering(
+        items = items,
+        clusterItemDecoration = { item ->
+            Circle(
+                center = item.position,
+                radius = 10000.0,
+                fillColor = Color.Blue.copy(alpha = 0.2f),
+                strokeColor = Color.Blue,
+                strokeWidth = 2f
+            )
+        }
+    )
+}
+
 @Composable
 private fun CircleContent(
     color: Color,
@@ -313,6 +337,7 @@ private fun ClusteringTypeControls(
                     ClusteringType.Default -> "Default"
                     ClusteringType.CustomUi -> "Custom UI"
                     ClusteringType.CustomRenderer -> "Custom Renderer"
+                    ClusteringType.Decorations -> "Decorations"
                 },
                 onClick = { onClusteringTypeClick(it) }
             )
@@ -338,6 +363,7 @@ private enum class ClusteringType {
     Default,
     CustomUi,
     CustomRenderer,
+    Decorations,
 }
 
 data class MyItem(

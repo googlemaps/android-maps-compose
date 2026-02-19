@@ -1,12 +1,14 @@
 package com.google.maps.android.compose.clustering
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.core.graphics.applyCanvas
 import androidx.core.view.doOnAttach
@@ -29,6 +31,10 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+internal interface ClusterRendererItemState<T : ClusterItem> {
+    val unclusteredItems: State<Set<T>>
+}
+
 /**
  * Implementation of [ClusterRenderer] that renders marker bitmaps from Compose UI content.
  * [clusterContentState] renders clusters, and [clusterItemContentState] renders non-clustered
@@ -50,13 +56,19 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     context,
     map,
     clusterManager
-) {
+), ClusterRendererItemState<T> {
+
+    override val unclusteredItems = mutableStateOf(emptySet<T>())
 
     private val fakeCanvas = Canvas()
     private val keysToViews = mutableMapOf<ViewKey<T>, ViewInfo>()
 
     override fun onClustersChanged(clusters: Set<Cluster<T>>) {
         super.onClustersChanged(clusters)
+        unclusteredItems.value = clusters.filter { !shouldRenderAsCluster(it) }
+            .flatMap { it.items }
+            .toSet()
+
         val keys = clusters.flatMap { it.computeViewKeys() }
 
         with(keysToViews.iterator()) {
