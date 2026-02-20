@@ -10,14 +10,14 @@ androidTargetSdk = "36"
 agp = "9.0.0"
 dokka = "2.1.0"
 gradleMavenPublishPlugin = "0.36.0"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 kotlinxCoroutines = "1.10.2"
 
 # Android
-activitycompose = "1.12.2"
+activitycompose = "1.12.4"
 androidx-core = "1.17.0"
 androidx-startup = "1.2.0"
-compose-bom = "2026.01.00"
+compose-bom = "2026.02.00"
 constraintlayout = "2.2.1"
 
 # Material
