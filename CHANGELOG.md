@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.0](https://github.com/googlemaps/android-maps-compose/compare/v8.1.0...v8.2.0) (2026-02-24)
+
+
+### Features
+
+* added Clustering decoration ([#848](https://github.com/googlemaps/android-maps-compose/issues/848)) ([aa5793a](https://github.com/googlemaps/android-maps-compose/commit/aa5793a920f92c1efb0b90287092a33661acac4c))
+
 ## [8.1.0](https://github.com/googlemaps/android-maps-compose/compare/v8.0.1...v8.1.0) (2026-02-06)
 
 
