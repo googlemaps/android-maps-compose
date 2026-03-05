@@ -12,16 +12,13 @@ Verify the latest versions if possible, but use these as a baseline:
 ```kotlin
 dependencies {
     // Google Maps Compose library
-    implementation("com.google.maps.android:maps-compose:8.2.0")
-    
-    // Google Maps Play Services
-    implementation("com.google.android.gms:play-services-maps:8.2.0")
+    implementation("com.google.maps.android:maps-compose:8.2.0") // x-release-please-version
 
     // Optional: Maps Compose Utilities (for clustering, etc.)
-    // implementation("com.google.maps.android:maps-compose-utils:8.2.0")
-    
+    // implementation("com.google.maps.android:maps-compose-utils:8.2.0") // x-release-please-version
+
     // Optional: Maps Compose Widgets (for UI components)
-    // implementation("com.google.maps.android:maps-compose-widgets:8.2.0")
+    // implementation("com.google.maps.android:maps-compose-widgets:8.2.0") // x-release-please-version
 }
 ```
 
