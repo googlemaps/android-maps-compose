@@ -180,8 +180,14 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             val viewInfo = keysToViews.entries
                 .firstOrNull { (key, _) -> (key as? ViewKey.Cluster)?.cluster == cluster }
                 ?.value
-                ?: createAndAddView(cluster.computeViewKeys().first())
-            renderViewToBitmapDescriptor(viewInfo.view)
+
+            if (viewInfo != null) {
+                renderViewToBitmapDescriptor(viewInfo.view)
+            } else {
+                cluster.computeViewKeys().firstOrNull()?.let { key ->
+                    renderViewToBitmapDescriptor(createAndAddView(key).view)
+                } ?: super.getDescriptorForCluster(cluster)
+            }
         } else {
             super.getDescriptorForCluster(cluster)
         }
