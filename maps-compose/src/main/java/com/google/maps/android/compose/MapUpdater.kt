@@ -143,16 +143,16 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
             }
         }
 
-        set(mapUiSettings.compassEnabled) { map.uiSettings.isCompassEnabled = it }
-        set(mapUiSettings.indoorLevelPickerEnabled) { map.uiSettings.isIndoorLevelPickerEnabled = it }
-        set(mapUiSettings.mapToolbarEnabled) { map.uiSettings.isMapToolbarEnabled = it }
-        set(mapUiSettings.myLocationButtonEnabled) { map.uiSettings.isMyLocationButtonEnabled = it }
-        set(mapUiSettings.rotationGesturesEnabled) { map.uiSettings.isRotateGesturesEnabled = it }
-        set(mapUiSettings.scrollGesturesEnabled) { map.uiSettings.isScrollGesturesEnabled = it }
-        set(mapUiSettings.scrollGesturesEnabledDuringRotateOrZoom) { map.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = it }
-        set(mapUiSettings.tiltGesturesEnabled) { map.uiSettings.isTiltGesturesEnabled = it }
-        set(mapUiSettings.zoomControlsEnabled) { map.uiSettings.isZoomControlsEnabled = it }
-        set(mapUiSettings.zoomGesturesEnabled) { map.uiSettings.isZoomGesturesEnabled = it }
+        set(mapUiSettings.compassEnabled) { try { map.uiSettings.isCompassEnabled = it } catch (e: Exception) { /* HMS/microG safe, see #804 */ } }
+        set(mapUiSettings.indoorLevelPickerEnabled) { try { map.uiSettings.isIndoorLevelPickerEnabled = it } catch (e: Exception) {} }
+        set(mapUiSettings.mapToolbarEnabled) { try { map.uiSettings.isMapToolbarEnabled = it } catch (e: Exception) {} }
+        set(mapUiSettings.myLocationButtonEnabled) { try { map.uiSettings.isMyLocationButtonEnabled = it } catch (e: Exception) {} }
+        set(mapUiSettings.rotationGesturesEnabled) { try { map.uiSettings.isRotateGesturesEnabled = it } catch (e: Exception) {} }
+        set(mapUiSettings.scrollGesturesEnabled) { try { map.uiSettings.isScrollGesturesEnabled = it } catch (e: Exception) {} }
+        set(mapUiSettings.scrollGesturesEnabledDuringRotateOrZoom) { try { map.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = it } catch (e: Exception) {} }
+        set(mapUiSettings.tiltGesturesEnabled) { try { map.uiSettings.isTiltGesturesEnabled = it } catch (e: Exception) {} }
+        set(mapUiSettings.zoomControlsEnabled) { try { map.uiSettings.isZoomControlsEnabled = it } catch (e: Exception) {} }
+        set(mapUiSettings.zoomGesturesEnabled) { try { map.uiSettings.isZoomGesturesEnabled = it } catch (e: Exception) {} }
 
         update(cameraPositionState) { this.cameraPositionState = it }
     }
