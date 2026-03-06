@@ -22,9 +22,36 @@ dependencies {
 }
 ```
 
-## 2. Update AndroidManifest.xml
+## 2. Setup the Secrets Gradle Plugin
 
-Add the required permissions and the Google Maps API key meta-data to `AndroidManifest.xml`. Instruct the user to replace `YOUR_API_KEY` with their actual API key from the Google Cloud Console.
+Instead of hardcoding the Google Maps API key in `AndroidManifest.xml`, use the Secrets Gradle Plugin for Android to inject the API key securely.
+
+First, add the plugin to the project-level `build.gradle.kts`:
+
+```kotlin
+buildscript {
+    dependencies {
+        classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
+    }
+}
+```
+
+Then, apply the plugin in the app-level `build.gradle.kts`:
+
+```kotlin
+plugins {
+    // ...
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+}
+```
+
+Add the API Key to `local.properties`:
+
+```properties
+MAPS_API_KEY=YOUR_API_KEY
+```
+
+In `AndroidManifest.xml`, add the required permissions and reference the injected API key meta-data:
 
 ```xml
 <manifest ...>
@@ -33,10 +60,10 @@ Add the required permissions and the Google Maps API key meta-data to `AndroidMa
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application ...>
-        <!-- Google Maps API Key -->
+        <!-- Google Maps API Key injected by Secrets Gradle Plugin -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_API_KEY" />
+            android:value="${MAPS_API_KEY}" />
         ...
     </application>
 </manifest>
@@ -87,7 +114,8 @@ fun MapScreen() {
 
 ## 5. Execution Steps
 1. Create a new branch `feature/maps-compose-integration`.
-2. Add the dependencies to `build.gradle.kts`.
-3. Update `AndroidManifest.xml` with permissions and the API key placeholder.
-4. Create the `MapScreen.kt` composable.
-5. Provide a summary of the changes and instruct the user on how to add their API key.
+2. Add the Maps Compose dependencies to the app-level `build.gradle.kts`.
+3. Set up the Secrets Gradle Plugin in both project-level and app-level `build.gradle.kts`.
+4. Update `AndroidManifest.xml` with permissions and the `${MAPS_API_KEY}` placeholder.
+5. Create the `MapScreen.kt` composable.
+6. Provide a summary of the changes and instruct the user on how to add their API key to `local.properties`.
