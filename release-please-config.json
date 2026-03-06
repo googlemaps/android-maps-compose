@@ -5,7 +5,8 @@
             "extra-files": [
                 "build.gradle.kts",
                 "README.md",
-                "llm-integration-prompt.md"
+                "llm-integration-prompt.md",
+                ".gemini/skills/android-maps-compose/SKILL.md"
             ]
         }
     }
