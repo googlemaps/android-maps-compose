@@ -6,8 +6,40 @@ Please follow these instructions carefully to ensure a complete and idiomatic im
 
 ## 1. Setup Dependencies
 
-First, add the necessary dependencies to the app-level `build.gradle.kts` file. 
-Verify the latest versions if possible, but use these as a baseline:
+You can add dependencies using either version catalogs (recommended) or directly in your `build.gradle.kts` file. Verify the latest versions if possible, but use these as a baseline:
+
+### Option A: Using Version Catalogs (Recommended)
+
+Add the following to your `gradle/libs.versions.toml` file:
+
+```toml
+[versions]
+mapsCompose = "8.2.0" # x-release-please-version
+
+[libraries]
+maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
+maps-compose-utils = { group = "com.google.maps.android", name = "maps-compose-utils", version.ref = "mapsCompose" }
+maps-compose-widgets = { group = "com.google.maps.android", name = "maps-compose-widgets", version.ref = "mapsCompose" }
+```
+
+Then add them to your app-level `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    // Google Maps Compose library
+    implementation(libs.maps.compose)
+
+    // Optional: Maps Compose Utilities (for clustering, etc.)
+    // implementation(libs.maps.compose.utils)
+
+    // Optional: Maps Compose Widgets (for UI components)
+    // implementation(libs.maps.compose.widgets)
+}
+```
+
+### Option B: Direct Dependencies
+
+If you are not using version catalogs, add the dependencies directly to your app-level `build.gradle.kts`:
 
 ```kotlin
 dependencies {
