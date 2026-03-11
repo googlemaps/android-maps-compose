@@ -14,10 +14,10 @@ kotlin = "2.3.10"
 kotlinxCoroutines = "1.10.2"
 
 # Android
-activitycompose = "1.12.4"
-androidx-core = "1.17.0"
+activitycompose = "1.13.0"
+androidx-core = "1.18.0"
 androidx-startup = "1.2.0"
-compose-bom = "2026.02.00"
+compose-bom = "2026.03.00"
 constraintlayout = "2.2.1"
 
 # Material
@@ -27,7 +27,7 @@ materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
-mapsktx = "6.0.0"
+mapsktx = "6.0.1"
 
 # Testing
 androidCore = "1.7.0"
