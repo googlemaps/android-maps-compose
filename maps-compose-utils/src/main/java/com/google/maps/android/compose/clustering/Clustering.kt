@@ -1,5 +1,6 @@
 package com.google.maps.android.compose.clustering
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.Composable
@@ -138,6 +139,7 @@ public fun <T : ClusterItem> Clustering(
     clusterContentZIndex: Float = 0.0f,
     clusterItemContentZIndex: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
+    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
 ) {
     val clusterManager = rememberClusterManager(
         clusterContent,
@@ -158,6 +160,8 @@ public fun <T : ClusterItem> Clustering(
     Clustering(
         items = items,
         clusterManager = clusterManager,
+        clusterItemDecoration = clusterItemDecoration,
+        renderer = clusterManager.renderer,
     )
 }
 
@@ -193,6 +197,7 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
     clusterContentZIndex: Float = 0.0f,
     clusterItemContentZIndex: Float = 0.0f,
+    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
 ) {
     Clustering(
         items = items,
@@ -206,6 +211,7 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentAnchor = clusterItemContentAnchor,
         clusterContentZIndex = clusterContentZIndex,
         clusterItemContentZIndex = clusterItemContentZIndex,
+        clusterItemDecoration = clusterItemDecoration,
         onClusterManager = null,
     )
 }
@@ -244,6 +250,7 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
     clusterContentZIndex: Float = 0.0f,
     clusterItemContentZIndex: Float = 0.0f,
+    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ) {
     val clusterManager = rememberClusterManager<T>()
@@ -277,6 +284,8 @@ public fun <T : ClusterItem> Clustering(
         Clustering(
             items = items,
             clusterManager = clusterManager,
+            clusterItemDecoration = clusterItemDecoration,
+            renderer = renderer,
         )
     }
 }
@@ -293,6 +302,24 @@ public fun <T : ClusterItem> Clustering(
 public fun <T : ClusterItem> Clustering(
     items: Collection<T>,
     clusterManager: ClusterManager<T>,
+    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+) {
+    Clustering(
+        items = items,
+        clusterManager = clusterManager,
+        clusterItemDecoration = clusterItemDecoration,
+        renderer = null
+    )
+}
+
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+internal fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    clusterManager: ClusterManager<T>,
+    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    renderer: ClusterRenderer<T>? = null,
 ) {
     ResetMapListeners(clusterManager)
     InputHandler(
@@ -327,6 +354,13 @@ public fun <T : ClusterItem> Clustering(
             clusterManager.cluster()
         }
     }
+
+    val actualRenderer = renderer ?: clusterManager.renderer
+    val unclusteredItems by (actualRenderer as? ClusterRendererItemState<T>)?.unclusteredItems
+        ?: remember { mutableStateOf(emptySet()) }
+    unclusteredItems.forEach { item ->
+        clusterItemDecoration(item)
+    }
 }
 
 
@@ -341,7 +375,7 @@ public fun <T : ClusterItem> rememberClusterRenderer(
 
     clusterManager ?: return null
     MapEffect(context) { map ->
-        val renderer = DefaultClusterRenderer(context, map, clusterManager)
+        val renderer = ReportingDefaultClusterRenderer(context, map, clusterManager)
         clusterRendererState.value = renderer
     }
 
@@ -457,7 +491,7 @@ private fun <T : ClusterItem> rememberClusterManager(
                                 clusterItemContentZIndexState,
                             )
                         } else {
-                            DefaultClusterRenderer(context, map, clusterManager)
+                            ReportingDefaultClusterRenderer(context, map, clusterManager)
                         }
                     clusterManager.renderer = renderer
                 }
@@ -486,5 +520,21 @@ private fun ResetMapListeners(
         Handler(Looper.getMainLooper()).post {
             reattach()
         }
+    }
+}
+
+private class ReportingDefaultClusterRenderer<T : ClusterItem>(
+    context: Context,
+    map: GoogleMap,
+    clusterManager: ClusterManager<T>
+) : DefaultClusterRenderer<T>(context, map, clusterManager), ClusterRendererItemState<T> {
+
+    override val unclusteredItems = mutableStateOf(emptySet<T>())
+
+    override fun onClustersChanged(clusters: Set<Cluster<T>>) {
+        super.onClustersChanged(clusters)
+        unclusteredItems.value = clusters.filter { !shouldRenderAsCluster(it) }
+            .flatMap { it.items }
+            .toSet()
     }
 }
