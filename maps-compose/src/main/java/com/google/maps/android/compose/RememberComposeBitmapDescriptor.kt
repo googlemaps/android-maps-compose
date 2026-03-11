@@ -17,7 +17,7 @@ import androidx.core.graphics.createBitmap
 
 @MapsComposeExperimentalApi
 @Composable
-fun rememberComposeBitmapDescriptor(
+public fun rememberComposeBitmapDescriptor(
     vararg keys: Any,
     content: @Composable () -> Unit,
 ): BitmapDescriptor {
