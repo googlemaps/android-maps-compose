@@ -94,9 +94,17 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
      */
     private fun Cluster<T>.computeViewKeys(): Set<ViewKey<T>> {
         return if (shouldRenderAsCluster(this)) {
-            setOf(ViewKey.Cluster(this))
+            if (clusterContentState.value != null) {
+                setOf(ViewKey.Cluster(this))
+            } else {
+                emptySet()
+            }
         } else {
-            items.mapTo(mutableSetOf()) { ViewKey.Item(it) }
+            if (clusterItemContentState.value != null) {
+                items.mapTo(mutableSetOf()) { ViewKey.Item(it) }
+            } else {
+                emptySet()
+            }
         }
     }
 
