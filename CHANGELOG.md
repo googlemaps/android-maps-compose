@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.2.2](https://github.com/googlemaps/android-maps-compose/compare/v8.2.1...v8.2.2) (2026-03-12)
+
+
+### Bug Fixes
+
+* avoid ComposeNotIdleException when clusterContent is null ([#855](https://github.com/googlemaps/android-maps-compose/issues/855)) ([3b12a24](https://github.com/googlemaps/android-maps-compose/commit/3b12a24dfb67ffdaaeed553af12368e074529ed9))
+
 ## [8.2.1](https://github.com/googlemaps/android-maps-compose/compare/v8.2.0...v8.2.1) (2026-03-12)
 
 
