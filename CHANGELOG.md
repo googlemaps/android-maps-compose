@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.2.1](https://github.com/googlemaps/android-maps-compose/compare/v8.2.0...v8.2.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* fixed issue with ProGuard/R8 and AttributionId ([#861](https://github.com/googlemaps/android-maps-compose/issues/861)) ([7b9149d](https://github.com/googlemaps/android-maps-compose/commit/7b9149d0fd60ad309e2d820c2b536702fd092314))
+* prevent NoSuchElementException when computing view keys in ClusterRenderer ([#857](https://github.com/googlemaps/android-maps-compose/issues/857)) ([e34b50f](https://github.com/googlemaps/android-maps-compose/commit/e34b50ff7e3edcf147ef256069e6bc19d983dc43))
+
 ## [8.2.0](https://github.com/googlemaps/android-maps-compose/compare/v8.1.0...v8.2.0) (2026-02-24)
 
 
