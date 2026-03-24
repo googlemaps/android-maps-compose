@@ -87,6 +87,8 @@ public inline fun rememberCameraPositionState(
 public class CameraPositionState private constructor(
     position: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
 ) {
+    internal var isLiteMode: Boolean = false
+
     /**
      * Whether the camera is currently moving or not. This includes any kind of movement:
      * panning, zooming, or rotation.
@@ -281,6 +283,12 @@ public class CameraPositionState private constructor(
         durationMs: Int,
         continuation: CancellableContinuation<Unit>
     ) {
+        if (isLiteMode) {
+            map.moveCamera(update)
+            continuation.resume(Unit)
+            return
+        }
+
         val cancelableCallback = object : GoogleMap.CancelableCallback {
             override fun onCancel() {
                 continuation.resumeWithException(CancellationException("Animation cancelled"))

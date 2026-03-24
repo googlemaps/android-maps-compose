@@ -154,7 +154,9 @@ public fun GoogleMap(
         AndroidView(
             modifier = modifier,
             factory = { context ->
-                mapViewFactory(context, googleMapOptionsFactory()).also { mapView ->
+                val options = googleMapOptionsFactory()
+                cameraPositionState.isLiteMode = options.liteMode == true
+                mapViewFactory(context, options).also { mapView ->
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
 
