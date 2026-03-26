@@ -48,7 +48,7 @@ class LiteModeActivity : ComponentActivity() {
         setContent {
             MapsComposeSampleTheme {
                 val singapore = remember { LatLng(1.35, 103.87) }
-                val tokyo = remember { LatLng(1.35, 103.87) } // wait let me fix coords below
+                val tokyo = remember { LatLng(35.6895, 139.6917) }
                 val coroutineScope = rememberCoroutineScope()
                 val cameraPositionState = rememberCameraPositionState {
                     position = CameraPosition.fromLatLngZoom(singapore, 11f)
@@ -66,7 +66,7 @@ class LiteModeActivity : ComponentActivity() {
                                 // This would previously hang indefinitely in Lite Mode!
                                 // Now it falls back to instantaneous movement and completes the coroutine.
                                 val newTarget = if (cameraPositionState.position.target == singapore) {
-                                    LatLng(35.6895, 139.6917) // Tokyo
+                                    tokyo
                                 } else {
                                     singapore
                                 }
