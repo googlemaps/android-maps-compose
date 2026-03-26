@@ -65,6 +65,9 @@
             android:name=".MapsInLazyColumnActivity"
             android:exported="true" />
         <activity
+            android:name=".LiteModeActivity"
+            android:exported="true" />
+        <activity
             android:name=".markerexamples.MarkerClusteringActivity"
             android:exported="true" />
         <activity

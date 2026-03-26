@@ -21,6 +21,9 @@
   <string name="basic_map_activity">Basic Map</string>
   <string name="basic_map_activity_description">A simple map showing the default configuration.</string>
 
+  <string name="lite_mode_activity">Lite Mode Map</string>
+  <string name="lite_mode_activity_description">A map showcasing the Lite Mode configuration.</string>
+
   <string name="street_view_activity">Street View</string>
   <string name="street_view_activity_description">A simple Street View.</string>
 

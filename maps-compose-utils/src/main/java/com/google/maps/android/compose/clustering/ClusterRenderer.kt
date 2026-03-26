@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.google.maps.android.compose.clustering
 
 import androidx.compose.runtime.State
@@ -30,6 +46,10 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.setViewTreeLifecycleOwner
 
 internal interface ClusterRendererItemState<T : ClusterItem> {
     val unclusteredItems: State<Set<T>>
@@ -62,6 +82,13 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
     private val fakeCanvas = Canvas()
     private val keysToViews = mutableMapOf<ViewKey<T>, ViewInfo>()
+
+    private val fakeLifecycleOwner = object : LifecycleOwner {
+        private val lifecycleRegistry = LifecycleRegistry(this).apply {
+            currentState = Lifecycle.State.RESUMED
+        }
+        override val lifecycle: Lifecycle get() = lifecycleRegistry
+    }
 
     override fun onClustersChanged(clusters: Set<Cluster<T>>) {
         super.onClustersChanged(clusters)
@@ -121,6 +148,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                 }
             }
         )
+        view.setViewTreeLifecycleOwner(fakeLifecycleOwner)
         val renderHandle = viewRendererState.value.startRenderingView(view)
         val rerenderJob = scope.launch {
             collectInvalidationsAndRerender(key, view)

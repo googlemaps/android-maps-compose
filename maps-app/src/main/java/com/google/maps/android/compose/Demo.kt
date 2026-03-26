@@ -76,6 +76,11 @@ sealed class ActivityGroup(
                 BasicMapActivity::class
             ),
             Activity(
+                R.string.lite_mode_activity,
+                R.string.lite_mode_activity_description,
+                LiteModeActivity::class
+            ),
+            Activity(
                 R.string.street_view_activity,
                 R.string.street_view_activity_description,
                 StreetViewActivity::class

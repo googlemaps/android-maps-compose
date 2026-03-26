@@ -1,0 +1,95 @@
+/*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.google.maps.android.compose
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.theme.MapsComposeSampleTheme
+import kotlinx.coroutines.launch
+
+class LiteModeActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            MapsComposeSampleTheme {
+                val singapore = remember { LatLng(1.35, 103.87) }
+                val tokyo = remember { LatLng(35.6895, 139.6917) }
+                val coroutineScope = rememberCoroutineScope()
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+                }
+                val mapProperties by remember {
+                    mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxSize().systemBarsPadding()
+                ) {
+                    Button(
+                        onClick = {
+                            coroutineScope.launch {
+                                // This would previously hang indefinitely in Lite Mode!
+                                // Now it falls back to instantaneous movement and completes the coroutine.
+                                val newTarget = if (cameraPositionState.position.target == singapore) {
+                                    tokyo
+                                } else {
+                                    singapore
+                                }
+                                cameraPositionState.animate(CameraUpdateFactory.newLatLng(newTarget))
+                            }
+                        },
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text("Animate Camera (Tests Fix)")
+                    }
+
+                    Box(
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        GoogleMap(
+                            modifier = Modifier.matchParentSize(),
+                            googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
+                            cameraPositionState = cameraPositionState,
+                            properties = mapProperties,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
