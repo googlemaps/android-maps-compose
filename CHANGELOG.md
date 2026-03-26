@@ -1,5 +1,17 @@
 # Changelog
 
+## [8.3.0](https://github.com/googlemaps/android-maps-compose/compare/v8.2.2...v8.3.0) (2026-03-26)
+
+
+### Features
+
+* expose rememberComposeBitmapDescriptor as public experimental API ([#867](https://github.com/googlemaps/android-maps-compose/issues/867)) ([3456db0](https://github.com/googlemaps/android-maps-compose/commit/3456db01fba52c66f18a367a6110d5e2c092dea4))
+
+
+### Bug Fixes
+
+* fallback to moveCamera in lite mode for CameraPositionState animate ([#877](https://github.com/googlemaps/android-maps-compose/issues/877)) ([8994e12](https://github.com/googlemaps/android-maps-compose/commit/8994e123730aeece4faec3b51706a4ec020db7e7))
+
 ## [8.2.2](https://github.com/googlemaps/android-maps-compose/compare/v8.2.1...v8.2.2) (2026-03-12)
 
 
