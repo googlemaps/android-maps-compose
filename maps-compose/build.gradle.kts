@@ -67,7 +67,7 @@ android {
 
 composeCompiler {
     stabilityConfigurationFiles.set(
-        listOf(layout.projectDirectory.file("compose_compiler_stability_config.conf"))
+        listOf(rootProject.layout.projectDirectory.file("compose_compiler_stability_config.conf"))
     )
 
     if (findProperty("composeCompilerReports") == "true") {

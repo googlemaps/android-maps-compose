@@ -63,6 +63,19 @@ android {
     }
 }
 
+composeCompiler {
+    stabilityConfigurationFiles.set(
+        listOf(rootProject.layout.projectDirectory.file("compose_compiler_stability_config.conf"))
+    )
+
+    if (findProperty("composeCompilerReports") == "true") {
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    }
+    if (findProperty("composeCompilerMetrics") == "true") {
+        metricsDestination = layout.buildDirectory.dir("compose_compiler")
+    }
+}
+
 dependencies {
     api(project(":maps-compose"))
 
