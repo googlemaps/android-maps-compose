@@ -26,6 +26,12 @@ information on using pull requests.
 
 Reviews will undergo strict enforcement of the [Jetpack Compose API guidelines](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md).
 
+## Using AI to Contribute
+
+This repository provides an official Gemini Skill to help AI agents navigate and contribute to the project effectively. If you are using the `gemini-cli` or a compatible AI tool, you can invoke the skill located in `.gemini/skills/android-maps-compose` to learn how to integrate or modify the Maps Compose components. 
+
+Additionally, the `.geminiignore` file prevents AI tools from consuming large or irrelevant files to preserve context limits.
+
 ## Community Guidelines
 
 This project follows
