@@ -19,52 +19,65 @@ package com.google.maps.android.compose
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionContext
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import androidx.core.graphics.createBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @MapsComposeExperimentalApi
 @Composable
 public fun rememberComposeBitmapDescriptor(
     vararg keys: Any,
     content: @Composable () -> Unit,
-): BitmapDescriptor {
+): BitmapDescriptor? {
+    var bitmapDescriptor by remember { mutableStateOf<BitmapDescriptor?>(null) }
     val parent = LocalView.current as ViewGroup
     val compositionContext = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
+    val composeView = remember { ComposeView(parent.context) }
 
-    return remember(parent, compositionContext, currentContent, *keys) {
-        renderComposableToBitmapDescriptor(parent, compositionContext, currentContent)
-    }
-}
-
-private val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-
-private fun renderComposableToBitmapDescriptor(
-    parent: ViewGroup,
-    compositionContext: CompositionContext,
-    content: @Composable () -> Unit,
-): BitmapDescriptor {
-    val composeView =
-        ComposeView(parent.context)
+    DisposableEffect(Unit) {
+        composeView
             .apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                 )
                 setParentCompositionContext(compositionContext)
-                setContent(content)
+                setContent(currentContent)
             }
             .also(parent::addView)
+        onDispose {
+            parent.removeView(composeView)
+        }
+    }
 
+    LaunchedEffect(*keys) {
+        bitmapDescriptor = withContext(Dispatchers.IO) {
+            renderComposableToBitmapDescriptor(composeView)
+        }
+    }
+
+    return bitmapDescriptor
+}
+
+private val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+
+private fun renderComposableToBitmapDescriptor(
+    composeView: ComposeView,
+): BitmapDescriptor {
     composeView.measure(measureSpec, measureSpec)
 
     if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
@@ -78,8 +91,6 @@ private fun renderComposableToBitmapDescriptor(
         createBitmap(composeView.measuredWidth, composeView.measuredHeight)
 
     bitmap.applyCanvas { composeView.draw(this) }
-
-    parent.removeView(composeView)
 
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
