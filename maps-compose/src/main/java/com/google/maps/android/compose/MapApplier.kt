@@ -75,6 +75,22 @@ internal class MapApplier(
     }
 
     internal fun attachClickListeners() {
+        with(mapClickListeners) {
+            map.setOnIndoorStateChangeListener(object : GoogleMap.OnIndoorStateChangeListener {
+                override fun onIndoorBuildingFocused() =
+                    indoorStateChangeListener.onIndoorBuildingFocused()
+
+                override fun onIndoorLevelActivated(building: com.google.android.gms.maps.model.IndoorBuilding) =
+                    indoorStateChangeListener.onIndoorLevelActivated(building)
+            })
+            map.setOnMapClickListener { onMapClick?.invoke(it) }
+            map.setOnMapLongClickListener { onMapLongClick?.invoke(it) }
+            map.setOnMapLoadedCallback { onMapLoaded?.invoke() }
+            map.setOnMyLocationButtonClickListener { onMyLocationButtonClick?.invoke() ?: false }
+            map.setOnMyLocationClickListener { onMyLocationClick?.invoke(it) }
+            map.setOnPoiClickListener { onPOIClick?.invoke(it) }
+        }
+
         map.setOnCircleClickListener { circle ->
             decorations.findInputCallback<CircleNode, Circle, Unit>(
                 nodeMatchPredicate = { it.circle == circle },
