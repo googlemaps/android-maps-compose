@@ -110,6 +110,9 @@
             android:name=".TileOverlayActivity"
             android:exported="true" />
         <activity
+            android:name=".WmsTileOverlayActivity"
+            android:exported="true" />
+        <activity
             android:name=".GroundOverlayActivity"
             android:exported="true" />
 

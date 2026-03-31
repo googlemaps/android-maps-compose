@@ -117,6 +117,11 @@ sealed class ActivityGroup(
                 TileOverlayActivity::class
             ),
             Activity(
+                R.string.wms_tile_overlay_activity,
+                R.string.wms_tile_overlay_activity_description,
+                WmsTileOverlayActivity::class
+            ),
+            Activity(
                 R.string.ground_overlay_activity,
                 R.string.ground_overlay_activity_description,
                 GroundOverlayActivity::class
