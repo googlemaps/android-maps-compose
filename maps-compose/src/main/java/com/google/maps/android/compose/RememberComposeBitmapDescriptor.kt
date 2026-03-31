@@ -34,8 +34,6 @@ import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @MapsComposeExperimentalApi
 @Composable
