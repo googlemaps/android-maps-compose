@@ -35,6 +35,10 @@ import com.google.maps.android.compose.rememberTileOverlayState
  * @param onClick a lambda invoked when the tile overlay is clicked.
  * @param tileWidth the width of the tiles in pixels (default 256).
  * @param tileHeight the height of the tiles in pixels (default 256).
+ * @param datasetXMinBound the minimum X coordinate of the dataset in EPSG:3857 (default null).
+ * @param datasetYMinBound the minimum Y coordinate of the dataset in EPSG:3857 (default null).
+ * @param datasetXMaxBound the maximum X coordinate of the dataset in EPSG:3857 (default null).
+ * @param datasetYMaxBound the maximum Y coordinate of the dataset in EPSG:3857 (default null).
  */
 @Composable
 public fun WmsTileOverlay(
@@ -46,13 +50,21 @@ public fun WmsTileOverlay(
     zIndex: Float = 0f,
     onClick: (TileOverlay) -> Unit = {},
     tileWidth: Int = 256,
-    tileHeight: Int = 256
+    tileHeight: Int = 256,
+    datasetXMinBound: Double? = null,
+    datasetYMinBound: Double? = null,
+    datasetXMaxBound: Double? = null,
+    datasetYMaxBound: Double? = null
 ) {
     val tileProvider = remember(urlFormatter, tileWidth, tileHeight) {
         WmsUrlTileProvider(
             width = tileWidth,
             height = tileHeight,
-            urlFormatter = urlFormatter
+            urlFormatter = urlFormatter,
+            datasetXMinBound = datasetXMinBound,
+            datasetYMinBound = datasetYMinBound,
+            datasetXMaxBound = datasetXMaxBound,
+            datasetYMaxBound = datasetYMaxBound
         )
     }
     TileOverlay(

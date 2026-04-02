@@ -19,7 +19,6 @@ package com.google.maps.android.compose.wms
 import com.google.android.gms.maps.model.UrlTileProvider
 import java.net.MalformedURLException
 import java.net.URL
-import kotlin.math.pow
 
 /**
  * A [UrlTileProvider] for Web Map Service (WMS) layers that use the EPSG:3857 (Web Mercator)
@@ -29,6 +28,10 @@ import kotlin.math.pow
  * @param height the height of the tile in pixels.
  * @param urlFormatter a lambda that returns the WMS URL for the given bounding box coordinates
  * (xMin, yMin, xMax, yMax) and zoom level.
+ * @param datasetXMinBound the minimum X coordinate of the dataset in EPSG:3857 (default null).
+ * @param datasetYMinBound the minimum Y coordinate of the dataset in EPSG:3857 (default null).
+ * @param datasetXMaxBound the maximum X coordinate of the dataset in EPSG:3857 (default null).
+ * @param datasetYMaxBound the maximum Y coordinate of the dataset in EPSG:3857 (default null).
  */
 public class WmsUrlTileProvider(
     width: Int = 256,
@@ -39,11 +42,23 @@ public class WmsUrlTileProvider(
         xMax: Double,
         yMax: Double,
         zoom: Int
-    ) -> String
+    ) -> String,
+    private val datasetXMinBound: Double? = null,
+    private val datasetYMinBound: Double? = null,
+    private val datasetXMaxBound: Double? = null,
+    private val datasetYMaxBound: Double? = null,
 ) : UrlTileProvider(width, height) {
+    private val bounded: Boolean = datasetXMinBound != null || datasetYMinBound != null || datasetXMaxBound != null || datasetYMaxBound != null
 
     override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
-        val bbox = getBoundingBox(x, y, zoom)
+        val bbox = getBoundingBox(x, y, zoom) // doubleArrayOf(xMin, yMin, xMax, yMax)
+        // Return null if the tile is entirely outside the specified bounds of the dataset
+        if(bounded && // skip checking for datasets where no bounds are specified
+            (datasetXMaxBound != null && bbox[0] > datasetXMaxBound) || // xMin greater than datasets xMax. No overlap.
+            (datasetYMaxBound != null && bbox[1] > datasetYMaxBound) || // yMin greater than datasets yMax. No overlap.
+            (datasetXMinBound != null && bbox[2] < datasetXMinBound) || // xMax less than datasets xMin. No overlap.
+            (datasetYMinBound != null && bbox[3] < datasetYMinBound) // yMax less than datasets yMin. No overlap.
+        ){return null}
         val urlString = urlFormatter(bbox[0], bbox[1], bbox[2], bbox[3], zoom)
         return try {
             URL(urlString)
@@ -54,10 +69,10 @@ public class WmsUrlTileProvider(
 
     private companion object {
         /**
-         * The Earth's circumference in meters at the equator according to EPSG:3857.
+         * The Earth's bound and circumference in meters at the equator according to EPSG:3857.
          */
-        private const val WMS_BOUND = 20037508.34789244
-        private const val EARTH_CIRCUMFERENCE = 2 * WMS_BOUND
+        private const val BOUND = 20037508.34789244
+        private const val EARTH_CIRCUMFERENCE = 2 * BOUND
 
     }
 
@@ -70,12 +85,12 @@ public class WmsUrlTileProvider(
         val numTiles: Int = 1 shl zoom // Powers of 2 are equivalent to bit-shifts
         val tileSizeMeters = EARTH_CIRCUMFERENCE / numTiles
 
-        val xMin = -WMS_BOUND + (x * tileSizeMeters)
+        val xMin = -BOUND + (x * tileSizeMeters)
         val xMax = xMin + tileSizeMeters
 
         // Y is inverted in TMS/Google Maps tiles vs WMS BBOX
         // Top of map (y=0) is +20037508.34789244
-        val yMax = WMS_BOUND - (y * tileSizeMeters)
+        val yMax = BOUND - (y * tileSizeMeters)
         val yMin = yMax - tileSizeMeters
 
         return doubleArrayOf(xMin, yMin, xMax, yMax)
