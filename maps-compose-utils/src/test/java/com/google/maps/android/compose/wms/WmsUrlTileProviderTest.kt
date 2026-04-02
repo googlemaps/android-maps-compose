@@ -17,6 +17,8 @@
 package com.google.maps.android.compose.wms
 
 import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 public class WmsUrlTileProviderTest {
@@ -71,7 +73,7 @@ public class WmsUrlTileProviderTest {
             for (x in 0..<halfOfRes(z)) { //since xMinBound is the line 1.0 the boxes made to reach 0.0 will not intersect
                 for (y in 0..2 * halfOfRes(z)) {
                     val tileUrl = provider.getTileUrl(x, y, z)
-                    assert(tileUrl == null)
+                    assertNull(tileUrl)
                 }
             }
         }
@@ -85,7 +87,7 @@ public class WmsUrlTileProviderTest {
             for (x in 0..<halfOfRes(z)) { //since xMaxBound is the line 1.0 the boxes made to reach 0.0 will be contained
                 for (y in 0..2 * halfOfRes(z)) {
                     val tileUrl = provider.getTileUrl(x, y, z)
-                    assert(tileUrl != null)
+                    assertNotNull(tileUrl)
                 }
             }
         }
