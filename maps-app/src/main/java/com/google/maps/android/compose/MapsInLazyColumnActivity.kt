@@ -290,6 +290,15 @@ private fun MapCard(
             }
 
             Column(
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+                TextWithBackground(
+                    "Panning this map disables list scroll",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Column(
                 modifier = Modifier.align(Alignment.BottomStart)
             ) {
                 TextWithBackground(item.title, fontWeight = FontWeight.Bold)
