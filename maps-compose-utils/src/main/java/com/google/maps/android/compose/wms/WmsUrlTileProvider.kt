@@ -36,17 +36,17 @@ import java.net.URL
 public class WmsUrlTileProvider(
     width: Int = 256,
     height: Int = 256,
+    private val datasetXMinBound: Double? = null,
+    private val datasetYMinBound: Double? = null,
+    private val datasetXMaxBound: Double? = null,
+    private val datasetYMaxBound: Double? = null,
     private val urlFormatter: (
         xMin: Double,
         yMin: Double,
         xMax: Double,
         yMax: Double,
         zoom: Int
-    ) -> String,
-    private val datasetXMinBound: Double? = null,
-    private val datasetYMinBound: Double? = null,
-    private val datasetXMaxBound: Double? = null,
-    private val datasetYMaxBound: Double? = null,
+    ) -> String
 ) : UrlTileProvider(width, height) {
     private val bounded: Boolean = datasetXMinBound != null || datasetYMinBound != null || datasetXMaxBound != null || datasetYMaxBound != null
 
