@@ -56,7 +56,9 @@ public class WmsUrlTileProvider(
         /**
          * The Earth's circumference in meters at the equator according to EPSG:3857.
          */
-        private const val EARTH_CIRCUMFERENCE = 2 * 20037508.34789244
+        private const val WMS_BOUND = 20037508.34789244
+        private const val EARTH_CIRCUMFERENCE = 2 * WMS_BOUND
+
     }
 
     /**
@@ -65,16 +67,16 @@ public class WmsUrlTileProvider(
      * @return an array containing [xMin, yMin, xMax, yMax] in meters.
      */
     internal fun getBoundingBox(x: Int, y: Int, zoom: Int): DoubleArray {
-        val numTiles = 2.0.pow(zoom.toDouble())
+        val numTiles: Int = 1 shl zoom // Powers of 2 are equivalent to bit-shifts
         val tileSizeMeters = EARTH_CIRCUMFERENCE / numTiles
 
-        val xMin = -20037508.34789244 + (x * tileSizeMeters)
-        val xMax = -20037508.34789244 + ((x + 1) * tileSizeMeters)
+        val xMin = -WMS_BOUND + (x * tileSizeMeters)
+        val xMax = xMin + tileSizeMeters
 
         // Y is inverted in TMS/Google Maps tiles vs WMS BBOX
         // Top of map (y=0) is +20037508.34789244
-        val yMax = 20037508.34789244 - (y * tileSizeMeters)
-        val yMin = 20037508.34789244 - ((y + 1) * tileSizeMeters)
+        val yMax = WMS_BOUND - (y * tileSizeMeters)
+        val yMin = yMax - tileSizeMeters
 
         return doubleArrayOf(xMin, yMin, xMax, yMax)
     }
