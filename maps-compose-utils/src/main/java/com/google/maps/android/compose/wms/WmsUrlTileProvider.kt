@@ -19,6 +19,7 @@ package com.google.maps.android.compose.wms
 import com.google.android.gms.maps.model.UrlTileProvider
 import java.net.MalformedURLException
 import java.net.URL
+import kotlin.math.PI
 import kotlin.math.pow
 
 /**
@@ -54,9 +55,16 @@ public class WmsUrlTileProvider(
 
     private companion object {
         /**
-         * The Earth's circumference in meters at the equator according to EPSG:3857.
+         * The maximum extent of the Web Mercator projection (EPSG:3857) in meters.
+         * This is the distance from the origin (0,0) to the edge of the world map.
+         * Calculated as semi-major axis of Earth (6378137.0) * PI.
          */
-        private const val EARTH_CIRCUMFERENCE = 2 * 20037508.34789244
+        private const val WORLD_EXTENT = (6378137.0) * PI
+
+        /**
+         * The total width/height of the world map in meters.
+         */
+        private const val WORLD_SIZE_METERS = 2 * WORLD_EXTENT
     }
 
     /**
@@ -65,16 +73,21 @@ public class WmsUrlTileProvider(
      * @return an array containing [xMin, yMin, xMax, yMax] in meters.
      */
     internal fun getBoundingBox(x: Int, y: Int, zoom: Int): DoubleArray {
-        val numTiles = 2.0.pow(zoom.toDouble())
-        val tileSizeMeters = EARTH_CIRCUMFERENCE / numTiles
+        // 1. Calculate how many tiles exist in each dimension at this zoom level (2^zoom).
+        val tilesPerDimension = 1 shl zoom
+        
+        // 2. Divide the total world span by the number of tiles to find the metric size of one tile.
+        val tileSizeMeters = WORLD_SIZE_METERS / tilesPerDimension.toDouble()
 
-        val xMin = -20037508.34789244 + (x * tileSizeMeters)
-        val xMax = -20037508.34789244 + ((x + 1) * tileSizeMeters)
+        // 3. X-axis: Starts at the far left (-WORLD_EXTENT) and moves East.
+        val xMin = -WORLD_EXTENT + (x * tileSizeMeters)
+        val xMax = -WORLD_EXTENT + ((x + 1) * tileSizeMeters)
 
-        // Y is inverted in TMS/Google Maps tiles vs WMS BBOX
-        // Top of map (y=0) is +20037508.34789244
-        val yMax = 20037508.34789244 - (y * tileSizeMeters)
-        val yMin = 20037508.34789244 - ((y + 1) * tileSizeMeters)
+        // 4. Y-axis: Google Maps/TMS starts at the Top (y=0 is North) and moves South.
+        // WMS Bounding Box expects yMin to be the southern-most latitude and yMax to be the northern-most.
+        // Therefore, we subtract the tile distance from the northern-most edge (+WORLD_EXTENT).
+        val yMax = WORLD_EXTENT - (y * tileSizeMeters)
+        val yMin = WORLD_EXTENT - ((y + 1) * tileSizeMeters)
 
         return doubleArrayOf(xMin, yMin, xMax, yMax)
     }

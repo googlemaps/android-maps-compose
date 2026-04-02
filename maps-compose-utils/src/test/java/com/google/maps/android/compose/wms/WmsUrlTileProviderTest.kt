@@ -21,7 +21,7 @@ import org.junit.Test
 
 public class WmsUrlTileProviderTest {
 
-    private val worldSize: Double = 20037508.34789244
+    private val worldSize: Double = 6378137.0 * kotlin.math.PI
 
     @Test
     public fun testGetBoundingBoxZoom0() {

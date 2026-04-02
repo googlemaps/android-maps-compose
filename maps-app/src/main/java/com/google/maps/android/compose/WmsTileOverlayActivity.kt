@@ -19,11 +19,24 @@ package com.google.maps.android.compose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.wms.WmsTileOverlay
+import androidx.core.net.toUri
 
 /**
  * This activity demonstrates how to use [WmsTileOverlay] to display a Web Map Service (WMS)
@@ -38,23 +51,62 @@ class WmsTileOverlayActivity : ComponentActivity() {
             val cameraPositionState = rememberCameraPositionState {
                 position = CameraPosition.fromLatLngZoom(center, 4f)
             }
+            var mapType by remember { mutableStateOf(MapType.NORMAL) }
+            var overlayVisible by remember { mutableStateOf(true) }
 
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
-            ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    properties = MapProperties(mapType = mapType)
+                ) {
                 // Example: USGS National Map Shaded Relief (WMS)
                 WmsTileOverlay(
                     urlFormatter = { xMin, yMin, xMax, yMax, _ ->
-                        "https://basemap.nationalmap.gov/arcgis/services/USGSShadedReliefOnly/MapServer/WmsServer?" +
-                            "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap" +
-                            "&FORMAT=image/png&TRANSPARENT=true&LAYERS=0" +
-                            "&SRS=EPSG:3857&WIDTH=256&HEIGHT=256" +
-                            "&BBOX=$xMin,$yMin,$xMax,$yMax"
+                        "https://basemap.nationalmap.gov/arcgis/services/USGSShadedReliefOnly/MapServer/WmsServer".toUri()
+                            .buildUpon()
+                            .appendQueryParameter("SERVICE", "WMS")
+                            .appendQueryParameter("VERSION", "1.1.1")
+                            .appendQueryParameter("REQUEST", "GetMap")
+                            .appendQueryParameter("FORMAT", "image/png")
+                            .appendQueryParameter("TRANSPARENT", "true")
+                            .appendQueryParameter("LAYERS", "0")
+                            .appendQueryParameter("SRS", "EPSG:3857")
+                            .appendQueryParameter("WIDTH", "256")
+                            .appendQueryParameter("HEIGHT", "256")
+                            .appendQueryParameter("STYLES", "")
+                            .appendQueryParameter("BBOX", "$xMin,$yMin,$xMax,$yMax")
+                            .build()
+                            .toString()
                     },
-                    transparency = 0.5f
+                    transparency = 0.5f,
+                    visible = overlayVisible
                 )
             }
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        mapType = if (mapType == MapType.NONE) MapType.NORMAL else MapType.NONE
+                    }
+                ) {
+                    Text(if (mapType == MapType.NONE) "Show Base Map" else "Hide Base Map")
+                }
+
+                Button(
+                    onClick = {
+                        overlayVisible = !overlayVisible
+                    }
+                ) {
+                    Text(if (overlayVisible) "Hide WMS Overlay" else "Show WMS Overlay")
+                }
+            }
         }
+    }
     }
 }
