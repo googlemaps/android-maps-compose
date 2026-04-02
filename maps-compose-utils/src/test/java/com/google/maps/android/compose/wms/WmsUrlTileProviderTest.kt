@@ -62,4 +62,33 @@ public class WmsUrlTileProviderTest {
         val expected = doubleArrayOf(-worldSize / 2, 0.0, 0.0, worldSize / 2)
         assertArrayEquals(expected, bbox, 0.001)
     }
+
+    @Test
+    public fun testGetTileUrlBeyondBounds() {
+        val provider = WmsUrlTileProvider(datasetXMinBound = 1.0) { _, _, _, _, _ -> "https://example.com" }
+        val halfOfRes = {zoom : Int -> 1 shl (zoom - 1)}
+        for (z in 1..3) {
+            for (x in 0..<halfOfRes(z)) { //since xMinBound is the line 1.0 the boxes made to reach 0.0 will not intersect
+                for (y in 0..2 * halfOfRes(z)) {
+                    val tileUrl = provider.getTileUrl(x, y, z)
+                    assert(tileUrl == null)
+                }
+            }
+        }
+    }
+
+    @Test
+    public fun testGetTileUrlWithinBounds() {
+        val provider = WmsUrlTileProvider(datasetXMaxBound = -1.0) { _, _, _, _, _ -> "https://example.com" }
+        val halfOfRes = {zoom : Int -> 1 shl (zoom - 1)}
+        for (z in 1..3) {
+            for (x in 0..<halfOfRes(z)) { //since xMaxBound is the line 1.0 the boxes made to reach 0.0 will be contained
+                for (y in 0..2 * halfOfRes(z)) {
+                    val tileUrl = provider.getTileUrl(x, y, z)
+                    assert(tileUrl != null)
+                }
+            }
+        }
+    }
+
 }
