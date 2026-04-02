@@ -48,7 +48,7 @@ class WmsTileOverlayActivity : ComponentActivity() {
                     urlFormatter = { xMin, yMin, xMax, yMax, _ ->
                         "https://basemap.nationalmap.gov/arcgis/services/USGSShadedReliefOnly/MapServer/WmsServer?" +
                             "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap" +
-                            "&FORMAT=image/png&TRANSPARENT=true&LAYERS=0" +
+                            "&FORMAT=image/png&STYLES=default&TRANSPARENT=true&LAYERS=0" +
                             "&SRS=EPSG:3857&WIDTH=256&HEIGHT=256" +
                             "&BBOX=$xMin,$yMin,$xMax,$yMax"
                     },
