@@ -75,6 +75,9 @@
   <string name="tile_overlay_activity">Tile Overlay</string>
   <string name="tile_overlay_activity_description">Adding a tile overlay to the map.</string>
 
+  <string name="wms_tile_overlay_activity">WMS Tile Overlay</string>
+  <string name="wms_tile_overlay_activity_description">Adding a WMS (EPSG:3857) tile overlay to the map.</string>
+
   <string name="ground_overlay_activity">Ground Overlay</string>
   <string name="ground_overlay_activity_description">Adding a ground overlay to the map.</string>
 
