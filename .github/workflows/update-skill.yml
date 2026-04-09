@@ -58,7 +58,7 @@ jobs:
           token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
           commit-message: "docs: update SKILL.md based on release ${{ github.ref_name }}"
           title: "docs: update SKILL.md for release ${{ github.ref_name }}"
-          body: "Automatically generated PR to update \`SKILL.md\` for the latest release \`${{ github.ref_name }}\`."
+          body: "Automatically generated PR to update `SKILL.md` for the latest release `${{ github.ref_name }}`."
           branch: "update-skill-for-${{ github.ref_name }}"
           base: main
           labels: |
