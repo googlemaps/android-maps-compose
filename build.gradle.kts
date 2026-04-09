@@ -49,7 +49,7 @@ val projectArtifactId by extra { project: Project ->
 allprojects {
     group = "com.google.maps.android"
     // {x-release-please-start-version}
-    version = "8.2.2"
+    version = "8.3.0"
     // {x-release-please-end}
 }
 
