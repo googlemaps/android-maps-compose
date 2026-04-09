@@ -52,23 +52,15 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python .github/scripts/update_skill.py
         
-      - name: Commit and Push Changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # Checkout main branch to push the update there
-          git checkout main
-          
-          # Copy the updated file to the main branch
-          git checkout ${GITHUB_REF_NAME} -- .gemini/skills/android-maps-compose/SKILL.md
-          
-          git add .gemini/skills/android-maps-compose/SKILL.md
-          
-          # Only commit if there are changes
-          if ! git diff-index --quiet HEAD; then
-            git commit -m "docs: update SKILL.md based on release ${GITHUB_REF_NAME} diff [skip ci]"
-            git push origin main
-          else
-            echo "No changes in SKILL.md"
-          fi
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
+          commit-message: "docs: update SKILL.md based on release ${{ github.ref_name }}"
+          title: "docs: update SKILL.md for release ${{ github.ref_name }}"
+          body: "Automatically generated PR to update \`SKILL.md\` for the latest release \`${{ github.ref_name }}\`."
+          branch: "update-skill-for-${{ github.ref_name }}"
+          base: main
+          labels: |
+            docs
+            automerge
