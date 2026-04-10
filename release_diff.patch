@@ -1,0 +1,2259 @@
+diff --git a/.gemini/config.yaml b/.gemini/config.yaml
+index 7a05ec4..770d2c1 100644
+--- a/.gemini/config.yaml
++++ b/.gemini/config.yaml
+@@ -1,3 +1,17 @@
++# Copyright 2026 Google LLC
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
+ # Gemini Code Assist Configuration
+ # See: https://developers.google.com/gemini-code-assist/docs/customize-gemini-behavior-github
+ 
+diff --git a/.gemini/skills/android-maps-compose/SKILL.md b/.gemini/skills/android-maps-compose/SKILL.md
+index 8da9e7a..4a40278 100644
+--- a/.gemini/skills/android-maps-compose/SKILL.md
++++ b/.gemini/skills/android-maps-compose/SKILL.md
+@@ -15,13 +15,13 @@ Verify the latest versions if possible, but use these as a baseline:
+ ```kotlin
+ dependencies {
+     // Google Maps Compose library
+-    implementation("com.google.maps.android:maps-compose:8.2.0") // x-release-please-version
++    implementation("com.google.maps.android:maps-compose:8.3.0") // x-release-please-version
+ 
+     // Optional: Maps Compose Utilities (for clustering, etc.)
+-    // implementation("com.google.maps.android:maps-compose-utils:8.2.0") // x-release-please-version
++    // implementation("com.google.maps.android:maps-compose-utils:8.3.0") // x-release-please-version
+ 
+     // Optional: Maps Compose Widgets (for UI components)
+-    // implementation("com.google.maps.android:maps-compose-widgets:8.2.0") // x-release-please-version
++    // implementation("com.google.maps.android:maps-compose-widgets:8.3.0") // x-release-please-version
+ }
+ ```
+ 
+diff --git a/.geminiignore b/.geminiignore
+new file mode 100644
+index 0000000..ecfe6dd
+--- /dev/null
++++ b/.geminiignore
+@@ -0,0 +1,40 @@
++# Ignore build and generated directories
++build/
++**/build/
++.gradle/
++.idea/
++.kotlin/
++.vscode/
++
++# Ignore outputs
++*.apk
++*.ap_
++*.aab
++*.dex
++*.class
++
++# Ignore large media assets (images, fonts, etc) unless specifically required
++**/*.png
++**/*.jpg
++**/*.jpeg
++**/*.gif
++**/*.webp
++**/*.svg
++**/*.mp4
++**/*.mp3
++**/*.wav
++**/*.ttf
++**/*.woff
++**/*.woff2
++**/*.otf
++
++# Ignore temporary and cache files
++tmp/
++**/tmp/
++*.log
++*.tmp
++*.bak
++*.swp
++*~.nib
++local.properties
++.DS_Store
+\ No newline at end of file
+diff --git a/.github/scripts/triage_issue.py b/.github/scripts/triage_issue.py
+index d9f1c91..8eb2337 100644
+--- a/.github/scripts/triage_issue.py
++++ b/.github/scripts/triage_issue.py
+@@ -1,3 +1,17 @@
++# Copyright 2026 Google LLC
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
+ import os
+ import json
+ import urllib.request
+diff --git a/.github/scripts/update_skill.py b/.github/scripts/update_skill.py
+new file mode 100644
+index 0000000..151ee91
+--- /dev/null
++++ b/.github/scripts/update_skill.py
+@@ -0,0 +1,116 @@
++# Copyright 2026 Google LLC
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
++import os
++import json
++import urllib.request
++import sys
++
++def get_gemini_response(api_key, prompt):
++    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
++    headers = {'Content-Type': 'application/json'}
++    data = {
++        "contents": [{
++            "parts": [{"text": prompt}]
++        }]
++    }
++    
++    req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers)
++    try:
++        with urllib.request.urlopen(req) as response:
++            res_data = json.loads(response.read().decode('utf-8'))
++            return res_data['candidates'][0]['content']['parts'][0]['text']
++    except urllib.error.HTTPError as e:
++        print(f"Gemini API Error ({e.code}): {e.reason}", file=sys.stderr)
++        try:
++            error_body = e.read().decode('utf-8')
++            print(f"Error details: {error_body}", file=sys.stderr)
++        except:
++            pass
++        return None
++    except Exception as e:
++        print(f"Error calling Gemini API: {e}", file=sys.stderr)
++        return None
++
++def main():
++    api_key = os.getenv("GEMINI_API_KEY")
++    diff_file = os.getenv("DIFF_FILE", "release_diff.patch")
++    skill_file = os.getenv("SKILL_FILE", ".gemini/skills/android-maps-compose/SKILL.md")
++
++    if not api_key:
++        print("GEMINI_API_KEY not found", file=sys.stderr)
++        sys.exit(1)
++
++    if not os.path.exists(diff_file):
++        print(f"Diff file {diff_file} not found.", file=sys.stderr)
++        sys.exit(1)
++
++    if not os.path.exists(skill_file):
++        print(f"Skill file {skill_file} not found.", file=sys.stderr)
++        sys.exit(1)
++
++    with open(diff_file, "r") as f:
++        diff_content = f.read()
++
++    with open(skill_file, "r") as f:
++        skill_content = f.read()
++
++    prompt = f"""
++You are an expert technical writer and Android developer. 
++Your task is to update the Gemini CLI skill instructions for an SDK based on the latest release changes.
++
++Here is the current `SKILL.md` file:
++```markdown
++{skill_content}
++```
++
++Here is the git diff representing the changes introduced in this release:
++```diff
++{diff_content}
++```
++
++Please analyze the diff to identify any new APIs, deprecated functions, structural changes, or changes in implementation best practices.
++Update the `SKILL.md` content to incorporate these new concepts or deprecations.
++
++CRITICAL REQUIREMENTS:
++- Preserve the overall markdown structure and formatting of the existing `SKILL.md`.
++- Ensure you keep the YAML frontmatter intact at the top of the file (between `---`).
++- Do NOT remove the `// x-release-please-version` comments in the Gradle dependencies, as they are required by our release process.
++- Return ONLY the raw updated markdown content. Do NOT wrap it in ```markdown...``` code blocks, just return the exact file content so it can be directly saved.
++"""
++
++    print("Requesting update from Gemini...", file=sys.stderr)
++    response_text = get_gemini_response(api_key, prompt)
++    if response_text:
++        # Clean up response text if the model wrapped it in markdown code blocks despite instructions
++        if response_text.startswith("```markdown"):
++            response_text = response_text.replace("```markdown\n", "", 1)
++            if response_text.endswith("```"):
++                response_text = response_text[:-3]
++        elif response_text.startswith("```"):
++            response_text = response_text.replace("```\n", "", 1)
++            if response_text.endswith("```"):
++                response_text = response_text[:-3]
++                
++        # Trim whitespace at the very beginning or end
++        response_text = response_text.strip() + "\n"
++            
++        with open(skill_file, "w") as f:
++            f.write(response_text)
++        print(f"Successfully updated {skill_file}", file=sys.stderr)
++    else:
++        sys.exit(1)
++
++if __name__ == "__main__":
++    main()
+diff --git a/.github/workflows/publish.yml b/.github/workflows/publish.yml
+index 287786e..6ccf586 100644
+--- a/.github/workflows/publish.yml
++++ b/.github/workflows/publish.yml
+@@ -1,3 +1,17 @@
++# Copyright 2026 Google LLC
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
+ name: Publish
+ 
+ on:
+diff --git a/.github/workflows/release-please.yml b/.github/workflows/release-please.yml
+index 9033382..7a1d629 100644
+--- a/.github/workflows/release-please.yml
++++ b/.github/workflows/release-please.yml
+@@ -1,3 +1,17 @@
++# Copyright 2026 Google LLC
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
+ on:
+   push:
+     branches:
+diff --git a/.github/workflows/triage-issue.yml b/.github/workflows/triage-issue.yml
+index 79cab12..6217d64 100644
+--- a/.github/workflows/triage-issue.yml
++++ b/.github/workflows/triage-issue.yml
+@@ -1,3 +1,17 @@
++# Copyright 2026 Google LLC
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
+ name: Issue Triage with Gemini
+ 
+ on:
+diff --git a/.github/workflows/update-skill.yml b/.github/workflows/update-skill.yml
+new file mode 100644
+index 0000000..34dd3bd
+--- /dev/null
++++ b/.github/workflows/update-skill.yml
+@@ -0,0 +1,66 @@
++# Copyright 2026 Google LLC
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++
++name: Update Skill
++
++on:
++  release:
++    types: [published]
++
++jobs:
++  update-skill:
++    runs-on: ubuntu-latest
++    steps:
++      - name: Checkout
++        uses: actions/checkout@v4
++        with:
++          fetch-depth: 0 # Fetch all history for tags and diffs
++          token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
++          
++      - name: Setup Python
++        uses: actions/setup-python@v5
++        with:
++          python-version: '3.11'
++          
++      - name: Generate Diff
++        run: |
++          # The new release tag is GITHUB_REF_NAME when triggered on release
++          # Find the tag immediately preceding this one
++          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${GITHUB_REF_NAME}^ 2>/dev/null || echo "")
++          
++          if [ -z "$PREVIOUS_TAG" ]; then
++            # If no previous tag, diff against the initial commit
++            INITIAL_COMMIT=$(git rev-list --max-parents=0 HEAD)
++            git diff $INITIAL_COMMIT..HEAD > release_diff.patch
++          else
++            git diff $PREVIOUS_TAG..$GITHUB_REF_NAME > release_diff.patch
++          fi
++          
++      - name: Update Skill via Gemini
++        env:
++          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
++        run: python .github/scripts/update_skill.py
++        
++      - name: Create Pull Request
++        uses: peter-evans/create-pull-request@v7
++        with:
++          token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
++          commit-message: "docs: update SKILL.md based on release ${{ github.ref_name }}"
++          title: "docs: update SKILL.md for release ${{ github.ref_name }}"
++          body: "Automatically generated PR to update `SKILL.md` for the latest release `${{ github.ref_name }}`."
++          branch: "update-skill-for-${{ github.ref_name }}"
++          base: main
++          labels: |
++            docs
++            automerge
+diff --git a/.release-please-manifest.json b/.release-please-manifest.json
+index 78bae24..08042c2 100644
+--- a/.release-please-manifest.json
++++ b/.release-please-manifest.json
+@@ -1,3 +1,3 @@
+ {
+-    ".": "8.2.2"
++    ".": "8.3.0"
+ }
+\ No newline at end of file
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index b52a45a..4c0735d 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,5 +1,19 @@
+ # Changelog
+ 
++## [8.3.0](https://github.com/googlemaps/android-maps-compose/compare/v8.2.2...v8.3.0) (2026-04-09)
++
++
++### Features
++
++* add WMS tile overlay support to maps-compose-utils ([#884](https://github.com/googlemaps/android-maps-compose/issues/884)) ([ca66e98](https://github.com/googlemaps/android-maps-compose/commit/ca66e982e70899f6deb487689b8eeac9751a94a2))
++* expose rememberComposeBitmapDescriptor as public experimental API ([#867](https://github.com/googlemaps/android-maps-compose/issues/867)) ([3456db0](https://github.com/googlemaps/android-maps-compose/commit/3456db01fba52c66f18a367a6110d5e2c092dea4))
++
++
++### Bug Fixes
++
++* fallback to moveCamera in lite mode for CameraPositionState animate ([#877](https://github.com/googlemaps/android-maps-compose/issues/877)) ([8994e12](https://github.com/googlemaps/android-maps-compose/commit/8994e123730aeece4faec3b51706a4ec020db7e7))
++* prevent NullPointerException in MapUpdater on HMS/microG devices ([#858](https://github.com/googlemaps/android-maps-compose/issues/858)) ([5669abd](https://github.com/googlemaps/android-maps-compose/commit/5669abd84ac20c5764ff0fdd73eef050828a577b))
++
+ ## [8.2.2](https://github.com/googlemaps/android-maps-compose/compare/v8.2.1...v8.2.2) (2026-03-12)
+ 
+ 
+diff --git a/CONTRIBUTING.md b/CONTRIBUTING.md
+index 4e673a0..69ae2d8 100644
+--- a/CONTRIBUTING.md
++++ b/CONTRIBUTING.md
+@@ -26,6 +26,12 @@ information on using pull requests.
+ 
+ Reviews will undergo strict enforcement of the [Jetpack Compose API guidelines](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md).
+ 
++## Using AI to Contribute
++
++This repository provides an official Gemini Skill to help AI agents navigate and contribute to the project effectively. If you are using the `gemini-cli` or a compatible AI tool, you can invoke the skill located in `.gemini/skills/android-maps-compose` to learn how to integrate or modify the Maps Compose components. 
++
++Additionally, the `.geminiignore` file prevents AI tools from consuming large or irrelevant files to preserve context limits.
++
+ ## Community Guidelines
+ 
+ This project follows
+diff --git a/README.md b/README.md
+index c347e4c..7195fdd 100644
+--- a/README.md
++++ b/README.md
+@@ -29,12 +29,12 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
+ 
+ ```groovy
+ dependencies {
+-    implementation 'com.google.maps.android:maps-compose:8.2.2' // {x-release-please-version}
++    implementation 'com.google.maps.android:maps-compose:8.3.0' // {x-release-please-version}
+     // Optionally, you can include the Compose utils library for Clustering,
+     // Street View metadata checks, etc.
+-    implementation 'com.google.maps.android:maps-compose-utils:8.2.2' // {x-release-please-version}
++    implementation 'com.google.maps.android:maps-compose-utils:8.3.0' // {x-release-please-version}
+     // Optionally, you can include the widgets library for ScaleBar, etc.
+-    implementation 'com.google.maps.android:maps-compose-widgets:8.2.2' // {x-release-please-version}
++    implementation 'com.google.maps.android:maps-compose-widgets:8.3.0' // {x-release-please-version}
+ }
+ ```
+ 
+diff --git a/build-logic/convention/build.gradle.kts b/build-logic/convention/build.gradle.kts
+index f2399c9..3a858e4 100644
+--- a/build-logic/convention/build.gradle.kts
++++ b/build-logic/convention/build.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ plugins {
+     `kotlin-dsl`
+ }
+diff --git a/build-logic/convention/src/main/kotlin/PublishingConventionPlugin.kt b/build-logic/convention/src/main/kotlin/PublishingConventionPlugin.kt
+index 8af5773..3544bc8 100644
+--- a/build-logic/convention/src/main/kotlin/PublishingConventionPlugin.kt
++++ b/build-logic/convention/src/main/kotlin/PublishingConventionPlugin.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ // buildSrc/src/main/kotlin/PublishingConventionPlugin.kt
+ import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+ import com.vanniktech.maven.publish.MavenPublishBaseExtension
+diff --git a/build-logic/convention/src/main/kotlin/dokka-convention.gradle.kts b/build-logic/convention/src/main/kotlin/dokka-convention.gradle.kts
+index 0444639..55785d9 100644
+--- a/build-logic/convention/src/main/kotlin/dokka-convention.gradle.kts
++++ b/build-logic/convention/src/main/kotlin/dokka-convention.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ /**
+  * Common conventions for generating documentation with Dokka.
+  */
+diff --git a/build-logic/settings.gradle.kts b/build-logic/settings.gradle.kts
+index 2907fbf..a2af130 100644
+--- a/build-logic/settings.gradle.kts
++++ b/build-logic/settings.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ dependencyResolutionManagement {
+     repositories {
+         google()
+diff --git a/build.gradle.kts b/build.gradle.kts
+index a310dae..c574535 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ // Top-level build file where you can add configuration options common to all sub-projects/modules.
+ buildscript {
+     repositories {
+@@ -33,7 +49,7 @@ val projectArtifactId by extra { project: Project ->
+ allprojects {
+     group = "com.google.maps.android"
+     // {x-release-please-start-version}
+-    version = "8.2.2"
++    version = "8.3.0"
+     // {x-release-please-end}
+ }
+ 
+diff --git a/maps-compose/compose_compiler_stability_config.conf b/compose_compiler_stability_config.conf
+similarity index 100%
+rename from maps-compose/compose_compiler_stability_config.conf
+rename to compose_compiler_stability_config.conf
+diff --git a/docs/build.gradle.kts b/docs/build.gradle.kts
+index c0727f4..0d4c3c4 100644
+--- a/docs/build.gradle.kts
++++ b/docs/build.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ plugins {
+     kotlin("jvm") apply false
+     id("org.jetbrains.dokka")
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+index a4076ca..65f88be 100644
+--- a/gradle/libs.versions.toml
++++ b/gradle/libs.versions.toml
+@@ -7,7 +7,7 @@ androidCompileSdk = "36"
+ androidMinSdk = "23"
+ androidTargetSdk = "36"
+ 
+-agp = "9.0.0"
++agp = "9.1.0"
+ dokka = "2.1.0"
+ gradleMavenPublishPlugin = "0.36.0"
+ kotlin = "2.3.10"
+diff --git a/gradle/wrapper/gradle-wrapper.jar b/gradle/wrapper/gradle-wrapper.jar
+index 8bdaf60..d997cfc 100644
+Binary files a/gradle/wrapper/gradle-wrapper.jar and b/gradle/wrapper/gradle-wrapper.jar differ
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index 23449a2..c61a118 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,6 +1,6 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-9.2.1-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-9.4.1-bin.zip
+ networkTimeout=10000
+ validateDistributionUrl=true
+ zipStoreBase=GRADLE_USER_HOME
+diff --git a/gradlew b/gradlew
+index ef07e01..739907d 100755
+--- a/gradlew
++++ b/gradlew
+@@ -57,7 +57,7 @@
+ #       Darwin, MinGW, and NonStop.
+ #
+ #   (3) This script is generated from the Groovy template
+-#       https://github.com/gradle/gradle/blob/HEAD/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
++#       https://github.com/gradle/gradle/blob/2d6327017519d23b96af35865dc997fcb544fb40/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+ #       within the Gradle project.
+ #
+ #       You can find Gradle at https://github.com/gradle/gradle/.
+@@ -114,7 +114,6 @@ case "$( uname )" in                #(
+   NONSTOP* )        nonstop=true ;;
+ esac
+ 
+-CLASSPATH="\\\"\\\""
+ 
+ 
+ # Determine the Java command to use to start the JVM.
+@@ -172,7 +171,6 @@ fi
+ # For Cygwin or MSYS, switch paths to Windows format before running java
+ if "$cygwin" || "$msys" ; then
+     APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
+-    CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
+ 
+     JAVACMD=$( cygpath --unix "$JAVACMD" )
+ 
+@@ -212,7 +210,6 @@ DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+ 
+ set -- \
+         "-Dorg.gradle.appname=$APP_BASE_NAME" \
+-        -classpath "$CLASSPATH" \
+         -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
+         "$@"
+ 
+diff --git a/gradlew.bat b/gradlew.bat
+index 5eed7ee..e509b2d 100644
+--- a/gradlew.bat
++++ b/gradlew.bat
+@@ -70,11 +70,10 @@ goto fail
+ :execute
+ @rem Setup the command line
+ 
+-set CLASSPATH=
+ 
+ 
+ @rem Execute Gradle
+-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
++"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -jar "%APP_HOME%\gradle\wrapper\gradle-wrapper.jar" %*
+ 
+ :end
+ @rem End local scope for the variables with windows NT shell
+diff --git a/llm-integration-prompt.md b/llm-integration-prompt.md
+index 79db3e8..09e803f 100644
+--- a/llm-integration-prompt.md
++++ b/llm-integration-prompt.md
+@@ -14,7 +14,7 @@ Add the following to your `gradle/libs.versions.toml` file:
+ 
+ ```toml
+ [versions]
+-mapsCompose = "8.2.0" # x-release-please-version
++mapsCompose = "8.3.0" # x-release-please-version
+ 
+ [libraries]
+ maps-compose = { group = "com.google.maps.android", name = "maps-compose", version.ref = "mapsCompose" }
+@@ -44,13 +44,13 @@ If you are not using version catalogs, add the dependencies directly to your app
+ ```kotlin
+ dependencies {
+     // Google Maps Compose library
+-    implementation("com.google.maps.android:maps-compose:8.2.0") // x-release-please-version
++    implementation("com.google.maps.android:maps-compose:8.3.0") // x-release-please-version
+ 
+     // Optional: Maps Compose Utilities (for clustering, etc.)
+-    // implementation("com.google.maps.android:maps-compose-utils:8.2.0") // x-release-please-version
++    // implementation("com.google.maps.android:maps-compose-utils:8.3.0") // x-release-please-version
+ 
+     // Optional: Maps Compose Widgets (for UI components)
+-    // implementation("com.google.maps.android:maps-compose-widgets:8.2.0") // x-release-please-version
++    // implementation("com.google.maps.android:maps-compose-widgets:8.3.0") // x-release-please-version
+ }
+ ```
+ 
+diff --git a/maps-app/build.gradle.kts b/maps-app/build.gradle.kts
+index 0654b78..1a6b6c1 100644
+--- a/maps-app/build.gradle.kts
++++ b/maps-app/build.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ 
+ plugins {
+diff --git a/maps-app/src/androidTest/AndroidManifest.xml b/maps-app/src/androidTest/AndroidManifest.xml
+index 6fae52d..0e2e2c4 100644
+--- a/maps-app/src/androidTest/AndroidManifest.xml
++++ b/maps-app/src/androidTest/AndroidManifest.xml
+@@ -1,4 +1,20 @@
+ <?xml version="1.0" encoding="utf-8"?>
++<!--
++ Copyright 2026 Google LLC
++
++ Licensed under the Apache License, Version 2.0 (the "License");
++ you may not use this file except in compliance with the License.
++ You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++ Unless required by applicable law or agreed to in writing, software
++ distributed under the License is distributed on an "AS IS" BASIS,
++ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ See the License for the specific language governing permissions and
++ limitations under the License.
++-->
++
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools">
+ 
+diff --git a/maps-app/src/androidTest/java/com/google/maps/android/compose/MapsInLazyColumnTest.kt b/maps-app/src/androidTest/java/com/google/maps/android/compose/MapsInLazyColumnTest.kt
+index dcb2154..7ec24af 100644
+--- a/maps-app/src/androidTest/java/com/google/maps/android/compose/MapsInLazyColumnTest.kt
++++ b/maps-app/src/androidTest/java/com/google/maps/android/compose/MapsInLazyColumnTest.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import androidx.compose.foundation.lazy.rememberLazyListState
+diff --git a/maps-app/src/androidTest/java/com/google/maps/android/compose/StreetViewTests.kt b/maps-app/src/androidTest/java/com/google/maps/android/compose/StreetViewTests.kt
+index 2f73f80..ed5b3fc 100644
+--- a/maps-app/src/androidTest/java/com/google/maps/android/compose/StreetViewTests.kt
++++ b/maps-app/src/androidTest/java/com/google/maps/android/compose/StreetViewTests.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import androidx.compose.ui.Modifier
+diff --git a/maps-app/src/androidTest/java/com/google/maps/android/compose/TestUtils.kt b/maps-app/src/androidTest/java/com/google/maps/android/compose/TestUtils.kt
+index 5d45ac5..e9b74f0 100644
+--- a/maps-app/src/androidTest/java/com/google/maps/android/compose/TestUtils.kt
++++ b/maps-app/src/androidTest/java/com/google/maps/android/compose/TestUtils.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import com.google.android.gms.maps.model.LatLng
+diff --git a/maps-app/src/main/AndroidManifest.xml b/maps-app/src/main/AndroidManifest.xml
+index 9d0cdc4..d312b73 100644
+--- a/maps-app/src/main/AndroidManifest.xml
++++ b/maps-app/src/main/AndroidManifest.xml
+@@ -64,6 +64,9 @@
+         <activity
+             android:name=".MapsInLazyColumnActivity"
+             android:exported="true" />
++        <activity
++            android:name=".LiteModeActivity"
++            android:exported="true" />
+         <activity
+             android:name=".markerexamples.MarkerClusteringActivity"
+             android:exported="true" />
+@@ -106,6 +109,9 @@
+         <activity
+             android:name=".TileOverlayActivity"
+             android:exported="true" />
++        <activity
++            android:name=".WmsTileOverlayActivity"
++            android:exported="true" />
+         <activity
+             android:name=".GroundOverlayActivity"
+             android:exported="true" />
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/Demo.kt b/maps-app/src/main/java/com/google/maps/android/compose/Demo.kt
+index 410785c..2931e60 100644
+--- a/maps-app/src/main/java/com/google/maps/android/compose/Demo.kt
++++ b/maps-app/src/main/java/com/google/maps/android/compose/Demo.kt
+@@ -75,6 +75,11 @@ sealed class ActivityGroup(
+                 R.string.basic_map_activity_description,
+                 BasicMapActivity::class
+             ),
++            Activity(
++                R.string.lite_mode_activity,
++                R.string.lite_mode_activity_description,
++                LiteModeActivity::class
++            ),
+             Activity(
+                 R.string.street_view_activity,
+                 R.string.street_view_activity_description,
+@@ -111,6 +116,11 @@ sealed class ActivityGroup(
+                 R.string.tile_overlay_activity_description,
+                 TileOverlayActivity::class
+             ),
++            Activity(
++                R.string.wms_tile_overlay_activity,
++                R.string.wms_tile_overlay_activity_description,
++                WmsTileOverlayActivity::class
++            ),
+             Activity(
+                 R.string.ground_overlay_activity,
+                 R.string.ground_overlay_activity_description,
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/FragmentDemoActivity.kt b/maps-app/src/main/java/com/google/maps/android/compose/FragmentDemoActivity.kt
+index 0caaf17..bc9c1c4 100644
+--- a/maps-app/src/main/java/com/google/maps/android/compose/FragmentDemoActivity.kt
++++ b/maps-app/src/main/java/com/google/maps/android/compose/FragmentDemoActivity.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ 
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/GoogleMapComposeFragment.kt b/maps-app/src/main/java/com/google/maps/android/compose/GoogleMapComposeFragment.kt
+index fde1cdc..19c5248 100644
+--- a/maps-app/src/main/java/com/google/maps/android/compose/GoogleMapComposeFragment.kt
++++ b/maps-app/src/main/java/com/google/maps/android/compose/GoogleMapComposeFragment.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import android.os.Bundle
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/LiteModeActivity.kt b/maps-app/src/main/java/com/google/maps/android/compose/LiteModeActivity.kt
+new file mode 100644
+index 0000000..3d62630
+--- /dev/null
++++ b/maps-app/src/main/java/com/google/maps/android/compose/LiteModeActivity.kt
+@@ -0,0 +1,95 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.google.maps.android.compose
++
++import android.os.Bundle
++import androidx.activity.ComponentActivity
++import androidx.activity.compose.setContent
++import androidx.activity.enableEdgeToEdge
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.systemBarsPadding
++import androidx.compose.material3.Button
++import androidx.compose.material3.Text
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
++import androidx.compose.runtime.rememberCoroutineScope
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.unit.dp
++import com.google.android.gms.maps.CameraUpdateFactory
++import com.google.android.gms.maps.GoogleMapOptions
++import com.google.android.gms.maps.model.CameraPosition
++import com.google.android.gms.maps.model.LatLng
++import com.google.maps.android.compose.theme.MapsComposeSampleTheme
++import kotlinx.coroutines.launch
++
++class LiteModeActivity : ComponentActivity() {
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        enableEdgeToEdge()
++        setContent {
++            MapsComposeSampleTheme {
++                val singapore = remember { LatLng(1.35, 103.87) }
++                val tokyo = remember { LatLng(35.6895, 139.6917) }
++                val coroutineScope = rememberCoroutineScope()
++                val cameraPositionState = rememberCameraPositionState {
++                    position = CameraPosition.fromLatLngZoom(singapore, 11f)
++                }
++                val mapProperties by remember {
++                    mutableStateOf(MapProperties(mapType = MapType.NORMAL))
++                }
++
++                Column(
++                    modifier = Modifier.fillMaxSize().systemBarsPadding()
++                ) {
++                    Button(
++                        onClick = {
++                            coroutineScope.launch {
++                                // This would previously hang indefinitely in Lite Mode!
++                                // Now it falls back to instantaneous movement and completes the coroutine.
++                                val newTarget = if (cameraPositionState.position.target == singapore) {
++                                    tokyo
++                                } else {
++                                    singapore
++                                }
++                                cameraPositionState.animate(CameraUpdateFactory.newLatLng(newTarget))
++                            }
++                        },
++                        modifier = Modifier.padding(16.dp)
++                    ) {
++                        Text("Animate Camera (Tests Fix)")
++                    }
++
++                    Box(
++                        modifier = Modifier.weight(1f),
++                    ) {
++                        GoogleMap(
++                            modifier = Modifier.matchParentSize(),
++                            googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
++                            cameraPositionState = cameraPositionState,
++                            properties = mapProperties,
++                        )
++                    }
++                }
++            }
++        }
++    }
++}
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/MapFragmentPagerAdapter.kt b/maps-app/src/main/java/com/google/maps/android/compose/MapFragmentPagerAdapter.kt
+index cb2cd09..26bc818 100644
+--- a/maps-app/src/main/java/com/google/maps/android/compose/MapFragmentPagerAdapter.kt
++++ b/maps-app/src/main/java/com/google/maps/android/compose/MapFragmentPagerAdapter.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import androidx.fragment.app.Fragment
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/MapsInLazyColumnActivity.kt b/maps-app/src/main/java/com/google/maps/android/compose/MapsInLazyColumnActivity.kt
+index eb507a1..07f5381 100644
+--- a/maps-app/src/main/java/com/google/maps/android/compose/MapsInLazyColumnActivity.kt
++++ b/maps-app/src/main/java/com/google/maps/android/compose/MapsInLazyColumnActivity.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import android.os.Bundle
+@@ -273,6 +289,15 @@ private fun MapCard(
+                 )
+             }
+ 
++            Column(
++                modifier = Modifier.align(Alignment.TopStart)
++            ) {
++                TextWithBackground(
++                    "Panning this map disables list scroll",
++                    fontWeight = FontWeight.Bold
++                )
++            }
++
+             Column(
+                 modifier = Modifier.align(Alignment.BottomStart)
+             ) {
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/TileOverlayActivity.kt b/maps-app/src/main/java/com/google/maps/android/compose/TileOverlayActivity.kt
+index 5f531cf..9f7976a 100644
+--- a/maps-app/src/main/java/com/google/maps/android/compose/TileOverlayActivity.kt
++++ b/maps-app/src/main/java/com/google/maps/android/compose/TileOverlayActivity.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import android.graphics.Bitmap
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/WmsTileOverlayActivity.kt b/maps-app/src/main/java/com/google/maps/android/compose/WmsTileOverlayActivity.kt
+new file mode 100644
+index 0000000..092479c
+--- /dev/null
++++ b/maps-app/src/main/java/com/google/maps/android/compose/WmsTileOverlayActivity.kt
+@@ -0,0 +1,112 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.google.maps.android.compose
++
++import android.os.Bundle
++import androidx.activity.ComponentActivity
++import androidx.activity.compose.setContent
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Box
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.padding
++import androidx.compose.material3.Button
++import androidx.compose.material3.Text
++import androidx.compose.runtime.getValue
++import androidx.compose.runtime.mutableStateOf
++import androidx.compose.runtime.remember
++import androidx.compose.runtime.setValue
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.unit.dp
++import com.google.android.gms.maps.model.CameraPosition
++import com.google.android.gms.maps.model.LatLng
++import com.google.maps.android.compose.wms.WmsTileOverlay
++import androidx.core.net.toUri
++
++/**
++ * This activity demonstrates how to use [WmsTileOverlay] to display a Web Map Service (WMS)
++ * layer on a map.
++ */
++class WmsTileOverlayActivity : ComponentActivity() {
++
++    override fun onCreate(savedInstanceState: Bundle?) {
++        super.onCreate(savedInstanceState)
++        setContent {
++            val center = LatLng(39.50, -98.35) // Center of US
++            val cameraPositionState = rememberCameraPositionState {
++                position = CameraPosition.fromLatLngZoom(center, 4f)
++            }
++            var mapType by remember { mutableStateOf(MapType.NORMAL) }
++            var overlayVisible by remember { mutableStateOf(true) }
++
++            Box(modifier = Modifier.fillMaxSize()) {
++                GoogleMap(
++                    modifier = Modifier.fillMaxSize(),
++                    cameraPositionState = cameraPositionState,
++                    properties = MapProperties(mapType = mapType)
++                ) {
++                // Example: USGS National Map Shaded Relief (WMS)
++                WmsTileOverlay(
++                    urlFormatter = { xMin, yMin, xMax, yMax, _ ->
++                        "https://basemap.nationalmap.gov/arcgis/services/USGSShadedReliefOnly/MapServer/WmsServer".toUri()
++                            .buildUpon()
++                            .appendQueryParameter("SERVICE", "WMS")
++                            .appendQueryParameter("VERSION", "1.1.1")
++                            .appendQueryParameter("REQUEST", "GetMap")
++                            .appendQueryParameter("FORMAT", "image/png")
++                            .appendQueryParameter("TRANSPARENT", "true")
++                            .appendQueryParameter("LAYERS", "0")
++                            .appendQueryParameter("SRS", "EPSG:3857")
++                            .appendQueryParameter("WIDTH", "256")
++                            .appendQueryParameter("HEIGHT", "256")
++                            .appendQueryParameter("STYLES", "")
++                            .appendQueryParameter("BBOX", "$xMin,$yMin,$xMax,$yMax")
++                            .build()
++                            .toString()
++                    },
++                    transparency = 0.5f,
++                    visible = overlayVisible
++                )
++            }
++
++            Column(
++                modifier = Modifier
++                    .align(Alignment.TopEnd)
++                    .padding(16.dp),
++                verticalArrangement = Arrangement.spacedBy(8.dp)
++            ) {
++                Button(
++                    onClick = {
++                        mapType = if (mapType == MapType.NONE) MapType.NORMAL else MapType.NONE
++                    }
++                ) {
++                    Text(if (mapType == MapType.NONE) "Show Base Map" else "Hide Base Map")
++                }
++
++                Button(
++                    onClick = {
++                        overlayVisible = !overlayVisible
++                    }
++                ) {
++                    Text(if (overlayVisible) "Hide WMS Overlay" else "Show WMS Overlay")
++                }
++            }
++        }
++    }
++    }
++}
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt b/maps-app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt
+index fe82f5c..5394742 100644
+--- a/maps-app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt
++++ b/maps-app/src/main/java/com/google/maps/android/compose/markerexamples/MarkerClusteringActivity.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.markerexamples
+ 
+ import android.os.Bundle
+diff --git a/maps-app/src/main/java/com/google/maps/android/compose/theme/Theme.kt b/maps-app/src/main/java/com/google/maps/android/compose/theme/Theme.kt
+index d1274f5..cf09587 100644
+--- a/maps-app/src/main/java/com/google/maps/android/compose/theme/Theme.kt
++++ b/maps-app/src/main/java/com/google/maps/android/compose/theme/Theme.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.theme
+ 
+ import androidx.compose.foundation.isSystemInDarkTheme
+diff --git a/maps-app/src/main/res/layout/activity_fragment_demo.xml b/maps-app/src/main/res/layout/activity_fragment_demo.xml
+index 5620f3c..36cbe1d 100644
+--- a/maps-app/src/main/res/layout/activity_fragment_demo.xml
++++ b/maps-app/src/main/res/layout/activity_fragment_demo.xml
+@@ -1,4 +1,20 @@
+ <?xml version="1.0" encoding="utf-8"?>
++<!--
++ Copyright 2026 Google LLC
++
++ Licensed under the Apache License, Version 2.0 (the "License");
++ you may not use this file except in compliance with the License.
++ You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++ Unless required by applicable law or agreed to in writing, software
++ distributed under the License is distributed on an "AS IS" BASIS,
++ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ See the License for the specific language governing permissions and
++ limitations under the License.
++-->
++
+ <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+diff --git a/maps-app/src/main/res/values/strings.xml b/maps-app/src/main/res/values/strings.xml
+index 9eb2b89..1147de1 100644
+--- a/maps-app/src/main/res/values/strings.xml
++++ b/maps-app/src/main/res/values/strings.xml
+@@ -21,6 +21,9 @@
+   <string name="basic_map_activity">Basic Map</string>
+   <string name="basic_map_activity_description">A simple map showing the default configuration.</string>
+ 
++  <string name="lite_mode_activity">Lite Mode Map</string>
++  <string name="lite_mode_activity_description">A map showcasing the Lite Mode configuration.</string>
++
+   <string name="street_view_activity">Street View</string>
+   <string name="street_view_activity_description">A simple Street View.</string>
+ 
+@@ -72,6 +75,9 @@
+   <string name="tile_overlay_activity">Tile Overlay</string>
+   <string name="tile_overlay_activity_description">Adding a tile overlay to the map.</string>
+ 
++  <string name="wms_tile_overlay_activity">WMS Tile Overlay</string>
++  <string name="wms_tile_overlay_activity_description">Adding a WMS (EPSG:3857) tile overlay to the map.</string>
++
+   <string name="ground_overlay_activity">Ground Overlay</string>
+   <string name="ground_overlay_activity_description">Adding a ground overlay to the map.</string>
+ 
+diff --git a/maps-app/src/screenshotTest/AndroidManifest.xml b/maps-app/src/screenshotTest/AndroidManifest.xml
+index e366e53..43c44f0 100644
+--- a/maps-app/src/screenshotTest/AndroidManifest.xml
++++ b/maps-app/src/screenshotTest/AndroidManifest.xml
+@@ -1,4 +1,20 @@
+ <?xml version="1.0" encoding="utf-8"?>
++<!--
++ Copyright 2026 Google LLC
++
++ Licensed under the Apache License, Version 2.0 (the "License");
++ you may not use this file except in compliance with the License.
++ You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++ Unless required by applicable law or agreed to in writing, software
++ distributed under the License is distributed on an "AS IS" BASIS,
++ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ See the License for the specific language governing permissions and
++ limitations under the License.
++-->
++
+ <manifest
+ 	package="com.google.maps.android.compose"
+ 	xmlns:android="http://schemas.android.com/apk/res/android"
+diff --git a/maps-app/src/screenshotTest/java/com/google/maps/android/compose/ScaleBarTest.kt b/maps-app/src/screenshotTest/java/com/google/maps/android/compose/ScaleBarTest.kt
+index f00644c..6ae01e7 100644
+--- a/maps-app/src/screenshotTest/java/com/google/maps/android/compose/ScaleBarTest.kt
++++ b/maps-app/src/screenshotTest/java/com/google/maps/android/compose/ScaleBarTest.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import androidx.compose.foundation.layout.padding
+diff --git a/maps-compose-utils/build.gradle.kts b/maps-compose-utils/build.gradle.kts
+index 41f9ccb..b3d5645 100644
+--- a/maps-compose-utils/build.gradle.kts
++++ b/maps-compose-utils/build.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ 
+ plugins {
+@@ -47,6 +63,19 @@ android {
+     }
+ }
+ 
++composeCompiler {
++    stabilityConfigurationFiles.set(
++        listOf(rootProject.layout.projectDirectory.file("compose_compiler_stability_config.conf"))
++    )
++
++    if (findProperty("composeCompilerReports") == "true") {
++        reportsDestination = layout.buildDirectory.dir("compose_compiler")
++    }
++    if (findProperty("composeCompilerMetrics") == "true") {
++        metricsDestination = layout.buildDirectory.dir("compose_compiler")
++    }
++}
++
+ dependencies {
+     api(project(":maps-compose"))
+ 
+@@ -56,4 +85,6 @@ dependencies {
+     implementation(libs.kotlin)
+     implementation(libs.kotlinx.coroutines.android)
+     api(libs.maps.ktx.utils)
++
++    testImplementation(libs.test.junit)
+ }
+diff --git a/maps-compose-utils/src/main/java/com/google/maps/android/compose/clustering/ClusterRenderer.kt b/maps-compose-utils/src/main/java/com/google/maps/android/compose/clustering/ClusterRenderer.kt
+index f80d0f7..09fcf05 100644
+--- a/maps-compose-utils/src/main/java/com/google/maps/android/compose/clustering/ClusterRenderer.kt
++++ b/maps-compose-utils/src/main/java/com/google/maps/android/compose/clustering/ClusterRenderer.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.clustering
+ 
+ import androidx.compose.runtime.State
+@@ -30,6 +46,10 @@ import kotlinx.coroutines.channels.awaitClose
+ import kotlinx.coroutines.flow.callbackFlow
+ import kotlinx.coroutines.flow.collectLatest
+ import kotlinx.coroutines.launch
++import androidx.lifecycle.Lifecycle
++import androidx.lifecycle.LifecycleOwner
++import androidx.lifecycle.LifecycleRegistry
++import androidx.lifecycle.setViewTreeLifecycleOwner
+ 
+ internal interface ClusterRendererItemState<T : ClusterItem> {
+     val unclusteredItems: State<Set<T>>
+@@ -63,6 +83,13 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
+     private val fakeCanvas = Canvas()
+     private val keysToViews = mutableMapOf<ViewKey<T>, ViewInfo>()
+ 
++    private val fakeLifecycleOwner = object : LifecycleOwner {
++        private val lifecycleRegistry = LifecycleRegistry(this).apply {
++            currentState = Lifecycle.State.RESUMED
++        }
++        override val lifecycle: Lifecycle get() = lifecycleRegistry
++    }
++
+     override fun onClustersChanged(clusters: Set<Cluster<T>>) {
+         super.onClustersChanged(clusters)
+         unclusteredItems.value = clusters.filter { !shouldRenderAsCluster(it) }
+@@ -121,6 +148,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
+                 }
+             }
+         )
++        view.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+         val renderHandle = viewRendererState.value.startRenderingView(view)
+         val rerenderJob = scope.launch {
+             collectInvalidationsAndRerender(key, view)
+diff --git a/maps-compose-utils/src/main/java/com/google/maps/android/compose/clustering/Clustering.kt b/maps-compose-utils/src/main/java/com/google/maps/android/compose/clustering/Clustering.kt
+index 482dfc4..741d0ac 100644
+--- a/maps-compose-utils/src/main/java/com/google/maps/android/compose/clustering/Clustering.kt
++++ b/maps-compose-utils/src/main/java/com/google/maps/android/compose/clustering/Clustering.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.clustering
+ 
+ import android.content.Context
+diff --git a/maps-compose-utils/src/main/java/com/google/maps/android/compose/wms/WmsTileOverlay.kt b/maps-compose-utils/src/main/java/com/google/maps/android/compose/wms/WmsTileOverlay.kt
+new file mode 100644
+index 0000000..52f8bcb
+--- /dev/null
++++ b/maps-compose-utils/src/main/java/com/google/maps/android/compose/wms/WmsTileOverlay.kt
+@@ -0,0 +1,67 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.google.maps.android.compose.wms
++
++import androidx.compose.runtime.Composable
++import androidx.compose.runtime.remember
++import com.google.android.gms.maps.model.TileOverlay
++import com.google.maps.android.compose.TileOverlay
++import com.google.maps.android.compose.TileOverlayState
++import com.google.maps.android.compose.rememberTileOverlayState
++
++/**
++ * A Composable that displays a Web Map Service (WMS) layer using the EPSG:3857 projection.
++ *
++ * @param urlFormatter a lambda that returns the WMS URL for the given bounding box coordinates.
++ * @param state the [TileOverlayState] to be used to control the tile overlay.
++ * @param fadeIn boolean indicating whether the tiles should fade in.
++ * @param transparency the transparency of the tile overlay.
++ * @param visible the visibility of the tile overlay.
++ * @param zIndex the z-index of the tile overlay.
++ * @param onClick a lambda invoked when the tile overlay is clicked.
++ * @param tileWidth the width of the tiles in pixels (default 256).
++ * @param tileHeight the height of the tiles in pixels (default 256).
++ */
++@Composable
++public fun WmsTileOverlay(
++    urlFormatter: (xMin: Double, yMin: Double, xMax: Double, yMax: Double, zoom: Int) -> String,
++    state: TileOverlayState = rememberTileOverlayState(),
++    fadeIn: Boolean = true,
++    transparency: Float = 0f,
++    visible: Boolean = true,
++    zIndex: Float = 0f,
++    onClick: (TileOverlay) -> Unit = {},
++    tileWidth: Int = 256,
++    tileHeight: Int = 256
++) {
++    val tileProvider = remember(urlFormatter, tileWidth, tileHeight) {
++        WmsUrlTileProvider(
++            width = tileWidth,
++            height = tileHeight,
++            urlFormatter = urlFormatter
++        )
++    }
++    TileOverlay(
++        tileProvider = tileProvider,
++        state = state,
++        fadeIn = fadeIn,
++        transparency = transparency,
++        visible = visible,
++        zIndex = zIndex,
++        onClick = onClick
++    )
++}
+diff --git a/maps-compose-utils/src/main/java/com/google/maps/android/compose/wms/WmsUrlTileProvider.kt b/maps-compose-utils/src/main/java/com/google/maps/android/compose/wms/WmsUrlTileProvider.kt
+new file mode 100644
+index 0000000..e6d0118
+--- /dev/null
++++ b/maps-compose-utils/src/main/java/com/google/maps/android/compose/wms/WmsUrlTileProvider.kt
+@@ -0,0 +1,94 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.google.maps.android.compose.wms
++
++import com.google.android.gms.maps.model.UrlTileProvider
++import java.net.MalformedURLException
++import java.net.URL
++import kotlin.math.PI
++import kotlin.math.pow
++
++/**
++ * A [UrlTileProvider] for Web Map Service (WMS) layers that use the EPSG:3857 (Web Mercator)
++ * projection.
++ *
++ * @param width the width of the tile in pixels.
++ * @param height the height of the tile in pixels.
++ * @param urlFormatter a lambda that returns the WMS URL for the given bounding box coordinates
++ * (xMin, yMin, xMax, yMax) and zoom level.
++ */
++public class WmsUrlTileProvider(
++    width: Int = 256,
++    height: Int = 256,
++    private val urlFormatter: (
++        xMin: Double,
++        yMin: Double,
++        xMax: Double,
++        yMax: Double,
++        zoom: Int
++    ) -> String
++) : UrlTileProvider(width, height) {
++
++    override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
++        val bbox = getBoundingBox(x, y, zoom)
++        val urlString = urlFormatter(bbox[0], bbox[1], bbox[2], bbox[3], zoom)
++        return try {
++            URL(urlString)
++        } catch (e: MalformedURLException) {
++            null
++        }
++    }
++
++    private companion object {
++        /**
++         * The maximum extent of the Web Mercator projection (EPSG:3857) in meters.
++         * This is the distance from the origin (0,0) to the edge of the world map.
++         * Calculated as semi-major axis of Earth (6378137.0) * PI.
++         */
++        private const val WORLD_EXTENT = (6378137.0) * PI
++
++        /**
++         * The total width/height of the world map in meters.
++         */
++        private const val WORLD_SIZE_METERS = 2 * WORLD_EXTENT
++    }
++
++    /**
++     * Calculates the bounding box for the given tile in EPSG:3857 coordinates.
++     *
++     * @return an array containing [xMin, yMin, xMax, yMax] in meters.
++     */
++    internal fun getBoundingBox(x: Int, y: Int, zoom: Int): DoubleArray {
++        // 1. Calculate how many tiles exist in each dimension at this zoom level (2^zoom).
++        val tilesPerDimension = 1 shl zoom
++        
++        // 2. Divide the total world span by the number of tiles to find the metric size of one tile.
++        val tileSizeMeters = WORLD_SIZE_METERS / tilesPerDimension.toDouble()
++
++        // 3. X-axis: Starts at the far left (-WORLD_EXTENT) and moves East.
++        val xMin = -WORLD_EXTENT + (x * tileSizeMeters)
++        val xMax = -WORLD_EXTENT + ((x + 1) * tileSizeMeters)
++
++        // 4. Y-axis: Google Maps/TMS starts at the Top (y=0 is North) and moves South.
++        // WMS Bounding Box expects yMin to be the southern-most latitude and yMax to be the northern-most.
++        // Therefore, we subtract the tile distance from the northern-most edge (+WORLD_EXTENT).
++        val yMax = WORLD_EXTENT - (y * tileSizeMeters)
++        val yMin = WORLD_EXTENT - ((y + 1) * tileSizeMeters)
++
++        return doubleArrayOf(xMin, yMin, xMax, yMax)
++    }
++}
+diff --git a/maps-compose-utils/src/test/java/com/google/maps/android/compose/wms/WmsUrlTileProviderTest.kt b/maps-compose-utils/src/test/java/com/google/maps/android/compose/wms/WmsUrlTileProviderTest.kt
+new file mode 100644
+index 0000000..55ddade
+--- /dev/null
++++ b/maps-compose-utils/src/test/java/com/google/maps/android/compose/wms/WmsUrlTileProviderTest.kt
+@@ -0,0 +1,65 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package com.google.maps.android.compose.wms
++
++import org.junit.Assert.assertArrayEquals
++import org.junit.Test
++
++public class WmsUrlTileProviderTest {
++
++    private val worldSize: Double = 6378137.0 * kotlin.math.PI
++
++    @Test
++    public fun testGetBoundingBoxZoom0() {
++        val provider = WmsUrlTileProvider { _, _, _, _, _ -> "" }
++        val bbox = provider.getBoundingBox(0, 0, 0)
++
++        // Zoom 0, Tile 0,0 should cover the entire world
++        val expected = doubleArrayOf(-worldSize, -worldSize, worldSize, worldSize)
++        assertArrayEquals(expected, bbox, 0.001)
++    }
++
++    @Test
++    public fun testGetBoundingBoxZoom1() {
++        val provider = WmsUrlTileProvider { _, _, _, _, _ -> "" }
++
++        // Zoom 1, Tile 0,0 (Top Left)
++        val bbox00 = provider.getBoundingBox(0, 0, 1)
++        val expected00 = doubleArrayOf(-worldSize, 0.0, 0.0, worldSize)
++        assertArrayEquals(expected00, bbox00, 0.001)
++
++        // Zoom 1, Tile 1,1 (Bottom Right)
++        val bbox11 = provider.getBoundingBox(1, 1, 1)
++        val expected11 = doubleArrayOf(0.0, -worldSize, worldSize, 0.0)
++        assertArrayEquals(expected11, bbox11, 0.001)
++    }
++
++    @Test
++    public fun testGetBoundingBoxSpecificTile() {
++        val provider = WmsUrlTileProvider { _, _, _, _, _ -> "" }
++
++        // Zoom 2, Tile 1,1
++        // Num tiles = 4x4. Tile size = 2 * worldSize / 4 = worldSize / 2
++        // xMin = -worldSize + 1 * (worldSize/2) = -worldSize/2
++        // xMax = -worldSize + 2 * (worldSize/2) = 0
++        // yMax = worldSize - 1 * (worldSize/2) = worldSize/2
++        // yMin = worldSize - 2 * (worldSize/2) = 0
++        val bbox = provider.getBoundingBox(1, 1, 2)
++        val expected = doubleArrayOf(-worldSize / 2, 0.0, 0.0, worldSize / 2)
++        assertArrayEquals(expected, bbox, 0.001)
++    }
++}
+diff --git a/maps-compose-widgets/build.gradle.kts b/maps-compose-widgets/build.gradle.kts
+index 4330e2d..cc6e33f 100644
+--- a/maps-compose-widgets/build.gradle.kts
++++ b/maps-compose-widgets/build.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ 
+ plugins {
+@@ -55,6 +71,19 @@ android {
+     }
+ }
+ 
++composeCompiler {
++    stabilityConfigurationFiles.set(
++        listOf(rootProject.layout.projectDirectory.file("compose_compiler_stability_config.conf"))
++    )
++
++    if (findProperty("composeCompilerReports") == "true") {
++        reportsDestination = layout.buildDirectory.dir("compose_compiler")
++    }
++    if (findProperty("composeCompilerMetrics") == "true") {
++        metricsDestination = layout.buildDirectory.dir("compose_compiler")
++    }
++}
++
+ dependencies {
+     implementation(project(":maps-compose"))
+ 
+diff --git a/maps-compose-widgets/src/androidTest/java/com/google/maps/android/compose/ScaleBarUnitTest.kt b/maps-compose-widgets/src/androidTest/java/com/google/maps/android/compose/ScaleBarUnitTest.kt
+index 8ac332f..3a1843e 100644
+--- a/maps-compose-widgets/src/androidTest/java/com/google/maps/android/compose/ScaleBarUnitTest.kt
++++ b/maps-compose-widgets/src/androidTest/java/com/google/maps/android/compose/ScaleBarUnitTest.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.widgets
+ 
+ 
+diff --git a/maps-compose/build.gradle.kts b/maps-compose/build.gradle.kts
+index 6afbede..d9b175a 100644
+--- a/maps-compose/build.gradle.kts
++++ b/maps-compose/build.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ 
+ plugins {
+@@ -51,7 +67,7 @@ android {
+ 
+ composeCompiler {
+     stabilityConfigurationFiles.set(
+-        listOf(layout.projectDirectory.file("compose_compiler_stability_config.conf"))
++        listOf(rootProject.layout.projectDirectory.file("compose_compiler_stability_config.conf"))
+     )
+ 
+     if (findProperty("composeCompilerReports") == "true") {
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/CameraPositionState.kt b/maps-compose/src/main/java/com/google/maps/android/compose/CameraPositionState.kt
+index e6e9096..f0be881 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/CameraPositionState.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/CameraPositionState.kt
+@@ -87,6 +87,8 @@ public inline fun rememberCameraPositionState(
+ public class CameraPositionState private constructor(
+     position: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)
+ ) {
++    internal var isLiteMode: Boolean = false
++
+     /**
+      * Whether the camera is currently moving or not. This includes any kind of movement:
+      * panning, zooming, or rotation.
+@@ -281,6 +283,12 @@ public class CameraPositionState private constructor(
+         durationMs: Int,
+         continuation: CancellableContinuation<Unit>
+     ) {
++        if (isLiteMode) {
++            map.moveCamera(update)
++            continuation.resume(Unit)
++            return
++        }
++
+         val cancelableCallback = object : GoogleMap.CancelableCallback {
+             override fun onCancel() {
+                 continuation.resumeWithException(CancellationException("Animation cancelled"))
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/GoogleMap.kt b/maps-compose/src/main/java/com/google/maps/android/compose/GoogleMap.kt
+index d026690..0e3d833 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/GoogleMap.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/GoogleMap.kt
+@@ -154,7 +154,9 @@ public fun GoogleMap(
+         AndroidView(
+             modifier = modifier,
+             factory = { context ->
+-                mapViewFactory(context, googleMapOptionsFactory()).also { mapView ->
++                val options = googleMapOptionsFactory()
++                cameraPositionState.isLiteMode = options.liteMode == true
++                mapViewFactory(context, options).also { mapView ->
+                     val componentCallbacks = object : ComponentCallbacks2 {
+                         override fun onConfigurationChanged(newConfig: Configuration) {}
+ 
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/GoogleMapComposable.kt b/maps-compose/src/main/java/com/google/maps/android/compose/GoogleMapComposable.kt
+index 56f3f04..9c88fd4 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/GoogleMapComposable.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/GoogleMapComposable.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import androidx.compose.runtime.ComposableTargetMarker
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/InputHandler.kt b/maps-compose/src/main/java/com/google/maps/android/compose/InputHandler.kt
+index a6bbda2..62b3cf8 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/InputHandler.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/InputHandler.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import androidx.annotation.RestrictTo
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/MapComposeViewRender.kt b/maps-compose/src/main/java/com/google/maps/android/compose/MapComposeViewRender.kt
+index 8e1fa5a..a66c841 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/MapComposeViewRender.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/MapComposeViewRender.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import android.content.Context
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/MapEffect.kt b/maps-compose/src/main/java/com/google/maps/android/compose/MapEffect.kt
+index 6cac92b..e399dcf 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/MapEffect.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/MapEffect.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import androidx.compose.runtime.Composable
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/MapUpdater.kt b/maps-compose/src/main/java/com/google/maps/android/compose/MapUpdater.kt
+index 930ecf0..fb44dae 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/MapUpdater.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/MapUpdater.kt
+@@ -143,16 +143,16 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
+             }
+         }
+ 
+-        set(mapUiSettings.compassEnabled) { map.uiSettings.isCompassEnabled = it }
+-        set(mapUiSettings.indoorLevelPickerEnabled) { map.uiSettings.isIndoorLevelPickerEnabled = it }
+-        set(mapUiSettings.mapToolbarEnabled) { map.uiSettings.isMapToolbarEnabled = it }
+-        set(mapUiSettings.myLocationButtonEnabled) { map.uiSettings.isMyLocationButtonEnabled = it }
+-        set(mapUiSettings.rotationGesturesEnabled) { map.uiSettings.isRotateGesturesEnabled = it }
+-        set(mapUiSettings.scrollGesturesEnabled) { map.uiSettings.isScrollGesturesEnabled = it }
+-        set(mapUiSettings.scrollGesturesEnabledDuringRotateOrZoom) { map.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = it }
+-        set(mapUiSettings.tiltGesturesEnabled) { map.uiSettings.isTiltGesturesEnabled = it }
+-        set(mapUiSettings.zoomControlsEnabled) { map.uiSettings.isZoomControlsEnabled = it }
+-        set(mapUiSettings.zoomGesturesEnabled) { map.uiSettings.isZoomGesturesEnabled = it }
++        set(mapUiSettings.compassEnabled) { try { map.uiSettings.isCompassEnabled = it } catch (e: Exception) { /* HMS/microG safe, see #804 */ } }
++        set(mapUiSettings.indoorLevelPickerEnabled) { try { map.uiSettings.isIndoorLevelPickerEnabled = it } catch (e: Exception) {} }
++        set(mapUiSettings.mapToolbarEnabled) { try { map.uiSettings.isMapToolbarEnabled = it } catch (e: Exception) {} }
++        set(mapUiSettings.myLocationButtonEnabled) { try { map.uiSettings.isMyLocationButtonEnabled = it } catch (e: Exception) {} }
++        set(mapUiSettings.rotationGesturesEnabled) { try { map.uiSettings.isRotateGesturesEnabled = it } catch (e: Exception) {} }
++        set(mapUiSettings.scrollGesturesEnabled) { try { map.uiSettings.isScrollGesturesEnabled = it } catch (e: Exception) {} }
++        set(mapUiSettings.scrollGesturesEnabledDuringRotateOrZoom) { try { map.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = it } catch (e: Exception) {} }
++        set(mapUiSettings.tiltGesturesEnabled) { try { map.uiSettings.isTiltGesturesEnabled = it } catch (e: Exception) {} }
++        set(mapUiSettings.zoomControlsEnabled) { try { map.uiSettings.isZoomControlsEnabled = it } catch (e: Exception) {} }
++        set(mapUiSettings.zoomGesturesEnabled) { try { map.uiSettings.isZoomGesturesEnabled = it } catch (e: Exception) {} }
+ 
+         update(cameraPositionState) { this.cameraPositionState = it }
+     }
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/MapsComposeExperimentalApi.kt b/maps-compose/src/main/java/com/google/maps/android/compose/MapsComposeExperimentalApi.kt
+index 41949f8..ad88190 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/MapsComposeExperimentalApi.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/MapsComposeExperimentalApi.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ /**
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/ReattachClickListeners.kt b/maps-compose/src/main/java/com/google/maps/android/compose/ReattachClickListeners.kt
+index e33586f..2f3b7b5 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/ReattachClickListeners.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/ReattachClickListeners.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import androidx.annotation.RestrictTo
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/RememberComposeBitmapDescriptor.kt b/maps-compose/src/main/java/com/google/maps/android/compose/RememberComposeBitmapDescriptor.kt
+index c61e280..98332b7 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/RememberComposeBitmapDescriptor.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/RememberComposeBitmapDescriptor.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose
+ 
+ import android.view.View
+@@ -15,8 +31,9 @@ import com.google.android.gms.maps.model.BitmapDescriptor
+ import com.google.android.gms.maps.model.BitmapDescriptorFactory
+ import androidx.core.graphics.createBitmap
+ 
++@MapsComposeExperimentalApi
+ @Composable
+-internal fun rememberComposeBitmapDescriptor(
++public fun rememberComposeBitmapDescriptor(
+     vararg keys: Any,
+     content: @Composable () -> Unit,
+ ): BitmapDescriptor {
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewCameraPositionState.kt b/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewCameraPositionState.kt
+index cf3607d..b062f84 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewCameraPositionState.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewCameraPositionState.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.streetview
+ 
+ import androidx.compose.runtime.Composable
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaApplier.kt b/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaApplier.kt
+index 18f6928..c5676f8 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaApplier.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaApplier.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.streetview
+ 
+ import androidx.compose.runtime.AbstractApplier
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaEventListeners.kt b/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaEventListeners.kt
+index 7b15e6b..1793631 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaEventListeners.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaEventListeners.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.streetview
+ 
+ import androidx.compose.runtime.getValue
+diff --git a/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaUpdater.kt b/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaUpdater.kt
+index 2898ec8..f9b2caf 100644
+--- a/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaUpdater.kt
++++ b/maps-compose/src/main/java/com/google/maps/android/compose/streetview/StreetViewPanoramaUpdater.kt
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ package com.google.maps.android.compose.streetview
+ 
+ import androidx.compose.runtime.Composable
+diff --git a/maps-compose/src/main/res/values/ids.xml b/maps-compose/src/main/res/values/ids.xml
+index 10f586d..cd8acd3 100644
+--- a/maps-compose/src/main/res/values/ids.xml
++++ b/maps-compose/src/main/res/values/ids.xml
+@@ -1,4 +1,20 @@
+ <?xml version="1.0" encoding="utf-8"?>
++<!--
++ Copyright 2026 Google LLC
++
++ Licensed under the Apache License, Version 2.0 (the "License");
++ you may not use this file except in compliance with the License.
++ You may obtain a copy of the License at
++
++     http://www.apache.org/licenses/LICENSE-2.0
++
++ Unless required by applicable law or agreed to in writing, software
++ distributed under the License is distributed on an "AS IS" BASIS,
++ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ See the License for the specific language governing permissions and
++ limitations under the License.
++-->
++
+ <resources>
+     <item name="maps_compose_nodraw_container_view" type="id" />
+ </resources>
+diff --git a/settings.gradle.kts b/settings.gradle.kts
+index 3366f3c..9a99af4 100644
+--- a/settings.gradle.kts
++++ b/settings.gradle.kts
+@@ -1,3 +1,19 @@
++/*
++ * Copyright 2026 Google LLC
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
+ dependencyResolutionManagement {
+     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+     repositories {
