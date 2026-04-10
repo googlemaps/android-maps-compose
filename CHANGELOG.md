@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.3.0](https://github.com/googlemaps/android-maps-compose/compare/v8.2.2...v8.3.0) (2026-04-09)
+
+
+### Features
+
+* add WMS tile overlay support to maps-compose-utils ([#884](https://github.com/googlemaps/android-maps-compose/issues/884)) ([ca66e98](https://github.com/googlemaps/android-maps-compose/commit/ca66e982e70899f6deb487689b8eeac9751a94a2))
+* expose rememberComposeBitmapDescriptor as public experimental API ([#867](https://github.com/googlemaps/android-maps-compose/issues/867)) ([3456db0](https://github.com/googlemaps/android-maps-compose/commit/3456db01fba52c66f18a367a6110d5e2c092dea4))
+
+
+### Bug Fixes
+
+* fallback to moveCamera in lite mode for CameraPositionState animate ([#877](https://github.com/googlemaps/android-maps-compose/issues/877)) ([8994e12](https://github.com/googlemaps/android-maps-compose/commit/8994e123730aeece4faec3b51706a4ec020db7e7))
+* prevent NullPointerException in MapUpdater on HMS/microG devices ([#858](https://github.com/googlemaps/android-maps-compose/issues/858)) ([5669abd](https://github.com/googlemaps/android-maps-compose/commit/5669abd84ac20c5764ff0fdd73eef050828a577b))
+
 ## [8.2.2](https://github.com/googlemaps/android-maps-compose/compare/v8.2.1...v8.2.2) (2026-03-12)
 
 
