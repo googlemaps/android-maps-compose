@@ -17,7 +17,6 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ExperimentalComposeApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.currentComposer
 import com.google.android.gms.maps.GoogleMap

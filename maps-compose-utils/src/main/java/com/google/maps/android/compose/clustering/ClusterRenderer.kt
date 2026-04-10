@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
 import androidx.compose.ui.geometry.Offset
@@ -37,7 +38,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
-import com.google.maps.android.clustering.view.ClusterRenderer
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.ComposeUiViewRenderer
 import kotlinx.coroutines.CoroutineScope
@@ -250,17 +250,16 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
            so trigger a draw to an empty canvas to force that */
         view.draw(fakeCanvas)
         val viewParent =
-            view.parent as? ViewGroup ?: return Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
+            view.parent as? ViewGroup ?: return createBitmap(20, 20)
                 .let(BitmapDescriptorFactory::fromBitmap)
         view.measure(
             View.MeasureSpec.makeMeasureSpec(viewParent.width, View.MeasureSpec.AT_MOST),
             View.MeasureSpec.makeMeasureSpec(viewParent.height, View.MeasureSpec.AT_MOST),
         )
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
-        val bitmap = Bitmap.createBitmap(
+        val bitmap = createBitmap(
             view.measuredWidth.takeIf { it > 0 } ?: 1,
-            view.measuredHeight.takeIf { it > 0 } ?: 1,
-            Bitmap.Config.ARGB_8888
+            view.measuredHeight.takeIf { it > 0 } ?: 1
         )
         bitmap.applyCanvas {
             view.draw(this)

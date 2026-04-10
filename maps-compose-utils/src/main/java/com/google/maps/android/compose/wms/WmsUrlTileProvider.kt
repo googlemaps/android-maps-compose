@@ -20,7 +20,6 @@ import com.google.android.gms.maps.model.UrlTileProvider
 import java.net.MalformedURLException
 import java.net.URL
 import kotlin.math.PI
-import kotlin.math.pow
 
 /**
  * A [UrlTileProvider] for Web Map Service (WMS) layers that use the EPSG:3857 (Web Mercator)
