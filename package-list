@@ -6,5 +6,6 @@ com.google.maps.android.compose
 com.google.maps.android.compose.streetview
 module:maps-compose-utils
 com.google.maps.android.compose.clustering
+com.google.maps.android.compose.wms
 module:maps-compose-widgets
 com.google.maps.android.compose.widgets
