@@ -17,6 +17,7 @@ name: Update Skill
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   update-skill:
@@ -50,13 +51,17 @@ jobs:
       - name: Update Skill via Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python .github/scripts/update_skill.py
+        run: |
+          python .github/scripts/update_skill.py
+          rm release_diff.patch
         
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
           commit-message: "docs: update SKILL.md based on release ${{ github.ref_name }}"
+          author: googlemaps-bot <googlemaps-bot@google.com>
+          committer: googlemaps-bot <googlemaps-bot@google.com>
           title: "docs: update SKILL.md for release ${{ github.ref_name }}"
           body: "Automatically generated PR to update `SKILL.md` for the latest release `${{ github.ref_name }}`."
           branch: "update-skill-for-${{ github.ref_name }}"
