@@ -50,7 +50,9 @@ jobs:
       - name: Update Skill via Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python .github/scripts/update_skill.py
+        run: |
+          python .github/scripts/update_skill.py
+          rm release_diff.patch
         
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
