@@ -28,10 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.UiComposable
@@ -43,7 +40,6 @@ import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.ClusterRenderer
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
-import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.InputHandler
 import com.google.maps.android.compose.MapEffect
@@ -372,9 +368,10 @@ internal fun <T : ClusterItem> Clustering(
     }
 
     val actualRenderer = renderer ?: clusterManager.renderer
+    @Suppress("UNCHECKED_CAST")
     val unclusteredItems by (actualRenderer as? ClusterRendererItemState<T>)?.unclusteredItems
         ?: remember { mutableStateOf(emptySet()) }
-    unclusteredItems.forEach { item ->
+    for (item in unclusteredItems) {
         clusterItemDecoration(item)
     }
 }

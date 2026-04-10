@@ -20,7 +20,6 @@ import androidx.annotation.RestrictTo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.remember
-import com.google.android.gms.maps.GoogleMap
 
 /**
  * Returns a lambda that, when invoked, will reattach click listeners set by the [MapApplier] on
