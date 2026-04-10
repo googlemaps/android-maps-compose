@@ -17,6 +17,7 @@ name: Update Skill
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   update-skill:
