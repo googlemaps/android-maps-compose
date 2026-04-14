@@ -38,7 +38,7 @@ jobs:
         distribution: 'adopt'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
+      uses: gradle/actions/setup-gradle@v6
 
     # Run dokka and create tar
     - name: Generate documentation
