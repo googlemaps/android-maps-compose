@@ -39,7 +39,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
+      uses: gradle/actions/setup-gradle@v6
 
     - name: Build modules
       run: ./gradlew build jacocoTestReport -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:generateReleaseScreenshotTestConfig --stacktrace
