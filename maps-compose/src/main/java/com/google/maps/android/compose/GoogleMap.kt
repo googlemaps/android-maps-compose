@@ -242,8 +242,6 @@ private fun CoroutineScope.launchSubcomposition(
             composition.setContent {
                 MapUpdater(mapUpdaterState)
 
-                MapClickListenerUpdater()
-
                 CompositionLocalProvider(
                     LocalCameraPositionState provides mapUpdaterState.cameraPositionState,
                     content
