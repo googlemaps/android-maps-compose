@@ -3,21 +3,21 @@
 
 [versions]
 # Base
-androidCompileSdk = "36"
+androidCompileSdk = "37"
 androidMinSdk = "23"
-androidTargetSdk = "36"
+androidTargetSdk = "37"
 
-agp = "9.1.0"
-dokka = "2.1.0"
+agp = "9.2.1"
+dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.36.0"
-kotlin = "2.3.10"
+kotlin = "2.3.21"
 kotlinxCoroutines = "1.10.2"
 
 # Android
 activitycompose = "1.13.0"
 androidx-core = "1.18.0"
 androidx-startup = "1.2.0"
-compose-bom = "2026.03.00"
+compose-bom = "2026.05.00"
 constraintlayout = "2.2.1"
 
 # Material
@@ -40,7 +40,7 @@ mockk = "1.14.9"
 org-jacoco-core = "0.8.14"
 jacoco-plugin = "0.2.1"
 robolectric = "4.16.1"
-screenshot = "0.0.1-alpha13"
+screenshot = "0.0.1-alpha14"
 truth = "1.4.5"
 
 [libraries]
@@ -85,7 +85,6 @@ jacoco-android-plugin = { module = "com.mxalbert.gradle:jacoco-android", version
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-#mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 org-jacoco-core = { module = "org.jacoco:org.jacoco.core", version.ref = "org-jacoco-core" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
