@@ -18,7 +18,7 @@ package com.google.maps.android.compose.markerexamples
 
 import android.os.Bundle
 import android.util.Log
-import java.util.Locale
+import androidx.compose.ui.text.intl.Locale
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -205,7 +205,7 @@ private fun CustomUiClustering(items: List<MyItem>) {
         clusterContent = { cluster ->
             CircleContent(
                 modifier = Modifier.size(40.dp),
-                text = "%,d".format(androidx.compose.ui.text.intl.Locale.current.platformLocale, cluster.size),
+                text = "%,d".format(Locale.current.platformLocale, cluster.size),
                 color = Color.Blue,
             )
         },
@@ -252,7 +252,7 @@ fun CustomRendererClustering(items: List<MyItem>) {
         clusterContent = { cluster ->
             CircleContent(
                 modifier = Modifier.size(40.dp),
-                text = "%,d".format(androidx.compose.ui.text.intl.Locale.current.platformLocale, cluster.size),
+                text = "%,d".format(Locale.current.platformLocale, cluster.size),
                 color = Color.Green,
             )
         },
