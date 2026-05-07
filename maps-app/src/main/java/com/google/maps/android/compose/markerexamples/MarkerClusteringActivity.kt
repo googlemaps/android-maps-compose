@@ -205,7 +205,7 @@ private fun CustomUiClustering(items: List<MyItem>) {
         clusterContent = { cluster ->
             CircleContent(
                 modifier = Modifier.size(40.dp),
-                text = "%,d".format(Locale.getDefault(), cluster.size),
+                text = "%,d".format(androidx.compose.ui.text.intl.Locale.current.platformLocale, cluster.size),
                 color = Color.Blue,
             )
         },
@@ -252,7 +252,7 @@ fun CustomRendererClustering(items: List<MyItem>) {
         clusterContent = { cluster ->
             CircleContent(
                 modifier = Modifier.size(40.dp),
-                text = "%,d".format(Locale.getDefault(), cluster.size),
+                text = "%,d".format(androidx.compose.ui.text.intl.Locale.current.platformLocale, cluster.size),
                 color = Color.Green,
             )
         },

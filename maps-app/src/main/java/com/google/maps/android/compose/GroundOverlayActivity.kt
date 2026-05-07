@@ -156,7 +156,7 @@ fun GroundOverlayControls(
                 Text(text = "Visible", modifier = Modifier.weight(1f))
                 Switch(checked = isVisible, onCheckedChange = onVisibilityChange)
             }
-            Text(text = "Transparency: ${String.format(Locale.getDefault(), "%.2f", transparency)}")
+            Text(text = "Transparency: ${String.format(androidx.compose.ui.text.intl.Locale.current.platformLocale, "%.2f", transparency)}")
             Slider(
                 value = transparency,
                 onValueChange = onTransparencyChange,
