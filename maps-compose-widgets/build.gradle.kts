@@ -17,7 +17,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("kotlin-android")
     alias (libs.plugins.compose.compiler)
     id("android.maps.compose.PublishingConventionPlugin")
     id("org.jetbrains.dokka")
@@ -53,21 +52,21 @@ android {
         compose = true
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            freeCompilerArgs.addAll(
-                "-Xexplicit-api=strict",
-                "-opt-in=kotlin.RequiresOptIn"
-            )
-        }
-    }
-
     buildTypes {
         getByName("debug") {
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
+        freeCompilerArgs.addAll(
+            "-Xexplicit-api=strict",
+            "-opt-in=kotlin.RequiresOptIn"
+        )
     }
 }
 

@@ -17,7 +17,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.jetbrains.kotlin.android")
     alias(libs.plugins.compose.compiler)
     id("org.jetbrains.dokka")
     id("android.maps.compose.PublishingConventionPlugin")
@@ -45,23 +44,28 @@ android {
         compose = true
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            freeCompilerArgs.addAll(
-                "-Xexplicit-api=strict",
-                "-opt-in=kotlin.RequiresOptIn"
-            )
+    sourceSets {
+        getByName("main") {
+            java.directories.add("build/generated/source/artifactId")
+            kotlin.directories.add("build/generated/source/artifactId")
         }
     }
-
-    sourceSets["main"].java.srcDir("build/generated/source/artifactId")
 
     buildTypes {
         getByName("debug") {
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
+        freeCompilerArgs.addAll(
+            "-Xexplicit-api=strict",
+            "-opt-in=kotlin.RequiresOptIn"
+        )
     }
 }
 
