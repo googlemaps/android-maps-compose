@@ -21,7 +21,7 @@ compose-bom = "2026.03.00"
 constraintlayout = "2.2.1"
 
 # Material
-material = "1.13.0"
+material = "1.14.0"
 material3 = "1.4.0"
 materialIconsExtendedAndroid = "1.7.8"
 
