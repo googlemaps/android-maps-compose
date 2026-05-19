@@ -30,16 +30,16 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout Repo
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Set up JDK 21
-      uses: actions/setup-java@v4.6.0
+      uses: actions/setup-java@v5
       with:
         java-version: '21'
         distribution: 'temurin'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
+      uses: gradle/actions/setup-gradle@v6
 
     - name: Build modules
       run: ./gradlew build jacocoTestReport -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:generateReleaseScreenshotTestConfig --stacktrace
@@ -48,7 +48,7 @@ jobs:
       run: ./gradlew :maps-app:validateDebugScreenshotTest
 
     - name: Upload build reports
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: always()
       with:
         name: screenshot-report
