@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.screenshot)
@@ -63,21 +62,8 @@ android {
         compose = true
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            freeCompilerArgs.addAll(
-                "-opt-in=kotlin.RequiresOptIn"
-            )
-        }
-    }
-
+    @Suppress("UnstableApiUsage")
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
-
-    screenshotTests {
-        imageDifferenceThreshold = 0.035f // 3.5%
-    }
-
 
     packaging {
         resources {
@@ -87,6 +73,19 @@ android {
             )
         }
     }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
+        freeCompilerArgs.addAll(
+            "-opt-in=kotlin.RequiresOptIn"
+        )
+    }
+}
+
+screenshotTests {
+    imageDifferenceThreshold = 0.035f // 3.5%
 }
 
 dependencies {

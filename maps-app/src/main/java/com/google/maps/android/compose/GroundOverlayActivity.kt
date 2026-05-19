@@ -15,7 +15,7 @@
 package com.google.maps.android.compose
 
 import android.os.Bundle
-import java.util.Locale
+import androidx.compose.ui.text.intl.Locale
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -156,7 +156,7 @@ fun GroundOverlayControls(
                 Text(text = "Visible", modifier = Modifier.weight(1f))
                 Switch(checked = isVisible, onCheckedChange = onVisibilityChange)
             }
-            Text(text = "Transparency: ${String.format(Locale.getDefault(), "%.2f", transparency)}")
+            Text(text = "Transparency: ${String.format(Locale.current.platformLocale, "%.2f", transparency)}")
             Slider(
                 value = transparency,
                 onValueChange = onTransparencyChange,
