@@ -17,19 +17,50 @@
 package com.google.maps.android.compose.snippets
 
 import android.os.Bundle
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
+
+/**
+ * Google Developers Brand inspired Light Color Scheme (Clean White & Google Blue).
+ * Completely replaces the default Material 3 lavender/purple seed color theme.
+ */
+val MapsComposeColorScheme = lightColorScheme(
+    primary = Color(0xFF1A73E8),          // Google Blue
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFE8F0FE),    // Translucent Blue
+    onPrimaryContainer = Color(0xFF1A73E8),
+    background = Color(0xFFFFFFFF),
+    onBackground = Color(0xFF202124),
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF202124),
+    surfaceVariant = Color(0xFFF8F9FA),     // Light Gray for Card backgrounds
+    onSurfaceVariant = Color(0xFF3C4043)
+)
+
+/**
+ * Base Activity class that automatically hides the system status bar and navigation bar
+ * to provide a clean, edge-to-edge full-screen bleed layout suitable for professional screenshots.
+ */
+abstract class BaseSnippetActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+}
 
 /**
  * Dedicated Activity class hosting the [BasicMapSnippet] showing minimum map setup.
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.BasicMapActivity`
  */
-class BasicMapActivity : ComponentActivity() {
+class BasicMapActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { BasicMapSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { BasicMapSnippet() } }
     }
 }
 
@@ -38,10 +69,10 @@ class BasicMapActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.CustomConfigMapActivity`
  */
-class CustomConfigMapActivity : ComponentActivity() {
+class CustomConfigMapActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { CustomConfigMapSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { CustomConfigMapSnippet() } }
     }
 }
 
@@ -50,10 +81,10 @@ class CustomConfigMapActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.MoveCameraActivity`
  */
-class MoveCameraActivity : ComponentActivity() {
+class MoveCameraActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { MoveCameraSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { MoveCameraSnippet() } }
     }
 }
 
@@ -62,10 +93,10 @@ class MoveCameraActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.AnimateCameraActivity`
  */
-class AnimateCameraActivity : ComponentActivity() {
+class AnimateCameraActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { AnimateCameraSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { AnimateCameraSnippet() } }
     }
 }
 
@@ -74,10 +105,10 @@ class AnimateCameraActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.RestrictCameraBoundsActivity`
  */
-class RestrictCameraBoundsActivity : ComponentActivity() {
+class RestrictCameraBoundsActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { RestrictCameraBoundsSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { RestrictCameraBoundsSnippet() } }
     }
 }
 
@@ -86,10 +117,10 @@ class RestrictCameraBoundsActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.BasicMarkerActivity`
  */
-class BasicMarkerActivity : ComponentActivity() {
+class BasicMarkerActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { BasicMarkerSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { BasicMarkerSnippet() } }
     }
 }
 
@@ -98,10 +129,10 @@ class BasicMarkerActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.CustomMarkerIconActivity`
  */
-class CustomMarkerIconActivity : ComponentActivity() {
+class CustomMarkerIconActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { CustomMarkerIconSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { CustomMarkerIconSnippet() } }
     }
 }
 
@@ -110,10 +141,10 @@ class CustomMarkerIconActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.MarkerComposableActivity`
  */
-class MarkerComposableActivity : ComponentActivity() {
+class MarkerComposableActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { MarkerComposableSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { MarkerComposableSnippet() } }
     }
 }
 
@@ -122,10 +153,10 @@ class MarkerComposableActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.CustomInfoWindowActivity`
  */
-class CustomInfoWindowActivity : ComponentActivity() {
+class CustomInfoWindowActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { CustomInfoWindowSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { CustomInfoWindowSnippet() } }
     }
 }
 
@@ -134,10 +165,10 @@ class CustomInfoWindowActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.PolylineActivity`
  */
-class PolylineActivity : ComponentActivity() {
+class PolylineActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { PolylineSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { PolylineSnippet() } }
     }
 }
 
@@ -146,10 +177,10 @@ class PolylineActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.PolygonActivity`
  */
-class PolygonActivity : ComponentActivity() {
+class PolygonActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { PolygonSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { PolygonSnippet() } }
     }
 }
 
@@ -158,10 +189,10 @@ class PolygonActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.CircleActivity`
  */
-class CircleActivity : ComponentActivity() {
+class CircleActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { CircleSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { CircleSnippet() } }
     }
 }
 
@@ -170,10 +201,10 @@ class CircleActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.MarkerClusteringActivity`
  */
-class MarkerClusteringActivity : ComponentActivity() {
+class MarkerClusteringActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { MarkerClusteringSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { MarkerClusteringSnippet() } }
     }
 }
 
@@ -182,10 +213,10 @@ class MarkerClusteringActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.GeoJsonLayerActivity`
  */
-class GeoJsonLayerActivity : ComponentActivity() {
+class GeoJsonLayerActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { GeoJsonLayerSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { GeoJsonLayerSnippet() } }
     }
 }
 
@@ -194,10 +225,10 @@ class GeoJsonLayerActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.KmlLayerActivity`
  */
-class KmlLayerActivity : ComponentActivity() {
+class KmlLayerActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { KmlLayerSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { KmlLayerSnippet() } }
     }
 }
 
@@ -206,10 +237,10 @@ class KmlLayerActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.GroundOverlayActivity`
  */
-class GroundOverlayActivity : ComponentActivity() {
+class GroundOverlayActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { GroundOverlaySnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { GroundOverlaySnippet() } }
     }
 }
 
@@ -218,10 +249,10 @@ class GroundOverlayActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.TileOverlayActivity`
  */
-class TileOverlayActivity : ComponentActivity() {
+class TileOverlayActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { TileOverlaySnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { TileOverlaySnippet() } }
     }
 }
 
@@ -230,10 +261,10 @@ class TileOverlayActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.WmsTileOverlayActivity`
  */
-class WmsTileOverlayActivity : ComponentActivity() {
+class WmsTileOverlayActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { WmsTileOverlaySnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { WmsTileOverlaySnippet() } }
     }
 }
 
@@ -242,10 +273,10 @@ class WmsTileOverlayActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.RememberComposeBitmapDescriptorActivity`
  */
-class RememberComposeBitmapDescriptorActivity : ComponentActivity() {
+class RememberComposeBitmapDescriptorActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { RememberComposeBitmapDescriptorSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { RememberComposeBitmapDescriptorSnippet() } }
     }
 }
 
@@ -254,9 +285,9 @@ class RememberComposeBitmapDescriptorActivity : ComponentActivity() {
  * Launchable via ADB:
  * `adb shell am start -n com.google.maps.android.compose.snippets/.ScaleBarActivity`
  */
-class ScaleBarActivity : ComponentActivity() {
+class ScaleBarActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { MaterialTheme { ScaleBarSnippet() } }
+        setContent { MaterialTheme(colorScheme = MapsComposeColorScheme) { ScaleBarSnippet() } }
     }
 }
