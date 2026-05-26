@@ -37,7 +37,7 @@ public fun rememberComposeBitmapDescriptor(
     vararg keys: Any,
     content: @Composable () -> Unit,
 ): BitmapDescriptor {
-    val parent = LocalView.current as ViewGroup
+    val parent = LocalView.current.rootView as ViewGroup
     val compositionContext = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
 
