@@ -7,6 +7,10 @@ TARGET_SNIPPET="$1"
 OUTPUT_DIR="../docs/images"
 mkdir -p "$OUTPUT_DIR"
 
+# Enable SystemUI Demo Mode for pixel-perfect and consistent clock, battery, and network states
+./configure_screen.sh
+
+
 # Declare associative array mapping snippet titles to filenames
 declare -A FILENAMES
 FILENAMES["1. Basic Map"]="basic_map.png"
@@ -45,9 +49,10 @@ capture_snippet() {
   
   # Force stop the application to guarantee a fresh boot and correct intent delivery
   adb shell am force-stop com.google.maps.android.compose.snippets
+  sleep 1 # Allow OS to fully terminate the process asynchronously
   
-  # Launch the app directly into that snippet with escaped quotes for adb shell argument safety
-  adb shell "am start -n com.google.maps.android.compose.snippets/com.google.maps.android.compose.snippets.MainActivity --es EXTRA_SNIPPET_TITLE \"$title\""
+  # Launch the app directly into that snippet with escaped quotes and wait-for-launch flag
+  adb shell "am start -W -n com.google.maps.android.compose.snippets/com.google.maps.android.compose.snippets.MainActivity --es EXTRA_SNIPPET_TITLE \"$title\""
   
   # Wait for the map tiles and coordinates to fully render
   sleep 4
@@ -57,6 +62,9 @@ capture_snippet() {
   
   # Pull screenshot to output directory
   adb pull /sdcard/temp_snippet.png "$OUTPUT_DIR/$filename"
+  
+  # Scale down to 360px width for elegant markdown rendering and repository efficiency
+  convert "$OUTPUT_DIR/$filename" -resize 360x "$OUTPUT_DIR/$filename"
   
   # Clean up on device
   adb shell rm /sdcard/temp_snippet.png
@@ -89,5 +97,8 @@ else
   capture_snippet "4. Compose Bitmap Descriptor"
   capture_snippet "5. Scale Bar Widget"
 fi
+
+# Restore the device's actual SystemUI states
+./configure_screen.sh off
 
 echo "Screenshots refresh complete! Images saved to snippets/$OUTPUT_DIR/"

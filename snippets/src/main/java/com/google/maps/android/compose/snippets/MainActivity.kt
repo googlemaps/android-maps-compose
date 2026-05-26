@@ -20,6 +20,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,12 +49,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-class MainActivity : ComponentActivity() {
+class MainActivity : BaseSnippetActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val initialSnippetTitle = intent.getStringExtra("EXTRA_SNIPPET_TITLE")
         setContent {
-            MaterialTheme {
+            MaterialTheme(colorScheme = MapsComposeColorScheme) {
                 SnippetRunnerApp(initialSnippetTitle)
             }
         }
@@ -122,35 +123,8 @@ fun SnippetRunnerApp(initialSnippetTitle: String? = null) {
         }
     } else {
         val snippet = selectedSnippet!!
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Column {
-                            Text(text = snippet.title, style = MaterialTheme.typography.titleMedium)
-                            Text(text = snippet.description, style = MaterialTheme.typography.bodySmall)
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { selectedSnippet = null }) {
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                )
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                snippet.content()
-            }
+        Box(modifier = Modifier.fillMaxSize()) {
+            snippet.content()
         }
     }
 }

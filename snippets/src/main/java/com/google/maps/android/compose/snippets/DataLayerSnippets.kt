@@ -31,10 +31,10 @@ import java.io.ByteArrayInputStream
 import kotlin.OptIn
 
 /**
- * Demonstrates how to load and display a GeoJSON data layer on the map in Compose.
+ * Demonstrates how to load and display a GeoJSON data layer (representing a Polyline) on the map.
  *
  * This Composable uses [MapEffect] to get the raw [com.google.android.gms.maps.GoogleMap]
- * reference safely and instantiates a [GeoJsonLayer] with a self-contained GeoJSON JSONObject.
+ * reference safely and instantiates a [GeoJsonLayer] with a self-contained GeoJSON LineString.
  */
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
@@ -58,8 +58,12 @@ fun GeoJsonLayerSnippet() {
                         "type": "Feature",
                         "properties": {},
                         "geometry": {
-                          "type": "Point",
-                          "coordinates": [103.8742, 1.3588]
+                          "type": "LineString",
+                          "coordinates": [
+                            [103.80, 1.35],
+                            [103.85, 1.40],
+                            [103.90, 1.35]
+                          ]
                         }
                       }
                     ]
@@ -73,10 +77,10 @@ fun GeoJsonLayerSnippet() {
 }
 
 /**
- * Demonstrates how to load and display KML data layers on the map in Compose.
+ * Demonstrates how to load and display KML data layers (representing a Polygon area) on the map.
  *
- * This Composable uses [MapEffect] to obtain a reference to the raw GoogleMap instance,
- * parses a KML stream using [KmlLayer], and adds it onto the map viewport.
+ * Parses a KML stream defining a closed triangular area over Singapore using [KmlLayer],
+ * rendering it dynamically on the map.
  */
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
@@ -97,10 +101,19 @@ fun KmlLayerSnippet() {
                 """<?xml version="1.0" encoding="UTF-8"?>
                 <kml xmlns="http://www.opengis.net/kml/2.2">
                   <Placemark>
-                    <name>Singapore Point</name>
-                    <Point>
-                      <coordinates>103.8742114,1.3588227,0</coordinates>
-                    </Point>
+                    <name>KML Polygon Area</name>
+                    <Polygon>
+                      <outerBoundaryIs>
+                        <LinearRing>
+                          <coordinates>
+                            103.80,1.30,0
+                            103.85,1.38,0
+                            103.90,1.30,0
+                            103.80,1.30,0
+                          </coordinates>
+                        </LinearRing>
+                      </outerBoundaryIs>
+                    </Polygon>
                   </Placemark>
                 </kml>""".toByteArray()
             )
