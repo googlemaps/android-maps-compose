@@ -198,12 +198,11 @@ fun WmsTileOverlaySnippet() {
 }
 
 /**
- * Demonstrates how to render arbitrary Compose graphics dynamically into a standard [com.google.android.gms.maps.model.BitmapDescriptor] icon.
+ * Demonstrates how to render custom graphics dynamically into a standard [com.google.android.gms.maps.model.BitmapDescriptor] icon.
  *
- * Uses the experimental [rememberComposeBitmapDescriptor] helper to capture a magenta circle composable
- * and bind it as the icon for a standard marker.
+ * Renders a styled magenta circle dynamically on a canvas inside [LaunchedEffect] once the Map SDK is active,
+ * binding the output bitmap as a standard marker icon.
  */
-@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun RememberComposeBitmapDescriptorSnippet() {
     // [START maps_android_compose_remember_bitmap_descriptor]
