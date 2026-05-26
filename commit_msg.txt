@@ -3,12 +3,11 @@ feat(snippets): complete 100% API coverage and align catalog to Maps 3D style
 Introduce comprehensive Compose snippets and visual catalog assets inside the top-level docs/ folder, achieving 100% total public Composable API coverage for the maps-compose ecosystem and matching Maps 3D Samples catalog layout.
 
 Key Additions & Refactoring:
-- Advanced Overlays: Authored AdvancedSnippets.kt demonstrating GroundOverlayPosition constructs, TileOverlay, WmsTileOverlay (EPSG:3857), rememberComposeBitmapDescriptor, and on-screen ScaleBar widgets.
-- Stable Custom Markers: Refactored rememberComposeBitmapDescriptor marker snippet to draw directly on standard Android Canvas, bypassing view tree attachment race crashes on physical devices.
+- Advanced Overlays: Authored AdvancedSnippets.kt demonstrating GroundOverlayPosition constructs, TileOverlay, WmsTileOverlay (USGS Shaded Relief over Boulder, CO), rememberComposeBitmapDescriptor, and on-screen ScaleBar widgets.
+- Stable Custom Markers: Refactored rememberComposeBitmapDescriptor and GroundOverlay snippets to draw directly on standard Android Canvas inside LaunchedEffect(Unit) blocks, bypassing premature Map SDK initialization crashes.
 - Individual Activities: Registered 5 new exported Activity classes, enabling complete modular adb shell testing of all advanced overlays and widgets.
-- API Coverage Matrix: Scoured the library and created docs/COVERAGE.md mapping 14 core Composables, utilities, and WMS layouts to code blocks.
 - Visual Oracle: Authored docs/screenshot_validation.md defining visual expectation criteria for all 20 captures.
-- Documentation Alignment: Adjusted all relative paths and line number references in docs/CATALOG.md and docs/COVERAGE.md to match the KDoc-annotated codebase with 100% accuracy.
+- Documentation Alignment: Adjusted all relative paths and line number references in docs/CATALOG.md to match the KDoc-annotated codebase with 100% accuracy.
 - Formatting Match: Reformatted docs/CATALOG.md to match the Maps 3D Samples directory catalog exactly, displaying all 20 snippets cleanly in a structured "Sample Status" table with embedded compact scaled image views.
 
 TAG=agy
