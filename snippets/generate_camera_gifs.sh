@@ -30,9 +30,11 @@ sleep 5
 echo "Pulling move camera recording..."
 adb pull /sdcard/move_temp.mp4 temp_move.mp4
 
-echo "Stitching and converting to camera_move.mp4 (360px width, H.264, trimmed, 20fps)..."
-# Compress as a loopable, web-optimized H.264 MP4 at 20fps for extreme file efficiency
+echo "Stitching and converting to camera_move.mp4 & camera_move.gif (360px width, H.264 & High-Quality GIF)..."
+# web-optimized H.264 MP4
 ffmpeg -y -ss 00:00:02.2 -t 2.5 -i temp_move.mp4 -vcodec libx264 -pix_fmt yuv420p -vf "scale=360:-2,fps=20" "$OUTPUT_DIR/camera_move.mp4"
+# Universal, high-quality loopable GIF using FFmpeg double-pass palette gen for pristine GFM table compatibility
+ffmpeg -y -ss 00:00:02.2 -t 2.5 -i temp_move.mp4 -vf "fps=20,scale=360:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 "$OUTPUT_DIR/camera_move.gif"
 
 
 echo "------------------------------------------------"
@@ -55,8 +57,9 @@ sleep 6
 echo "Pulling animate camera recording..."
 adb pull /sdcard/animate_temp.mp4 temp_animate.mp4
 
-echo "Stitching and converting to camera_animate.mp4 (360px width, H.264, trimmed, 20fps)..."
+echo "Stitching and converting to camera_animate.mp4 & camera_animate.gif (360px width, H.264 & High-Quality GIF)..."
 ffmpeg -y -ss 00:00:02.2 -t 3.8 -i temp_animate.mp4 -vcodec libx264 -pix_fmt yuv420p -vf "scale=360:-2,fps=20" "$OUTPUT_DIR/camera_animate.mp4"
+ffmpeg -y -ss 00:00:02.2 -t 3.8 -i temp_animate.mp4 -vf "fps=20,scale=360:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 "$OUTPUT_DIR/camera_animate.gif"
 
 
 # --- CLEANUP ---
