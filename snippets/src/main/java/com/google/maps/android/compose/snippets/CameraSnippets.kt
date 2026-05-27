@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 val singapore = LatLng(1.3588227, 103.8742114)
 val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
@@ -56,8 +57,9 @@ fun MoveCameraSnippet() {
         cameraPositionState = cameraPositionState
     )
 
-    // Instantly updates the camera position (for example, on load or inside a callback)
+    // Instantly updates the camera position after a 2-second delay to capture the transition clearly in recordings
     LaunchedEffect(Unit) {
+        delay(2000)
         cameraPositionState.move(
             CameraUpdateFactory.newLatLngZoom(LatLng(1.40, 103.77), 12f)
         )
@@ -68,9 +70,8 @@ fun MoveCameraSnippet() {
 /**
  * Demonstrates how to smoothly animate the map camera to a targeted coordinate and zoom.
  *
- * This Composable shows a button overlaid on the map. Clicks on the button launch a coroutine
- * in the [rememberCoroutineScope] which executes a smooth camera animation via
- * `cameraPositionState.animate(...)` over a specified duration in milliseconds.
+ * Executes a smooth camera animation via `cameraPositionState.animate(...)` over a specified duration 
+ * after a 2-second recording delay.
  */
 @Composable
 fun AnimateCameraSnippet() {
@@ -78,28 +79,20 @@ fun AnimateCameraSnippet() {
     val cameraPositionState = rememberCameraPositionState {
         position = defaultCameraPosition
     }
-    val coroutineScope = rememberCoroutineScope()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState
+    // Automatically trigger the camera animation after a 2-second recording delay
+    LaunchedEffect(Unit) {
+        delay(2000)
+        cameraPositionState.animate(
+            update = CameraUpdateFactory.newLatLngZoom(LatLng(1.40, 103.77), 14f),
+            durationMs = 2000
         )
-
-        Button(
-            onClick = {
-                coroutineScope.launch {
-                    cameraPositionState.animate(
-                        update = CameraUpdateFactory.newLatLngZoom(LatLng(1.40, 103.77), 14f),
-                        durationMs = 2000
-                    )
-                }
-            },
-            modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)
-        ) {
-            Text("Animate Camera")
-        }
     }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState
+    )
     // [END maps_android_compose_camera_animate]
 }
 
