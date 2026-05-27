@@ -11,17 +11,17 @@ agp = "9.2.1"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.36.0"
 kotlin = "2.3.21"
-kotlinxCoroutines = "1.10.2"
+kotlinxCoroutines = "1.11.0"
 
 # Android
 activitycompose = "1.13.0"
 androidx-core = "1.18.0"
 androidx-startup = "1.2.0"
-compose-bom = "2026.03.00"
+compose-bom = "2026.05.01"
 constraintlayout = "2.2.1"
 
 # Material
-material = "1.13.0"
+material = "1.14.0"
 material3 = "1.4.0"
 materialIconsExtendedAndroid = "1.7.8"
 
@@ -40,7 +40,7 @@ mockk = "1.14.9"
 org-jacoco-core = "0.8.14"
 jacoco-plugin = "0.2.1"
 robolectric = "4.16.1"
-screenshot = "0.0.1-alpha14"
+screenshot = "0.0.1-alpha15"
 truth = "1.4.5"
 
 [libraries]

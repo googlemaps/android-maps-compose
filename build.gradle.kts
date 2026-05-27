@@ -30,12 +30,12 @@ buildscript {
 }
 
 plugins {
-    id("org.jetbrains.dokka") version "2.1.0"
+    alias(libs.plugins.dokka)
     alias(libs.plugins.compose.compiler) apply false
     id("com.autonomousapps.dependency-analysis") version "3.4.1"
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
-
+    id("com.github.ben-manes.versions") version "0.54.0"
 }
 
 val projectArtifactId by extra { project: Project ->

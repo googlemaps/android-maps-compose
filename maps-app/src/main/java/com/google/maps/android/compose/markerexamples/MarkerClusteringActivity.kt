@@ -51,7 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -235,17 +235,17 @@ private fun CustomUiClustering(items: List<MyItem>) {
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun CustomRendererClustering(items: List<MyItem>) {
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
-    val screenWidth = configuration.screenWidthDp.dp
+    val windowInfo = LocalWindowInfo.current
+    val screenWidth = windowInfo.containerSize.width
+    val screenHeight = windowInfo.containerSize.height
     val clusterManager = rememberClusterManager<MyItem>()
 
     // Here the clusterManager is being customized with a NonHierarchicalViewBasedAlgorithm.
     // This speeds up by a factor the rendering of items on the screen.
     clusterManager?.setAlgorithm(
         NonHierarchicalViewBasedAlgorithm(
-            screenWidth.value.toInt(),
-            screenHeight.value.toInt()
+            screenWidth,
+            screenHeight
         )
     )
     val renderer = rememberClusterRenderer(

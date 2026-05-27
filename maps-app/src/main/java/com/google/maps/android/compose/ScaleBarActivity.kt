@@ -29,8 +29,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +59,7 @@ class ScaleBarActivity : ComponentActivity() {
                 position = defaultCameraPosition
             }
 
-            val scaleBackground = MaterialTheme.colors.background.copy(alpha = 0.4f)
+            val scaleBackground = MaterialTheme.colorScheme.background.copy(alpha = 0.4f)
             val scaleBorderStroke = BorderStroke(width = 1.dp, DarkGray.copy(alpha = 0.2f))
 
             Box(
@@ -122,7 +122,7 @@ class ScaleBarActivity : ComponentActivity() {
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
-                                .background(MaterialTheme.colors.background)
+                                .background(MaterialTheme.colorScheme.background)
                                 .wrapContentSize()
                         )
                     }

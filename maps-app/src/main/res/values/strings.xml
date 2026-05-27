@@ -87,4 +87,5 @@
   <string name="markers_title">Markers</string>
   <string name="ui_integration_title">UI Integration</string>
   <string name="performance_title">Performance</string>
+  <string name="swipe_to_switch">Swipe to switch between views</string>
 </resources>
