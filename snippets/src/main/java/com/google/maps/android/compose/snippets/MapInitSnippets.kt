@@ -18,10 +18,13 @@ package com.google.maps.android.compose.snippets
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.delay
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -55,26 +58,36 @@ fun BasicMapSnippet() {
 @Composable
 fun CustomConfigMapSnippet() {
     // [START maps_android_compose_init_custom]
-    val cameraPositionState = rememberCameraPositionState()
-
-    // Configure layers and properties
-    val properties by remember {
-        mutableStateOf(
-            MapProperties(
-                mapType = MapType.SATELLITE,
-                isMyLocationEnabled = false
-            )
-        )
+    val cameraPositionState = rememberCameraPositionState {
+        position = defaultCameraPosition
     }
 
-    // Customize UI controls
-    val uiSettings by remember {
-        mutableStateOf(
-            MapUiSettings(
-                compassEnabled = true,
-                zoomControlsEnabled = false
-            )
-        )
+    var configStep by remember { mutableStateOf(0) }
+
+    // Automatically cycle through 3 different configurations every 2 seconds to capture transition details
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(2000)
+            configStep = (configStep + 1) % 3
+        }
+    }
+
+    // Dynamically derive MapProperties based on the current state index
+    val properties = remember(configStep) {
+        when (configStep) {
+            0 -> MapProperties(mapType = MapType.SATELLITE, isTrafficEnabled = false)
+            1 -> MapProperties(mapType = MapType.TERRAIN, isTrafficEnabled = true)
+            else -> MapProperties(mapType = MapType.NORMAL, isTrafficEnabled = false)
+        }
+    }
+
+    // Dynamically derive MapUiSettings based on the current state index
+    val uiSettings = remember(configStep) {
+        when (configStep) {
+            0 -> MapUiSettings(compassEnabled = true, zoomControlsEnabled = false)
+            1 -> MapUiSettings(compassEnabled = false, zoomControlsEnabled = true)
+            else -> MapUiSettings(compassEnabled = true, zoomControlsEnabled = false)
+        }
     }
 
     GoogleMap(
