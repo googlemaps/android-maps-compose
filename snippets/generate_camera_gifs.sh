@@ -30,9 +30,9 @@ sleep 5
 echo "Pulling move camera recording..."
 adb pull /sdcard/move_temp.mp4 temp_move.mp4
 
-echo "Stitching and converting to camera_move.gif (360px width)..."
-# Use ImageMagick convert to transcode the MP4 frames cleanly into an optimized loopable GIF
-convert -delay 8 -loop 0 temp_move.mp4 -resize 360x "$OUTPUT_DIR/camera_move.gif"
+echo "Stitching and converting to camera_move.mp4 (360px width, H.264, trimmed, 20fps)..."
+# Compress as a loopable, web-optimized H.264 MP4 at 20fps for extreme file efficiency
+ffmpeg -y -ss 00:00:02.2 -t 2.5 -i temp_move.mp4 -vcodec libx264 -pix_fmt yuv420p -vf "scale=360:-2,fps=20" "$OUTPUT_DIR/camera_move.mp4"
 
 
 echo "------------------------------------------------"
@@ -42,7 +42,7 @@ echo "------------------------------------------------"
 adb shell am force-stop com.google.maps.android.compose.snippets
 
 # Start screenrecord in the background
-adb shell screenrecord --time-limit 5 /sdcard/animate_temp.mp4 &
+adb shell screenrecord --time-limit 6 /sdcard/animate_temp.mp4 &
 RECORD_PID=$!
 
 sleep 1
@@ -50,13 +50,13 @@ sleep 1
 # Boot directly into Animate Camera snippet
 adb shell "am start -W -n com.google.maps.android.compose.snippets/com.google.maps.android.compose.snippets.MainActivity --es EXTRA_SNIPPET_TITLE \"2. Animate Camera\""
 
-sleep 5
+sleep 6
 
 echo "Pulling animate camera recording..."
 adb pull /sdcard/animate_temp.mp4 temp_animate.mp4
 
-echo "Stitching and converting to camera_animate.gif (360px width)..."
-convert -delay 8 -loop 0 temp_animate.mp4 -resize 360x "$OUTPUT_DIR/camera_animate.gif"
+echo "Stitching and converting to camera_animate.mp4 (360px width, H.264, trimmed, 20fps)..."
+ffmpeg -y -ss 00:00:02.2 -t 3.8 -i temp_animate.mp4 -vcodec libx264 -pix_fmt yuv420p -vf "scale=360:-2,fps=20" "$OUTPUT_DIR/camera_animate.mp4"
 
 
 # --- CLEANUP ---
