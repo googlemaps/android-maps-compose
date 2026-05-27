@@ -16,6 +16,11 @@ if [ "$1" == "off" ]; then
     exit 0
 fi
 
+# Wake up the device screen if asleep, and dismiss the lock screen keyguard
+adb shell input keyevent KEYCODE_WAKE
+adb shell wm dismiss-keyguard
+sleep 0.5
+
 # Enable Demo Mode controls
 adb shell settings put global sysui_demo_allowed 1
 adb shell settings put global sysui_tuner_demo_on 1
