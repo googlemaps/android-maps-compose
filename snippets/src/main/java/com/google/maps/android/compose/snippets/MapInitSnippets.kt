@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -41,16 +42,20 @@ import kotlinx.coroutines.delay
  * [rememberCameraPositionState].
  */
 @Composable
-fun BasicMapSnippet() {
-  // [START maps_android_compose_init_basic]
-  val cameraPositionState = rememberCameraPositionState {
+fun BasicMapSnippet(
+  cameraPositionState: CameraPositionState = rememberCameraPositionState {
     position =
       CameraPosition.fromLatLngZoom(
         LatLng(40.0150, -105.2705), // Boulder, Colorado
         11f
       )
-  }
+  },
+  onStateConfigured: (CameraPositionState) -> Unit = {}
+) {
+  // Expose the active camera state to test listeners
+  onStateConfigured(cameraPositionState)
 
+  // [START maps_android_compose_init_basic]
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState)
   // [END maps_android_compose_init_basic]
 }

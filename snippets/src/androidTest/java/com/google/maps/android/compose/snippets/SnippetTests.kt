@@ -20,6 +20,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.maps.android.compose.CameraPositionState
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -43,7 +45,19 @@ class SnippetTests {
 
   @Test
   fun testBasicMapSnippet() {
-    runSnippetCompositionTest { BasicMapSnippet() }
+    var capturedState: CameraPositionState? = null
+    runSnippetCompositionTest {
+      BasicMapSnippet(onStateConfigured = { state -> capturedState = state })
+    }
+    val finalPosition = capturedState!!.position
+    assertEquals("Latitude must match Boulder CO!", 40.0150, finalPosition.target.latitude, 0.001)
+    assertEquals(
+      "Longitude must match Boulder CO!",
+      -105.2705,
+      finalPosition.target.longitude,
+      0.001
+    )
+    assertEquals("Zoom must match 11f!", 11f, finalPosition.zoom, 0.01f)
   }
 
   @Test
