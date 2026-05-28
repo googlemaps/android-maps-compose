@@ -26,32 +26,28 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.data.geojson.GeoJsonLayer
 import com.google.maps.android.data.kml.KmlLayer
-import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import kotlin.OptIn
+import org.json.JSONObject
 
 /**
  * Demonstrates how to load and display a GeoJSON data layer (representing a Polyline) on the map.
  *
- * This Composable uses [MapEffect] to get the raw [com.google.android.gms.maps.GoogleMap]
- * reference safely and instantiates a [GeoJsonLayer] with a self-contained GeoJSON LineString.
+ * This Composable uses [MapEffect] to get the raw [com.google.android.gms.maps.GoogleMap] reference
+ * safely and instantiates a [GeoJsonLayer] with a self-contained GeoJSON LineString.
  */
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun GeoJsonLayerSnippet() {
-    // [START maps_android_compose_geojson_layer]
-    val cameraPositionState = rememberCameraPositionState {
-        position = defaultCameraPosition
-    }
+  // [START maps_android_compose_geojson_layer]
+  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
-    ) {
-        // Use MapEffect to safely access the raw GoogleMap instance
-        MapEffect(Unit) { googleMap ->
-            val geoJsonData = JSONObject(
-                """{
+  GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
+    // Use MapEffect to safely access the raw GoogleMap instance
+    MapEffect(Unit) { googleMap ->
+      val geoJsonData =
+        JSONObject(
+          """{
                     "type": "FeatureCollection",
                     "features": [
                       {
@@ -68,37 +64,33 @@ fun GeoJsonLayerSnippet() {
                       }
                     ]
                 }"""
-            )
-            val geoJsonLayer = GeoJsonLayer(googleMap, geoJsonData)
-            geoJsonLayer.addLayerToMap()
-        }
+        )
+      val geoJsonLayer = GeoJsonLayer(googleMap, geoJsonData)
+      geoJsonLayer.addLayerToMap()
     }
-    // [END maps_android_compose_geojson_layer]
+  }
+  // [END maps_android_compose_geojson_layer]
 }
 
 /**
  * Demonstrates how to load and display KML data layers (representing a Polygon area) on the map.
  *
- * Parses a KML stream defining a closed triangular area over Singapore using [KmlLayer],
- * rendering it dynamically on the map.
+ * Parses a KML stream defining a closed triangular area over Singapore using [KmlLayer], rendering
+ * it dynamically on the map.
  */
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun KmlLayerSnippet() {
-    // [START maps_android_compose_kml_layer]
-    val cameraPositionState = rememberCameraPositionState {
-        position = defaultCameraPosition
-    }
-    val context = LocalContext.current
+  // [START maps_android_compose_kml_layer]
+  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val context = LocalContext.current
 
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState
-    ) {
-        // Use MapEffect to safely access the raw GoogleMap instance
-        MapEffect(Unit) { googleMap ->
-            val kmlData = ByteArrayInputStream(
-                """<?xml version="1.0" encoding="UTF-8"?>
+  GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
+    // Use MapEffect to safely access the raw GoogleMap instance
+    MapEffect(Unit) { googleMap ->
+      val kmlData =
+        ByteArrayInputStream(
+          """<?xml version="1.0" encoding="UTF-8"?>
                 <kml xmlns="http://www.opengis.net/kml/2.2">
                   <Placemark>
                     <name>KML Polygon Area</name>
@@ -115,11 +107,12 @@ fun KmlLayerSnippet() {
                       </outerBoundaryIs>
                     </Polygon>
                   </Placemark>
-                </kml>""".toByteArray()
-            )
-            val kmlLayer = KmlLayer(googleMap, kmlData, context)
-            kmlLayer.addLayerToMap()
-        }
+                </kml>"""
+            .toByteArray()
+        )
+      val kmlLayer = KmlLayer(googleMap, kmlData, context)
+      kmlLayer.addLayerToMap()
     }
-    // [END maps_android_compose_kml_layer]
+  }
+  // [END maps_android_compose_kml_layer]
 }

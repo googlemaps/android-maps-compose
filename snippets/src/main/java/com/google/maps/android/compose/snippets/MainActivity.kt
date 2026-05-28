@@ -17,7 +17,6 @@
 package com.google.maps.android.compose.snippets
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -29,13 +28,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,81 +45,69 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 class MainActivity : BaseSnippetActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val initialSnippetTitle = intent.getStringExtra("EXTRA_SNIPPET_TITLE")
-        setContent {
-            MaterialTheme(colorScheme = MapsComposeColorScheme) {
-                SnippetRunnerApp(initialSnippetTitle)
-            }
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    val initialSnippetTitle = intent.getStringExtra("EXTRA_SNIPPET_TITLE")
+    setContent {
+      MaterialTheme(colorScheme = MapsComposeColorScheme) { SnippetRunnerApp(initialSnippetTitle) }
     }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SnippetRunnerApp(initialSnippetTitle: String? = null) {
-    var selectedSnippet by remember {
-        mutableStateOf(
-            SnippetRegistry.groups.flatMap { it.items }
-                .find { it.title == initialSnippetTitle }
-        )
-    }
+  var selectedSnippet by remember {
+    mutableStateOf(
+      SnippetRegistry.groups.flatMap { it.items }.find { it.title == initialSnippetTitle }
+    )
+  }
 
-    if (selectedSnippet == null) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Google Maps Compose Snippets") },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                )
-            }
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
+  if (selectedSnippet == null) {
+    Scaffold(
+      topBar = {
+        TopAppBar(
+          title = { Text("Google Maps Compose Snippets") },
+          colors =
+            TopAppBarDefaults.topAppBarColors(
+              containerColor = MaterialTheme.colorScheme.primaryContainer,
+              titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        )
+      }
+    ) { paddingValues ->
+      LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
+        SnippetRegistry.groups.forEach { group ->
+          item {
+            Text(
+              text = group.title,
+              style = MaterialTheme.typography.titleLarge,
+              color = MaterialTheme.colorScheme.primary,
+              modifier = Modifier.padding(vertical = 8.dp)
+            )
+          }
+          items(group.items) { item ->
+            Card(
+              modifier =
+                Modifier.fillMaxWidth().padding(vertical = 6.dp).clickable {
+                  selectedSnippet = item
+                },
+              colors =
+                CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
-                SnippetRegistry.groups.forEach { group ->
-                    item {
-                        Text(
-                            text = group.title,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-                    items(group.items) { item ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 6.dp)
-                                .clickable { selectedSnippet = item },
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(text = item.title, style = MaterialTheme.typography.titleMedium)
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = item.description, style = MaterialTheme.typography.bodyMedium)
-                            }
-                        }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                }
+              Column(modifier = Modifier.padding(16.dp)) {
+                Text(text = item.title, style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(text = item.description, style = MaterialTheme.typography.bodyMedium)
+              }
             }
+          }
+          item { Spacer(modifier = Modifier.height(16.dp)) }
         }
-    } else {
-        val snippet = selectedSnippet!!
-        Box(modifier = Modifier.fillMaxSize()) {
-            snippet.content()
-        }
+      }
     }
+  } else {
+    val snippet = selectedSnippet!!
+    Box(modifier = Modifier.fillMaxSize()) { snippet.content() }
+  }
 }
