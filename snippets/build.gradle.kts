@@ -36,6 +36,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableAndroidTestCoverage = true
+            enableUnitTestCoverage = true
+        }
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
@@ -92,6 +96,25 @@ dependencies {
     implementation(project(":maps-compose"))
     implementation(project(":maps-compose-widgets"))
     implementation(project(":maps-compose-utils"))
+
+    // Local Unit Testing (Robolectric)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.test.compose.ui)
+    testImplementation(libs.androidx.test.runner)
+    testImplementation(libs.androidx.test.rules)
+    testImplementation(libs.androidx.test.junit.ktx)
+    testImplementation(libs.test.junit)
+    testImplementation(libs.robolectric)
+
+    // Instrumented Connected Testing on the Pixel 6 Device
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.test.compose.ui)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.junit.ktx)
+    androidTestImplementation(libs.test.junit)
+    
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
 secrets {
