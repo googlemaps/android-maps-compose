@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -30,6 +31,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Demonstrates the minimum configuration to initialize a basic, interactive Google Map.
@@ -62,12 +64,12 @@ fun CustomConfigMapSnippet() {
         position = defaultCameraPosition
     }
 
-    var configStep by remember { mutableStateOf(0) }
+    var configStep by remember { mutableIntStateOf(0) }
 
     // Automatically cycle through 3 different configurations every 2 seconds to capture transition details
     LaunchedEffect(Unit) {
         while (true) {
-            delay(2000)
+            delay(2000.milliseconds)
             configStep = (configStep + 1) % 3
         }
     }
