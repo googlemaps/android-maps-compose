@@ -38,30 +38,27 @@ import com.google.maps.android.compose.rememberTileOverlayState
  */
 @Composable
 public fun WmsTileOverlay(
-    urlFormatter: (xMin: Double, yMin: Double, xMax: Double, yMax: Double, zoom: Int) -> String,
-    state: TileOverlayState = rememberTileOverlayState(),
-    fadeIn: Boolean = true,
-    transparency: Float = 0f,
-    visible: Boolean = true,
-    zIndex: Float = 0f,
-    onClick: (TileOverlay) -> Unit = {},
-    tileWidth: Int = 256,
-    tileHeight: Int = 256
+  urlFormatter: (xMin: Double, yMin: Double, xMax: Double, yMax: Double, zoom: Int) -> String,
+  state: TileOverlayState = rememberTileOverlayState(),
+  fadeIn: Boolean = true,
+  transparency: Float = 0f,
+  visible: Boolean = true,
+  zIndex: Float = 0f,
+  onClick: (TileOverlay) -> Unit = {},
+  tileWidth: Int = 256,
+  tileHeight: Int = 256
 ) {
-    val tileProvider = remember(urlFormatter, tileWidth, tileHeight) {
-        WmsUrlTileProvider(
-            width = tileWidth,
-            height = tileHeight,
-            urlFormatter = urlFormatter
-        )
+  val tileProvider =
+    remember(urlFormatter, tileWidth, tileHeight) {
+      WmsUrlTileProvider(width = tileWidth, height = tileHeight, urlFormatter = urlFormatter)
     }
-    TileOverlay(
-        tileProvider = tileProvider,
-        state = state,
-        fadeIn = fadeIn,
-        transparency = transparency,
-        visible = visible,
-        zIndex = zIndex,
-        onClick = onClick
-    )
+  TileOverlay(
+    tileProvider = tileProvider,
+    state = state,
+    fadeIn = fadeIn,
+    transparency = transparency,
+    visible = visible,
+    zIndex = zIndex,
+    onClick = onClick
+  )
 }

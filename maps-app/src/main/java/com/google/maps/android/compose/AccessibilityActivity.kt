@@ -30,56 +30,47 @@ import com.google.android.gms.maps.model.Marker
 
 private const val TAG = "AccessibilityActivity"
 
-
 class AccessibilityActivity : ComponentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            val singaporeState = rememberUpdatedMarkerState(position = singapore)
-            val cameraPositionState = rememberCameraPositionState {
-                position = defaultCameraPosition
-            }
-            val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
-            val mapProperties by remember {
-                mutableStateOf(MapProperties(mapType = MapType.NORMAL))
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      val singaporeState = rememberUpdatedMarkerState(position = singapore)
+      val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+      val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+      val mapProperties by remember { mutableStateOf(MapProperties(mapType = MapType.NORMAL)) }
 
-            Box(
-                modifier = Modifier.fillMaxSize()
-                    .systemBarsPadding(),
-            ) {
-                GoogleMap(
-                    // mergeDescendants will remove accessibility from the entire map and content inside.
-                    mergeDescendants = true,
-                    // alternatively, contentDescription will deactivate it for the maps, but not markers.
-                    contentDescription = "",
-                    cameraPositionState = cameraPositionState,
-                    properties = mapProperties,
-                    uiSettings = uiSettings,
-                    onPOIClick = {
-                        Log.d(TAG, "POI clicked: ${it.name}")
-                    }
-                ) {
-                    val markerClick: (Marker) -> Boolean = {
-                        Log.d(TAG, "${it.title} was clicked")
-                        cameraPositionState.projection?.let { projection ->
-                            Log.d(TAG, "The current projection is: $projection")
-                        }
-                        false
-                    }
-
-                    Marker(
-                        // contentDescription overrides title for TalkBack
-                        contentDescription = "Description of the marker",
-                        state = singaporeState,
-                        title = "Marker in Singapore",
-                        onClick = markerClick
-                    )
-                }
+      Box(
+        modifier = Modifier.fillMaxSize().systemBarsPadding(),
+      ) {
+        GoogleMap(
+          // mergeDescendants will remove accessibility from the entire map and content inside.
+          mergeDescendants = true,
+          // alternatively, contentDescription will deactivate it for the maps, but not markers.
+          contentDescription = "",
+          cameraPositionState = cameraPositionState,
+          properties = mapProperties,
+          uiSettings = uiSettings,
+          onPOIClick = { Log.d(TAG, "POI clicked: ${it.name}") }
+        ) {
+          val markerClick: (Marker) -> Boolean = {
+            Log.d(TAG, "${it.title} was clicked")
+            cameraPositionState.projection?.let { projection ->
+              Log.d(TAG, "The current projection is: $projection")
             }
+            false
+          }
+
+          Marker(
+            // contentDescription overrides title for TalkBack
+            contentDescription = "Description of the marker",
+            state = singaporeState,
+            title = "Marker in Singapore",
+            onClick = markerClick
+          )
         }
+      }
     }
+  }
 }
-

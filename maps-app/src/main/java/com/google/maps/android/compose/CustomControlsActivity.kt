@@ -46,102 +46,85 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import kotlinx.coroutines.launch
 
-
 class CustomControlsActivity : ComponentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            var isMapLoaded by remember { mutableStateOf(false) }
-            val coroutineScope = rememberCoroutineScope()
-            // This needs to be manually deactivated to avoid having a custom and the native
-            // location button
-            val uiSettings by remember {
-                mutableStateOf(
-                    MapUiSettings(
-                        myLocationButtonEnabled = false,
-                        zoomGesturesEnabled = false
-                    )
-                )
-            }
-            // Observing and controlling the camera's state can be done with a CameraPositionState
-            val cameraPositionState = rememberCameraPositionState {
-                position = defaultCameraPosition
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      var isMapLoaded by remember { mutableStateOf(false) }
+      val coroutineScope = rememberCoroutineScope()
+      // This needs to be manually deactivated to avoid having a custom and the native
+      // location button
+      val uiSettings by remember {
+        mutableStateOf(MapUiSettings(myLocationButtonEnabled = false, zoomGesturesEnabled = false))
+      }
+      // Observing and controlling the camera's state can be done with a CameraPositionState
+      val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
-            Box(
-                modifier = Modifier.fillMaxSize()
-                    .systemBarsPadding(),
-            ) {
-                GoogleMap(
-                    modifier = Modifier.matchParentSize(),
-                    cameraPositionState = cameraPositionState,
-                    onMapLoaded = {
-                        isMapLoaded = true
-                    },
-                    uiSettings = uiSettings,
-                )
+      Box(
+        modifier = Modifier.fillMaxSize().systemBarsPadding(),
+      ) {
+        GoogleMap(
+          modifier = Modifier.matchParentSize(),
+          cameraPositionState = cameraPositionState,
+          onMapLoaded = { isMapLoaded = true },
+          uiSettings = uiSettings,
+        )
 
-                if (!isMapLoaded) {
-                    AnimatedVisibility(
-                        modifier = Modifier
-                            .matchParentSize(),
-                        visible = !isMapLoaded,
-                        enter = EnterTransition.None,
-                        exit = fadeOut()
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .background(MaterialTheme.colors.background)
-                                .wrapContentSize()
-                        )
-                    }
-                }
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    MapButton(
-                        "This is a custom location button",
-                        onClick = {
-                            Toast.makeText(
-                                this@CustomControlsActivity,
-                                "Click on my location",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        })
-                    MapButton(
-                        "+",
-                        onClick = {
-                            coroutineScope.launch {
-                                cameraPositionState.animate(CameraUpdateFactory.zoomIn())
-                            }
-                        })
-                    MapButton(
-                        "-",
-                        onClick = {
-                            coroutineScope.launch {
-                                cameraPositionState.animate(CameraUpdateFactory.zoomOut())
-                            }
-                        })
-                }
-            }
+        if (!isMapLoaded) {
+          AnimatedVisibility(
+            modifier = Modifier.matchParentSize(),
+            visible = !isMapLoaded,
+            enter = EnterTransition.None,
+            exit = fadeOut()
+          ) {
+            CircularProgressIndicator(
+              modifier = Modifier.background(MaterialTheme.colors.background).wrapContentSize()
+            )
+          }
         }
-    }
-
-    @Composable
-    private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-        Button(
-            modifier = modifier.padding(4.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.onPrimary,
-                contentColor = MaterialTheme.colors.primary
-            ),
-            onClick = onClick
-        ) {
-            Text(text = text, style = MaterialTheme.typography.body1)
+        Column(modifier = Modifier.fillMaxWidth()) {
+          MapButton(
+            "This is a custom location button",
+            onClick = {
+              Toast.makeText(
+                  this@CustomControlsActivity,
+                  "Click on my location",
+                  Toast.LENGTH_SHORT
+                )
+                .show()
+            }
+          )
+          MapButton(
+            "+",
+            onClick = {
+              coroutineScope.launch { cameraPositionState.animate(CameraUpdateFactory.zoomIn()) }
+            }
+          )
+          MapButton(
+            "-",
+            onClick = {
+              coroutineScope.launch { cameraPositionState.animate(CameraUpdateFactory.zoomOut()) }
+            }
+          )
         }
+      }
     }
+  }
 
-
+  @Composable
+  private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(
+      modifier = modifier.padding(4.dp),
+      colors =
+        ButtonDefaults.buttonColors(
+          backgroundColor = MaterialTheme.colors.onPrimary,
+          contentColor = MaterialTheme.colors.primary
+        ),
+      onClick = onClick
+    ) {
+      Text(text = text, style = MaterialTheme.typography.body1)
+    }
+  }
 }

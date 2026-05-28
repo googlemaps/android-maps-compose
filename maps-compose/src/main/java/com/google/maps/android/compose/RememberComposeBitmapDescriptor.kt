@@ -27,59 +27,61 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import androidx.core.graphics.createBitmap
 
 @MapsComposeExperimentalApi
 @Composable
 public fun rememberComposeBitmapDescriptor(
-    vararg keys: Any,
-    content: @Composable () -> Unit,
+  vararg keys: Any,
+  content: @Composable () -> Unit,
 ): BitmapDescriptor {
-    val parent = LocalView.current.rootView as ViewGroup
-    val compositionContext = rememberCompositionContext()
-    val currentContent by rememberUpdatedState(content)
+  val parent = LocalView.current.rootView as ViewGroup
+  val compositionContext = rememberCompositionContext()
+  val currentContent by rememberUpdatedState(content)
 
-    return remember(parent, compositionContext, currentContent, *keys) {
-        renderComposableToBitmapDescriptor(parent, compositionContext, currentContent)
-    }
+  return remember(parent, compositionContext, currentContent, *keys) {
+    renderComposableToBitmapDescriptor(parent, compositionContext, currentContent)
+  }
 }
 
 private val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
 
 private fun renderComposableToBitmapDescriptor(
-    parent: ViewGroup,
-    compositionContext: CompositionContext,
-    content: @Composable () -> Unit,
+  parent: ViewGroup,
+  compositionContext: CompositionContext,
+  content: @Composable () -> Unit,
 ): BitmapDescriptor {
-    val composeView =
-        ComposeView(parent.context)
-            .apply {
-                layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                )
-                setParentCompositionContext(compositionContext)
-                setContent(content)
-            }
-            .also(parent::addView)
+  val composeView =
+    ComposeView(parent.context)
+      .apply {
+        layoutParams =
+          ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+          )
+        setParentCompositionContext(compositionContext)
+        setContent(content)
+      }
+      .also(parent::addView)
 
-    composeView.measure(measureSpec, measureSpec)
+  composeView.measure(measureSpec, measureSpec)
 
-    if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
-        throw IllegalStateException("The ComposeView was measured to have a width or height of " +
-                "zero. Make sure that the content has a non-zero size.")
-    }
+  if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
+    throw IllegalStateException(
+      "The ComposeView was measured to have a width or height of " +
+        "zero. Make sure that the content has a non-zero size."
+    )
+  }
 
-    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
+  composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
 
-    val bitmap =
-        createBitmap(composeView.measuredWidth, composeView.measuredHeight)
+  val bitmap = createBitmap(composeView.measuredWidth, composeView.measuredHeight)
 
-    bitmap.applyCanvas { composeView.draw(this) }
+  bitmap.applyCanvas { composeView.draw(this) }
 
-    parent.removeView(composeView)
+  parent.removeView(composeView)
 
-    return BitmapDescriptorFactory.fromBitmap(bitmap)
+  return BitmapDescriptorFactory.fromBitmap(bitmap)
 }

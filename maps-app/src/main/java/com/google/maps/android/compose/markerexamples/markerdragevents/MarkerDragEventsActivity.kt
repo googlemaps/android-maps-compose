@@ -42,36 +42,35 @@ private val TAG = MarkerDragEventsActivity::class.simpleName
  * original GoogleMap Marker listener.
  */
 class MarkerDragEventsActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MapsComposeSampleTheme {
-                GoogleMapWithMarker(
-                    modifier = Modifier.fillMaxSize()
-                        .systemBarsPadding(),
-                )
-            }
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      MapsComposeSampleTheme {
+        GoogleMapWithMarker(
+          modifier = Modifier.fillMaxSize().systemBarsPadding(),
+        )
+      }
     }
+  }
 }
 
 @Composable
 private fun GoogleMapWithMarker(
-    modifier: Modifier = Modifier,
+  modifier: Modifier = Modifier,
 ) {
-    val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
-    GoogleMap(
-        modifier = modifier,
-        cameraPositionState = cameraPositionState,
-    ) {
-        DraggableMarker(
-            onDragStart = { Log.i(TAG, "onDragStart") },
-            onDragEnd = { Log.i(TAG, "onDragEnd") },
-            onDrag = { position -> Log.i(TAG, "onDrag: $position") }
-        )
-    }
+  GoogleMap(
+    modifier = modifier,
+    cameraPositionState = cameraPositionState,
+  ) {
+    DraggableMarker(
+      onDragStart = { Log.i(TAG, "onDragStart") },
+      onDragEnd = { Log.i(TAG, "onDragEnd") },
+      onDrag = { position -> Log.i(TAG, "onDrag: $position") }
+    )
+  }
 }
 
 /**
@@ -83,48 +82,45 @@ private fun GoogleMapWithMarker(
  */
 @Composable
 private fun DraggableMarker(
-    onDragStart: () -> Unit = {},
-    onDrag: (LatLng) -> Unit = {},
-    onDragEnd: () -> Unit = {}
+  onDragStart: () -> Unit = {},
+  onDrag: (LatLng) -> Unit = {},
+  onDragEnd: () -> Unit = {}
 ) {
-    val markerState = rememberUpdatedMarkerState(position = singapore)
+  val markerState = rememberUpdatedMarkerState(position = singapore)
 
-    Marker(
-        state = markerState,
-        draggable = true
-    )
+  Marker(state = markerState, draggable = true)
 
-    LaunchedEffect(Unit) {
-        var inDrag = false
-        var priorPosition: LatLng? = singapore
+  LaunchedEffect(Unit) {
+    var inDrag = false
+    var priorPosition: LatLng? = singapore
 
-        snapshotFlow { markerState.isDragging to markerState.position }
-            .dropWhile { (isDragging, position) ->
-                !isDragging && position == priorPosition // ignore initial value
-            }
-            .collect { (isDragging, position) ->
-                // Do not even bother to check isDragging state here:
-                // it is possible to miss a sequence of states
-                // where isDragging == true, then isDragging == false;
-                // in this case we would only see a change in position.
-                // (Hypothetically we could even miss a change in position
-                // if the Marker ended up in its original position at the
-                // end of the drag. But then nothing changed at all,
-                // so we should be ok to ignore this case altogether.)
-                if (!inDrag) {
-                    inDrag = true
-                    onDragStart()
-                }
+    snapshotFlow { markerState.isDragging to markerState.position }
+      .dropWhile { (isDragging, position) ->
+        !isDragging && position == priorPosition // ignore initial value
+      }
+      .collect { (isDragging, position) ->
+        // Do not even bother to check isDragging state here:
+        // it is possible to miss a sequence of states
+        // where isDragging == true, then isDragging == false;
+        // in this case we would only see a change in position.
+        // (Hypothetically we could even miss a change in position
+        // if the Marker ended up in its original position at the
+        // end of the drag. But then nothing changed at all,
+        // so we should be ok to ignore this case altogether.)
+        if (!inDrag) {
+          inDrag = true
+          onDragStart()
+        }
 
-                if (position != priorPosition) {
-                    onDrag(position)
-                    priorPosition = position
-                }
+        if (position != priorPosition) {
+          onDrag(position)
+          priorPosition = position
+        }
 
-                if (!isDragging) {
-                    inDrag = false
-                    onDragEnd()
-                }
-            }
-    }
+        if (!isDragging) {
+          inDrag = false
+          onDragEnd()
+        }
+      }
+  }
 }

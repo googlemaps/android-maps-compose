@@ -37,86 +37,77 @@ import kotlin.random.Random
 private const val TAG = "RecompositionActivity"
 
 /**
- * This is a sample activity showcasing how the recomposition works. The location is changed
- * every time we click on the button, and the marker gets updated (removed and added in a new
- * location)
+ * This is a sample activity showcasing how the recomposition works. The location is changed every
+ * time we click on the button, and the marker gets updated (removed and added in a new location)
  */
 class RecompositionActivity : ComponentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            val cameraPositionState = rememberCameraPositionState {
-                position = defaultCameraPosition
-            }
-            Box(
-                modifier = Modifier.fillMaxSize()
-                    .systemBarsPadding(),
-            ) {
-                MapsComposeSampleTheme {
-                    GoogleMapView(
-                        modifier = Modifier.matchParentSize(),
-                        cameraPositionState = cameraPositionState
-                    )
-                }
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+      Box(
+        modifier = Modifier.fillMaxSize().systemBarsPadding(),
+      ) {
+        MapsComposeSampleTheme {
+          GoogleMapView(
+            modifier = Modifier.matchParentSize(),
+            cameraPositionState = cameraPositionState
+          )
         }
+      }
     }
+  }
 
-    @Composable
-    fun GoogleMapView(
-        modifier: Modifier = Modifier,
-        cameraPositionState: CameraPositionState = rememberCameraPositionState(),
-        content: @Composable () -> Unit = {},
-    ) {
-        val markerState = rememberUpdatedMarkerState(position = singapore)
+  @Composable
+  fun GoogleMapView(
+    modifier: Modifier = Modifier,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    content: @Composable () -> Unit = {},
+  ) {
+    val markerState = rememberUpdatedMarkerState(position = singapore)
 
-        val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
-        val mapProperties by remember {
-            mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+    val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+    val mapProperties by remember { mutableStateOf(MapProperties(mapType = MapType.NORMAL)) }
+
+    val mapVisible by remember { mutableStateOf(true) }
+    if (mapVisible) {
+      GoogleMap(
+        modifier = modifier,
+        cameraPositionState = cameraPositionState,
+        properties = mapProperties,
+        uiSettings = uiSettings,
+        onPOIClick = { Log.d(TAG, "POI clicked: ${it.name}") }
+      ) {
+        val markerClick: (Marker) -> Boolean = {
+          Log.d(TAG, "${it.title} was clicked")
+          cameraPositionState.projection?.let { projection ->
+            Log.d(TAG, "The current projection is: $projection")
+          }
+          false
         }
 
-        val mapVisible by remember { mutableStateOf(true) }
-        if (mapVisible) {
-            GoogleMap(
-                modifier = modifier,
-                cameraPositionState = cameraPositionState,
-                properties = mapProperties,
-                uiSettings = uiSettings,
-                onPOIClick = {
-                    Log.d(TAG, "POI clicked: ${it.name}")
-                }
-            ) {
-                val markerClick: (Marker) -> Boolean = {
-                    Log.d(TAG, "${it.title} was clicked")
-                    cameraPositionState.projection?.let { projection ->
-                        Log.d(TAG, "The current projection is: $projection")
-                    }
-                    false
-                }
+        Marker(state = markerState, title = "Marker in Singapore", onClick = markerClick)
 
-                Marker(
-                    state = markerState,
-                    title = "Marker in Singapore",
-                    onClick = markerClick
-                )
-
-                content()
-            }
-            Column {
-                Button(onClick = {
-                    val randomValue = Random.nextInt(3)
-                    markerState.position = when (randomValue) {
-                        0 -> singapore
-                        1 -> singapore2
-                        2 -> singapore3
-                        else -> singapore
-                    }
-                }) {
-                    Text("Change Location")
-                }
-            }
+        content()
+      }
+      Column {
+        Button(
+          onClick = {
+            val randomValue = Random.nextInt(3)
+            markerState.position =
+              when (randomValue) {
+                0 -> singapore
+                1 -> singapore2
+                2 -> singapore3
+                else -> singapore
+              }
+          }
+        ) {
+          Text("Change Location")
         }
+      }
     }
+  }
 }

@@ -30,39 +30,35 @@ import org.junit.Rule
 import org.junit.Test
 
 class StreetViewTests {
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    private lateinit var cameraPositionState: StreetViewCameraPositionState
-    private val initialLatLng = singapore
+  private lateinit var cameraPositionState: StreetViewCameraPositionState
+  private val initialLatLng = singapore
 
-    @Before
-    fun setUp() {
-        cameraPositionState = StreetViewCameraPositionState()
+  @Before
+  fun setUp() {
+    cameraPositionState = StreetViewCameraPositionState()
+  }
+
+  @OptIn(MapsExperimentalFeature::class)
+  private fun initStreetView(onClick: (StreetViewPanoramaOrientation) -> Unit = {}) {
+    composeTestRule.setContent {
+      StreetView(
+        Modifier.semantics { contentDescription = "StreetView" },
+        cameraPositionState = cameraPositionState,
+        streetViewPanoramaOptionsFactory = { StreetViewPanoramaOptions().position(initialLatLng) },
+        onClick = onClick
+      )
     }
-
-    @OptIn(MapsExperimentalFeature::class)
-    private fun initStreetView(onClick: (StreetViewPanoramaOrientation) -> Unit = {}) {
-        composeTestRule.setContent {
-            StreetView(
-                Modifier.semantics { contentDescription = "StreetView" },
-                cameraPositionState = cameraPositionState,
-                streetViewPanoramaOptionsFactory = {
-                    StreetViewPanoramaOptions()
-                        .position(initialLatLng)
-                },
-                onClick = onClick
-            )
-        }
-        composeTestRule.waitUntil(timeout5) {
-            cameraPositionState.location.position.latitude != 0.0 &&
-                cameraPositionState.location.position.longitude != 0.0
-        }
+    composeTestRule.waitUntil(timeout5) {
+      cameraPositionState.location.position.latitude != 0.0 &&
+        cameraPositionState.location.position.longitude != 0.0
     }
+  }
 
-    @Test
-    fun testStartingStreetViewPosition() {
-        initStreetView()
-        initialLatLng.assertEquals(cameraPositionState.location.position)
-    }
+  @Test
+  fun testStartingStreetViewPosition() {
+    initStreetView()
+    initialLatLng.assertEquals(cameraPositionState.location.position)
+  }
 }

@@ -37,9 +37,9 @@ import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.singapore2
 import com.google.maps.android.compose.singapore3
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
+import kotlin.random.Random
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 /**
  * Simplistic app data model intended for persistent storage.
@@ -47,89 +47,83 @@ import kotlin.random.Random
  * This only stores [LocationData], for demonstration purposes, but could hold an entire app's data.
  */
 private class DataModel {
-    /**
-     * Location data
-     */
-    var locationData by mutableStateOf(LocationData(singapore))
+  /** Location data */
+  var locationData by mutableStateOf(LocationData(singapore))
 }
 
 /**
  * Data type representing a location.
  *
- * This only stores location position, for demonstration purposes,
- * but could hold other data related to the location.
+ * This only stores location position, for demonstration purposes, but could hold other data related
+ * to the location.
  */
-@Immutable
-private data class LocationData(val position: LatLng)
+@Immutable private data class LocationData(val position: LatLng)
 
 /**
- * Demonstrates how to easily initialize and update position for a non-draggable
- * Marker from a data model.
+ * Demonstrates how to easily initialize and update position for a non-draggable Marker from a data
+ * model.
  */
 class UpdatingNoDragMarkerWithDataModelActivity : ComponentActivity() {
-    private val dataModel = DataModel()
+  private val dataModel = DataModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        lifecycleScope.launch {
-            // Simulate remote updates to data model
-            while (true) {
-                delay(3_000)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    lifecycleScope.launch {
+      // Simulate remote updates to data model
+      while (true) {
+        delay(3_000)
 
-                val newPosition = when (Random.nextInt(3)) {
-                    0 -> singapore
-                    1 -> singapore2
-                    2 -> singapore3
-                    else -> singapore
-                }
+        val newPosition =
+          when (Random.nextInt(3)) {
+            0 -> singapore
+            1 -> singapore2
+            2 -> singapore3
+            else -> singapore
+          }
 
-                dataModel.locationData = LocationData(newPosition)
-            }
-        }
-
-        setContent {
-            MapsComposeSampleTheme {
-                GoogleMapWithSimpleMarker(
-                    locationData = dataModel.locationData,
-                    modifier = Modifier.fillMaxSize()
-                        .systemBarsPadding(),
-                )
-            }
-        }
+        dataModel.locationData = LocationData(newPosition)
+      }
     }
+
+    setContent {
+      MapsComposeSampleTheme {
+        GoogleMapWithSimpleMarker(
+          locationData = dataModel.locationData,
+          modifier = Modifier.fillMaxSize().systemBarsPadding(),
+        )
+      }
+    }
+  }
 }
 
 @Composable
 private fun GoogleMapWithSimpleMarker(
-    locationData: LocationData,
-    modifier: Modifier = Modifier,
+  locationData: LocationData,
+  modifier: Modifier = Modifier,
 ) {
-    val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
-    GoogleMap(
-        modifier = modifier,
-        cameraPositionState = cameraPositionState,
-    ) {
-        Marker(position = locationData.position)
-    }
+  GoogleMap(
+    modifier = modifier,
+    cameraPositionState = cameraPositionState,
+  ) {
+    Marker(position = locationData.position)
+  }
 }
 
 /**
  * Standard API pattern for a non-draggable Marker.
  *
- * The caller does not have to deal with MarkerState,
- * and can update Marker [position] via recomposition.
+ * The caller does not have to deal with MarkerState, and can update Marker [position] via
+ * recomposition.
  */
 @Composable
 fun Marker(
-    position: LatLng,
-    onClick: () -> Boolean = { false },
+  position: LatLng,
+  onClick: () -> Boolean = { false },
 ) {
-    val markerState = rememberUpdatedMarkerState(position = position)
+  val markerState = rememberUpdatedMarkerState(position = position)
 
-    Marker(
-        state = markerState,
-        onClick = { onClick() }
-    )
+  Marker(state = markerState, onClick = { onClick() })
 }

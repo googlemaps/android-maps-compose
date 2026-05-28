@@ -27,12 +27,12 @@ import com.google.maps.android.ktx.addGroundOverlay
 import kotlin.IllegalStateException
 
 internal class GroundOverlayNode(
-    val groundOverlay: GroundOverlay,
-    var onGroundOverlayClick: (GroundOverlay) -> Unit
+  val groundOverlay: GroundOverlay,
+  var onGroundOverlayClick: (GroundOverlay) -> Unit
 ) : MapNode {
-    override fun onRemoved() {
-        groundOverlay.remove()
-    }
+  override fun onRemoved() {
+    groundOverlay.remove()
+  }
 }
 
 /**
@@ -41,25 +41,26 @@ internal class GroundOverlayNode(
  * Use one of the [create] methods to construct an instance of this class.
  */
 @ConsistentCopyVisibility
-public data class GroundOverlayPosition internal constructor(
-    public val latLngBounds: LatLngBounds? = null,
-    public val location: LatLng? = null,
-    public val width: Float? = null,
-    public val height: Float? = null,
+public data class GroundOverlayPosition
+internal constructor(
+  public val latLngBounds: LatLngBounds? = null,
+  public val location: LatLng? = null,
+  public val width: Float? = null,
+  public val height: Float? = null,
 ) {
-    public companion object {
-        public fun create(latLngBounds: LatLngBounds) : GroundOverlayPosition {
-            return GroundOverlayPosition(latLngBounds = latLngBounds)
-        }
-
-        public fun create(location: LatLng, width: Float, height: Float? = null) : GroundOverlayPosition {
-            return GroundOverlayPosition(
-                location = location,
-                width = width,
-                height = height
-            )
-        }
+  public companion object {
+    public fun create(latLngBounds: LatLngBounds): GroundOverlayPosition {
+      return GroundOverlayPosition(latLngBounds = latLngBounds)
     }
+
+    public fun create(
+      location: LatLng,
+      width: Float,
+      height: Float? = null
+    ): GroundOverlayPosition {
+      return GroundOverlayPosition(location = location, width = width, height = height)
+    }
+  }
 }
 
 /**
@@ -79,82 +80,83 @@ public data class GroundOverlayPosition internal constructor(
 @Composable
 @GoogleMapComposable
 public fun GroundOverlay(
-    position: GroundOverlayPosition,
-    image: BitmapDescriptor,
-    anchor: Offset = Offset(0.5f, 0.5f),
-    bearing: Float = 0f,
-    clickable: Boolean = false,
-    tag: Any? = null,
-    transparency: Float = 0f,
-    visible: Boolean = true,
-    zIndex: Float = 0f,
-    onClick: (GroundOverlay) -> Unit = {},
+  position: GroundOverlayPosition,
+  image: BitmapDescriptor,
+  anchor: Offset = Offset(0.5f, 0.5f),
+  bearing: Float = 0f,
+  clickable: Boolean = false,
+  tag: Any? = null,
+  transparency: Float = 0f,
+  visible: Boolean = true,
+  zIndex: Float = 0f,
+  onClick: (GroundOverlay) -> Unit = {},
 ) {
-    val mapApplier = currentComposer.applier as? MapApplier
-    ComposeNode<GroundOverlayNode, MapApplier>(
-        factory = {
-            val groundOverlay = mapApplier?.map?.addGroundOverlay {
-                anchor(anchor.x, anchor.y)
-                bearing(bearing)
-                clickable(clickable)
-                image(image)
-                position(position)
-                transparency(transparency)
-                visible(visible)
-                zIndex(zIndex)
-            } ?: error("Error adding ground overlay")
-            groundOverlay.tag = tag
-            GroundOverlayNode(groundOverlay, onClick)
-        },
-        update = {
-            update(onClick) { this.onGroundOverlayClick = it }
+  val mapApplier = currentComposer.applier as? MapApplier
+  ComposeNode<GroundOverlayNode, MapApplier>(
+    factory = {
+      val groundOverlay =
+        mapApplier?.map?.addGroundOverlay {
+          anchor(anchor.x, anchor.y)
+          bearing(bearing)
+          clickable(clickable)
+          image(image)
+          position(position)
+          transparency(transparency)
+          visible(visible)
+          zIndex(zIndex)
+        } ?: error("Error adding ground overlay")
+      groundOverlay.tag = tag
+      GroundOverlayNode(groundOverlay, onClick)
+    },
+    update = {
+      update(onClick) { this.onGroundOverlayClick = it }
 
-            update(bearing) { this.groundOverlay.bearing = it }
-            update(clickable) { this.groundOverlay.isClickable = it }
-            update(image) { this.groundOverlay.setImage(it) }
-            update(position) { this.groundOverlay.position(it) }
-            update(tag) { this.groundOverlay.tag = it }
-            update(transparency) { this.groundOverlay.transparency = it }
-            update(visible) { this.groundOverlay.isVisible = it }
-            update(zIndex) { this.groundOverlay.zIndex = it }
-            update(anchor) {
-                // GroundOverlay does not have a setAnchor method.
-                // We could recreate the overlay here, but that might be expensive.
-                // For now, we'll document that anchor cannot be changed.
-            }
-        }
-    )
+      update(bearing) { this.groundOverlay.bearing = it }
+      update(clickable) { this.groundOverlay.isClickable = it }
+      update(image) { this.groundOverlay.setImage(it) }
+      update(position) { this.groundOverlay.position(it) }
+      update(tag) { this.groundOverlay.tag = it }
+      update(transparency) { this.groundOverlay.transparency = it }
+      update(visible) { this.groundOverlay.isVisible = it }
+      update(zIndex) { this.groundOverlay.zIndex = it }
+      update(anchor) {
+        // GroundOverlay does not have a setAnchor method.
+        // We could recreate the overlay here, but that might be expensive.
+        // For now, we'll document that anchor cannot be changed.
+      }
+    }
+  )
 }
 
 private fun GroundOverlay.position(position: GroundOverlayPosition) {
-    if (position.latLngBounds != null) {
-        setPositionFromBounds(position.latLngBounds)
-        return
-    }
+  if (position.latLngBounds != null) {
+    setPositionFromBounds(position.latLngBounds)
+    return
+  }
 
-    if (position.location != null) {
-        setPosition(position.location)
-    }
+  if (position.location != null) {
+    setPosition(position.location)
+  }
 
-    if (position.width != null && position.height == null) {
-        setDimensions(position.width)
-    } else if (position.width != null && position.height != null) {
-        setDimensions(position.width, position.height)
-    }
+  if (position.width != null && position.height == null) {
+    setDimensions(position.width)
+  } else if (position.width != null && position.height != null) {
+    setDimensions(position.width, position.height)
+  }
 }
 
 private fun GroundOverlayOptions.position(position: GroundOverlayPosition): GroundOverlayOptions {
-    if (position.latLngBounds != null) {
-        return positionFromBounds(position.latLngBounds)
-    }
+  if (position.latLngBounds != null) {
+    return positionFromBounds(position.latLngBounds)
+  }
 
-    if (position.location == null || position.width == null) {
-        throw IllegalStateException("Invalid position $position")
-    }
+  if (position.location == null || position.width == null) {
+    throw IllegalStateException("Invalid position $position")
+  }
 
-    if (position.height == null) {
-        return position(position.location, position.width)
-    }
+  if (position.height == null) {
+    return position(position.location, position.width)
+  }
 
-    return position(position.location, position.width, position.height)
+  return position(position.location, position.width, position.height)
 }

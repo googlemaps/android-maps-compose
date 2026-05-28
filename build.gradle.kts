@@ -35,7 +35,7 @@ plugins {
     id("com.autonomousapps.dependency-analysis") version "3.4.1"
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
-
+    id("com.diffplug.spotless") version "6.25.0"
 }
 
 val projectArtifactId by extra { project: Project ->
@@ -58,4 +58,12 @@ tasks.register<Exec>("installAndLaunch") {
     group = "install"
     dependsOn(":maps-app:installDebug")
     commandLine("adb", "shell", "am", "start", "-n", "com.google.maps.android.compose/.MainActivity")
+}
+
+configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/build/**/*.kt")
+        ktfmt("0.46").googleStyle()
+    }
 }

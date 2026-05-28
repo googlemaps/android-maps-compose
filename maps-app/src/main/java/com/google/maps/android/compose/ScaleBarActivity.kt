@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,95 +38,74 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 import com.google.maps.android.compose.widgets.DarkGray
 import com.google.maps.android.compose.widgets.DisappearingScaleBar
 import com.google.maps.android.compose.widgets.ScaleBar
 
 class ScaleBarActivity : ComponentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            var isMapLoaded by remember { mutableStateOf(false) }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      var isMapLoaded by remember { mutableStateOf(false) }
 
-            // To control and observe the map camera
-            val cameraPositionState = rememberCameraPositionState {
-                position = defaultCameraPosition
-            }
+      // To control and observe the map camera
+      val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
-            val scaleBackground = MaterialTheme.colors.background.copy(alpha = 0.4f)
-            val scaleBorderStroke = BorderStroke(width = 1.dp, DarkGray.copy(alpha = 0.2f))
+      val scaleBackground = MaterialTheme.colors.background.copy(alpha = 0.4f)
+      val scaleBorderStroke = BorderStroke(width = 1.dp, DarkGray.copy(alpha = 0.2f))
 
-            Box(
-                modifier = Modifier.fillMaxSize()
-                    .systemBarsPadding(),
-            ) {
-                GoogleMap(
-                    modifier = Modifier.matchParentSize(),
-                    cameraPositionState = cameraPositionState,
-                    onMapLoaded = {
-                        isMapLoaded = true
-                    }
-                )
+      Box(
+        modifier = Modifier.fillMaxSize().systemBarsPadding(),
+      ) {
+        GoogleMap(
+          modifier = Modifier.matchParentSize(),
+          cameraPositionState = cameraPositionState,
+          onMapLoaded = { isMapLoaded = true }
+        )
 
-                Box(
-                    modifier = Modifier
-                        .padding(top = 5.dp, start = 5.dp)
-                        .align(Alignment.TopStart)
-                        .background(
-                            scaleBackground,
-                            shape = MaterialTheme.shapes.medium
-                        )
-                        .border(
-                            scaleBorderStroke,
-                            shape = MaterialTheme.shapes.medium
-                        ),
-                ) {
-                    DisappearingScaleBar(
-                        modifier = Modifier.padding(end = 4.dp),
-                        cameraPositionState = cameraPositionState
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .padding(top = 5.dp, end = 5.dp)
-                        .align(Alignment.TopEnd)
-                        .background(
-                            scaleBackground,
-                            shape = MaterialTheme.shapes.medium,
-                        )
-                        .border(
-                            scaleBorderStroke,
-                            shape = MaterialTheme.shapes.medium
-                        ),
-                    ) {
-                    ScaleBar(
-                        modifier = Modifier.padding(end = 4.dp),
-                        cameraPositionState = cameraPositionState
-                    )
-
-                }
-                if (!isMapLoaded) {
-                    AnimatedVisibility(
-                        modifier = Modifier
-                            .matchParentSize(),
-                        visible = !isMapLoaded,
-                        enter = EnterTransition.None,
-                        exit = fadeOut()
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .background(MaterialTheme.colors.background)
-                                .wrapContentSize()
-                        )
-                    }
-                }
-            }
+        Box(
+          modifier =
+            Modifier.padding(top = 5.dp, start = 5.dp)
+              .align(Alignment.TopStart)
+              .background(scaleBackground, shape = MaterialTheme.shapes.medium)
+              .border(scaleBorderStroke, shape = MaterialTheme.shapes.medium),
+        ) {
+          DisappearingScaleBar(
+            modifier = Modifier.padding(end = 4.dp),
+            cameraPositionState = cameraPositionState
+          )
         }
+
+        Box(
+          modifier =
+            Modifier.padding(top = 5.dp, end = 5.dp)
+              .align(Alignment.TopEnd)
+              .background(
+                scaleBackground,
+                shape = MaterialTheme.shapes.medium,
+              )
+              .border(scaleBorderStroke, shape = MaterialTheme.shapes.medium),
+        ) {
+          ScaleBar(
+            modifier = Modifier.padding(end = 4.dp),
+            cameraPositionState = cameraPositionState
+          )
+        }
+        if (!isMapLoaded) {
+          AnimatedVisibility(
+            modifier = Modifier.matchParentSize(),
+            visible = !isMapLoaded,
+            enter = EnterTransition.None,
+            exit = fadeOut()
+          ) {
+            CircularProgressIndicator(
+              modifier = Modifier.background(MaterialTheme.colors.background).wrapContentSize()
+            )
+          }
+        }
+      }
     }
+  }
 }

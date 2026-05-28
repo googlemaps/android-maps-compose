@@ -30,84 +30,83 @@ import com.google.android.gms.maps.model.StreetViewSource
 
 @Composable
 public inline fun rememberStreetViewCameraPositionState(
-    crossinline init: StreetViewCameraPositionState.() -> Unit = {}
-): StreetViewCameraPositionState = remember {
-    StreetViewCameraPositionState().apply(init)
-}
+  crossinline init: StreetViewCameraPositionState.() -> Unit = {}
+): StreetViewCameraPositionState = remember { StreetViewCameraPositionState().apply(init) }
 
 public class StreetViewCameraPositionState private constructor() {
 
-    /**
-     * The location of the panorama.
-     *
-     * This is read-only - to update the camera's position use [setPosition].
-     *
-     * Note that this property is observable and if you use it in a composable function it will be
-     * recomposed on every change. Use `snapshotFlow` to observe it instead.
-     */
-    public val location: StreetViewPanoramaLocation
-        get() = rawLocation
+  /**
+   * The location of the panorama.
+   *
+   * This is read-only - to update the camera's position use [setPosition].
+   *
+   * Note that this property is observable and if you use it in a composable function it will be
+   * recomposed on every change. Use `snapshotFlow` to observe it instead.
+   */
+  public val location: StreetViewPanoramaLocation
+    get() = rawLocation
 
-    internal var rawLocation by mutableStateOf(StreetViewPanoramaLocation(arrayOf(), LatLng(0.0,0.0), ""))
+  internal var rawLocation by
+    mutableStateOf(StreetViewPanoramaLocation(arrayOf(), LatLng(0.0, 0.0), ""))
 
-    /**
-     * The camera of the panorama.
-     *
-     * Note that this property is observable and if you use it in a composable function it will be
-     * recomposed on every change. Use `snapshotFlow` to observe it instead.
-     */
-    public val panoramaCamera: StreetViewPanoramaCamera
-        get() = rawPanoramaCamera
+  /**
+   * The camera of the panorama.
+   *
+   * Note that this property is observable and if you use it in a composable function it will be
+   * recomposed on every change. Use `snapshotFlow` to observe it instead.
+   */
+  public val panoramaCamera: StreetViewPanoramaCamera
+    get() = rawPanoramaCamera
 
-    internal var rawPanoramaCamera by mutableStateOf(StreetViewPanoramaCamera(0f, 0f, 0f ))
+  internal var rawPanoramaCamera by mutableStateOf(StreetViewPanoramaCamera(0f, 0f, 0f))
 
-    internal var panorama: StreetViewPanorama? = null
-        set(value) {
-            // Set value
-            if (field == null && value == null) return
-            if (field != null && value != null) {
-                error("StreetViewCameraPositionState may only be associated with one StreetView at a time.")
-            }
-            field = value
-        }
-
-    /**
-     * Animates the camera to be at [camera] in [durationMs] milliseconds.
-     * @param camera the camera to update to
-     * @param durationMs the duration of the animation in milliseconds
-     */
-    public fun animateTo(camera: StreetViewPanoramaCamera, durationMs: Int) {
-        panorama?.animateTo(camera, durationMs.toLong())
+  internal var panorama: StreetViewPanorama? = null
+    set(value) {
+      // Set value
+      if (field == null && value == null) return
+      if (field != null && value != null) {
+        error("StreetViewCameraPositionState may only be associated with one StreetView at a time.")
+      }
+      field = value
     }
 
-    /**
-     * Sets the position of the panorama.
-     * @param position the LatLng of the panorama
-     * @param radius the area in which to search for a panorama in meters
-     * @param source the source of the panoramas
-     */
-    public fun setPosition(position: LatLng, radius: Int? = null, source: StreetViewSource? = null) {
-        when {
-            radius != null && source != null -> panorama?.setPosition(position, radius, source)
-            radius != null -> panorama?.setPosition(position, radius)
-            else -> panorama?.setPosition(position)
-        }
-    }
+  /**
+   * Animates the camera to be at [camera] in [durationMs] milliseconds.
+   *
+   * @param camera the camera to update to
+   * @param durationMs the duration of the animation in milliseconds
+   */
+  public fun animateTo(camera: StreetViewPanoramaCamera, durationMs: Int) {
+    panorama?.animateTo(camera, durationMs.toLong())
+  }
 
-    /**
-     * Sets the StreetViewPanorama to the given panorama ID.
-     * @param panoId the ID of the panorama to set to
-     */
-    public fun setPosition(panoId: String) {
-        panorama?.setPosition(panoId)
+  /**
+   * Sets the position of the panorama.
+   *
+   * @param position the LatLng of the panorama
+   * @param radius the area in which to search for a panorama in meters
+   * @param source the source of the panoramas
+   */
+  public fun setPosition(position: LatLng, radius: Int? = null, source: StreetViewSource? = null) {
+    when {
+      radius != null && source != null -> panorama?.setPosition(position, radius, source)
+      radius != null -> panorama?.setPosition(position, radius)
+      else -> panorama?.setPosition(position)
     }
+  }
 
-    public companion object {
-        /**
-         * Creates a new [StreetViewCameraPositionState] object
-         */
-        @StateFactoryMarker
-        public operator fun invoke(): StreetViewCameraPositionState =
-            StreetViewCameraPositionState()
-    }
+  /**
+   * Sets the StreetViewPanorama to the given panorama ID.
+   *
+   * @param panoId the ID of the panorama to set to
+   */
+  public fun setPosition(panoId: String) {
+    panorama?.setPosition(panoId)
+  }
+
+  public companion object {
+    /** Creates a new [StreetViewCameraPositionState] object */
+    @StateFactoryMarker
+    public operator fun invoke(): StreetViewCameraPositionState = StreetViewCameraPositionState()
+  }
 }

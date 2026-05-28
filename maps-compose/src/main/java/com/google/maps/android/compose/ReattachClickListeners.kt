@@ -22,16 +22,13 @@ import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.remember
 
 /**
- * Returns a lambda that, when invoked, will reattach click listeners set by the [MapApplier] on
- * the [GoogleMap].
- * Used for working around other functionality that modifies those click listeners, such as
- * clustering.
+ * Returns a lambda that, when invoked, will reattach click listeners set by the [MapApplier] on the
+ * [GoogleMap]. Used for working around other functionality that modifies those click listeners,
+ * such as clustering.
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Composable
 public fun rememberReattachClickListenersHandle(): () -> Unit {
-    val map = currentComposer.applier as MapApplier
-    return remember(map) {
-        { map.attachClickListeners() }
-    }
+  val map = currentComposer.applier as MapApplier
+  return remember(map) { { map.attachClickListeners() } }
 }
