@@ -18,8 +18,8 @@ import urllib.request
 import sys
 
 def get_gemini_response(api_key, prompt):
-    # Using gemini-1.5-flash for fast and reliable answering
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    # Using gemini-3.5-flash for fast and reliable answering
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}"
     headers = {'Content-Type': 'application/json'}
     data = {
         "contents": [{
