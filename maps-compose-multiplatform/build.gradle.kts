@@ -16,6 +16,7 @@
 
 plugins {
     kotlin("multiplatform")
+    kotlin("native.cocoapods")
     id("com.android.kotlin.multiplatform.library")
     alias(libs.plugins.compose.compiler)
 }
@@ -31,6 +32,16 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
+
+    cocoapods {
+        summary = "Multiplatform Google Maps wrapper"
+        homepage = "https://github.com/googlemaps/android-maps-compose"
+        version = "1.0"
+        ios.deploymentTarget = "14.0"
+        pod("GoogleMaps") {
+            version = "9.0.0"
+        }
+    }
 
     sourceSets {
         commonMain {
