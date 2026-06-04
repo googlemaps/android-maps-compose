@@ -20,11 +20,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlin.math.pow
-import platform.CoreLocation.CLLocationCoordinate2DMake
-import platform.MapKit.MKCoordinateRegionMake
-import platform.MapKit.MKCoordinateSpanMake
-import platform.MapKit.MKMapView
+import kotlinx.cinterop.readValue
+import platform.CoreGraphics.CGRectZero
+import cocoapods.GoogleMaps.GMSMapView
+import cocoapods.GoogleMaps.GMSCameraPosition
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -36,16 +35,13 @@ public actual fun GoogleMap(
 ) {
     UIKitView(
         factory = {
-            MKMapView()
+            val camera = GMSCameraPosition.cameraWithLatitude(latitude, longitude, zoom)
+            GMSMapView.mapWithFrame(CGRectZero.readValue(), camera = camera)
         },
         modifier = modifier,
         update = { mapView ->
-            val center = CLLocationCoordinate2DMake(latitude, longitude)
-            // Approximate span calculation based on zoom level
-            val spanDelta = 360.0 / 2.0.pow(zoom.toDouble())
-            val span = MKCoordinateSpanMake(spanDelta, spanDelta)
-            val region = MKCoordinateRegionMake(center, span)
-            mapView.setRegion(region, animated = true)
+            val camera = GMSCameraPosition.cameraWithLatitude(latitude, longitude, zoom)
+            mapView.animateToCameraPosition(camera)
         }
     )
 }
