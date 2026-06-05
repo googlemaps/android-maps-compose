@@ -37,9 +37,28 @@ kotlin {
         summary = "Multiplatform Google Maps wrapper"
         homepage = "https://github.com/googlemaps/android-maps-compose"
         version = "1.0"
-        ios.deploymentTarget = "14.0"
+        ios.deploymentTarget = "16.0"
         pod("GoogleMaps") {
-            version = "9.0.0"
+            version = "10.14.0.0"
+        }
+        framework {
+            baseName = "maps_compose_multiplatform"
+            isStatic = true
+            linkerOpts("-lc++")
+            linkerOpts("-framework", "Accelerate")
+            linkerOpts("-framework", "CoreData")
+            linkerOpts("-framework", "CoreGraphics")
+            linkerOpts("-framework", "CoreImage")
+            linkerOpts("-framework", "CoreLocation")
+            linkerOpts("-framework", "CoreText")
+            linkerOpts("-framework", "GLKit")
+            linkerOpts("-framework", "ImageIO")
+            linkerOpts("-framework", "Metal")
+            linkerOpts("-framework", "OpenGLES")
+            linkerOpts("-framework", "QuartzCore")
+            linkerOpts("-framework", "Security")
+            linkerOpts("-framework", "SystemConfiguration")
+            linkerOpts("-framework", "UIKit")
         }
     }
 

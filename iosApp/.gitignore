@@ -1,0 +1,19 @@
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Xcode
+build/
+DerivedData/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+*.xcworkspace
+!default.xcworkspace
+*.xcuserstate
+
+# Secrets
+iosApp/DeveloperSecrets.swift
+
