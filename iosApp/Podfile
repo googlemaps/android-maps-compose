@@ -1,0 +1,11 @@
+platform :ios, '16.0'
+
+# Ignore warnings from CocoaPods dependencies
+inhibit_all_warnings!
+
+target 'iosApp' do
+  use_frameworks!
+  
+  # Reference our local KMP module via its podspec path
+  pod 'maps_compose_multiplatform', :path => '../maps-compose-multiplatform'
+end
