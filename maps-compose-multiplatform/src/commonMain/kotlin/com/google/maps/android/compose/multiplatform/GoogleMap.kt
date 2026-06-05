@@ -19,14 +19,34 @@ package com.google.maps.android.compose.multiplatform
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+public enum class MapType {
+    NONE,
+    NORMAL,
+    SATELLITE,
+    TERRAIN,
+    HYBRID
+}
+
+public data class MapMarker(
+    val latitude: Double,
+    val longitude: Double,
+    val title: String? = null,
+    val snippet: String? = null
+)
+
 /**
- * A multiplatform Map Composable that renders Google Maps on Android
- * and native Apple MapKit Map (MKMapView) on iOS.
+ * A multiplatform Map Composable that renders Google Maps on Android and iOS.
  */
 @Composable
 public expect fun GoogleMap(
     modifier: Modifier = Modifier,
     latitude: Double,
     longitude: Double,
-    zoom: Float = 10f
+    zoom: Float = 10f,
+    mapType: MapType = MapType.NORMAL,
+    myLocationEnabled: Boolean = false,
+    scrollGesturesEnabled: Boolean = true,
+    zoomGesturesEnabled: Boolean = true,
+    markers: List<MapMarker> = emptyList()
 )
+

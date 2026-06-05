@@ -84,6 +84,11 @@ sealed class ActivityGroup(@StringRes val title: Int, val activities: List<Activ
                 R.string.street_view_activity_description,
                 StreetViewActivity::class,
             ),
+            Activity(
+                R.string.kmp_map_activity,
+                R.string.kmp_map_activity_description,
+                KmpMapActivity::class,
+            ),
         ),
     )
 
