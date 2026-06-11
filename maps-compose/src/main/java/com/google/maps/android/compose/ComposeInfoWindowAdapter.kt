@@ -32,13 +32,16 @@ import com.google.android.gms.maps.model.Marker
  * workaround, the contained window is temporarily attached to the MapView so
  * that the contents of the ComposeViews are rendered.
  *
- * Eventually when info windows are no longer implemented this way, this
- * implementation should be updated.
+ * As of compose-ui 1.10, [ComposeView] skips drawing when detached (isShown == false).
+ * To work around this, the view is kept attached to the [MapView] until the info window
+ * is closed, at which point [disposeForMarker] must be called.
  */
 internal class ComposeInfoWindowAdapter(
     private val mapView: MapView,
     private val markerNodeFinder: (Marker) -> MarkerNode?
 ) : GoogleMap.InfoWindowAdapter {
+
+    private val renderHandles = mutableMapOf<Marker, ComposeUiViewRenderer.RenderHandle>()
 
     override fun getInfoContents(marker: Marker): View? {
         val markerNode = markerNodeFinder(marker) ?: return null
@@ -49,7 +52,8 @@ internal class ComposeInfoWindowAdapter(
         val view = ComposeView(mapView.context).apply {
             setContent { content(marker) }
         }
-        mapView.renderComposeViewOnce(view, parentContext = markerNode.compositionContext)
+        renderHandles.remove(marker)?.dispose()
+        renderHandles[marker] = mapView.startRenderingComposeView(view, markerNode.compositionContext)
         return view
     }
 
@@ -62,8 +66,13 @@ internal class ComposeInfoWindowAdapter(
         val view = ComposeView(mapView.context).apply {
             setContent { infoWindow(marker) }
         }
-        mapView.renderComposeViewOnce(view, parentContext = markerNode.compositionContext)
+        renderHandles.remove(marker)?.dispose()
+        renderHandles[marker] = mapView.startRenderingComposeView(view, markerNode.compositionContext)
         return view
+    }
+
+    fun disposeForMarker(marker: Marker) {
+        renderHandles.remove(marker)?.dispose()
     }
 
 }
