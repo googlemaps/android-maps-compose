@@ -35,6 +35,7 @@ end
 
 # Add a Build Phase Run Script to populate secrets before compilation
 populate_secrets_phase = target.new_shell_script_build_phase('Populate Secrets')
+populate_secrets_phase.output_paths = ['$(SRCROOT)/iosApp/DeveloperSecrets.swift']
 populate_secrets_phase.shell_script = <<-SHELL
 SECRETS_PATH="${PROJECT_DIR}/../secrets.properties"
 OUTPUT_FILE="${SRCROOT}/iosApp/DeveloperSecrets.swift"
