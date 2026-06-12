@@ -115,6 +115,9 @@
         <activity
             android:name=".GroundOverlayActivity"
             android:exported="true" />
+        <activity
+            android:name=".KmpMapActivity"
+            android:exported="true" />
 
         <!-- Used by createComponentActivity() for unit testing -->
         <activity android:name="androidx.activity.ComponentActivity" />

@@ -85,6 +85,11 @@ sealed class ActivityGroup(
                 R.string.street_view_activity_description,
                 StreetViewActivity::class
             ),
+            Activity(
+                R.string.kmp_map_activity,
+                R.string.kmp_map_activity_description,
+                KmpMapActivity::class
+            ),
         )
     )
 
