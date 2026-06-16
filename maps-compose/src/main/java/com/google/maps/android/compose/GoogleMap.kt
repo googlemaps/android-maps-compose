@@ -21,6 +21,7 @@ import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -155,6 +156,9 @@ public fun GoogleMap(
                 val options = googleMapOptionsFactory()
                 cameraPositionState.isLiteMode = options.liteMode == true
                 mapViewFactory(context, options).also { mapView ->
+                    mapView.isFocusable = true
+                    mapView.descendantFocusability = ViewGroup.FOCUS_BEFORE_DESCENDANTS
+
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
 
