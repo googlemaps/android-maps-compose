@@ -40,12 +40,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -215,7 +214,7 @@ private fun MapCard(
 ) {
     Card(
         Modifier.padding(16.dp),
-        elevation = 4.dp
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         var mapLoaded by remember { mutableStateOf(false) }
         var buildingFocused: Boolean? by remember { mutableStateOf(null) }
@@ -270,7 +269,7 @@ private fun MapCard(
                 }
             }
 
-            AnimatedVisibility(!mapLoaded, enter = fadeIn(), exit = fadeOut()) {
+            androidx.compose.animation.AnimatedVisibility(!mapLoaded, enter = fadeIn(), exit = fadeOut()) {
                 Box(
                     Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

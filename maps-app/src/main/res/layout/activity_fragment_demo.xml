@@ -38,7 +38,7 @@
         android:layout_margin="16dp"
         android:background="#80000000"
         android:padding="16dp"
-        android:text="Swipe to switch between views"
+        android:text="@string/swipe_to_switch"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
