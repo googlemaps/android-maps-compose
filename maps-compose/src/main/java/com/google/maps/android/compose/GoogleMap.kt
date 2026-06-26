@@ -22,6 +22,7 @@ import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
@@ -151,7 +152,7 @@ public fun GoogleMap(
         val parentCompositionScope = rememberCoroutineScope()
 
         AndroidView(
-            modifier = modifier,
+            modifier = modifier.focusable(),
             factory = { context ->
                 val options = googleMapOptionsFactory()
                 cameraPositionState.isLiteMode = options.liteMode == true
