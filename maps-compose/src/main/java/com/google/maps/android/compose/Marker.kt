@@ -605,7 +605,7 @@ public fun MarkerInfoWindowContent(
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
  * @param infoWindow optional composable lambda expression for customizing
- * the entire info window. If this value is non-null, the value in infoContent]
+ * the entire info window. If this value is non-null, the value in [infoContent]
  * will be ignored.
  * @param infoContent optional composable lambda expression for customizing
  * the info window's content. If this value is non-null, [infoWindow] must be null.
@@ -723,7 +723,7 @@ private fun MarkerImpl(
  * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
- * @param icon  sets the icon for the marker
+ * @param icon sets the icon for the marker
  * @param pinConfig the PinConfig object that will be used for the advanced marker
  * @param iconView the custom view to be used on the advanced marker
  * @param collisionBehavior the expected collision behavior
@@ -779,6 +779,170 @@ public fun AdvancedMarker(
 }
 
 /**
+ * A composable for an advanced marker on the map wherein its entire info window can be
+ * customized. If this customization is not required, use
+ * [com.google.maps.android.compose.AdvancedMarker].
+ *
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
+ * @param contentDescription the content description for accessibility purposes
+ * @param alpha the alpha (opacity) of the marker
+ * @param anchor the anchor for the marker image
+ * @param draggable sets the draggability for the marker
+ * @param flat sets if the marker should be flat against the map
+ * @param infoWindowAnchor the anchor point of the info window on the marker image
+ * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
+ * @param snippet the snippet for the marker
+ * @param tag optional tag to associate with the marker
+ * @param title the title for the marker
+ * @param visible the visibility of the marker
+ * @param zIndex the z-index of the marker
+ * @param onClick a lambda invoked when the marker is clicked
+ * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
+ * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
+ * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param icon sets the icon for the marker
+ * @param pinConfig the PinConfig object that will be used for the advanced marker
+ * @param iconView the custom view to be used on the advanced marker
+ * @param collisionBehavior the expected collision behavior
+ * @param infoWindowContent optional composable lambda expression for customizing the
+ * info window's content
+ */
+@Composable
+@GoogleMapComposable
+public fun AdvancedMarkerInfoWindow(
+    state: MarkerState = rememberUpdatedMarkerState(),
+    contentDescription: String? = "",
+    alpha: Float = 1.0f,
+    anchor: Offset = Offset(0.5f, 1.0f),
+    draggable: Boolean = false,
+    flat: Boolean = false,
+    infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
+    rotation: Float = 0.0f,
+    snippet: String? = null,
+    tag: Any? = null,
+    title: String? = null,
+    visible: Boolean = true,
+    zIndex: Float = 0.0f,
+    onClick: (Marker) -> Boolean = { false },
+    onInfoWindowClick: (Marker) -> Unit = {},
+    onInfoWindowClose: (Marker) -> Unit = {},
+    onInfoWindowLongClick: (Marker) -> Unit = {},
+    icon: BitmapDescriptor? = null,
+    pinConfig: PinConfig? = null,
+    iconView: View? = null,
+    collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED,
+    infoWindowContent: (@UiComposable @Composable (Marker) -> Unit)? = null
+) {
+    AdvancedMarkerImpl(
+        state = state,
+        contentDescription = contentDescription,
+        alpha = alpha,
+        anchor = anchor,
+        draggable = draggable,
+        flat = flat,
+        infoWindowAnchor = infoWindowAnchor,
+        rotation = rotation,
+        snippet = snippet,
+        tag = tag,
+        title = title,
+        visible = visible,
+        zIndex = zIndex,
+        onClick = onClick,
+        onInfoWindowClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose,
+        onInfoWindowLongClick = onInfoWindowLongClick,
+        icon = icon,
+        pinConfig = pinConfig,
+        iconView = iconView,
+        collisionBehavior = collisionBehavior,
+        infoWindow = infoWindowContent,
+    )
+}
+
+/**
+ * A composable for an advanced marker on the map wherein its info window contents can be
+ * customized. If this customization is not required, use
+ * [com.google.maps.android.compose.AdvancedMarker].
+ *
+ * @param state the [MarkerState] to be used to control or observe the marker
+ * state such as its position and info window
+ * @param contentDescription the content description for accessibility purposes
+ * @param alpha the alpha (opacity) of the marker
+ * @param anchor the anchor for the marker image
+ * @param draggable sets the draggability for the marker
+ * @param flat sets if the marker should be flat against the map
+ * @param infoWindowAnchor the anchor point of the info window on the marker image
+ * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point
+ * @param snippet the snippet for the marker
+ * @param tag optional tag to associate with the marker
+ * @param title the title for the marker
+ * @param visible the visibility of the marker
+ * @param zIndex the z-index of the marker
+ * @param onClick a lambda invoked when the marker is clicked
+ * @param onInfoWindowClick a lambda invoked when the marker's info window is clicked
+ * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
+ * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
+ * @param icon sets the icon for the marker
+ * @param pinConfig the PinConfig object that will be used for the advanced marker
+ * @param iconView the custom view to be used on the advanced marker
+ * @param collisionBehavior the expected collision behavior
+ * @param infoWindowContent optional composable lambda expression for customizing the
+ * info window's content
+ */
+@Composable
+@GoogleMapComposable
+public fun AdvancedMarkerInfoWindowContent(
+    state: MarkerState = rememberUpdatedMarkerState(),
+    contentDescription: String? = "",
+    alpha: Float = 1.0f,
+    anchor: Offset = Offset(0.5f, 1.0f),
+    draggable: Boolean = false,
+    flat: Boolean = false,
+    infoWindowAnchor: Offset = Offset(0.5f, 0.0f),
+    rotation: Float = 0.0f,
+    snippet: String? = null,
+    tag: Any? = null,
+    title: String? = null,
+    visible: Boolean = true,
+    zIndex: Float = 0.0f,
+    onClick: (Marker) -> Boolean = { false },
+    onInfoWindowClick: (Marker) -> Unit = {},
+    onInfoWindowClose: (Marker) -> Unit = {},
+    onInfoWindowLongClick: (Marker) -> Unit = {},
+    icon: BitmapDescriptor? = null,
+    pinConfig: PinConfig? = null,
+    iconView: View? = null,
+    collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED,
+    infoWindowContent: (@UiComposable @Composable (Marker) -> Unit)? = null,
+) {
+    AdvancedMarkerImpl(
+        state = state,
+        contentDescription = contentDescription,
+        alpha = alpha,
+        anchor = anchor,
+        draggable = draggable,
+        flat = flat,
+        infoWindowAnchor = infoWindowAnchor,
+        rotation = rotation,
+        snippet = snippet,
+        tag = tag,
+        title = title,
+        visible = visible,
+        zIndex = zIndex,
+        onClick = onClick,
+        onInfoWindowClick = onInfoWindowClick,
+        onInfoWindowClose = onInfoWindowClose,
+        onInfoWindowLongClick = onInfoWindowLongClick,
+        icon = icon,
+        pinConfig = pinConfig,
+        iconView = iconView,
+        collisionBehavior = collisionBehavior,
+        infoContent = infoWindowContent,
+    )
+}
+
+/**
  * Internal implementation for an advanced marker on a Google map.
  *
  * @param state the [MarkerState] to be used to control or observe the marker
@@ -800,7 +964,7 @@ public fun AdvancedMarker(
  * @param onInfoWindowClose a lambda invoked when the marker's info window is closed
  * @param onInfoWindowLongClick a lambda invoked when the marker's info window is long clicked
  * @param infoWindow optional composable lambda expression for customizing
- * the entire info window. If this value is non-null, the value in infoContent]
+ * the entire info window. If this value is non-null, the value in [infoContent]
  * will be ignored.
  * @param infoContent optional composable lambda expression for customizing
  * the info window's content. If this value is non-null, [infoWindow] must be null.
