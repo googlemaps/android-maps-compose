@@ -24,11 +24,11 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun MapsComposeSampleTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+  darkTheme: Boolean = isSystemInDarkTheme(),
+  content: @Composable () -> Unit
 ) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme(),
-        content = content
-    )
+  MaterialTheme(
+    colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme(),
+    content = content
+  )
 }

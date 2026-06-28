@@ -31,287 +31,238 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.common.truth.Truth.assertThat
 import com.google.maps.android.compose.LatLngSubject.Companion.assertThat
-import kotlinx.coroutines.runBlocking
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 class GoogleMapViewTests {
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    private val startingZoom = 10f
-    private val startingPosition = LatLng(1.23, 4.56)
-    private lateinit var cameraPositionState: CameraPositionState
-    private var mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM
+  private val startingZoom = 10f
+  private val startingPosition = LatLng(1.23, 4.56)
+  private lateinit var cameraPositionState: CameraPositionState
+  private var mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM
 
-    private fun initMap(content: @Composable () -> Unit = {}) {
-        check(hasValidApiKey) { "Maps API key not specified" }
-        val countDownLatch = CountDownLatch(1)
+  private fun initMap(content: @Composable () -> Unit = {}) {
+    check(hasValidApiKey) { "Maps API key not specified" }
+    val countDownLatch = CountDownLatch(1)
 
-        val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
+    val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
-
-        composeTestRule.setContent {
-            GoogleMapView(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                onMapLoaded = {
-                    countDownLatch.countDown()
-                },
-                mapColorScheme = mapColorScheme
-            ) {
-                content.invoke()
-            }
-        }
-        val mapLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        assertThat(mapLoaded).isTrue()
+    composeTestRule.setContent {
+      GoogleMapView(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        onMapLoaded = { countDownLatch.countDown() },
+        mapColorScheme = mapColorScheme
+      ) {
+        content.invoke()
+      }
     }
+    val mapLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    assertThat(mapLoaded).isTrue()
+  }
 
-    @Before
-    fun setUp() {
-        cameraPositionState = CameraPositionState(
-            position = CameraPosition.fromLatLngZoom(
-                startingPosition,
-                startingZoom
-            )
-        )
+  @Before
+  fun setUp() {
+    cameraPositionState =
+      CameraPositionState(position = CameraPosition.fromLatLngZoom(startingPosition, startingZoom))
+  }
+
+  @Test
+  fun testStartingCameraPosition() {
+    initMap()
+    assertThat(cameraPositionState.position.target).isEqualTo(startingPosition)
+  }
+
+  @Test
+  fun testRightInitialColorScheme() {
+    initMap()
+    assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.FOLLOW_SYSTEM)
+  }
+
+  @Test
+  fun testRightColorSchemeAfterChangingIt() {
+    mapColorScheme = ComposeMapColorScheme.DARK
+    initMap()
+    assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.DARK)
+  }
+
+  @Test
+  fun testCameraReportsMoving() {
+    initMap()
+    assertThat(cameraPositionState.cameraMoveStartedReason)
+      .isEqualTo(CameraMoveStartedReason.NO_MOVEMENT_YET)
+    zoom(shouldAnimate = true, zoomIn = true) {
+      composeTestRule.waitUntil(timeout2) { cameraPositionState.isMoving }
+      assertThat(cameraPositionState.isMoving).isTrue()
+      assertThat(cameraPositionState.cameraMoveStartedReason)
+        .isEqualTo(CameraMoveStartedReason.DEVELOPER_ANIMATION)
     }
+  }
 
-    @Test
-    fun testStartingCameraPosition() {
-        initMap()
-        assertThat(cameraPositionState.position.target).isEqualTo(startingPosition)
+  @Test
+  fun testCameraReportsNotMoving() {
+    initMap()
+    zoom(shouldAnimate = true, zoomIn = true) {
+      composeTestRule.waitUntil(timeout2) { cameraPositionState.isMoving }
+      composeTestRule.waitUntil(timeout5) { !cameraPositionState.isMoving }
+      assertThat(cameraPositionState.isMoving).isFalse()
     }
+  }
 
-    @Test
-    fun testRightInitialColorScheme() {
-        initMap()
-        assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.FOLLOW_SYSTEM)
+  @Test
+  fun testCameraZoomInAnimation() {
+    initMap()
+    zoom(shouldAnimate = true, zoomIn = true) {
+      composeTestRule.waitUntil(timeout2) { cameraPositionState.isMoving }
+      composeTestRule.waitUntil(timeout3) { !cameraPositionState.isMoving }
+      assertThat(cameraPositionState.position.zoom)
+        .isWithin(assertRoundingError.toFloat())
+        .of(startingZoom + 1f)
     }
+  }
 
-    @Test
-    fun testRightColorSchemeAfterChangingIt() {
-        mapColorScheme = ComposeMapColorScheme.DARK
-        initMap()
-        assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.DARK)
+  @Test
+  fun testCameraZoomIn() {
+    initMap()
+    zoom(shouldAnimate = false, zoomIn = true) {
+      composeTestRule.waitUntil(timeout2) { cameraPositionState.isMoving }
+      composeTestRule.waitUntil(timeout3) { !cameraPositionState.isMoving }
+      assertThat(cameraPositionState.position.zoom)
+        .isWithin(assertRoundingError.toFloat())
+        .of(startingZoom + 1f)
     }
+  }
 
-    @Test
-    fun testCameraReportsMoving() {
-        initMap()
-        assertThat(cameraPositionState.cameraMoveStartedReason).isEqualTo(CameraMoveStartedReason.NO_MOVEMENT_YET)
-        zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
-            }
-            assertThat(cameraPositionState.isMoving).isTrue()
-            assertThat(cameraPositionState.cameraMoveStartedReason).isEqualTo(CameraMoveStartedReason.DEVELOPER_ANIMATION)
-        }
+  @Test
+  fun testCameraZoomOut() {
+    initMap()
+    zoom(shouldAnimate = false, zoomIn = false) {
+      composeTestRule.waitUntil(timeout2) { cameraPositionState.isMoving }
+      composeTestRule.waitUntil(timeout3) { !cameraPositionState.isMoving }
+      assertThat(cameraPositionState.position.zoom)
+        .isWithin(assertRoundingError.toFloat())
+        .of(startingZoom - 1f)
     }
+  }
 
-    @Test
-    fun testCameraReportsNotMoving() {
-        initMap()
-        zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
-            }
-            composeTestRule.waitUntil(timeout5) {
-                !cameraPositionState.isMoving
-            }
-            assertThat(cameraPositionState.isMoving).isFalse()
-        }
+  @Test
+  fun testCameraZoomOutAnimation() {
+    initMap()
+    zoom(shouldAnimate = true, zoomIn = false) {
+      composeTestRule.waitUntil(timeout2) { cameraPositionState.isMoving }
+      composeTestRule.waitUntil(timeout3) { !cameraPositionState.isMoving }
+      assertThat(cameraPositionState.position.zoom)
+        .isWithin(assertRoundingError.toFloat())
+        .of(startingZoom - 1f)
     }
+  }
 
-    @Test
-    fun testCameraZoomInAnimation() {
-        initMap()
-        zoom(shouldAnimate = true, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
-            }
-            composeTestRule.waitUntil(timeout3) {
-                !cameraPositionState.isMoving
-            }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom + 1f)
-        }
+  @Test
+  fun testLatLngInVisibleRegion() {
+    initMap()
+    composeTestRule.runOnUiThread {
+      val projection = cameraPositionState.projection
+      assertThat(projection).isNotNull()
+      assertThat(projection!!.visibleRegion.latLngBounds.contains(startingPosition)).isTrue()
     }
+  }
 
-    @Test
-    fun testCameraZoomIn() {
-        initMap()
-        zoom(shouldAnimate = false, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
-            }
-            composeTestRule.waitUntil(timeout3) {
-                !cameraPositionState.isMoving
-            }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom + 1f)
-        }
+  @Test
+  fun testLatLngNotInVisibleRegion() {
+    initMap()
+    composeTestRule.runOnUiThread {
+      val projection = cameraPositionState.projection
+      assertThat(projection).isNotNull()
+      val latLng = LatLng(23.4, 25.6)
+      assertThat(projection!!.visibleRegion.latLngBounds.contains(latLng)).isFalse()
     }
+  }
 
-    @Test
-    fun testCameraZoomOut() {
-        initMap()
-        zoom(shouldAnimate = false, zoomIn = false) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
-            }
-            composeTestRule.waitUntil(timeout3) {
-                !cameraPositionState.isMoving
-            }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom - 1f)
-        }
+  @Test(expected = IllegalStateException::class)
+  fun testMarkerStateCannotBeReused() {
+    initMap {
+      val markerState = rememberUpdatedMarkerState()
+      Marker(state = markerState)
+      Marker(state = markerState)
     }
+  }
 
-    @Test
-    fun testCameraZoomOutAnimation() {
-        initMap()
-        zoom(shouldAnimate = true, zoomIn = false) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
-            }
-            composeTestRule.waitUntil(timeout3) {
-                !cameraPositionState.isMoving
-            }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom - 1f)
-        }
+  @Test(expected = IllegalStateException::class)
+  fun testMarkerStateInsideMarkerComposableCannotBeReused() {
+    initMap {
+      val markerState = rememberUpdatedMarkerState()
+      MarkerComposable(
+        keys = arrayOf("marker1"),
+        state = markerState,
+      ) {
+        Box { Text(text = "marker1") }
+      }
+      MarkerComposable(
+        keys = arrayOf("marker2"),
+        state = markerState,
+      ) {
+        Box { Text(text = "marker2") }
+      }
     }
+  }
 
-    @Test
-    fun testLatLngInVisibleRegion() {
-        initMap()
-        composeTestRule.runOnUiThread {
-            val projection = cameraPositionState.projection
-            assertThat(projection).isNotNull()
-            assertThat(
-                projection!!.visibleRegion.latLngBounds.contains(startingPosition)
-            ).isTrue()
-        }
+  @Test(expected = IllegalStateException::class)
+  fun testMarkerStateInsideMarkerInfoWindowComposableCannotBeReused() {
+    initMap {
+      val markerState = rememberUpdatedMarkerState()
+      MarkerInfoWindowComposable(
+        keys = arrayOf("marker1"),
+        state = markerState,
+      ) {
+        Box { Text(text = "marker1") }
+      }
+      MarkerInfoWindowComposable(
+        keys = arrayOf("marker2"),
+        state = markerState,
+      ) {
+        Box { Text(text = "marker2") }
+      }
     }
+  }
 
-    @Test
-    fun testLatLngNotInVisibleRegion() {
-        initMap()
-        composeTestRule.runOnUiThread {
-            val projection = cameraPositionState.projection
-            assertThat(projection).isNotNull()
-            val latLng = LatLng(23.4, 25.6)
-            assertThat(
-                projection!!.visibleRegion.latLngBounds.contains(latLng)
-            ).isFalse()
-        }
+  @Test
+  fun testCameraPositionStateMapClears() {
+    initMap()
+    composeTestRule.onNodeWithTag("toggleMapVisibility").performClick().performClick()
+  }
+
+  @Test
+  fun testRememberUpdatedMarkerStateBeUpdate() {
+    val testPoint0 = LatLng(0.0, 0.0)
+    val testPoint1 = LatLng(37.6281576, -122.4264549)
+    val testPoint2 = LatLng(37.500012, 127.0364185)
+
+    val positionState = mutableStateOf(testPoint0)
+    lateinit var markerState: MarkerState
+
+    initMap { markerState = rememberUpdatedMarkerState(position = positionState.value) }
+
+    assertThat(markerState.position).isEqualTo(testPoint0)
+
+    positionState.value = testPoint1
+    composeTestRule.waitForIdle()
+    assertThat(markerState.position).isEqualTo(testPoint1)
+
+    positionState.value = testPoint2
+    composeTestRule.waitForIdle()
+    assertThat(markerState.position).isEqualTo(testPoint2)
+  }
+
+  private fun zoom(shouldAnimate: Boolean, zoomIn: Boolean, assertionBlock: () -> Unit) {
+    if (!shouldAnimate) {
+      composeTestRule.onNodeWithTag("cameraAnimations").assertIsDisplayed().performClick()
     }
+    composeTestRule.onNodeWithText(if (zoomIn) "+" else "-").assertIsDisplayed().performClick()
 
-    @Test(expected = IllegalStateException::class)
-    fun testMarkerStateCannotBeReused() {
-        initMap {
-            val markerState = rememberUpdatedMarkerState()
-            Marker(
-                state = markerState
-            )
-            Marker(
-                state = markerState
-            )
-        }
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun testMarkerStateInsideMarkerComposableCannotBeReused() {
-        initMap {
-            val markerState = rememberUpdatedMarkerState()
-            MarkerComposable(
-                keys = arrayOf("marker1"),
-                state = markerState,
-            ) {
-                Box {
-                    Text(text = "marker1")
-                }
-            }
-            MarkerComposable(
-                keys = arrayOf("marker2"),
-                state = markerState,
-            ) {
-                Box {
-                    Text(text = "marker2")
-                }
-            }
-        }
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun testMarkerStateInsideMarkerInfoWindowComposableCannotBeReused() {
-        initMap {
-            val markerState = rememberUpdatedMarkerState()
-            MarkerInfoWindowComposable(
-                keys = arrayOf("marker1"),
-                state = markerState,
-            ) {
-                Box {
-                    Text(text = "marker1")
-                }
-            }
-            MarkerInfoWindowComposable(
-                keys = arrayOf("marker2"),
-                state = markerState,
-            ) {
-                Box {
-                    Text(text = "marker2")
-                }
-            }
-        }
-    }
-
-    @Test
-    fun testCameraPositionStateMapClears() {
-        initMap()
-        composeTestRule.onNodeWithTag("toggleMapVisibility")
-            .performClick()
-            .performClick()
-    }
-
-    @Test
-    fun testRememberUpdatedMarkerStateBeUpdate() {
-        val testPoint0 = LatLng(0.0,0.0)
-        val testPoint1 = LatLng(37.6281576,-122.4264549)
-        val testPoint2 = LatLng(37.500012, 127.0364185)
-
-        val positionState = mutableStateOf(testPoint0)
-        lateinit var markerState: MarkerState
-
-        initMap {
-            markerState = rememberUpdatedMarkerState(position = positionState.value)
-        }
-
-        assertThat(markerState.position).isEqualTo(testPoint0)
-
-        positionState.value = testPoint1
-        composeTestRule.waitForIdle()
-        assertThat(markerState.position).isEqualTo(testPoint1)
-
-        positionState.value = testPoint2
-        composeTestRule.waitForIdle()
-        assertThat(markerState.position).isEqualTo(testPoint2)
-    }
-
-    private fun zoom(
-        shouldAnimate: Boolean,
-        zoomIn: Boolean,
-        assertionBlock: () -> Unit
-    ) {
-        if (!shouldAnimate) {
-            composeTestRule.onNodeWithTag("cameraAnimations")
-                .assertIsDisplayed()
-                .performClick()
-        }
-        composeTestRule.onNodeWithText(if (zoomIn) "+" else "-")
-            .assertIsDisplayed()
-            .performClick()
-
-        assertionBlock()
-    }
+    assertionBlock()
+  }
 }

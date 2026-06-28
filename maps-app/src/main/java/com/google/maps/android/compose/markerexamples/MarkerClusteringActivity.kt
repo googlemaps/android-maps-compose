@@ -18,7 +18,6 @@ package com.google.maps.android.compose.markerexamples
 
 import android.os.Bundle
 import android.util.Log
-import androidx.compose.ui.text.intl.Locale
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -48,11 +47,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +61,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.algo.NonHierarchicalViewBasedAlgorithm
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.MarkerInfoWindow
@@ -70,333 +71,298 @@ import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
-import com.google.maps.android.compose.Circle
-import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.singapore2
 import kotlin.random.Random
 
 private val TAG = MarkerClusteringActivity::class.simpleName
 
 class MarkerClusteringActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            GoogleMapClustering()
-        }
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent { GoogleMapClustering() }
+  }
 }
 
 @Composable
 fun GoogleMapClustering() {
-    val items = remember { mutableStateListOf<MyItem>() }
-    LaunchedEffect(Unit) {
-        for (i in 1..10) {
-            val position = LatLng(
-                singapore2.latitude + Random.nextFloat(),
-                singapore2.longitude + Random.nextFloat(),
-            )
-            items.add(MyItem(position, "Marker", "Snippet", 0f))
-        }
+  val items = remember { mutableStateListOf<MyItem>() }
+  LaunchedEffect(Unit) {
+    for (i in 1..10) {
+      val position =
+        LatLng(
+          singapore2.latitude + Random.nextFloat(),
+          singapore2.longitude + Random.nextFloat(),
+        )
+      items.add(MyItem(position, "Marker", "Snippet", 0f))
     }
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .systemBarsPadding()
-    ) {
-        GoogleMapClustering(items = items)
-    }
+  }
+  Box(modifier = Modifier.fillMaxSize().systemBarsPadding()) { GoogleMapClustering(items = items) }
 }
 
 @Composable
 fun GoogleMapClustering(items: List<MyItem>) {
-    var clusteringType by remember {
-        mutableStateOf(ClusteringType.Default)
-    }
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(singapore2, 6f)
-        }
-    ) {
-        when (clusteringType) {
-            ClusteringType.Default -> {
-                DefaultClustering(
-                    items = items,
-                )
-            }
-
-            ClusteringType.CustomUi -> {
-                CustomUiClustering(
-                    items = items,
-                )
-            }
-
-            ClusteringType.CustomRenderer -> {
-                CustomRendererClustering(
-                    items = items,
-                )
-            }
-
-            ClusteringType.Decorations -> {
-                DecorationsClustering(
-                    items = items,
-                )
-            }
-        }
-
-        MarkerInfoWindow(
-            state = rememberUpdatedMarkerState(position = singapore2),
-            onClick = {
-                Log.d(TAG, "Non-cluster marker clicked! $it")
-                true
-            }
+  var clusteringType by remember { mutableStateOf(ClusteringType.Default) }
+  GoogleMap(
+    modifier = Modifier.fillMaxSize(),
+    cameraPositionState =
+      rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(singapore2, 6f) }
+  ) {
+    when (clusteringType) {
+      ClusteringType.Default -> {
+        DefaultClustering(
+          items = items,
         )
+      }
+      ClusteringType.CustomUi -> {
+        CustomUiClustering(
+          items = items,
+        )
+      }
+      ClusteringType.CustomRenderer -> {
+        CustomRendererClustering(
+          items = items,
+        )
+      }
+      ClusteringType.Decorations -> {
+        DecorationsClustering(
+          items = items,
+        )
+      }
     }
 
-    ClusteringTypeControls(
-        onClusteringTypeClick = {
-            clusteringType = it
-        },
+    MarkerInfoWindow(
+      state = rememberUpdatedMarkerState(position = singapore2),
+      onClick = {
+        Log.d(TAG, "Non-cluster marker clicked! $it")
+        true
+      }
     )
+  }
+
+  ClusteringTypeControls(
+    onClusteringTypeClick = { clusteringType = it },
+  )
 }
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 private fun DefaultClustering(items: List<MyItem>) {
-    Clustering(
-        items = items,
-        // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
-        onClusterClick = {
-            Log.d(TAG, "Cluster clicked! $it")
-            false
-        },
-        onClusterItemClick = {
-            Log.d(TAG, "Cluster item clicked! $it")
-            false
-        },
-        onClusterItemInfoWindowClick = {
-            Log.d(TAG, "Cluster item info window clicked! $it")
-        },
-        // Optional: Custom rendering for non-clustered items
-        clusterItemContent = null
-    )
+  Clustering(
+    items = items,
+    // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
+    onClusterClick = {
+      Log.d(TAG, "Cluster clicked! $it")
+      false
+    },
+    onClusterItemClick = {
+      Log.d(TAG, "Cluster item clicked! $it")
+      false
+    },
+    onClusterItemInfoWindowClick = { Log.d(TAG, "Cluster item info window clicked! $it") },
+    // Optional: Custom rendering for non-clustered items
+    clusterItemContent = null
+  )
 }
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 private fun CustomUiClustering(items: List<MyItem>) {
-    var selectedItem by remember { mutableStateOf<MyItem?>(null) }
-    Clustering(
-        items = items,
-        // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
-        onClusterClick = {
-            Log.d(TAG, "Cluster clicked! $it")
-            false
-        },
-        onClusterItemClick = {
-            Log.d(TAG, "Cluster item clicked! $it")
-            selectedItem = if (selectedItem == it) null else it
-            false
-        },
-        onClusterItemInfoWindowClick = {
-            Log.d(TAG, "Cluster item info window clicked! $it")
-        },
-        // Optional: Custom rendering for clusters
-        clusterContent = { cluster ->
-            CircleContent(
-                modifier = Modifier.size(40.dp),
-                text = "%,d".format(Locale.current.platformLocale, cluster.size),
-                color = Color.Blue,
-            )
-        },
-        // Optional: Custom rendering for non-clustered items
-        clusterItemContent = { item ->
-            val isSelected = item == selectedItem
-            if (isSelected) {
-                ClusteringMarkerProperties(
-                    anchor = Offset(0.5f, 0.5f),
-                    zIndex = 1.0f
-                )
-            }
-            CircleContent(
-                modifier = Modifier.size(if (isSelected) 40.dp else 20.dp),
-                text = "",
-                color = if (isSelected) Color.Red else Color.Green,
-            )
-        },
-        clusterContentAnchor = Offset(0.5f, 0.5f),
-        // Optional: Customization hook for clusterManager and renderer when they're ready
-        onClusterManager = { clusterManager ->
-            (clusterManager.renderer as DefaultClusterRenderer).minClusterSize = 2
-        },
-    )
+  var selectedItem by remember { mutableStateOf<MyItem?>(null) }
+  Clustering(
+    items = items,
+    // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
+    onClusterClick = {
+      Log.d(TAG, "Cluster clicked! $it")
+      false
+    },
+    onClusterItemClick = {
+      Log.d(TAG, "Cluster item clicked! $it")
+      selectedItem = if (selectedItem == it) null else it
+      false
+    },
+    onClusterItemInfoWindowClick = { Log.d(TAG, "Cluster item info window clicked! $it") },
+    // Optional: Custom rendering for clusters
+    clusterContent = { cluster ->
+      CircleContent(
+        modifier = Modifier.size(40.dp),
+        text = "%,d".format(Locale.current.platformLocale, cluster.size),
+        color = Color.Blue,
+      )
+    },
+    // Optional: Custom rendering for non-clustered items
+    clusterItemContent = { item ->
+      val isSelected = item == selectedItem
+      if (isSelected) {
+        ClusteringMarkerProperties(anchor = Offset(0.5f, 0.5f), zIndex = 1.0f)
+      }
+      CircleContent(
+        modifier = Modifier.size(if (isSelected) 40.dp else 20.dp),
+        text = "",
+        color = if (isSelected) Color.Red else Color.Green,
+      )
+    },
+    clusterContentAnchor = Offset(0.5f, 0.5f),
+    // Optional: Customization hook for clusterManager and renderer when they're ready
+    onClusterManager = { clusterManager ->
+      (clusterManager.renderer as DefaultClusterRenderer).minClusterSize = 2
+    },
+  )
 }
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun CustomRendererClustering(items: List<MyItem>) {
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
-    val screenWidth = configuration.screenWidthDp.dp
-    val clusterManager = rememberClusterManager<MyItem>()
+  val configuration = LocalConfiguration.current
+  val screenHeight = configuration.screenHeightDp.dp
+  val screenWidth = configuration.screenWidthDp.dp
+  val clusterManager = rememberClusterManager<MyItem>()
 
-    // Here the clusterManager is being customized with a NonHierarchicalViewBasedAlgorithm.
-    // This speeds up by a factor the rendering of items on the screen.
-    clusterManager?.setAlgorithm(
-        NonHierarchicalViewBasedAlgorithm(
-            screenWidth.value.toInt(),
-            screenHeight.value.toInt()
+  // Here the clusterManager is being customized with a NonHierarchicalViewBasedAlgorithm.
+  // This speeds up by a factor the rendering of items on the screen.
+  clusterManager?.setAlgorithm(
+    NonHierarchicalViewBasedAlgorithm(screenWidth.value.toInt(), screenHeight.value.toInt())
+  )
+  val renderer =
+    rememberClusterRenderer(
+      clusterContent = { cluster ->
+        CircleContent(
+          modifier = Modifier.size(40.dp),
+          text = "%,d".format(Locale.current.platformLocale, cluster.size),
+          color = Color.Green,
         )
-    )
-    val renderer = rememberClusterRenderer(
-        clusterContent = { cluster ->
-            CircleContent(
-                modifier = Modifier.size(40.dp),
-                text = "%,d".format(Locale.current.platformLocale, cluster.size),
-                color = Color.Green,
-            )
-        },
-        clusterItemContent = {
-            CircleContent(
-                modifier = Modifier.size(20.dp),
-                text = "",
-                color = Color.Green,
-            )
-        },
-        clusterManager = clusterManager,
+      },
+      clusterItemContent = {
+        CircleContent(
+          modifier = Modifier.size(20.dp),
+          text = "",
+          color = Color.Green,
+        )
+      },
+      clusterManager = clusterManager,
     )
 
-    SideEffect {
-        clusterManager ?: return@SideEffect
-        clusterManager.setOnClusterClickListener {
-            Log.d(TAG, "Cluster clicked! $it")
-            false
-        }
-        clusterManager.setOnClusterItemClickListener {
-            Log.d(TAG, "Cluster item clicked! $it")
-            false
-        }
-        clusterManager.setOnClusterItemInfoWindowClickListener {
-            Log.d(TAG, "Cluster item info window clicked! $it")
-        }
+  SideEffect {
+    clusterManager ?: return@SideEffect
+    clusterManager.setOnClusterClickListener {
+      Log.d(TAG, "Cluster clicked! $it")
+      false
     }
-    SideEffect {
-        if (clusterManager?.renderer != renderer) {
-            clusterManager?.renderer = renderer ?: return@SideEffect
-        }
+    clusterManager.setOnClusterItemClickListener {
+      Log.d(TAG, "Cluster item clicked! $it")
+      false
     }
+    clusterManager.setOnClusterItemInfoWindowClickListener {
+      Log.d(TAG, "Cluster item info window clicked! $it")
+    }
+  }
+  SideEffect {
+    if (clusterManager?.renderer != renderer) {
+      clusterManager?.renderer = renderer ?: return@SideEffect
+    }
+  }
 
-    if (clusterManager != null) {
-        Clustering(
-            items = items,
-            clusterManager = clusterManager,
-        )
-    }
-
+  if (clusterManager != null) {
+    Clustering(
+      items = items,
+      clusterManager = clusterManager,
+    )
+  }
 }
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 private fun DecorationsClustering(items: List<MyItem>) {
-    Clustering(
-        items = items,
-        clusterItemDecoration = { item ->
-            Circle(
-                center = item.position,
-                radius = 10000.0,
-                fillColor = Color.Blue.copy(alpha = 0.2f),
-                strokeColor = Color.Blue,
-                strokeWidth = 2f
-            )
-        }
-    )
+  Clustering(
+    items = items,
+    clusterItemDecoration = { item ->
+      Circle(
+        center = item.position,
+        radius = 10000.0,
+        fillColor = Color.Blue.copy(alpha = 0.2f),
+        strokeColor = Color.Blue,
+        strokeWidth = 2f
+      )
+    }
+  )
 }
 
 @Composable
 private fun CircleContent(
-    color: Color,
-    text: String,
-    modifier: Modifier = Modifier,
+  color: Color,
+  text: String,
+  modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier,
-        shape = CircleShape,
-        color = color,
-        contentColor = Color.White,
-        border = BorderStroke(1.dp, Color.White)
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Black,
-                textAlign = TextAlign.Center
-            )
-        }
+  Surface(
+    modifier,
+    shape = CircleShape,
+    color = color,
+    contentColor = Color.White,
+    border = BorderStroke(1.dp, Color.White)
+  ) {
+    Box(contentAlignment = Alignment.Center) {
+      Text(text, fontSize = 16.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
     }
+  }
 }
 
 @Composable
 private fun ClusteringTypeControls(
-    onClusteringTypeClick: (ClusteringType) -> Unit,
-    modifier: Modifier = Modifier,
+  onClusteringTypeClick: (ClusteringType) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier
-            .fillMaxWidth()
-            .horizontalScroll(state = ScrollState(0)),
-        horizontalArrangement = Arrangement.Start
-    ) {
-        ClusteringType.entries.forEach {
-            MapButton(
-                text = when (it) {
-                    ClusteringType.Default -> "Default"
-                    ClusteringType.CustomUi -> "Custom UI"
-                    ClusteringType.CustomRenderer -> "Custom Renderer"
-                    ClusteringType.Decorations -> "Decorations"
-                },
-                onClick = { onClusteringTypeClick(it) }
-            )
-        }
+  Row(
+    modifier.fillMaxWidth().horizontalScroll(state = ScrollState(0)),
+    horizontalArrangement = Arrangement.Start
+  ) {
+    ClusteringType.entries.forEach {
+      MapButton(
+        text =
+          when (it) {
+            ClusteringType.Default -> "Default"
+            ClusteringType.CustomUi -> "Custom UI"
+            ClusteringType.CustomRenderer -> "Custom Renderer"
+            ClusteringType.Decorations -> "Decorations"
+          },
+        onClick = { onClusteringTypeClick(it) }
+      )
     }
+  }
 }
 
 @Composable
 private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(
-        modifier = modifier.padding(4.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-            contentColor = MaterialTheme.colorScheme.primary
-        ),
-        onClick = onClick
-    ) {
-        Text(text = text, style = MaterialTheme.typography.bodyLarge)
-    }
+  Button(
+    modifier = modifier.padding(4.dp),
+    colors =
+      ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.onPrimary,
+        contentColor = MaterialTheme.colorScheme.primary
+      ),
+    onClick = onClick
+  ) {
+    Text(text = text, style = MaterialTheme.typography.bodyLarge)
+  }
 }
 
 private enum class ClusteringType {
-    Default,
-    CustomUi,
-    CustomRenderer,
-    Decorations,
+  Default,
+  CustomUi,
+  CustomRenderer,
+  Decorations,
 }
 
 data class MyItem(
-    val itemPosition: LatLng,
-    val itemTitle: String,
-    val itemSnippet: String,
-    val itemZIndex: Float,
+  val itemPosition: LatLng,
+  val itemTitle: String,
+  val itemSnippet: String,
+  val itemZIndex: Float,
 ) : ClusterItem {
-    override fun getPosition(): LatLng =
-        itemPosition
+  override fun getPosition(): LatLng = itemPosition
 
-    override fun getTitle(): String =
-        itemTitle
+  override fun getTitle(): String = itemTitle
 
-    override fun getSnippet(): String =
-        itemSnippet
+  override fun getSnippet(): String = itemSnippet
 
-    override fun getZIndex(): Float =
-        itemZIndex
+  override fun getZIndex(): Float = itemZIndex
 }

@@ -23,20 +23,20 @@ import com.google.android.gms.maps.MapsApiSettings
 import com.google.maps.android.compose.utils.meta.AttributionId
 
 /**
- * Adds a usage attribution ID to the initializer, which helps Google understand which libraries
- * and samples are helpful to developers, such as usage of this library.
- * To opt out of sending the usage attribution ID, please remove this initializer from your manifest.
+ * Adds a usage attribution ID to the initializer, which helps Google understand which libraries and
+ * samples are helpful to developers, such as usage of this library. To opt out of sending the usage
+ * attribution ID, please remove this initializer from your manifest.
  */
 @Keep
 internal class AttributionIdInitializer : Initializer<Unit> {
-    override fun create(context: Context) {
-        MapsApiSettings.addInternalUsageAttributionId(
-            /* context = */ context,
-            /* internalUsageAttributionId = */ AttributionId.VALUE
-        )
-    }
+  override fun create(context: Context) {
+    MapsApiSettings.addInternalUsageAttributionId(
+      /* context = */ context,
+      /* internalUsageAttributionId = */ AttributionId.VALUE
+    )
+  }
 
-    override fun dependencies(): List<Class<out Initializer<*>>> {
-        return emptyList()
-    }
+  override fun dependencies(): List<Class<out Initializer<*>>> {
+    return emptyList()
+  }
 }

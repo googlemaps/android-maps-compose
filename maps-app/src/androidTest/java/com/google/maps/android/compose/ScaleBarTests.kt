@@ -25,12 +25,12 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.widgets.ScaleBar
 import com.google.maps.android.ktx.utils.sphericalDistance
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 // These constants are used for converting between metric and imperial units
 // to ensure the scale bar displays distances correctly in both systems.
@@ -42,95 +42,93 @@ private const val FEET_IN_MILE: Double = 5280.0
 
 class ScaleBarTests {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    private lateinit var cameraPositionState: CameraPositionState
-    private lateinit var density: Density
+  private lateinit var cameraPositionState: CameraPositionState
+  private lateinit var density: Density
 
-    private fun initScaleBar(initialZoom: Float, initialPosition: LatLng) {
-        check(hasValidApiKey) { "Maps API key not specified" }
+  private fun initScaleBar(initialZoom: Float, initialPosition: LatLng) {
+    check(hasValidApiKey) { "Maps API key not specified" }
 
-        val countDownLatch = CountDownLatch(1)
+    val countDownLatch = CountDownLatch(1)
 
-        cameraPositionState = CameraPositionState(
-            position = CameraPosition.fromLatLngZoom(initialPosition, initialZoom)
+    cameraPositionState =
+      CameraPositionState(position = CameraPosition.fromLatLngZoom(initialPosition, initialZoom))
+
+    composeTestRule.setContent {
+      density = LocalDensity.current
+      Box {
+        GoogleMap(
+          cameraPositionState = cameraPositionState,
+          onMapLoaded = { countDownLatch.countDown() }
         )
-
-        composeTestRule.setContent {
-            density = LocalDensity.current
-            Box {
-                GoogleMap(
-                    cameraPositionState = cameraPositionState,
-                    onMapLoaded = {
-                        countDownLatch.countDown()
-                    }
-                )
-                ScaleBar(cameraPositionState = cameraPositionState)
-            }
-        }
-        val mapLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        assertTrue(mapLoaded)
+        ScaleBar(cameraPositionState = cameraPositionState)
+      }
     }
+    val mapLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    assertTrue(mapLoaded)
+  }
 
-    @Test
-    fun testScaleBarInitialState() {
-        val initialZoom = 15f
-        val initialPosition = LatLng(37.7749, -122.4194) // San Francisco
-        initScaleBar(initialZoom, initialPosition)
+  @Test
+  fun testScaleBarInitialState() {
+    val initialZoom = 15f
+    val initialPosition = LatLng(37.7749, -122.4194) // San Francisco
+    initScaleBar(initialZoom, initialPosition)
 
-        composeTestRule.waitForIdle()
+    composeTestRule.waitForIdle()
 
-        var imperialText = ""
-        var metricText = ""
+    var imperialText = ""
+    var metricText = ""
 
-        composeTestRule.runOnIdle {
-            // We use a `let` block to safely handle the projection, which can be null.
-            // If the projection is null, the test will fail explicitly, preventing
-            // any potential NullPointerExceptions and ensuring the test is robust.
-            val projection = cameraPositionState.projection
-            projection?.let { proj ->
-                val widthInDp = 65.dp
-                val widthInPixels = with(density) {
-                    widthInDp.toPx().toInt()
-                }
+    composeTestRule.runOnIdle {
+      // We use a `let` block to safely handle the projection, which can be null.
+      // If the projection is null, the test will fail explicitly, preventing
+      // any potential NullPointerExceptions and ensuring the test is robust.
+      val projection = cameraPositionState.projection
+      projection?.let { proj ->
+        val widthInDp = 65.dp
+        val widthInPixels = with(density) { widthInDp.toPx().toInt() }
 
-                val upperLeftLatLng = proj.fromScreenLocation(Point(0, 0))
-                val upperRightLatLng = proj.fromScreenLocation(Point(0, widthInPixels))
-                val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
-                val horizontalLineWidthMeters = (canvasWidthMeters * 8 / 9).toInt()
+        val upperLeftLatLng = proj.fromScreenLocation(Point(0, 0))
+        val upperRightLatLng = proj.fromScreenLocation(Point(0, widthInPixels))
+        val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
+        val horizontalLineWidthMeters = (canvasWidthMeters * 8 / 9).toInt()
 
-                var metricUnits = "m"
-                var metricDistance = horizontalLineWidthMeters
-                if (horizontalLineWidthMeters > METERS_IN_KILOMETER) {
-                    metricUnits = "km"
-                    metricDistance /= METERS_IN_KILOMETER.toInt()
-                }
-
-                var imperialUnits = "ft"
-                var imperialDistance = horizontalLineWidthMeters.toDouble().toFeet()
-                if (imperialDistance > FEET_IN_MILE) {
-                    imperialUnits = "mi"
-                    imperialDistance = imperialDistance.toMiles()
-                }
-                imperialText = "${imperialDistance.toInt()} $imperialUnits"
-                metricText = "$metricDistance $metricUnits"
-            } ?: fail("Projection should not be null")
+        var metricUnits = "m"
+        var metricDistance = horizontalLineWidthMeters
+        if (horizontalLineWidthMeters > METERS_IN_KILOMETER) {
+          metricUnits = "km"
+          metricDistance /= METERS_IN_KILOMETER.toInt()
         }
 
-        composeTestRule.onNodeWithText(
-            text = imperialText,
-        ).assertExists()
-        composeTestRule.onNodeWithText(
-            text = metricText,
-        ).assertExists()
+        var imperialUnits = "ft"
+        var imperialDistance = horizontalLineWidthMeters.toDouble().toFeet()
+        if (imperialDistance > FEET_IN_MILE) {
+          imperialUnits = "mi"
+          imperialDistance = imperialDistance.toMiles()
+        }
+        imperialText = "${imperialDistance.toInt()} $imperialUnits"
+        metricText = "$metricDistance $metricUnits"
+      } ?: fail("Projection should not be null")
     }
+
+    composeTestRule
+      .onNodeWithText(
+        text = imperialText,
+      )
+      .assertExists()
+    composeTestRule
+      .onNodeWithText(
+        text = metricText,
+      )
+      .assertExists()
+  }
 }
 
 internal fun Double.toFeet(): Double {
-    return this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
+  return this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
 }
 
 internal fun Double.toMiles(): Double {
-    return this / FEET_IN_MILE
+  return this / FEET_IN_MILE
 }

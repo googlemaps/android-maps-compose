@@ -14,7 +14,6 @@
 
 package com.google.maps.android.compose.streetview
 
-import android.content.ComponentCallbacks
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import android.os.Bundle
@@ -44,18 +43,16 @@ import com.google.maps.android.ktx.awaitStreetViewPanorama
 import kotlinx.coroutines.awaitCancellation
 
 /**
- * A composable for displaying a Street View for a given location. A location might not be available for a given
- * set of coordinates. We recommend you to check our sample on [StreetViewActivity] using our utility function
- * in [StreetViewUtils] to manage non-existing locations.
- *
- *
+ * A composable for displaying a Street View for a given location. A location might not be available
+ * for a given set of coordinates. We recommend you to check our sample on [StreetViewActivity]
+ * using our utility function in [StreetViewUtils] to manage non-existing locations.
  *
  * @param modifier Modifier to be applied to the StreetView
  * @param cameraPositionState the [StreetViewCameraPositionState] to be used to control or observe
- * the Street View's camera
+ *   the Street View's camera
  * @param streetViewPanoramaOptionsFactory a factory lambda for providing a
- * [StreetViewPanoramaOptions] object which is used when the underlying [StreetViewPanoramaView] is
- * constructed
+ *   [StreetViewPanoramaOptions] object which is used when the underlying [StreetViewPanoramaView]
+ *   is constructed
  * @param isPanningGesturesEnabled whether panning gestures are enabled or not
  * @param isStreetNamesEnabled whether street names are enabled or not
  * @param isUserNavigationEnabled whether user navigation is enabled or not
@@ -66,128 +63,128 @@ import kotlinx.coroutines.awaitCancellation
 @MapsExperimentalFeature
 @Composable
 public fun StreetView(
-    modifier: Modifier = Modifier,
-    cameraPositionState: StreetViewCameraPositionState = rememberStreetViewCameraPositionState(),
-    streetViewPanoramaOptionsFactory: () -> StreetViewPanoramaOptions = {
-        StreetViewPanoramaOptions()
-    },
-    isPanningGesturesEnabled: Boolean = true,
-    isStreetNamesEnabled: Boolean = true,
-    isUserNavigationEnabled: Boolean = true,
-    isZoomGesturesEnabled: Boolean = true,
-    onClick: (StreetViewPanoramaOrientation) -> Unit = {},
-    onLongClick: (StreetViewPanoramaOrientation) -> Unit = {},
+  modifier: Modifier = Modifier,
+  cameraPositionState: StreetViewCameraPositionState = rememberStreetViewCameraPositionState(),
+  streetViewPanoramaOptionsFactory: () -> StreetViewPanoramaOptions = {
+    StreetViewPanoramaOptions()
+  },
+  isPanningGesturesEnabled: Boolean = true,
+  isStreetNamesEnabled: Boolean = true,
+  isUserNavigationEnabled: Boolean = true,
+  isZoomGesturesEnabled: Boolean = true,
+  onClick: (StreetViewPanoramaOrientation) -> Unit = {},
+  onLongClick: (StreetViewPanoramaOrientation) -> Unit = {},
 ) {
-    val context = LocalContext.current
-    val streetView =
-        remember(context) { StreetViewPanoramaView(context, streetViewPanoramaOptionsFactory()) }
+  val context = LocalContext.current
+  val streetView =
+    remember(context) { StreetViewPanoramaView(context, streetViewPanoramaOptionsFactory()) }
 
-    AndroidView(modifier = modifier, factory = { streetView }) {}
-    StreetViewLifecycle(streetView)
+  AndroidView(modifier = modifier, factory = { streetView }) {}
+  StreetViewLifecycle(streetView)
 
-    val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
-    val currentIsPanningGestureEnabled by rememberUpdatedState(isPanningGesturesEnabled)
-    val currentIsStreetNamesEnabled by rememberUpdatedState(isStreetNamesEnabled)
-    val currentIsUserNavigationEnabled by rememberUpdatedState(isUserNavigationEnabled)
-    val currentIsZoomGesturesEnabled by rememberUpdatedState(isZoomGesturesEnabled)
-    val clickListeners by rememberUpdatedState(StreetViewPanoramaEventListeners().also {
+  val currentCameraPositionState by rememberUpdatedState(cameraPositionState)
+  val currentIsPanningGestureEnabled by rememberUpdatedState(isPanningGesturesEnabled)
+  val currentIsStreetNamesEnabled by rememberUpdatedState(isStreetNamesEnabled)
+  val currentIsUserNavigationEnabled by rememberUpdatedState(isUserNavigationEnabled)
+  val currentIsZoomGesturesEnabled by rememberUpdatedState(isZoomGesturesEnabled)
+  val clickListeners by
+    rememberUpdatedState(
+      StreetViewPanoramaEventListeners().also {
         it.onClick = onClick
         it.onLongClick = onLongClick
-    })
-    val parentComposition = rememberCompositionContext()
+      }
+    )
+  val parentComposition = rememberCompositionContext()
 
-    LaunchedEffect(Unit) {
-        disposingComposition {
-            streetView.newComposition(parentComposition) {
-                StreetViewUpdater(
-                    cameraPositionState = currentCameraPositionState,
-                    isPanningGesturesEnabled = currentIsPanningGestureEnabled,
-                    isStreetNamesEnabled = currentIsStreetNamesEnabled,
-                    isUserNavigationEnabled = currentIsUserNavigationEnabled,
-                    isZoomGesturesEnabled = currentIsZoomGesturesEnabled,
-                    clickListeners = clickListeners
-                )
-            }
-        }
+  LaunchedEffect(Unit) {
+    disposingComposition {
+      streetView.newComposition(parentComposition) {
+        StreetViewUpdater(
+          cameraPositionState = currentCameraPositionState,
+          isPanningGesturesEnabled = currentIsPanningGestureEnabled,
+          isStreetNamesEnabled = currentIsStreetNamesEnabled,
+          isUserNavigationEnabled = currentIsUserNavigationEnabled,
+          isZoomGesturesEnabled = currentIsZoomGesturesEnabled,
+          clickListeners = clickListeners
+        )
+      }
     }
+  }
 }
 
 @Composable
 private fun StreetViewLifecycle(streetView: StreetViewPanoramaView) {
-    val context = LocalContext.current
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val previousState = remember { mutableStateOf(Lifecycle.Event.ON_CREATE) }
-    DisposableEffect(context, lifecycle, streetView) {
-        val streetViewLifecycleObserver = streetView.lifecycleObserver(previousState)
-        val callbacks = streetView.componentCallbacks2()
+  val context = LocalContext.current
+  val lifecycle = LocalLifecycleOwner.current.lifecycle
+  val previousState = remember { mutableStateOf(Lifecycle.Event.ON_CREATE) }
+  DisposableEffect(context, lifecycle, streetView) {
+    val streetViewLifecycleObserver = streetView.lifecycleObserver(previousState)
+    val callbacks = streetView.componentCallbacks2()
 
-        lifecycle.addObserver(streetViewLifecycleObserver)
-        context.registerComponentCallbacks(callbacks)
+    lifecycle.addObserver(streetViewLifecycleObserver)
+    context.registerComponentCallbacks(callbacks)
 
-        onDispose {
-            lifecycle.removeObserver(streetViewLifecycleObserver)
-            context.unregisterComponentCallbacks(callbacks)
-            streetView.onDestroy()
-        }
+    onDispose {
+      lifecycle.removeObserver(streetViewLifecycleObserver)
+      context.unregisterComponentCallbacks(callbacks)
+      streetView.onDestroy()
     }
+  }
 }
 
 private suspend inline fun disposingComposition(factory: () -> Composition) {
-    val composition = factory()
-    try {
-        awaitCancellation()
-    } finally {
-        composition.dispose()
-    }
+  val composition = factory()
+  try {
+    awaitCancellation()
+  } finally {
+    composition.dispose()
+  }
 }
 
 private suspend inline fun StreetViewPanoramaView.newComposition(
-    parent: CompositionContext,
-    noinline content: @Composable () -> Unit
+  parent: CompositionContext,
+  noinline content: @Composable () -> Unit
 ): Composition {
-    val panorama = awaitStreetViewPanorama()
-    Log.d("StreetView", "Location is ${panorama.location}")
-    return Composition(
-        StreetViewPanoramaApplier(panorama), parent
-    ).apply {
-        setContent(content)
-    }
+  val panorama = awaitStreetViewPanorama()
+  Log.d("StreetView", "Location is ${panorama.location}")
+  return Composition(StreetViewPanoramaApplier(panorama), parent).apply { setContent(content) }
 }
 
-private fun StreetViewPanoramaView.lifecycleObserver(previousState: MutableState<Lifecycle.Event>): LifecycleEventObserver =
-    LifecycleEventObserver { _, event ->
-        event.targetState
-        when (event) {
-            Lifecycle.Event.ON_CREATE -> {
-                // Skip calling mapView.onCreate if the lifecycle did not go through onDestroy - in
-                // this case the GoogleMap composable also doesn't leave the composition. So,
-                // recreating the map does not restore state properly which must be avoided.
-                if (previousState.value != Lifecycle.Event.ON_STOP) {
-                    this.onCreate(Bundle())
-                }
-            }
-            Lifecycle.Event.ON_START -> this.onStart()
-            Lifecycle.Event.ON_RESUME -> this.onResume()
-            Lifecycle.Event.ON_PAUSE -> this.onPause()
-            Lifecycle.Event.ON_STOP -> this.onStop()
-            Lifecycle.Event.ON_DESTROY -> {
-                //handled in onDispose
-            }
-            else -> throw IllegalStateException()
-        }
-        previousState.value = event
+private fun StreetViewPanoramaView.lifecycleObserver(
+  previousState: MutableState<Lifecycle.Event>
+): LifecycleEventObserver = LifecycleEventObserver { _, event ->
+  event.targetState
+  when (event) {
+    Lifecycle.Event.ON_CREATE -> {
+      // Skip calling mapView.onCreate if the lifecycle did not go through onDestroy - in
+      // this case the GoogleMap composable also doesn't leave the composition. So,
+      // recreating the map does not restore state properly which must be avoided.
+      if (previousState.value != Lifecycle.Event.ON_STOP) {
+        this.onCreate(Bundle())
+      }
     }
+    Lifecycle.Event.ON_START -> this.onStart()
+    Lifecycle.Event.ON_RESUME -> this.onResume()
+    Lifecycle.Event.ON_PAUSE -> this.onPause()
+    Lifecycle.Event.ON_STOP -> this.onStop()
+    Lifecycle.Event.ON_DESTROY -> {
+      // handled in onDispose
+    }
+    else -> throw IllegalStateException()
+  }
+  previousState.value = event
+}
 
 private fun StreetViewPanoramaView.componentCallbacks2(): ComponentCallbacks2 =
-    object : ComponentCallbacks2 {
-        override fun onConfigurationChanged(config: Configuration) {}
+  object : ComponentCallbacks2 {
+    override fun onConfigurationChanged(config: Configuration) {}
 
-        @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
-        override fun onLowMemory() {
-            this@componentCallbacks2.onLowMemory()
-        }
-
-        override fun onTrimMemory(level: Int) {
-            this@componentCallbacks2.onLowMemory()
-        }
+    @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
+    override fun onLowMemory() {
+      this@componentCallbacks2.onLowMemory()
     }
+
+    override fun onTrimMemory(level: Int) {
+      this@componentCallbacks2.onLowMemory()
+    }
+  }

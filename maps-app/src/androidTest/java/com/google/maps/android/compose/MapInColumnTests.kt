@@ -22,125 +22,107 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 private const val TAG = "MapInColumnTests"
 
 class MapInColumnTests {
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    private val startingZoom = 10f
-    private val startingPosition = LatLng(1.23, 4.56)
-    private lateinit var cameraPositionState: CameraPositionState
+  private val startingZoom = 10f
+  private val startingPosition = LatLng(1.23, 4.56)
+  private lateinit var cameraPositionState: CameraPositionState
 
-    private fun initMap() {
-        check(hasValidApiKey) { "Maps API key not specified" }
-        val countDownLatch = CountDownLatch(1)
-        composeTestRule.setContent {
-            var scrollingEnabled by remember { mutableStateOf(true) }
+  private fun initMap() {
+    check(hasValidApiKey) { "Maps API key not specified" }
+    val countDownLatch = CountDownLatch(1)
+    composeTestRule.setContent {
+      var scrollingEnabled by remember { mutableStateOf(true) }
 
-            LaunchedEffect(cameraPositionState.isMoving) {
-                if (!cameraPositionState.isMoving) {
-                    scrollingEnabled = true
-                    Log.d(TAG, "Map camera stopped moving - Enabling column scrolling...")
-                }
-            }
-
-            MapInColumn(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState,
-                columnScrollingEnabled = scrollingEnabled,
-                onMapTouched = {
-                    scrollingEnabled = false
-                    Log.d(
-                        TAG,
-                        "User touched map - Disabling column scrolling after user touched this Box..."
-                    )
-                },
-                onMapLoaded = {
-                    countDownLatch.countDown()
-                }
-            )
+      LaunchedEffect(cameraPositionState.isMoving) {
+        if (!cameraPositionState.isMoving) {
+          scrollingEnabled = true
+          Log.d(TAG, "Map camera stopped moving - Enabling column scrolling...")
         }
-        val mapLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        assertTrue("Map loaded", mapLoaded)
+      }
+
+      MapInColumn(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState,
+        columnScrollingEnabled = scrollingEnabled,
+        onMapTouched = {
+          scrollingEnabled = false
+          Log.d(TAG, "User touched map - Disabling column scrolling after user touched this Box...")
+        },
+        onMapLoaded = { countDownLatch.countDown() }
+      )
     }
+    val mapLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    assertTrue("Map loaded", mapLoaded)
+  }
 
-    @Before
-    fun setUp() {
-        cameraPositionState = CameraPositionState(
-            position = CameraPosition.fromLatLngZoom(
-                startingPosition,
-                startingZoom
-            )
-        )
+  @Before
+  fun setUp() {
+    cameraPositionState =
+      CameraPositionState(position = CameraPosition.fromLatLngZoom(startingPosition, startingZoom))
+  }
+
+  @Test
+  fun testStartingCameraPosition() {
+    initMap()
+    startingPosition.assertEquals(cameraPositionState.position.target)
+  }
+
+  @Test
+  fun testLatLngInVisibleRegion() {
+    initMap()
+    composeTestRule.runOnUiThread {
+      val projection = cameraPositionState.projection
+      assertNotNull(projection)
+      assertTrue(projection!!.visibleRegion.latLngBounds.contains(startingPosition))
     }
+  }
 
-    @Test
-    fun testStartingCameraPosition() {
-        initMap()
-        startingPosition.assertEquals(cameraPositionState.position.target)
+  @Test
+  fun testLatLngNotInVisibleRegion() {
+    initMap()
+    composeTestRule.runOnUiThread {
+      val projection = cameraPositionState.projection
+      assertNotNull(projection)
+      val latLng = LatLng(23.4, 25.6)
+      assertFalse(projection!!.visibleRegion.latLngBounds.contains(latLng))
     }
+  }
 
-    @Test
-    fun testLatLngInVisibleRegion() {
-        initMap()
-        composeTestRule.runOnUiThread {
-            val projection = cameraPositionState.projection
-            assertNotNull(projection)
-            assertTrue(
-                projection!!.visibleRegion.latLngBounds.contains(startingPosition)
-            )
-        }
-    }
+  @Test
+  fun testScrollColumn_MapCameraRemainsSame() {
+    initMap()
+    // Check that the column scrolls to the last item
+    composeTestRule.onRoot().performTouchInput { swipeUp(startY = (bottom - top) / 2) }
 
-    @Test
-    fun testLatLngNotInVisibleRegion() {
-        initMap()
-        composeTestRule.runOnUiThread {
-            val projection = cameraPositionState.projection
-            assertNotNull(projection)
-            val latLng = LatLng(23.4, 25.6)
-            assertFalse(
-                projection!!.visibleRegion.latLngBounds.contains(latLng)
-            )
-        }
-    }
+    composeTestRule.waitForIdle()
+    // composeTestRule.onNodeWithTag("Item 1").assertIsNotDisplayed()
 
-    @Test
-    fun testScrollColumn_MapCameraRemainsSame() {
-        initMap()
-        // Check that the column scrolls to the last item
-        composeTestRule.onRoot().performTouchInput {
-            swipeUp(
-                startY = (bottom - top) / 2
-            )
-        }
+    // Check that the map didn't change
+    startingPosition.assertEquals(cameraPositionState.position.target)
+  }
 
-        composeTestRule.waitForIdle()
-        // composeTestRule.onNodeWithTag("Item 1").assertIsNotDisplayed()
+  @Test
+  fun testPanMapUp_MapCameraChangesColumnDoesNotScroll() {
+    initMap()
+    // Swipe the map up
+    composeTestRule.onAllNodesWithTag("Map").onFirst().performTouchInput { swipeUp() }
+    composeTestRule.waitForIdle()
 
-        // Check that the map didn't change
-        startingPosition.assertEquals(cameraPositionState.position.target)
-    }
+    // Make sure that the map changed (i.e., we can scroll the map in the column)
+    assertNotEquals(startingPosition, cameraPositionState.position.target)
 
-    @Test
-    fun testPanMapUp_MapCameraChangesColumnDoesNotScroll() {
-        initMap()
-        //Swipe the map up
-        composeTestRule.onAllNodesWithTag("Map").onFirst().performTouchInput { swipeUp() }
-        composeTestRule.waitForIdle()
-
-        //Make sure that the map changed (i.e., we can scroll the map in the column)
-        assertNotEquals(startingPosition, cameraPositionState.position.target)
-
-        //Check to make sure column didn't scroll
-        composeTestRule.onNodeWithTag("Item 1").assertIsDisplayed()
-    }
+    // Check to make sure column didn't scroll
+    composeTestRule.onNodeWithTag("Item 1").assertIsDisplayed()
+  }
 }

@@ -25,13 +25,10 @@ import com.google.android.gms.maps.model.PatternItem
 import com.google.android.gms.maps.model.Polygon
 import com.google.maps.android.ktx.addPolygon
 
-internal class PolygonNode(
-    val polygon: Polygon,
-    var onPolygonClick: (Polygon) -> Unit
-) : MapNode {
-    override fun onRemoved() {
-        polygon.remove()
-    }
+internal class PolygonNode(val polygon: Polygon, var onPolygonClick: (Polygon) -> Unit) : MapNode {
+  override fun onRemoved() {
+    polygon.remove()
+  }
 }
 
 /**
@@ -54,57 +51,58 @@ internal class PolygonNode(
 @Composable
 @GoogleMapComposable
 public fun Polygon(
-    points: List<LatLng>,
-    clickable: Boolean = false,
-    fillColor: Color = Color.Black,
-    geodesic: Boolean = false,
-    holes: List<List<LatLng>> = emptyList(),
-    strokeColor: Color = Color.Black,
-    strokeJointType: Int = JointType.DEFAULT,
-    strokePattern: List<PatternItem>? = null,
-    strokeWidth: Float = 10f,
-    tag: Any? = null,
-    visible: Boolean = true,
-    zIndex: Float = 0f,
-    onClick: (Polygon) -> Unit = {}
+  points: List<LatLng>,
+  clickable: Boolean = false,
+  fillColor: Color = Color.Black,
+  geodesic: Boolean = false,
+  holes: List<List<LatLng>> = emptyList(),
+  strokeColor: Color = Color.Black,
+  strokeJointType: Int = JointType.DEFAULT,
+  strokePattern: List<PatternItem>? = null,
+  strokeWidth: Float = 10f,
+  tag: Any? = null,
+  visible: Boolean = true,
+  zIndex: Float = 0f,
+  onClick: (Polygon) -> Unit = {}
 ) {
-    if (points.isEmpty()) return // avoid SDK crash
+  if (points.isEmpty()) return // avoid SDK crash
 
-    val mapApplier = currentComposer.applier as MapApplier?
-    ComposeNode<PolygonNode, MapApplier>(
-        factory = {
-            val polygon = mapApplier?.map?.addPolygon {
-                addAll(points)
-                clickable(clickable)
-                fillColor(fillColor.toArgb())
-                geodesic(geodesic)
-                for (hole in holes) {
-                    addHole(hole)
-                }
-                strokeColor(strokeColor.toArgb())
-                strokeJointType(strokeJointType)
-                strokePattern(strokePattern)
-                strokeWidth(strokeWidth)
-                visible(visible)
-                zIndex(zIndex)
-            } ?: error("Error adding polygon")
-            polygon.tag = tag
-            PolygonNode(polygon, onClick)
-        },
-        update = {
-            update(onClick) { this.onPolygonClick = it }
-            update(points) { this.polygon.points = it }
-            update(clickable) { this.polygon.isClickable = it }
-            update(fillColor) { this.polygon.fillColor = it.toArgb() }
-            update(geodesic) { this.polygon.isGeodesic = it }
-            update(holes) { this.polygon.holes = it }
-            update(strokeColor) { this.polygon.strokeColor = it.toArgb() }
-            update(strokeJointType) { this.polygon.strokeJointType = it }
-            update(strokePattern) { this.polygon.strokePattern = it }
-            update(strokeWidth) { this.polygon.strokeWidth = it }
-            update(tag) { this.polygon.tag = it }
-            update(visible) { this.polygon.isVisible = it }
-            update(zIndex) { this.polygon.zIndex = it }
-        }
-    )
+  val mapApplier = currentComposer.applier as MapApplier?
+  ComposeNode<PolygonNode, MapApplier>(
+    factory = {
+      val polygon =
+        mapApplier?.map?.addPolygon {
+          addAll(points)
+          clickable(clickable)
+          fillColor(fillColor.toArgb())
+          geodesic(geodesic)
+          for (hole in holes) {
+            addHole(hole)
+          }
+          strokeColor(strokeColor.toArgb())
+          strokeJointType(strokeJointType)
+          strokePattern(strokePattern)
+          strokeWidth(strokeWidth)
+          visible(visible)
+          zIndex(zIndex)
+        } ?: error("Error adding polygon")
+      polygon.tag = tag
+      PolygonNode(polygon, onClick)
+    },
+    update = {
+      update(onClick) { this.onPolygonClick = it }
+      update(points) { this.polygon.points = it }
+      update(clickable) { this.polygon.isClickable = it }
+      update(fillColor) { this.polygon.fillColor = it.toArgb() }
+      update(geodesic) { this.polygon.isGeodesic = it }
+      update(holes) { this.polygon.holes = it }
+      update(strokeColor) { this.polygon.strokeColor = it.toArgb() }
+      update(strokeJointType) { this.polygon.strokeJointType = it }
+      update(strokePattern) { this.polygon.strokePattern = it }
+      update(strokeWidth) { this.polygon.strokeWidth = it }
+      update(tag) { this.polygon.tag = it }
+      update(visible) { this.polygon.isVisible = it }
+      update(zIndex) { this.polygon.zIndex = it }
+    }
+  )
 }

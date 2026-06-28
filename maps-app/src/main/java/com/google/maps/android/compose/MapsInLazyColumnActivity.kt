@@ -42,8 +42,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -71,12 +69,13 @@ private data class CountryLocation(val name: String, val latLng: LatLng, val zoo
 typealias MapItemId = String
 
 // From https://developers.google.com/public-data/docs/canonical/countries_csv
-private val countries = listOf(
+private val countries =
+  listOf(
     CountryLocation("Hong Kong", LatLng(22.396428, 114.109497), 5f),
     CountryLocation(
-        "Madison Square Garden (has indoor mode)",
-        LatLng(40.7504656, -73.9937246),
-        19.33f
+      "Madison Square Garden (has indoor mode)",
+      LatLng(40.7504656, -73.9937246),
+      19.33f
     ),
     CountryLocation("Bolivia", LatLng(-16.290154, -63.588653), 5f),
     CountryLocation("Ecuador", LatLng(-1.831239, -78.183406), 5f),
@@ -93,222 +92,182 @@ private val countries = listOf(
     CountryLocation("Spain", LatLng(40.463667, -3.74922), 5f),
     CountryLocation("Georgia", LatLng(42.315407, 43.356892), 5f),
     CountryLocation("Burundi", LatLng(-3.373056, 29.918886), 5f)
-)
+  )
 
-data class MapListItem(
-    val title: String,
-    val location: LatLng,
-    val zoom: Float,
-    val id: MapItemId
-)
+data class MapListItem(val title: String, val location: LatLng, val zoom: Float, val id: MapItemId)
 
-private val allItems = countries.mapIndexed { index, country ->
+private val allItems =
+  countries.mapIndexed { index, country ->
     MapListItem(country.name, country.latLng, country.zoom, "MapInLazyColumn#$index")
-}
+  }
 
 class MapsInLazyColumnActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            var showLazyColumn by rememberSaveable { mutableStateOf(true) }
-            var visibleItems by rememberSaveable { mutableStateOf(allItems) }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      var showLazyColumn by rememberSaveable { mutableStateOf(true) }
+      var visibleItems by rememberSaveable { mutableStateOf(allItems) }
 
-            fun setItemCount(count: Int) {
-                visibleItems = allItems.take(count.coerceIn(0, allItems.size))
-            }
+      fun setItemCount(count: Int) {
+        visibleItems = allItems.take(count.coerceIn(0, allItems.size))
+      }
 
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .systemBarsPadding(),
-            ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    TextButton(onClick = { setItemCount(0) }) {
-                        Text(text = "Clear")
-                    }
-                    TextButton(onClick = { setItemCount(visibleItems.size - 1) }) {
-                        Text(text = "Remove")
-                    }
-                    TextButton(onClick = { showLazyColumn = !showLazyColumn }) {
-                        Text(text = if (showLazyColumn) "Hide" else "Show")
-                    }
-                    TextButton(onClick = { setItemCount(visibleItems.size + 1) }) {
-                        Text(text = "Add")
-                    }
-                    TextButton(onClick = { setItemCount(allItems.size) }) {
-                        Text(text = "Fill")
-                    }
-                }
-                if (showLazyColumn) {
-                    Box(Modifier.border(1.dp, Color.LightGray.copy(0.5f))) {
-                        MapsInLazyColumn(visibleItems, onMapLoaded = { })
-                    }
-                }
-            }
+      Column(
+        Modifier.fillMaxSize().systemBarsPadding(),
+      ) {
+        Row(
+          Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+          horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+          TextButton(onClick = { setItemCount(0) }) { Text(text = "Clear") }
+          TextButton(onClick = { setItemCount(visibleItems.size - 1) }) { Text(text = "Remove") }
+          TextButton(onClick = { showLazyColumn = !showLazyColumn }) {
+            Text(text = if (showLazyColumn) "Hide" else "Show")
+          }
+          TextButton(onClick = { setItemCount(visibleItems.size + 1) }) { Text(text = "Add") }
+          TextButton(onClick = { setItemCount(allItems.size) }) { Text(text = "Fill") }
         }
+        if (showLazyColumn) {
+          Box(Modifier.border(1.dp, Color.LightGray.copy(0.5f))) {
+            MapsInLazyColumn(visibleItems, onMapLoaded = {})
+          }
+        }
+      }
     }
+  }
 }
 
 @Composable
 fun MapsInLazyColumn(
-    mapItems: List<MapListItem>,
-    lazyListState: LazyListState = rememberLazyListState(),
-    onMapLoaded: () -> Unit
+  mapItems: List<MapListItem>,
+  lazyListState: LazyListState = rememberLazyListState(),
+  onMapLoaded: () -> Unit
 ) {
 
-    var isMapLoaded by remember { mutableStateOf(false) }
+  var isMapLoaded by remember { mutableStateOf(false) }
 
-    val lazyListState = lazyListState
+  val lazyListState = lazyListState
 
-    val cameraPositionStates = mapItems.associate { item ->
-        item.id to rememberCameraPositionState(
-            init = { position = CameraPosition.fromLatLngZoom(item.location, item.zoom) }
+  val cameraPositionStates =
+    mapItems.associate { item ->
+      item.id to
+        rememberCameraPositionState(
+          init = { position = CameraPosition.fromLatLngZoom(item.location, item.zoom) }
         )
     }
-    val visibleItemIds by remember(lazyListState) {
-        derivedStateOf {
-            lazyListState.layoutInfo.visibleItemsInfo.map { it.key as MapItemId }
-        }
+  val visibleItemIds by
+    remember(lazyListState) {
+      derivedStateOf { lazyListState.layoutInfo.visibleItemsInfo.map { it.key as MapItemId } }
     }
-    val anyMapMoving by remember(cameraPositionStates) {
-        derivedStateOf {
-            visibleItemIds.any { cameraPositionStates[it]?.isMoving == true }
-        }
+  val anyMapMoving by
+    remember(cameraPositionStates) {
+      derivedStateOf { visibleItemIds.any { cameraPositionStates[it]?.isMoving == true } }
     }
 
-    Box {
-        LazyColumn(
-            state = lazyListState,
-            userScrollEnabled = !anyMapMoving
-        ) {
-            items(mapItems, key = { it.id }) { item ->
-                val cameraPositionState = cameraPositionStates[item.id]!!
+  Box {
+    LazyColumn(state = lazyListState, userScrollEnabled = !anyMapMoving) {
+      items(mapItems, key = { it.id }) { item ->
+        val cameraPositionState = cameraPositionStates[item.id]!!
 
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(300.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    MapCard(item, cameraPositionState, onMapLoaded = {
-                        isMapLoaded = true
-                        onMapLoaded()
-                    })
-                }
+        Box(Modifier.fillMaxWidth().height(300.dp), contentAlignment = Alignment.Center) {
+          MapCard(
+            item,
+            cameraPositionState,
+            onMapLoaded = {
+              isMapLoaded = true
+              onMapLoaded()
             }
+          )
         }
+      }
     }
+  }
 }
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 private fun MapCard(
-    item: MapListItem,
-    cameraPositionState: CameraPositionState,
-    onMapLoaded: () -> Unit,
+  item: MapListItem,
+  cameraPositionState: CameraPositionState,
+  onMapLoaded: () -> Unit,
 ) {
-    Card(
-        Modifier.padding(16.dp),
-        elevation = 4.dp
-    ) {
-        var mapLoaded by remember { mutableStateOf(false) }
-        var buildingFocused: Boolean? by remember { mutableStateOf(null) }
-        var focusedBuildingInvocationCount by remember { mutableIntStateOf(0) }
-        var activatedIndoorLevel: String? by remember { mutableStateOf(null) }
-        var activatedIndoorLevelInvocationCount by remember { mutableIntStateOf(0) }
-        var onMapClickCount by remember { mutableIntStateOf(0) }
+  Card(Modifier.padding(16.dp), elevation = 4.dp) {
+    var mapLoaded by remember { mutableStateOf(false) }
+    var buildingFocused: Boolean? by remember { mutableStateOf(null) }
+    var focusedBuildingInvocationCount by remember { mutableIntStateOf(0) }
+    var activatedIndoorLevel: String? by remember { mutableStateOf(null) }
+    var activatedIndoorLevelInvocationCount by remember { mutableIntStateOf(0) }
+    var onMapClickCount by remember { mutableIntStateOf(0) }
 
-        var map: GoogleMap? by remember { mutableStateOf(null) }
+    var map: GoogleMap? by remember { mutableStateOf(null) }
 
-        fun updateIndoorLevel() {
-            activatedIndoorLevel =
-                map!!.focusedBuilding?.run { levels.getOrNull(activeLevelIndex)?.name }
-        }
-
-        Box {
-            GoogleMap(
-                modifier = Modifier.testTag("Map"),
-                onMapClick = {
-                    onMapClickCount++
-                },
-                properties = remember {
-                    MapProperties(
-                        isBuildingEnabled = true,
-                        isIndoorEnabled = true
-                    )
-                },
-                cameraPositionState = cameraPositionState,
-                onMapLoaded = {
-                    onMapLoaded.invoke()
-                    mapLoaded = true
-                },
-                indoorStateChangeListener = object : IndoorStateChangeListener {
-                    override fun onIndoorBuildingFocused() {
-                        super.onIndoorBuildingFocused()
-                        focusedBuildingInvocationCount++
-                        buildingFocused = (map!!.focusedBuilding != null)
-                        updateIndoorLevel()
-                    }
-
-                    override fun onIndoorLevelActivated(building: IndoorBuilding) {
-                        super.onIndoorLevelActivated(building)
-                        activatedIndoorLevelInvocationCount++
-                        updateIndoorLevel()
-                    }
-                }
-            ) {
-                MapEffect(Unit) { googleMap ->
-                    map = googleMap
-                    updateIndoorLevel()
-                    buildingFocused = (googleMap.focusedBuilding != null)
-                }
-            }
-
-            AnimatedVisibility(!mapLoaded, enter = fadeIn(), exit = fadeOut()) {
-                Box(
-                    Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            @Composable
-            fun TextWithBackground(text: String, fontWeight: FontWeight = FontWeight.Medium) {
-                Text(
-                    modifier = Modifier.background(Color.White.copy(0.7f)).testTag(text),
-                    text = text,
-                    fontWeight = fontWeight,
-                    fontSize = 10.sp
-                )
-            }
-
-            Column(
-                modifier = Modifier.align(Alignment.TopStart)
-            ) {
-                TextWithBackground(
-                    "Panning this map disables list scroll",
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Column(
-                modifier = Modifier.align(Alignment.BottomStart)
-            ) {
-                TextWithBackground(item.title, fontWeight = FontWeight.Bold)
-                TextWithBackground("Map loaded: $mapLoaded")
-                TextWithBackground("Map click count: $onMapClickCount")
-                TextWithBackground("Building focused: $buildingFocused")
-                TextWithBackground("Building focused invocation count: $focusedBuildingInvocationCount")
-                TextWithBackground("Indoor level: $activatedIndoorLevel")
-                TextWithBackground("Indoor level invocation count: $activatedIndoorLevelInvocationCount")
-            }
-        }
+    fun updateIndoorLevel() {
+      activatedIndoorLevel = map!!.focusedBuilding?.run { levels.getOrNull(activeLevelIndex)?.name }
     }
+
+    Box {
+      GoogleMap(
+        modifier = Modifier.testTag("Map"),
+        onMapClick = { onMapClickCount++ },
+        properties = remember { MapProperties(isBuildingEnabled = true, isIndoorEnabled = true) },
+        cameraPositionState = cameraPositionState,
+        onMapLoaded = {
+          onMapLoaded.invoke()
+          mapLoaded = true
+        },
+        indoorStateChangeListener =
+          object : IndoorStateChangeListener {
+            override fun onIndoorBuildingFocused() {
+              super.onIndoorBuildingFocused()
+              focusedBuildingInvocationCount++
+              buildingFocused = (map!!.focusedBuilding != null)
+              updateIndoorLevel()
+            }
+
+            override fun onIndoorLevelActivated(building: IndoorBuilding) {
+              super.onIndoorLevelActivated(building)
+              activatedIndoorLevelInvocationCount++
+              updateIndoorLevel()
+            }
+          }
+      ) {
+        MapEffect(Unit) { googleMap ->
+          map = googleMap
+          updateIndoorLevel()
+          buildingFocused = (googleMap.focusedBuilding != null)
+        }
+      }
+
+      AnimatedVisibility(!mapLoaded, enter = fadeIn(), exit = fadeOut()) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          CircularProgressIndicator()
+        }
+      }
+
+      @Composable
+      fun TextWithBackground(text: String, fontWeight: FontWeight = FontWeight.Medium) {
+        Text(
+          modifier = Modifier.background(Color.White.copy(0.7f)).testTag(text),
+          text = text,
+          fontWeight = fontWeight,
+          fontSize = 10.sp
+        )
+      }
+
+      Column(modifier = Modifier.align(Alignment.TopStart)) {
+        TextWithBackground("Panning this map disables list scroll", fontWeight = FontWeight.Bold)
+      }
+
+      Column(modifier = Modifier.align(Alignment.BottomStart)) {
+        TextWithBackground(item.title, fontWeight = FontWeight.Bold)
+        TextWithBackground("Map loaded: $mapLoaded")
+        TextWithBackground("Map click count: $onMapClickCount")
+        TextWithBackground("Building focused: $buildingFocused")
+        TextWithBackground("Building focused invocation count: $focusedBuildingInvocationCount")
+        TextWithBackground("Indoor level: $activatedIndoorLevel")
+        TextWithBackground("Indoor level invocation count: $activatedIndoorLevelInvocationCount")
+      }
+    }
+  }
 }

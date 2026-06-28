@@ -27,38 +27,39 @@ import com.google.android.gms.maps.model.TileProvider
 import com.google.maps.android.ktx.addTileOverlay
 
 private class TileOverlayNode(
-    var tileOverlay: TileOverlay,
-    var tileOverlayState: TileOverlayState,
-    var onTileOverlayClick: (TileOverlay) -> Unit
+  var tileOverlay: TileOverlay,
+  var tileOverlayState: TileOverlayState,
+  var onTileOverlayClick: (TileOverlay) -> Unit
 ) : MapNode {
-    override fun onAttached() {
-        tileOverlayState.tileOverlay = tileOverlay
-    }
-    override fun onRemoved() {
-        tileOverlay.remove()
-    }
+  override fun onAttached() {
+    tileOverlayState.tileOverlay = tileOverlay
+  }
+
+  override fun onRemoved() {
+    tileOverlay.remove()
+  }
 }
 
 @Composable
 @GoogleMapComposable
 @Deprecated("For compatibility", level = DeprecationLevel.HIDDEN)
 public fun TileOverlay(
-    tileProvider: TileProvider,
-    fadeIn: Boolean = true,
-    transparency: Float = 0f,
-    visible: Boolean = true,
-    zIndex: Float = 0f,
-    onClick: (TileOverlay) -> Unit = {},
+  tileProvider: TileProvider,
+  fadeIn: Boolean = true,
+  transparency: Float = 0f,
+  visible: Boolean = true,
+  zIndex: Float = 0f,
+  onClick: (TileOverlay) -> Unit = {},
 ) {
-    TileOverlay(
-        tileProvider = tileProvider,
-        state = rememberTileOverlayState(),
-        fadeIn = fadeIn,
-        transparency = transparency,
-        visible = visible,
-        zIndex = zIndex,
-        onClick = onClick,
-    )
+  TileOverlay(
+    tileProvider = tileProvider,
+    state = rememberTileOverlayState(),
+    fadeIn = fadeIn,
+    transparency = transparency,
+    visible = visible,
+    zIndex = zIndex,
+    onClick = onClick,
+  )
 }
 
 /**
@@ -66,7 +67,7 @@ public fun TileOverlay(
  *
  * @param tileProvider the tile provider to use for this tile overlay
  * @param state the [TileOverlayState] to be used to control the tile overlay, such as clearing
- * stale tiles
+ *   stale tiles
  * @param fadeIn boolean indicating whether the tiles should fade in
  * @param transparency the transparency of the tile overlay
  * @param visible the visibility of the tile overlay
@@ -76,81 +77,80 @@ public fun TileOverlay(
 @Composable
 @GoogleMapComposable
 public fun TileOverlay(
-    tileProvider: TileProvider,
-    state: TileOverlayState = rememberTileOverlayState(),
-    fadeIn: Boolean = true,
-    transparency: Float = 0f,
-    visible: Boolean = true,
-    zIndex: Float = 0f,
-    onClick: (TileOverlay) -> Unit = {},
+  tileProvider: TileProvider,
+  state: TileOverlayState = rememberTileOverlayState(),
+  fadeIn: Boolean = true,
+  transparency: Float = 0f,
+  visible: Boolean = true,
+  zIndex: Float = 0f,
+  onClick: (TileOverlay) -> Unit = {},
 ) {
-    val mapApplier = currentComposer.applier as MapApplier?
-    ComposeNode<TileOverlayNode, MapApplier>(
-        factory = {
-            val tileOverlay = mapApplier?.map?.addTileOverlay {
-                tileProvider(tileProvider)
-                fadeIn(fadeIn)
-                transparency(transparency)
-                visible(visible)
-                zIndex(zIndex)
-            } ?: error("Error adding tile overlay")
-            TileOverlayNode(tileOverlay, state, onClick)
-        },
-        update = {
-            update(onClick) { this.onTileOverlayClick = it }
+  val mapApplier = currentComposer.applier as MapApplier?
+  ComposeNode<TileOverlayNode, MapApplier>(
+    factory = {
+      val tileOverlay =
+        mapApplier?.map?.addTileOverlay {
+          tileProvider(tileProvider)
+          fadeIn(fadeIn)
+          transparency(transparency)
+          visible(visible)
+          zIndex(zIndex)
+        } ?: error("Error adding tile overlay")
+      TileOverlayNode(tileOverlay, state, onClick)
+    },
+    update = {
+      update(onClick) { this.onTileOverlayClick = it }
 
-            update(tileProvider) {
-                this.tileOverlay.remove()
-                this.tileOverlay = mapApplier?.map?.addTileOverlay {
-                    tileProvider(tileProvider)
-                    fadeIn(fadeIn)
-                    transparency(transparency)
-                    visible(visible)
-                    zIndex(zIndex)
-                } ?: error("Error adding tile overlay")
-                this.tileOverlayState.tileOverlay = this.tileOverlay
-            }
-            update(fadeIn) { this.tileOverlay.fadeIn = it }
-            update(transparency) { this.tileOverlay.transparency = it }
-            update(visible) { this.tileOverlay.isVisible = it }
-            update(zIndex) { this.tileOverlay.zIndex = it }
-        }
-    )
+      update(tileProvider) {
+        this.tileOverlay.remove()
+        this.tileOverlay =
+          mapApplier?.map?.addTileOverlay {
+            tileProvider(tileProvider)
+            fadeIn(fadeIn)
+            transparency(transparency)
+            visible(visible)
+            zIndex(zIndex)
+          } ?: error("Error adding tile overlay")
+        this.tileOverlayState.tileOverlay = this.tileOverlay
+      }
+      update(fadeIn) { this.tileOverlay.fadeIn = it }
+      update(transparency) { this.tileOverlay.transparency = it }
+      update(visible) { this.tileOverlay.isVisible = it }
+      update(zIndex) { this.tileOverlay.zIndex = it }
+    }
+  )
 }
 
 /**
- * A state object that can be hoisted to control the state of a [TileOverlay].
- * A [TileOverlayState] may only be used by a single [TileOverlay] composable at a time.
+ * A state object that can be hoisted to control the state of a [TileOverlay]. A [TileOverlayState]
+ * may only be used by a single [TileOverlay] composable at a time.
  *
  * [clearTileCache] can be called to request that the map refresh these tiles.
  */
 public class TileOverlayState private constructor() {
 
-    internal var tileOverlay: TileOverlay? by mutableStateOf(null)
+  internal var tileOverlay: TileOverlay? by mutableStateOf(null)
 
-    /**
-     * Call to force a refresh if the tiles provided by the tile overlay become 'stale'.
-     * This will cause all the tiles on this overlay to be reloaded.
-     * For example, if the tiles provided by the [TileProvider] change, you must call
-     * this afterwards to ensure that the previous tiles are no longer rendered.
-     *
-     * See [Maps SDK docs](https://developers.google.com/maps/documentation/android-sdk/tileoverlay#clear)
-     */
-    public fun clearTileCache() {
-        (tileOverlay ?: error("This TileOverlayState is not used in any TileOverlay"))
-            .clearTileCache()
-    }
+  /**
+   * Call to force a refresh if the tiles provided by the tile overlay become 'stale'. This will
+   * cause all the tiles on this overlay to be reloaded. For example, if the tiles provided by the
+   * [TileProvider] change, you must call this afterwards to ensure that the previous tiles are no
+   * longer rendered.
+   *
+   * See
+   * [Maps SDK docs](https://developers.google.com/maps/documentation/android-sdk/tileoverlay#clear)
+   */
+  public fun clearTileCache() {
+    (tileOverlay ?: error("This TileOverlayState is not used in any TileOverlay")).clearTileCache()
+  }
 
-    public companion object {
-        /**
-         * Creates a new [TileOverlayState] object
-         */
-        @StateFactoryMarker
-        public operator fun invoke(): TileOverlayState = TileOverlayState()
-    }
+  public companion object {
+    /** Creates a new [TileOverlayState] object */
+    @StateFactoryMarker public operator fun invoke(): TileOverlayState = TileOverlayState()
+  }
 }
 
 @Composable
 public fun rememberTileOverlayState(): TileOverlayState {
-    return remember { TileOverlayState() }
+  return remember { TileOverlayState() }
 }

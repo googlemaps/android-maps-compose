@@ -52,22 +52,15 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.ktx.utils.sphericalDistance
 import kotlinx.coroutines.delay
 
-internal fun calculateDistance(
-    projection: Projection,
-    width: Dp,
-    density: Density
-): Int {
-    val widthInPixels = with(density) {
-        width.toPx().toInt()
-    }
+internal fun calculateDistance(projection: Projection, width: Dp, density: Density): Int {
+  val widthInPixels = with(density) { width.toPx().toInt() }
 
-    val upperLeftLatLng = projection.fromScreenLocation(Point(0, 0))
-    val upperRightLatLng =
-        projection.fromScreenLocation(Point(widthInPixels, 0))
+  val upperLeftLatLng = projection.fromScreenLocation(Point(0, 0))
+  val upperRightLatLng = projection.fromScreenLocation(Point(widthInPixels, 0))
 
-    val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
+  val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
 
-    return (canvasWidthMeters * 8 / 9).toInt()
+  return (canvasWidthMeters * 8 / 9).toInt()
 }
 
 public val DarkGray: Color = Color(0xFF3a3c3b)
@@ -88,134 +81,128 @@ private val defaultHeight: Dp = 50.dp
  */
 @Composable
 public fun ScaleBar(
-    modifier: Modifier = Modifier,
-    width: Dp = defaultWidth,
-    height: Dp = defaultHeight,
-    cameraPositionState: CameraPositionState,
-    textColor: Color = DarkGray,
-    lineColor: Color = DarkGray,
-    shadowColor: Color = Color.White,
+  modifier: Modifier = Modifier,
+  width: Dp = defaultWidth,
+  height: Dp = defaultHeight,
+  cameraPositionState: CameraPositionState,
+  textColor: Color = DarkGray,
+  lineColor: Color = DarkGray,
+  shadowColor: Color = Color.White,
 ) {
-    val density = LocalDensity.current
-    val horizontalLineWidthMeters by remember(cameraPositionState.position.zoom) {
-        derivedStateOf {
-            cameraPositionState.projection?.let {
-                calculateDistance(it, width, density)
-            } ?: 0
-        }
+  val density = LocalDensity.current
+  val horizontalLineWidthMeters by
+    remember(cameraPositionState.position.zoom) {
+      derivedStateOf {
+        cameraPositionState.projection?.let { calculateDistance(it, width, density) } ?: 0
+      }
     }
 
-    Box(
-        modifier = modifier.size(width = width, height = height)
-    ) {
-        // The Canvas composable is used for custom drawing. Here, we are drawing the
-        // lines of the scale bar.
-        Canvas(
-            modifier = Modifier.fillMaxSize(),
-            onDraw = {
-                val oneNinthWidth = size.width / 9
-                val midHeight = size.height / 2
-                val oneThirdHeight = size.height / 3
-                val twoThirdsHeight = size.height * 2 / 3
-                val strokeWidth = 4f
-                val shadowStrokeWidth = strokeWidth + 3
+  Box(modifier = modifier.size(width = width, height = height)) {
+    // The Canvas composable is used for custom drawing. Here, we are drawing the
+    // lines of the scale bar.
+    Canvas(
+      modifier = Modifier.fillMaxSize(),
+      onDraw = {
+        val oneNinthWidth = size.width / 9
+        val midHeight = size.height / 2
+        val oneThirdHeight = size.height / 3
+        val twoThirdsHeight = size.height * 2 / 3
+        val strokeWidth = 4f
+        val shadowStrokeWidth = strokeWidth + 3
 
-                // The shadows are drawn first, slightly offset from the main lines, to create
-                // a "drop shadow" effect. This makes the scale bar more readable on different
-                // map backgrounds.
+        // The shadows are drawn first, slightly offset from the main lines, to create
+        // a "drop shadow" effect. This makes the scale bar more readable on different
+        // map backgrounds.
 
-                // Middle horizontal line shadow
-                drawLine(
-                    color = shadowColor,
-                    start = Offset(oneNinthWidth, midHeight),
-                    end = Offset(size.width, midHeight),
-                    strokeWidth = shadowStrokeWidth,
-                    cap = StrokeCap.Round
-                )
-                // Top vertical line shadow
-                drawLine(
-                    color = shadowColor,
-                    start = Offset(oneNinthWidth, oneThirdHeight),
-                    end = Offset(oneNinthWidth, midHeight),
-                    strokeWidth = shadowStrokeWidth,
-                    cap = StrokeCap.Round
-                )
-                // Bottom vertical line shadow
-                drawLine(
-                    color = shadowColor,
-                    start = Offset(oneNinthWidth, midHeight),
-                    end = Offset(oneNinthWidth, twoThirdsHeight),
-                    strokeWidth = shadowStrokeWidth,
-                    cap = StrokeCap.Round
-                )
-
-                // These are the main lines of the scale bar.
-
-                // Middle horizontal line
-                drawLine(
-                    color = lineColor,
-                    start = Offset(oneNinthWidth, midHeight),
-                    end = Offset(size.width, midHeight),
-                    strokeWidth = strokeWidth,
-                    cap = StrokeCap.Round
-                )
-                // Top vertical line
-                drawLine(
-                    color = lineColor,
-                    start = Offset(oneNinthWidth, oneThirdHeight),
-                    end = Offset(oneNinthWidth, midHeight),
-                    strokeWidth = strokeWidth,
-                    cap = StrokeCap.Round
-                )
-                // Bottom vertical line
-                drawLine(
-                    color = lineColor,
-                    start = Offset(oneNinthWidth, midHeight),
-                    end = Offset(oneNinthWidth, twoThirdsHeight),
-                    strokeWidth = strokeWidth,
-                    cap = StrokeCap.Round
-                )
-            }
+        // Middle horizontal line shadow
+        drawLine(
+          color = shadowColor,
+          start = Offset(oneNinthWidth, midHeight),
+          end = Offset(size.width, midHeight),
+          strokeWidth = shadowStrokeWidth,
+          cap = StrokeCap.Round
         )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceAround
-        ) {
-            // Here, we determine the appropriate units (meters/kilometers and feet/miles)
-            // based on the calculated distance in meters.
+        // Top vertical line shadow
+        drawLine(
+          color = shadowColor,
+          start = Offset(oneNinthWidth, oneThirdHeight),
+          end = Offset(oneNinthWidth, midHeight),
+          strokeWidth = shadowStrokeWidth,
+          cap = StrokeCap.Round
+        )
+        // Bottom vertical line shadow
+        drawLine(
+          color = shadowColor,
+          start = Offset(oneNinthWidth, midHeight),
+          end = Offset(oneNinthWidth, twoThirdsHeight),
+          strokeWidth = shadowStrokeWidth,
+          cap = StrokeCap.Round
+        )
 
-            var metricUnits = "m"
-            var metricDistance = horizontalLineWidthMeters
-            if (horizontalLineWidthMeters > METERS_IN_KILOMETER) {
-                // Switch from meters to kilometers as unit
-                metricUnits = "km"
-                metricDistance /= METERS_IN_KILOMETER.toInt()
-            }
+        // These are the main lines of the scale bar.
 
-            var imperialUnits = "ft"
-            var imperialDistance = horizontalLineWidthMeters.toDouble().toFeet()
-            if (imperialDistance > FEET_IN_MILE) {
-                // Switch from ft to miles as unit
-                imperialUnits = "mi"
-                imperialDistance = imperialDistance.toMiles()
-            }
+        // Middle horizontal line
+        drawLine(
+          color = lineColor,
+          start = Offset(oneNinthWidth, midHeight),
+          end = Offset(size.width, midHeight),
+          strokeWidth = strokeWidth,
+          cap = StrokeCap.Round
+        )
+        // Top vertical line
+        drawLine(
+          color = lineColor,
+          start = Offset(oneNinthWidth, oneThirdHeight),
+          end = Offset(oneNinthWidth, midHeight),
+          strokeWidth = strokeWidth,
+          cap = StrokeCap.Round
+        )
+        // Bottom vertical line
+        drawLine(
+          color = lineColor,
+          start = Offset(oneNinthWidth, midHeight),
+          end = Offset(oneNinthWidth, twoThirdsHeight),
+          strokeWidth = strokeWidth,
+          cap = StrokeCap.Round
+        )
+      }
+    )
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
+      // Here, we determine the appropriate units (meters/kilometers and feet/miles)
+      // based on the calculated distance in meters.
 
-            // We display the calculated distances in two Text composables, one for imperial
-            // and one for metric units.
-            ScaleText(
-                modifier = Modifier.align(End),
-                textColor = textColor,
-                shadowColor = shadowColor,
-                text = "${imperialDistance.toInt()} $imperialUnits"
-            )
-            ScaleText(
-                modifier = Modifier.align(End),
-                textColor = textColor,
-                shadowColor = shadowColor,
-                text = "$metricDistance $metricUnits"
-            )
-        }
+      var metricUnits = "m"
+      var metricDistance = horizontalLineWidthMeters
+      if (horizontalLineWidthMeters > METERS_IN_KILOMETER) {
+        // Switch from meters to kilometers as unit
+        metricUnits = "km"
+        metricDistance /= METERS_IN_KILOMETER.toInt()
+      }
+
+      var imperialUnits = "ft"
+      var imperialDistance = horizontalLineWidthMeters.toDouble().toFeet()
+      if (imperialDistance > FEET_IN_MILE) {
+        // Switch from ft to miles as unit
+        imperialUnits = "mi"
+        imperialDistance = imperialDistance.toMiles()
+      }
+
+      // We display the calculated distances in two Text composables, one for imperial
+      // and one for metric units.
+      ScaleText(
+        modifier = Modifier.align(End),
+        textColor = textColor,
+        shadowColor = shadowColor,
+        text = "${imperialDistance.toInt()} $imperialUnits"
+      )
+      ScaleText(
+        modifier = Modifier.align(End),
+        textColor = textColor,
+        shadowColor = shadowColor,
+        text = "$metricDistance $metricUnits"
+      )
     }
+  }
 }
 
 /**
@@ -235,91 +222,88 @@ public fun ScaleBar(
  */
 @Composable
 public fun DisappearingScaleBar(
-    modifier: Modifier = Modifier,
-    width: Dp = defaultWidth,
-    height: Dp = defaultHeight,
-    cameraPositionState: CameraPositionState,
-    textColor: Color = DarkGray,
-    lineColor: Color = DarkGray,
-    shadowColor: Color = Color.White,
-    visibilityDurationMillis: Int = 3_000,
-    enterTransition: EnterTransition = fadeIn(),
-    exitTransition: ExitTransition = fadeOut(),
+  modifier: Modifier = Modifier,
+  width: Dp = defaultWidth,
+  height: Dp = defaultHeight,
+  cameraPositionState: CameraPositionState,
+  textColor: Color = DarkGray,
+  lineColor: Color = DarkGray,
+  shadowColor: Color = Color.White,
+  visibilityDurationMillis: Int = 3_000,
+  enterTransition: EnterTransition = fadeIn(),
+  exitTransition: ExitTransition = fadeOut(),
 ) {
-    val visible = remember {
-        MutableTransitionState(true)
-    }
+  val visible = remember { MutableTransitionState(true) }
 
-    // This effect is re-launched every time the camera position changes.
-    //
-    // The effect itself makes the scale bar visible, waits for the specified duration,
-    // and then makes it invisible again. This creates the "disappearing" effect.
-    LaunchedEffect(key1 = cameraPositionState.position) {
-        visible.targetState = true
-        delay(visibilityDurationMillis.toLong())
-        visible.targetState = false
-    }
+  // This effect is re-launched every time the camera position changes.
+  //
+  // The effect itself makes the scale bar visible, waits for the specified duration,
+  // and then makes it invisible again. This creates the "disappearing" effect.
+  LaunchedEffect(key1 = cameraPositionState.position) {
+    visible.targetState = true
+    delay(visibilityDurationMillis.toLong())
+    visible.targetState = false
+  }
 
-    // `AnimatedVisibility` is a composable that animates the appearance and disappearance
-    // of its content. We are using it here to wrap the `ScaleBar` and provide the
-    // fade-in and fade-out animations.
-    AnimatedVisibility(
-        visibleState = visible,
-        modifier = modifier,
-        enter = enterTransition,
-        exit = exitTransition
-    ) {
-        ScaleBar(
-            width = width,
-            height = height,
-            cameraPositionState = cameraPositionState,
-            textColor = textColor,
-            lineColor = lineColor,
-            shadowColor = shadowColor
-        )
-    }
+  // `AnimatedVisibility` is a composable that animates the appearance and disappearance
+  // of its content. We are using it here to wrap the `ScaleBar` and provide the
+  // fade-in and fade-out animations.
+  AnimatedVisibility(
+    visibleState = visible,
+    modifier = modifier,
+    enter = enterTransition,
+    exit = exitTransition
+  ) {
+    ScaleBar(
+      width = width,
+      height = height,
+      cameraPositionState = cameraPositionState,
+      textColor = textColor,
+      lineColor = lineColor,
+      shadowColor = shadowColor
+    )
+  }
 }
 
 @Composable
 private fun ScaleText(
-    modifier: Modifier = Modifier,
-    text: String,
-    textColor: Color = DarkGray,
-    shadowColor: Color = Color.White,
+  modifier: Modifier = Modifier,
+  text: String,
+  textColor: Color = DarkGray,
+  shadowColor: Color = Color.White,
 ) {
-    Text(
-        text = text,
-        fontSize = 12.sp,
-        color = textColor,
-        textAlign = TextAlign.End,
-        lineHeight = 1.em,
-        modifier = modifier,
-        style = MaterialTheme.typography.h4.copy(
-            shadow = Shadow(
-                color = shadowColor,
-                offset = Offset(2f, 2f),
-                blurRadius = 1f
-            )
-        )
-    )
+  Text(
+    text = text,
+    fontSize = 12.sp,
+    color = textColor,
+    textAlign = TextAlign.End,
+    lineHeight = 1.em,
+    modifier = modifier,
+    style =
+      MaterialTheme.typography.h4.copy(
+        shadow = Shadow(color = shadowColor, offset = Offset(2f, 2f), blurRadius = 1f)
+      )
+  )
 }
 
 /**
- * Converts [this] value in meters to the corresponding value in feet.
- * This is a utility function used for unit conversion.
+ * Converts [this] value in meters to the corresponding value in feet. This is a utility function
+ * used for unit conversion.
+ *
  * @return [this] meters value converted to feet
  */
 internal fun Double.toFeet(): Double {
-    return this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
+  return this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
 }
 
 /**
- * Converts [this] value in feet to the corresponding value in miles.
- * This is a utility function used for unit conversion.
+ * Converts [this] value in feet to the corresponding value in miles. This is a utility function
+ * used for unit conversion.
+ *
  * @return [this] feet value converted to miles
  */
 internal fun Double.toMiles(): Double {
-    return this / FEET_IN_MILE
+  return this / FEET_IN_MILE
 }
 
 private const val CENTIMETERS_IN_METER: Double = 100.0

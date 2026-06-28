@@ -21,7 +21,8 @@ import com.google.maps.android.compose.CameraMoveStartedReason.UNKNOWN
 /**
  * Enumerates the different reasons why the map camera started to move.
  *
- * Based on enum values from https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener#constants.
+ * Based on enum values from
+ * https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener#constants.
  *
  * [NO_MOVEMENT_YET] is used as the initial state before any map movement has been observed.
  *
@@ -31,22 +32,28 @@ import com.google.maps.android.compose.CameraMoveStartedReason.UNKNOWN
  */
 @Immutable
 public enum class CameraMoveStartedReason(public val value: Int) {
-    UNKNOWN(-2),
-    NO_MOVEMENT_YET(-1),
-    GESTURE(com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE),
-    API_ANIMATION(com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_API_ANIMATION),
-    DEVELOPER_ANIMATION(com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION);
+  UNKNOWN(-2),
+  NO_MOVEMENT_YET(-1),
+  GESTURE(com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE),
+  API_ANIMATION(
+    com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_API_ANIMATION
+  ),
+  DEVELOPER_ANIMATION(
+    com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION
+  );
 
-    public companion object {
-        /**
-         * Converts from the Maps SDK [com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener]
-         * constants to [CameraMoveStartedReason], or returns [UNKNOWN] if there is no such
-         * [CameraMoveStartedReason] for the given [value].
-         *
-         * See https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener#constants.
-         */
-        public fun fromInt(value: Int): CameraMoveStartedReason {
-            return values().firstOrNull { it.value == value } ?: return UNKNOWN
-        }
+  public companion object {
+    /**
+     * Converts from the Maps SDK
+     * [com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener] constants to
+     * [CameraMoveStartedReason], or returns [UNKNOWN] if there is no such [CameraMoveStartedReason]
+     * for the given [value].
+     *
+     * See
+     * https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnCameraMoveStartedListener#constants.
+     */
+    public fun fromInt(value: Int): CameraMoveStartedReason {
+      return values().firstOrNull { it.value == value } ?: return UNKNOWN
     }
+  }
 }

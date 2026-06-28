@@ -42,54 +42,51 @@ import kotlinx.coroutines.launch
 
 class LiteModeActivity : ComponentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MapsComposeSampleTheme {
-                val singapore = remember { LatLng(1.35, 103.87) }
-                val tokyo = remember { LatLng(35.6895, 139.6917) }
-                val coroutineScope = rememberCoroutineScope()
-                val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(singapore, 11f)
-                }
-                val mapProperties by remember {
-                    mutableStateOf(MapProperties(mapType = MapType.NORMAL))
-                }
-
-                Column(
-                    modifier = Modifier.fillMaxSize().systemBarsPadding()
-                ) {
-                    Button(
-                        onClick = {
-                            coroutineScope.launch {
-                                // This would previously hang indefinitely in Lite Mode!
-                                // Now it falls back to instantaneous movement and completes the coroutine.
-                                val newTarget = if (cameraPositionState.position.target == singapore) {
-                                    tokyo
-                                } else {
-                                    singapore
-                                }
-                                cameraPositionState.animate(CameraUpdateFactory.newLatLng(newTarget))
-                            }
-                        },
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text("Animate Camera (Tests Fix)")
-                    }
-
-                    Box(
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        GoogleMap(
-                            modifier = Modifier.matchParentSize(),
-                            googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
-                            cameraPositionState = cameraPositionState,
-                            properties = mapProperties,
-                        )
-                    }
-                }
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      MapsComposeSampleTheme {
+        val singapore = remember { LatLng(1.35, 103.87) }
+        val tokyo = remember { LatLng(35.6895, 139.6917) }
+        val coroutineScope = rememberCoroutineScope()
+        val cameraPositionState = rememberCameraPositionState {
+          position = CameraPosition.fromLatLngZoom(singapore, 11f)
         }
+        val mapProperties by remember { mutableStateOf(MapProperties(mapType = MapType.NORMAL)) }
+
+        Column(modifier = Modifier.fillMaxSize().systemBarsPadding()) {
+          Button(
+            onClick = {
+              coroutineScope.launch {
+                // This would previously hang indefinitely in Lite Mode!
+                // Now it falls back to instantaneous movement and completes the coroutine.
+                val newTarget =
+                  if (cameraPositionState.position.target == singapore) {
+                    tokyo
+                  } else {
+                    singapore
+                  }
+                cameraPositionState.animate(CameraUpdateFactory.newLatLng(newTarget))
+              }
+            },
+            modifier = Modifier.padding(16.dp)
+          ) {
+            Text("Animate Camera (Tests Fix)")
+          }
+
+          Box(
+            modifier = Modifier.weight(1f),
+          ) {
+            GoogleMap(
+              modifier = Modifier.matchParentSize(),
+              googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
+              cameraPositionState = cameraPositionState,
+              properties = mapProperties,
+            )
+          }
+        }
+      }
     }
+  }
 }

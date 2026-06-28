@@ -24,13 +24,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
 import com.google.maps.android.ktx.addCircle
 
-internal class CircleNode(
-    val circle: Circle,
-    var onCircleClick: (Circle) -> Unit
-) : MapNode {
-    override fun onRemoved() {
-        circle.remove()
-    }
+internal class CircleNode(val circle: Circle, var onCircleClick: (Circle) -> Unit) : MapNode {
+  override fun onRemoved() {
+    circle.remove()
+  }
 }
 
 /**
@@ -42,7 +39,7 @@ internal class CircleNode(
  * @param radius the radius of the circle in meters.
  * @param strokeColor the stroke color of the circle
  * @param strokePattern a sequence of [PatternItem] to be repeated along the circle's outline (null
- * represents a solid line)
+ *   represents a solid line)
  * @param tag optional tag to be associated with the circle
  * @param strokeWidth the width of the circle's outline in screen pixels
  * @param visible the visibility of the circle
@@ -52,48 +49,49 @@ internal class CircleNode(
 @Composable
 @GoogleMapComposable
 public fun Circle(
-    center: LatLng,
-    clickable: Boolean = false,
-    fillColor: Color = Color.Black,
-    radius: Double = 10.0,
-    strokeColor: Color = Color.Black,
-    strokePattern: List<PatternItem>? = null,
-    strokeWidth: Float = 10f,
-    tag: Any? = null,
-    visible: Boolean = true,
-    zIndex: Float = 0f,
-    onClick: (Circle) -> Unit = {},
+  center: LatLng,
+  clickable: Boolean = false,
+  fillColor: Color = Color.Black,
+  radius: Double = 10.0,
+  strokeColor: Color = Color.Black,
+  strokePattern: List<PatternItem>? = null,
+  strokeWidth: Float = 10f,
+  tag: Any? = null,
+  visible: Boolean = true,
+  zIndex: Float = 0f,
+  onClick: (Circle) -> Unit = {},
 ) {
-    val mapApplier = currentComposer.applier as? MapApplier
-    ComposeNode<CircleNode, MapApplier>(
-        factory = {
-            val circle = mapApplier?.map?.addCircle {
-                center(center)
-                clickable(clickable)
-                fillColor(fillColor.toArgb())
-                radius(radius)
-                strokeColor(strokeColor.toArgb())
-                strokePattern(strokePattern)
-                strokeWidth(strokeWidth)
-                visible(visible)
-                zIndex(zIndex)
-            } ?: error("Error adding circle")
-            circle.tag = tag
-            CircleNode(circle, onClick)
-        },
-        update = {
-            update(onClick) { this.onCircleClick = it }
+  val mapApplier = currentComposer.applier as? MapApplier
+  ComposeNode<CircleNode, MapApplier>(
+    factory = {
+      val circle =
+        mapApplier?.map?.addCircle {
+          center(center)
+          clickable(clickable)
+          fillColor(fillColor.toArgb())
+          radius(radius)
+          strokeColor(strokeColor.toArgb())
+          strokePattern(strokePattern)
+          strokeWidth(strokeWidth)
+          visible(visible)
+          zIndex(zIndex)
+        } ?: error("Error adding circle")
+      circle.tag = tag
+      CircleNode(circle, onClick)
+    },
+    update = {
+      update(onClick) { this.onCircleClick = it }
 
-            update(center) { this.circle.center = it }
-            update(clickable) { this.circle.isClickable = it }
-            update(fillColor) { this.circle.fillColor = it.toArgb() }
-            update(radius) { this.circle.radius = it }
-            update(strokeColor) { this.circle.strokeColor = it.toArgb() }
-            update(strokePattern) { this.circle.strokePattern = it }
-            update(strokeWidth) { this.circle.strokeWidth = it }
-            update(tag) { this.circle.tag = it }
-            update(visible) { this.circle.isVisible = it }
-            update(zIndex) { this.circle.zIndex = it }
-        }
-    )
+      update(center) { this.circle.center = it }
+      update(clickable) { this.circle.isClickable = it }
+      update(fillColor) { this.circle.fillColor = it.toArgb() }
+      update(radius) { this.circle.radius = it }
+      update(strokeColor) { this.circle.strokeColor = it.toArgb() }
+      update(strokePattern) { this.circle.strokePattern = it }
+      update(strokeWidth) { this.circle.strokeWidth = it }
+      update(tag) { this.circle.tag = it }
+      update(visible) { this.circle.isVisible = it }
+      update(zIndex) { this.circle.zIndex = it }
+    }
+  )
 }
