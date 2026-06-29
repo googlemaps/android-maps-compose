@@ -29,6 +29,10 @@ import com.google.android.gms.maps.model.LatLng
 import org.junit.Rule
 import org.junit.Test
 
+/**
+ * Verifies keyboard focus traversal behavior for [GoogleMap] when integrated
+ * inside Compose layouts, ensuring the map behaves as a single focus stop.
+ */
 class GoogleMapFocusTraversalTests {
     @get:Rule
     val composeTestRule = createComposeRule()
