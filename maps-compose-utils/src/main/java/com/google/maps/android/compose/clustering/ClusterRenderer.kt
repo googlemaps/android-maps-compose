@@ -42,6 +42,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.ComposeUiViewRenderer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -50,6 +51,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
 internal interface ClusterRendererItemState<T : ClusterItem> {
     val unclusteredItems: State<Set<T>>
@@ -88,6 +93,15 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             currentState = Lifecycle.State.RESUMED
         }
         override val lifecycle: Lifecycle get() = lifecycleRegistry
+    }
+
+    private val fakeSavedStateRegistryOwner = object : SavedStateRegistryOwner {
+        private val controller = SavedStateRegistryController.create(this).apply {
+            performAttach()
+            performRestore(null)
+        }
+        override val savedStateRegistry: SavedStateRegistry get() = controller.savedStateRegistry
+        override val lifecycle: Lifecycle get() = fakeLifecycleOwner.lifecycle
     }
 
     override fun onClustersChanged(clusters: Set<Cluster<T>>) {
@@ -149,6 +163,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             }
         )
         view.setViewTreeLifecycleOwner(fakeLifecycleOwner)
+        view.setViewTreeSavedStateRegistryOwner(fakeSavedStateRegistryOwner)
         val renderHandle = viewRendererState.value.startRenderingView(view)
         val rerenderJob = scope.launch {
             collectInvalidationsAndRerender(key, view)
@@ -212,6 +227,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     }
 
     override fun getDescriptorForCluster(cluster: Cluster<T>): BitmapDescriptor {
+        if (!scope.isActive) return super.getDescriptorForCluster(cluster)
         return if (clusterContentState.value != null) {
             val viewInfo = keysToViews.entries
                 .firstOrNull { (key, _) -> (key as? ViewKey.Cluster)?.cluster == cluster }
@@ -231,6 +247,8 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
     override fun onBeforeClusterItemRendered(item: T, markerOptions: MarkerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions)
+
+        if (!scope.isActive) return
 
         if (clusterItemContentState.value != null) {
             val viewInfo = keysToViews.entries
