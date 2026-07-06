@@ -29,10 +29,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 import kotlin.random.Random
+import kotlinx.coroutines.launch
 
 private const val TAG = "RecompositionActivity"
 
@@ -71,7 +74,7 @@ class RecompositionActivity : ComponentActivity() {
         content: @Composable () -> Unit = {},
     ) {
         val markerState = rememberUpdatedMarkerState(position = singapore)
-
+        val coroutineScope = rememberCoroutineScope()
         val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
         val mapProperties by remember {
             mutableStateOf(MapProperties(mapType = MapType.NORMAL))
@@ -107,12 +110,19 @@ class RecompositionActivity : ComponentActivity() {
             Column {
                 Button(onClick = {
                     val randomValue = Random.nextInt(3)
-                    markerState.position = when (randomValue) {
+                    val newPosition =  when (randomValue) {
                         0 -> singapore
                         1 -> singapore2
                         2 -> singapore3
                         else -> singapore
                     }
+                    markerState.position = newPosition
+                    coroutineScope.launch {
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLngZoom(newPosition, 11f)
+                        )
+                    }
+
                 }) {
                     Text("Change Location")
                 }
