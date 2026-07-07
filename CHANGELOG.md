@@ -1,5 +1,13 @@
 # Changelog
 
+## [8.3.1](https://github.com/googlemaps/android-maps-compose/compare/v8.3.0...v8.3.1) (2026-07-07)
+
+
+### Bug Fixes
+
+* keep maps as single tab focus targets ([#935](https://github.com/googlemaps/android-maps-compose/issues/935)) ([2f5b340](https://github.com/googlemaps/android-maps-compose/commit/2f5b340db673a8fc13826b32aed4dc506e312972))
+* toggle map color scheme from system state ([#933](https://github.com/googlemaps/android-maps-compose/issues/933)) ([ec1276c](https://github.com/googlemaps/android-maps-compose/commit/ec1276c44d3ac732ceaa6108540cd669d1360581))
+
 ## [8.3.0](https://github.com/googlemaps/android-maps-compose/compare/v8.2.2...v8.3.0) (2026-04-09)
 
 

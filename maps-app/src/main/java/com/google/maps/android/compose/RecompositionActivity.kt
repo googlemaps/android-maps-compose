@@ -29,12 +29,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
-import kotlin.random.Random
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 private const val TAG = "RecompositionActivity"
+private val singaporeLocations = listOf(singapore, singapore2, singapore3)
 
 /**
  * This is a sample activity showcasing how the recomposition works. The location is changed
@@ -71,11 +76,11 @@ class RecompositionActivity : ComponentActivity() {
         content: @Composable () -> Unit = {},
     ) {
         val markerState = rememberUpdatedMarkerState(position = singapore)
+        val coroutineScope = rememberCoroutineScope()
+        var animationJob by remember { mutableStateOf<Job?>(null) }
 
-        val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
-        val mapProperties by remember {
-            mutableStateOf(MapProperties(mapType = MapType.NORMAL))
-        }
+        val uiSettings = remember { MapUiSettings(compassEnabled = false) }
+        val mapProperties = remember { MapProperties(mapType = MapType.NORMAL) }
 
         val mapVisible by remember { mutableStateOf(true) }
         if (mapVisible) {
@@ -88,12 +93,14 @@ class RecompositionActivity : ComponentActivity() {
                     Log.d(TAG, "POI clicked: ${it.name}")
                 }
             ) {
-                val markerClick: (Marker) -> Boolean = {
-                    Log.d(TAG, "${it.title} was clicked")
-                    cameraPositionState.projection?.let { projection ->
-                        Log.d(TAG, "The current projection is: $projection")
+                val markerClick: (Marker) -> Boolean = remember(cameraPositionState) {
+                    { marker ->
+                        Log.d(TAG, "${marker.title} was clicked")
+                        cameraPositionState.projection?.let { projection ->
+                            Log.d(TAG, "The current projection is: $projection")
+                        }
+                        false
                     }
-                    false
                 }
 
                 Marker(
@@ -106,12 +113,13 @@ class RecompositionActivity : ComponentActivity() {
             }
             Column {
                 Button(onClick = {
-                    val randomValue = Random.nextInt(3)
-                    markerState.position = when (randomValue) {
-                        0 -> singapore
-                        1 -> singapore2
-                        2 -> singapore3
-                        else -> singapore
+                    val newPosition = (singaporeLocations - markerState.position).random()
+                    markerState.position = newPosition
+                    animationJob?.cancel()
+                    animationJob = coroutineScope.launch {
+                        cameraPositionState.animate(
+                            CameraUpdateFactory.newLatLng(newPosition)
+                        )
                     }
                 }) {
                     Text("Change Location")
