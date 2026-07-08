@@ -1,1 +1,1 @@
-sourceset_dependencies = '{":maps-compose-utils/debug":[],":maps-compose-utils/main":[],":maps-compose-utils/release":[],":maps-compose/debug":[],":maps-compose/main":[],":maps-compose/release":[],":maps-compose-widgets/debug":[],":maps-compose-widgets/main":[],":maps-compose-widgets/release":[]}'
+sourceset_dependencies = '{":maps-compose-utils/release":[],":maps-compose-widgets/release":[]}'
