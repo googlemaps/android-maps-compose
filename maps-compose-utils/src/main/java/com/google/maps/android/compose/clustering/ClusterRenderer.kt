@@ -16,6 +16,8 @@
 
 package com.google.maps.android.compose.clustering
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 
@@ -320,10 +322,10 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
         @Composable
         override fun Content() {
-            androidx.compose.runtime.LaunchedEffect(properties.anchor, properties.zIndex, properties.rotation) {
+            LaunchedEffect(properties.anchor, properties.zIndex, properties.rotation) {
                 invalidate()
             }
-            androidx.compose.runtime.CompositionLocalProvider(
+            CompositionLocalProvider(
                 LocalClusteringMarkerProperties provides properties
             ) {
                 content()
