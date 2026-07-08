@@ -77,6 +77,8 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     private val clusterItemContentAnchorState: State<Offset>,
     private val clusterContentZIndexState: State<Float>,
     private val clusterItemContentZIndexState: State<Float>,
+    private val clusterContentRotationState: State<Float>,
+    private val clusterItemContentRotationState: State<Float>,
 ) : DefaultClusterRenderer<T>(
     context,
     map,
@@ -211,6 +213,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                     setIcon(renderViewToBitmapDescriptor(view))
                     view.properties.anchor?.let { setAnchor(it.x, it.y) }
                     view.properties.zIndex?.let { zIndex = it }
+                    view.properties.rotation?.let { rotation = it }
                 }
             }
 
@@ -223,6 +226,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             val anchor = clusterContentAnchorState.value
             markerOptions.anchor(anchor.x, anchor.y)
             markerOptions.zIndex(clusterContentZIndexState.value)
+            markerOptions.rotation(clusterContentRotationState.value)
         }
     }
 
@@ -260,6 +264,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             val anchor = clusterItemContentAnchorState.value
             markerOptions.anchor(anchor.x, anchor.y)
             markerOptions.zIndex(clusterItemContentZIndexState.value)
+            markerOptions.rotation(clusterItemContentRotationState.value)
         }
     }
 
@@ -315,7 +320,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
         @Composable
         override fun Content() {
-            androidx.compose.runtime.LaunchedEffect(properties.anchor, properties.zIndex) {
+            androidx.compose.runtime.LaunchedEffect(properties.anchor, properties.zIndex, properties.rotation) {
                 invalidate()
             }
             androidx.compose.runtime.CompositionLocalProvider(

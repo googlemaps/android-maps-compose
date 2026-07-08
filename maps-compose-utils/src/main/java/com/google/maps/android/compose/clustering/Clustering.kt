@@ -58,6 +58,8 @@ public class ClusteringMarkerProperties {
         internal set
     public var zIndex: Float? by mutableStateOf(null)
         internal set
+    public var rotation: Float? by mutableStateOf(null)
+        internal set
 }
 
 /**
@@ -74,16 +76,20 @@ public val LocalClusteringMarkerProperties: androidx.compose.runtime.ProvidableC
  * [Clustering] will be used.
  * @param zIndex the z-index of the marker. If null, the default z-index specified in [Clustering]
  * will be used.
+ * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point.
+ * If null, the default rotation specified in [Clustering] will be used.
  */
 @Composable
 public fun ClusteringMarkerProperties(
     anchor: Offset? = null,
     zIndex: Float? = null,
+    rotation: Float? = null,
 ) {
     val properties = LocalClusteringMarkerProperties.current
     SideEffect {
         properties.anchor = anchor
         properties.zIndex = zIndex
+        properties.rotation = rotation
     }
 }
 
@@ -103,6 +109,8 @@ public fun ClusteringMarkerProperties(
  * @param clusterItemContentAnchor the anchor for the non-clustered item image
  * @param clusterContentZIndex the z-index of the cluster
  * @param clusterItemContentZIndex the z-index of the non-clustered item
+ * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
+ * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
  * @param clusterRenderer an optional ClusterRenderer that can be used to specify the algorithm used by the rendering.
  */
 @Composable
@@ -150,6 +158,8 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
     clusterContentZIndex: Float = 0.0f,
     clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
     clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
 ) {
@@ -160,6 +170,8 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentAnchor,
         clusterContentZIndex,
         clusterItemContentZIndex,
+        clusterContentRotation,
+        clusterItemContentRotation,
         clusterRenderer
     ) ?: return
 
@@ -193,6 +205,8 @@ public fun <T : ClusterItem> Clustering(
  * @param clusterItemContentAnchor the anchor for the non-clustered item image
  * @param clusterContentZIndex the z-index of the cluster
  * @param clusterItemContentZIndex the z-index of the non-clustered item
+ * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
+ * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
  */
 @Composable
 @GoogleMapComposable
@@ -209,6 +223,8 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
     clusterContentZIndex: Float = 0.0f,
     clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
     clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
 ) {
     Clustering(
@@ -223,6 +239,8 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentAnchor = clusterItemContentAnchor,
         clusterContentZIndex = clusterContentZIndex,
         clusterItemContentZIndex = clusterItemContentZIndex,
+        clusterContentRotation = clusterContentRotation,
+        clusterItemContentRotation = clusterItemContentRotation,
         clusterItemDecoration = clusterItemDecoration,
         onClusterManager = null,
     )
@@ -244,6 +262,8 @@ public fun <T : ClusterItem> Clustering(
  * @param clusterItemContentAnchor the anchor for the non-clustered item image
  * @param clusterContentZIndex the z-index of the cluster
  * @param clusterItemContentZIndex the z-index of the non-clustered item
+ * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
+ * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
  * @param onClusterManager an optional lambda invoked with the clusterManager as a param when both
  * the clusterManager and renderer are set up, allowing callers a customization hook.
  */
@@ -262,6 +282,8 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
     clusterContentZIndex: Float = 0.0f,
     clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
     clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ) {
@@ -273,6 +295,8 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentAnchor,
         clusterContentZIndex,
         clusterItemContentZIndex,
+        clusterContentRotation,
+        clusterItemContentRotation,
         clusterManager
     )
 
@@ -404,6 +428,8 @@ public fun <T : ClusterItem> rememberClusterRenderer(
  * @param clusterItemContentAnchor the anchor for the non-clustered item image
  * @param clusterContentZIndex the z-index of the cluster
  * @param clusterItemContentZIndex the z-index of the non-clustered item
+ * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
+ * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
  */
 @Composable
 @GoogleMapComposable
@@ -415,6 +441,8 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
     clusterContentZIndex: Float = 0.0f,
     clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
     clusterManager: ClusterManager<T>?,
 ): ClusterRenderer<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
@@ -423,6 +451,8 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     val clusterItemContentAnchorState = rememberUpdatedState(clusterItemContentAnchor)
     val clusterContentZIndexState = rememberUpdatedState(clusterContentZIndex)
     val clusterItemContentZIndexState = rememberUpdatedState(clusterItemContentZIndex)
+    val clusterContentRotationState = rememberUpdatedState(clusterContentRotation)
+    val clusterItemContentRotationState = rememberUpdatedState(clusterItemContentRotation)
     val context = LocalContext.current
     val viewRendererState = rememberUpdatedState(rememberComposeUiViewRenderer())
     val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
@@ -441,6 +471,8 @@ public fun <T : ClusterItem> rememberClusterRenderer(
             clusterItemContentAnchorState,
             clusterContentZIndexState,
             clusterItemContentZIndexState,
+            clusterContentRotationState,
+            clusterItemContentRotationState,
         )
         clusterRendererState.value = renderer
         awaitCancellation()
@@ -469,6 +501,8 @@ private fun <T : ClusterItem> rememberClusterManager(
     clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
     clusterContentZIndex: Float = 0.0f,
     clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
 ): ClusterManager<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
@@ -477,6 +511,8 @@ private fun <T : ClusterItem> rememberClusterManager(
     val clusterItemContentAnchorState = rememberUpdatedState(clusterItemContentAnchor)
     val clusterContentZIndexState = rememberUpdatedState(clusterContentZIndex)
     val clusterItemContentZIndexState = rememberUpdatedState(clusterItemContentZIndex)
+    val clusterContentRotationState = rememberUpdatedState(clusterContentRotation)
+    val clusterItemContentRotationState = rememberUpdatedState(clusterItemContentRotation)
     val context = LocalContext.current
     val viewRendererState = rememberUpdatedState(rememberComposeUiViewRenderer())
     val clusterManagerState: MutableState<ClusterManager<T>?> = remember { mutableStateOf(null) }
@@ -502,6 +538,8 @@ private fun <T : ClusterItem> rememberClusterManager(
                                 clusterItemContentAnchorState,
                                 clusterContentZIndexState,
                                 clusterItemContentZIndexState,
+                                clusterContentRotationState,
+                                clusterItemContentRotationState,
                             )
                         } else {
                             ReportingDefaultClusterRenderer(context, map, clusterManager)
