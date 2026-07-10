@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.maps.android.compose.markerexamples.AdvancedMarkersActivity
 import com.google.maps.android.compose.markerexamples.MarkerClusteringActivity
+import com.google.maps.android.compose.markerexamples.MarkerClusteringRotationActivity
 import com.google.maps.android.compose.markerexamples.draggablemarkerscollectionwithpolygon.DraggableMarkersCollectionWithPolygonActivity
 import com.google.maps.android.compose.markerexamples.markerdragevents.MarkerDragEventsActivity
 import com.google.maps.android.compose.markerexamples.markerscollection.MarkersCollectionActivity
@@ -141,6 +142,11 @@ sealed class ActivityGroup(
                 R.string.marker_clustering_activity,
                 R.string.marker_clustering_activity_description,
                 MarkerClusteringActivity::class
+            ),
+            Activity(
+                R.string.marker_clustering_rotation_activity,
+                R.string.marker_clustering_rotation_activity_description,
+                MarkerClusteringRotationActivity::class
             ),
             Activity(
                 R.string.marker_drag_events_activity,
