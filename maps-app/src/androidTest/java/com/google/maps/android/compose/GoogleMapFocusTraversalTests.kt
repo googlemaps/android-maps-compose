@@ -16,11 +16,11 @@
 
 package com.google.maps.android.compose
 
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.platform.testTag
@@ -93,18 +93,27 @@ class GoogleMapFocusTraversalTests {
 
         composeTestRule.setContent {
             Column {
-                Button(onClick = {}, modifier = Modifier.testTag("Button1")) {
-                    Text("Button 1")
-                }
+                // Plain focusable() elements are used instead of Buttons because
+                // clickable-based components only accept focus in keyboard mode,
+                // and the test starts in touch mode.
+                Box(
+                    Modifier
+                        .testTag("Item1")
+                        .size(48.dp)
+                        .focusable()
+                )
                 GoogleMap(
                     modifier = Modifier
                         .testTag("Map")
                         .size(200.dp),
                     focusable = false,
                 )
-                Button(onClick = {}, modifier = Modifier.testTag("Button2")) {
-                    Text("Button 2")
-                }
+                Box(
+                    Modifier
+                        .testTag("Item2")
+                        .size(48.dp)
+                        .focusable()
+                )
             }
         }
 
@@ -117,13 +126,13 @@ class GoogleMapFocusTraversalTests {
                 .isNotEmpty()
         }
 
-        composeTestRule.onNodeWithTag("Button1").requestFocus()
-        composeTestRule.onNodeWithTag("Button1").assertIsFocused()
+        composeTestRule.onNodeWithTag("Item1").requestFocus()
+        composeTestRule.onNodeWithTag("Item1").assertIsFocused()
 
-        composeTestRule.onNodeWithTag("Button1").performKeyInput {
+        composeTestRule.onNodeWithTag("Item1").performKeyInput {
             pressKey(Key.Tab)
         }
 
-        composeTestRule.onNodeWithTag("Button2").assertIsFocused()
+        composeTestRule.onNodeWithTag("Item2").assertIsFocused()
     }
 }
