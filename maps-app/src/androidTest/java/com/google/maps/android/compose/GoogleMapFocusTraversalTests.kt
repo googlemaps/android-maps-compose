@@ -91,7 +91,6 @@ class GoogleMapFocusTraversalTests {
     fun nonFocusableMapIsSkippedDuringTabTraversal() {
         check(hasValidApiKey) { "Maps API key not specified" }
 
-        var mapLoaded = false
         composeTestRule.setContent {
             Column {
                 Button(onClick = {}, modifier = Modifier.testTag("Button1")) {
@@ -102,7 +101,6 @@ class GoogleMapFocusTraversalTests {
                         .testTag("Map")
                         .size(200.dp),
                     focusable = false,
-                    onMapLoaded = { mapLoaded = true },
                 )
                 Button(onClick = {}, modifier = Modifier.testTag("Button2")) {
                     Text("Button 2")
@@ -110,7 +108,14 @@ class GoogleMapFocusTraversalTests {
             }
         }
 
-        composeTestRule.waitUntil(timeoutMillis = 5_000) { mapLoaded }
+        // Focus traversal only requires the view hierarchy to be composed and attached,
+        // not the map tiles to have loaded.
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule
+                .onAllNodesWithTag("Map", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
 
         composeTestRule.onNodeWithTag("Button1").requestFocus()
         composeTestRule.onNodeWithTag("Button1").assertIsFocused()
