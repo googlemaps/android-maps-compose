@@ -64,6 +64,10 @@ import kotlinx.coroutines.launch
  *
  * @param modifier Modifier to be applied to the GoogleMap
  * @param mergeDescendants deactivates the map for accessibility purposes
+ * @param focusable whether the map participates in keyboard focus traversal. When true (the
+ * default), the map acts as a single focus stop so keyboard users can reach and control it. Set
+ * to false to remove the map from focus traversal entirely, e.g. when the map is used as a
+ * decorative background behind other focusable content.
  * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
  * camera state
  * @param contentDescription the content description for the map used by accessibility services to
@@ -88,6 +92,7 @@ import kotlinx.coroutines.launch
 public fun GoogleMap(
     modifier: Modifier = Modifier,
     mergeDescendants: Boolean = false,
+    focusable: Boolean = true,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     contentDescription: String? = null,
     googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
@@ -153,18 +158,14 @@ public fun GoogleMap(
 
         AndroidView(
             // Make the AndroidView wrapper focusable in Compose so the Compose focus
-            // system can target it during tab traversal.
-            modifier = modifier.focusable(),
+            // system can target it during tab traversal, unless the caller opted the map
+            // out of focus traversal entirely.
+            modifier = if (focusable) modifier.focusable() else modifier,
             factory = { context ->
                 val options = googleMapOptionsFactory()
                 cameraPositionState.isLiteMode = options.liteMode == true
                 mapViewFactory(context, options).also { mapView ->
-                    // Treat the MapView as a single focus stop. FOCUS_BEFORE_DESCENDANTS
-                    // ensures the map container gets focused first, and prevents the keyboard
-                    // focus from tabbing through all internal map elements (like zoom buttons
-                    // or the Google logo) by default.
-                    mapView.isFocusable = true
-                    mapView.descendantFocusability = ViewGroup.FOCUS_BEFORE_DESCENDANTS
+                    mapView.applyFocusability(focusable)
 
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
@@ -215,6 +216,7 @@ public fun GoogleMap(
                 mapView.tag = null
             },
             update = { mapView ->
+                mapView.applyFocusability(focusable)
                 if (subcompositionJob == null) {
                     subcompositionJob = parentCompositionScope.launchSubcomposition(
                         mapUpdaterState,
@@ -225,6 +227,23 @@ public fun GoogleMap(
                     )
                 }
             })
+}
+
+/**
+ * When [focusable] is true, treat the MapView as a single focus stop.
+ * FOCUS_BEFORE_DESCENDANTS ensures the map container gets focused first, and prevents the
+ * keyboard focus from tabbing through all internal map elements (like zoom buttons or the
+ * Google logo) by default.
+ * When [focusable] is false, remove the map and all of its internal elements from keyboard
+ * focus traversal altogether.
+ */
+private fun MapView.applyFocusability(focusable: Boolean) {
+    isFocusable = focusable
+    descendantFocusability = if (focusable) {
+        ViewGroup.FOCUS_BEFORE_DESCENDANTS
+    } else {
+        ViewGroup.FOCUS_BLOCK_DESCENDANTS
+    }
 }
 
 /**

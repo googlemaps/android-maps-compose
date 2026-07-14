@@ -16,15 +16,23 @@
 
 package com.google.maps.android.compose
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.pressKey
 import androidx.compose.ui.test.requestFocus
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Rule
 import org.junit.Test
@@ -76,5 +84,41 @@ class GoogleMapFocusTraversalTests {
         }
 
         visibleMaps[1].assertIsFocused()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun nonFocusableMapIsSkippedDuringTabTraversal() {
+        check(hasValidApiKey) { "Maps API key not specified" }
+
+        var mapLoaded = false
+        composeTestRule.setContent {
+            Column {
+                Button(onClick = {}, modifier = Modifier.testTag("Button1")) {
+                    Text("Button 1")
+                }
+                GoogleMap(
+                    modifier = Modifier
+                        .testTag("Map")
+                        .size(200.dp),
+                    focusable = false,
+                    onMapLoaded = { mapLoaded = true },
+                )
+                Button(onClick = {}, modifier = Modifier.testTag("Button2")) {
+                    Text("Button 2")
+                }
+            }
+        }
+
+        composeTestRule.waitUntil(timeoutMillis = 5_000) { mapLoaded }
+
+        composeTestRule.onNodeWithTag("Button1").requestFocus()
+        composeTestRule.onNodeWithTag("Button1").assertIsFocused()
+
+        composeTestRule.onNodeWithTag("Button1").performKeyInput {
+            pressKey(Key.Tab)
+        }
+
+        composeTestRule.onNodeWithTag("Button2").assertIsFocused()
     }
 }
