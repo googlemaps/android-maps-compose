@@ -27,7 +27,7 @@ materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
-mapsktx = "6.0.1"
+mapsktx = "7.0.0-rc1"
 
 # Testing
 androidCore = "1.7.0"
