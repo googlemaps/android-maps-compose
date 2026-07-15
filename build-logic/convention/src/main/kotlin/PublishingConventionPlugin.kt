@@ -85,7 +85,9 @@ class PublishingConventionPlugin : Plugin<Project> {
             )
 
             publishToMavenCentral()
-            signAllPublications()
+            if (project.hasProperty("signing.keyId") && project.property("signing.keyId").toString().isNotEmpty()) {
+                signAllPublications()
+            }
 
             pom {
                 name.set(project.name)
