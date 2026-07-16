@@ -10,7 +10,7 @@ androidTargetSdk = "37"
 agp = "9.2.1"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.36.0"
-kotlin = "2.4.0"
+kotlin = "2.4.10"
 kotlinxCoroutines = "1.11.0"
 
 # Android
