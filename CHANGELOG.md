@@ -1,5 +1,20 @@
 # Changelog
 
+## [8.4.0](https://github.com/googlemaps/android-maps-compose/compare/v8.3.1...v8.4.0) (2026-07-16)
+
+
+### Features
+
+* add rotation support to cluster item API ([#943](https://github.com/googlemaps/android-maps-compose/issues/943)) ([3430231](https://github.com/googlemaps/android-maps-compose/commit/343023171d583a52426cc53513e264e8ccbfa788))
+* allow GoogleMap to opt out of keyboard focus traversal ([#945](https://github.com/googlemaps/android-maps-compose/issues/945)) ([7049991](https://github.com/googlemaps/android-maps-compose/commit/7049991755f26dfc251ca5075de3bef93673902c))
+
+
+### Bug Fixes
+
+* **deps:** update dependencies across android-maps-compose ([d4064c7](https://github.com/googlemaps/android-maps-compose/commit/d4064c7307f2a970ce63f4856073a43cc476e400))
+* keep ComposeView attached while info window is shown for compose-ui 1.10+ compat ([#931](https://github.com/googlemaps/android-maps-compose/issues/931)) ([995ff38](https://github.com/googlemaps/android-maps-compose/commit/995ff3822e98df2707e9e5f2b43339d6cee27517))
+* prevent ComposeUiClusterRenderer crash on fast back gesture with compose-ui 1.10+ ([#930](https://github.com/googlemaps/android-maps-compose/issues/930)) ([3882afa](https://github.com/googlemaps/android-maps-compose/commit/3882afa582fda77b08c50587b4192f6205309cf0))
+
 ## [8.3.1](https://github.com/googlemaps/android-maps-compose/compare/v8.3.0...v8.3.1) (2026-07-07)
 
 
