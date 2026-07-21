@@ -207,6 +207,22 @@ class GoogleMapViewTests {
         }
     }
 
+    @Test
+    fun testCameraZoomLevels() {
+        assertThat(cameraPositionState.minZoomLevel).isNull()
+        assertThat(cameraPositionState.maxZoomLevel).isNull()
+
+        initMap()
+
+        composeTestRule.runOnUiThread {
+            val minZoomLevel = cameraPositionState.minZoomLevel
+            val maxZoomLevel = cameraPositionState.maxZoomLevel
+            assertThat(minZoomLevel).isNotNull()
+            assertThat(maxZoomLevel).isNotNull()
+            assertThat(minZoomLevel!!).isAtMost(maxZoomLevel!!)
+        }
+    }
+
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateCannotBeReused() {
         initMap {
