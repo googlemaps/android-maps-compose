@@ -51,7 +51,7 @@ jobs:
       run: ./gradlew assembleDebug
 
     - name: Run instrumentation tests
-      uses: reactivecircus/android-emulator-runner@c9c93e6ba9c4194322e114c40970d5983d9a07cc # v2.38.0
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
       with:
         api-level: 29
         target: google_apis
@@ -73,9 +73,12 @@ jobs:
         update-comment: true
 
     - name: Get the Coverage info
+      env:
+        COVERAGE_OVERALL: ${{ steps.jacoco.outputs.coverage-overall }}
+        COVERAGE_CHANGED_FILES: ${{ steps.jacoco.outputs.coverage-changed-files }}
       run: |
-            echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
-            echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
+            echo "Total coverage $COVERAGE_OVERALL"
+            echo "Changed Files coverage $COVERAGE_CHANGED_FILES"
 
     - name: Upload test reports
       if: always()
