@@ -199,7 +199,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     private fun createAndAddView(key: ViewKey<T>): ViewInfo {
         val view = InvalidatingComposeView(
             context,
-            getRotation = {
+            getRotationOverride = {
                 when (key) {
                     is ViewKey.Cluster -> clusterContentRotationState.value
                     is ViewKey.Item -> clusterItemContentRotationState.value
@@ -381,7 +381,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
      */
     private class InvalidatingComposeView(
         context: Context,
-        private val getRotation: () -> Float,
+        private val getRotationOverride: () -> Float,
         private val getAnchor: () -> Offset,
         private val getZIndex: () -> Float,
         private val content: @Composable () -> Unit,
@@ -392,7 +392,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
         @Composable
         override fun Content() {
-            val rotation = getRotation()
+            val rotation = getRotationOverride()
             val anchor = getAnchor()
             val zIndex = getZIndex()
             LaunchedEffect(properties.anchor, properties.zIndex, properties.rotation, rotation, anchor, zIndex) {
