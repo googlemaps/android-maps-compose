@@ -24,7 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.StateFactoryMarker
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileProvider
-import com.google.maps.android.ktx.addTileOverlay
+import com.google.maps.android.addTileOverlay
 
 private class TileOverlayNode(
     var tileOverlay: TileOverlay,

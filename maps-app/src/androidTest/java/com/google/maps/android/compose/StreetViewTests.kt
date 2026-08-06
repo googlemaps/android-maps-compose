@@ -24,7 +24,7 @@ import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.compose.streetview.StreetViewCameraPositionState
-import com.google.maps.android.ktx.MapsExperimentalFeature
+import com.google.maps.android.MapsExperimentalFeature
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
