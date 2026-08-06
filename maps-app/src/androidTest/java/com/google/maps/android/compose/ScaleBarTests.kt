@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.widgets.ScaleBar
-import com.google.maps.android.ktx.utils.sphericalDistance
+import com.google.maps.android.sphericalDistance
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Rule
