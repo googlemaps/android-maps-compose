@@ -383,20 +383,8 @@ private enum class ClusteringType {
 }
 
 data class MyItem(
-    val itemPosition: LatLng,
-    val itemTitle: String,
-    val itemSnippet: String,
-    val itemZIndex: Float,
-) : ClusterItem {
-    override fun getPosition(): LatLng =
-        itemPosition
-
-    override fun getTitle(): String =
-        itemTitle
-
-    override fun getSnippet(): String =
-        itemSnippet
-
-    override fun getZIndex(): Float =
-        itemZIndex
-}
+    override val position: LatLng,
+    override val title: String,
+    override val snippet: String,
+    override val zIndex: Float,
+) : ClusterItem

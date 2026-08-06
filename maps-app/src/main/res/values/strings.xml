@@ -45,6 +45,9 @@
   <string name="marker_clustering_activity">Marker Clustering</string>
   <string name="marker_clustering_activity_description">Clustering markers on your map.</string>
 
+  <string name="marker_clustering_rotation_activity">Marker Clustering Rotation</string>
+  <string name="marker_clustering_rotation_activity_description">Customizing rotation angle of clustered and non-clustered items.</string>
+
   <string name="marker_drag_events_activity">Marker Drag Events</string>
   <string name="marker_drag_events_activity_description">Listening to marker drag events.</string>
 
