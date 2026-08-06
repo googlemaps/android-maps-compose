@@ -7,18 +7,18 @@ androidCompileSdk = "37"
 androidMinSdk = "23"
 androidTargetSdk = "37"
 
-agp = "9.2.1"
+agp = "9.3.1"
 dokka = "2.2.0"
-gradleMavenPublishPlugin = "0.36.0"
-kotlin = "2.3.21"
-kotlinxCoroutines = "1.10.2"
+gradleMavenPublishPlugin = "0.37.0"
+kotlin = "2.4.10"
+kotlinxCoroutines = "1.11.0"
 
 # Android
 activitycompose = "1.13.0"
-androidx-core = "1.18.0"
+androidx-core = "1.19.0"
 androidx-startup = "1.2.0"
-compose-bom = "2026.03.00"
-constraintlayout = "2.2.1"
+compose-bom = "2026.06.01"
+constraintlayout = "2.2.2"
 
 # Material
 material = "1.14.0"
@@ -27,7 +27,7 @@ materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
-mapsktx = "6.0.1"
+mapsktx = "6.2.0"
 
 # Testing
 androidCore = "1.7.0"
@@ -36,8 +36,8 @@ espresso = "3.7.0"
 junit = "4.13.2"
 junitktx = "1.3.0"
 leakcanaryAndroid = "2.14"
-mockk = "1.14.9"
-org-jacoco-core = "0.8.14"
+mockk = "1.14.11"
+org-jacoco-core = "0.8.15"
 jacoco-plugin = "0.2.1"
 robolectric = "4.16.1"
 screenshot = "0.0.1-alpha14"

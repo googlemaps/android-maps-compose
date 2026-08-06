@@ -34,10 +34,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.x'
 
@@ -72,3 +72,25 @@ jobs:
           done
           # Remove 'triage me' label
           gh issue edit "$ISSUE_NUMBER" --remove-label "triage me" || true
+
+      - name: Generate Answer with Gemini
+        if: github.event_name == 'workflow_dispatch' || github.event.action == 'opened'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ISSUE_TITLE: ${{ github.event.issue.title || github.event.inputs.title }}
+          ISSUE_BODY: ${{ github.event.issue.body || github.event.inputs.body }}
+        run: |
+          python .github/scripts/answer_issue.py
+
+      - name: Post Answer Comment
+        if: (github.event_name == 'workflow_dispatch' || github.event.action == 'opened') && hashFiles('issue_response.md') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || 'mock' }}
+        run: |
+          if [ "$ISSUE_NUMBER" != "mock" ]; then
+            gh issue comment "$ISSUE_NUMBER" -F issue_response.md
+          else
+            echo "Mock run. Generated response is:"
+            cat issue_response.md
+          fi

@@ -63,9 +63,17 @@ class PublishingConventionPlugin : Plugin<Project> {
              val mainSrc = "${layout.projectDirectory}/src/main/java"
              sourceDirectories.setFrom(files(mainSrc))
              
-             // Class directories - we need to point to where Kotlin compiles to
-             val debugTree = fileTree("${layout.buildDirectory.get()}/tmp/kotlin-classes/debug")
-             classDirectories.setFrom(files(debugTree))
+             // Class directories - AGP 9's built-in Kotlin compiler outputs to
+             // intermediates/built_in_kotlinc/, not the legacy tmp/kotlin-classes/ path.
+             classDirectories.setFrom(
+                 fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug")) {
+                     include("**/classes/**")
+                 },
+                 fileTree(layout.buildDirectory.dir("intermediates/javac/debug")) {
+                     include("**/classes/**")
+                     exclude("**/R.class", "**/R\$*.class", "**/BuildConfig.class")
+                 }
+             )
              
              // Execution data from the unit test task
              executionData.setFrom(fileTree(layout.buildDirectory.get()) {
