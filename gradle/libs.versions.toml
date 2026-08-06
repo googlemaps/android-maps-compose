@@ -29,7 +29,7 @@ materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
-mapsktx = "6.4.1"
+mapsutils = "6.0.0-rc03"
 
 # Testing
 androidCore = "1.7.0"
@@ -72,8 +72,8 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3", 
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 # Google Maps Platform
-maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "mapsktx" }
-maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsktx" }
+maps-utils-core = { module = "com.google.maps.android:android-maps-utils-core", version.ref = "mapsutils" }
+maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsutils" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
 
 # Testing
