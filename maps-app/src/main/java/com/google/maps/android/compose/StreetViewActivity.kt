@@ -46,7 +46,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.Status
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.compose.streetview.rememberStreetViewCameraPositionState
-import com.google.maps.android.ktx.MapsExperimentalFeature
+import com.google.maps.android.MapsExperimentalFeature
 import kotlinx.coroutines.launch
 import com.google.maps.android.StreetViewUtils.Companion.fetchStreetViewData
 
