@@ -30,12 +30,12 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.dokka)
+    id("org.jetbrains.dokka") version "2.1.0"
     alias(libs.plugins.compose.compiler) apply false
-    alias(libs.plugins.dependency.analysis)
-    alias(libs.plugins.versions)
+    id("com.autonomousapps.dependency-analysis") version "3.4.1"
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+
 }
 
 val projectArtifactId by extra { project: Project ->
@@ -49,7 +49,7 @@ val projectArtifactId by extra { project: Project ->
 allprojects {
     group = "com.google.maps.android"
     // {x-release-please-start-version}
-    version = "8.6.0"
+    version = "9.0.0-rc02"
     // {x-release-please-end}
 }
 
