@@ -7,9 +7,9 @@ androidCompileSdk = "37"
 androidMinSdk = "23"
 androidTargetSdk = "37"
 
-agp = "9.2.1"
+agp = "9.3.1"
 dokka = "2.2.0"
-gradleMavenPublishPlugin = "0.36.0"
+gradleMavenPublishPlugin = "0.37.0"
 kotlin = "2.4.10"
 kotlinxCoroutines = "1.11.0"
 
@@ -18,16 +18,16 @@ activitycompose = "1.13.0"
 androidx-core = "1.19.0"
 androidx-startup = "1.2.0"
 compose-bom = "2026.06.01"
-constraintlayout = "2.2.1"
+constraintlayout = "2.2.2"
 
 # Material
-material = "1.13.0"
+material = "1.14.0"
 material3 = "1.4.0"
 materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
-mapsktx = "6.2.0"
+mapsktx = "6.3.0"
 
 # Testing
 androidCore = "1.7.0"
