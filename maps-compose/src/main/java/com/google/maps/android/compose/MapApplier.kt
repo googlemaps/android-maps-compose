@@ -125,15 +125,7 @@ internal class MapApplier(
                 inputHandlerCallback = { onInfoWindowClick }
             )
         }
-        val composeInfoWindowAdapter = ComposeInfoWindowAdapter(
-            mapView,
-            markerNodeFinder = { marker ->
-                decorations.firstOrNull { it is MarkerNode && it.marker == marker }
-                        as MarkerNode?
-            }
-        )
         map.setOnInfoWindowCloseListener { marker ->
-            composeInfoWindowAdapter.disposeForMarker(marker)
             decorations.findInputCallback<MarkerNode, Marker, Unit>(
                 nodeMatchPredicate = { it.marker == marker },
                 marker = marker,
@@ -217,7 +209,15 @@ internal class MapApplier(
                 )
             }
         })
-        map.setInfoWindowAdapter(composeInfoWindowAdapter)
+        map.setInfoWindowAdapter(
+            ComposeInfoWindowAdapter(
+                mapView,
+                markerNodeFinder = { marker ->
+                    decorations.firstOrNull { it is MarkerNode && it.marker == marker }
+                            as MarkerNode?
+                }
+            )
+        )
     }
 }
 

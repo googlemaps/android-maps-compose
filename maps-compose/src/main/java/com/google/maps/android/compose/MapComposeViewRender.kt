@@ -17,6 +17,7 @@
 package com.google.maps.android.compose
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,9 @@ import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.ui.platform.AbstractComposeView
+import androidx.compose.ui.platform.ComposeView
+import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.MapView
 import java.io.Closeable
 
@@ -45,6 +49,49 @@ internal fun MapView.renderComposeViewOnce(
     startRenderingComposeView(view, parentContext).use {
         onAddedToWindow?.invoke(view)
     }
+}
+
+private val unspecifiedMeasureSpec =
+    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+
+/**
+ * Renders [content] into a standalone [Bitmap] by temporarily attaching a [ComposeView] as a
+ * descendant of this [MapView], measuring, laying out and drawing it, then detaching it again.
+ *
+ * Unlike [startRenderingComposeView], the returned bitmap has no ties back to this [MapView] or
+ * its composition once this function returns, so it is safe to hand off to APIs (such as
+ * [com.google.android.gms.maps.GoogleMap.InfoWindowAdapter]) that take ownership of the view they
+ * receive and re-parent it into their own hierarchy — which would otherwise crash with
+ * "The specified child already has a parent" if handed a view still attached elsewhere.
+ */
+internal fun MapView.renderComposableToBitmap(
+    parentContext: CompositionContext,
+    content: @Composable () -> Unit,
+): Bitmap {
+    val containerView = ensureContainerView()
+    val composeView = ComposeView(context).apply {
+        layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+        )
+        setParentCompositionContext(parentContext)
+        setContent(content)
+    }
+    containerView.addView(composeView)
+
+    composeView.measure(unspecifiedMeasureSpec, unspecifiedMeasureSpec)
+    check(composeView.measuredWidth > 0 && composeView.measuredHeight > 0) {
+        "The info window content was measured to have a width or height of zero. " +
+            "Make sure that the content has a non-zero size."
+    }
+    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
+
+    val bitmap = createBitmap(composeView.measuredWidth, composeView.measuredHeight)
+    bitmap.applyCanvas { composeView.draw(this) }
+
+    containerView.removeView(composeView)
+
+    return bitmap
 }
 
 /**
