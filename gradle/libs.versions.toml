@@ -40,7 +40,7 @@ mockk = "1.14.11"
 org-jacoco-core = "0.8.15"
 jacoco-plugin = "0.2.1"
 robolectric = "4.16.1"
-screenshot = "0.0.1-alpha14"
+screenshot = "0.0.1-alpha16"
 truth = "1.4.5"
 
 [libraries]
