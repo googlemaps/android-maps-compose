@@ -71,8 +71,10 @@ jobs:
             README.md \
             llm-integration-prompt.md \
             .gemini/skills/android-maps-compose/SKILL.md
-          git commit -m "chore: release v${VERSION}"
-          git push origin "$BRANCH"
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: release v${VERSION}"
+            git push origin "$BRANCH"
+          fi
 
       - name: Tag and create pre-release
         env:
