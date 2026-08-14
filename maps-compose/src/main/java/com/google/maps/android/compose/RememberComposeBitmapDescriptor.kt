@@ -16,6 +16,7 @@
 
 package com.google.maps.android.compose
 
+import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
@@ -47,14 +48,24 @@ public fun rememberComposeBitmapDescriptor(
 }
 
 private val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+private val fakeCanvas = Canvas()
 
 private fun renderComposableToBitmapDescriptor(
     parent: ViewGroup,
     compositionContext: CompositionContext,
     content: @Composable () -> Unit,
 ): BitmapDescriptor {
+    // Host the throwaway rendering ComposeView on the window's root view rather than on `parent`
+    // directly. `parent` (LocalView.current) can itself be mid-attach with no Android layout pass
+    // performed on it yet -- e.g. when this is called from content composed inside a Clustering
+    // item, which is first composed while its own hosting view is still being attached to its
+    // parent. `setParentCompositionContext` keeps this composition correctly scoped to the
+    // surrounding composition regardless of which Android View it's physically parented under, so
+    // it's safe to use a different, already-laid-out ViewGroup as the Android host.
+    val host = parent.rootView as? ViewGroup ?: parent
+
     val composeView =
-        ComposeView(parent.context)
+        ComposeView(host.context)
             .apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -63,7 +74,11 @@ private fun renderComposableToBitmapDescriptor(
                 setParentCompositionContext(compositionContext)
                 setContent(content)
             }
-            .also(parent::addView)
+            .also(host::addView)
+
+    // AndroidComposeView triggers LayoutNode's layout phase in the View draw phase, so trigger a
+    // draw to an empty canvas to force that.
+    composeView.draw(fakeCanvas)
 
     composeView.measure(measureSpec, measureSpec)
 
@@ -79,7 +94,7 @@ private fun renderComposableToBitmapDescriptor(
 
     bitmap.applyCanvas { composeView.draw(this) }
 
-    parent.removeView(composeView)
+    host.removeView(composeView)
 
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
