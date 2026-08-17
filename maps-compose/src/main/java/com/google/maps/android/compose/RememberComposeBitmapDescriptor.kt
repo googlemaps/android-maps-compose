@@ -48,7 +48,6 @@ public fun rememberComposeBitmapDescriptor(
 }
 
 private val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-private val fakeCanvas = Canvas()
 
 private fun renderComposableToBitmapDescriptor(
     parent: ViewGroup,
@@ -63,6 +62,7 @@ private fun renderComposableToBitmapDescriptor(
     // surrounding composition regardless of which Android View it's physically parented under, so
     // it's safe to use a different, already-laid-out ViewGroup as the Android host.
     val host = parent.rootView as? ViewGroup ?: parent
+    val canvasOfHolding = Canvas()
 
     val composeView =
         ComposeView(host.context)
@@ -76,25 +76,29 @@ private fun renderComposableToBitmapDescriptor(
             }
             .also(host::addView)
 
-    // AndroidComposeView triggers LayoutNode's layout phase in the View draw phase, so trigger a
-    // draw to an empty canvas to force that.
-    composeView.draw(fakeCanvas)
+    try {
+        // AndroidComposeView triggers LayoutNode's layout phase in the View draw phase, so trigger a
+        // draw to an empty canvas to force that.
+        composeView.draw(canvasOfHolding)
 
-    composeView.measure(measureSpec, measureSpec)
+        composeView.measure(measureSpec, measureSpec)
 
-    if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
-        throw IllegalStateException("The ComposeView was measured to have a width or height of " +
-                "zero. Make sure that the content has a non-zero size.")
+        if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
+            throw IllegalStateException(
+                "The ComposeView was measured to have a width or height of zero. " +
+                    "Make sure that the content has a non-zero size."
+            )
+        }
+
+        composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
+
+        val bitmap =
+            createBitmap(composeView.measuredWidth, composeView.measuredHeight)
+
+        bitmap.applyCanvas { composeView.draw(this) }
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    } finally {
+        host.removeView(composeView)
     }
-
-    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
-
-    val bitmap =
-        createBitmap(composeView.measuredWidth, composeView.measuredHeight)
-
-    bitmap.applyCanvas { composeView.draw(this) }
-
-    host.removeView(composeView)
-
-    return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
