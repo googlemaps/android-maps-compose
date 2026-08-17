@@ -16,6 +16,7 @@
 
 package com.google.maps.android.compose
 
+import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
@@ -53,8 +54,18 @@ private fun renderComposableToBitmapDescriptor(
     compositionContext: CompositionContext,
     content: @Composable () -> Unit,
 ): BitmapDescriptor {
+    // Host the throwaway rendering ComposeView on the window's root view rather than on `parent`
+    // directly. `parent` (LocalView.current) can itself be mid-attach with no Android layout pass
+    // performed on it yet -- e.g. when this is called from content composed inside a Clustering
+    // item, which is first composed while its own hosting view is still being attached to its
+    // parent. `setParentCompositionContext` keeps this composition correctly scoped to the
+    // surrounding composition regardless of which Android View it's physically parented under, so
+    // it's safe to use a different, already-laid-out ViewGroup as the Android host.
+    val host = parent.rootView as? ViewGroup ?: parent
+    val canvasOfHolding = Canvas()
+
     val composeView =
-        ComposeView(parent.context)
+        ComposeView(host.context)
             .apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -63,23 +74,31 @@ private fun renderComposableToBitmapDescriptor(
                 setParentCompositionContext(compositionContext)
                 setContent(content)
             }
-            .also(parent::addView)
+            .also(host::addView)
 
-    composeView.measure(measureSpec, measureSpec)
+    try {
+        // AndroidComposeView triggers LayoutNode's layout phase in the View draw phase, so trigger a
+        // draw to an empty canvas to force that.
+        composeView.draw(canvasOfHolding)
 
-    if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
-        throw IllegalStateException("The ComposeView was measured to have a width or height of " +
-                "zero. Make sure that the content has a non-zero size.")
+        composeView.measure(measureSpec, measureSpec)
+
+        if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
+            throw IllegalStateException(
+                "The ComposeView was measured to have a width or height of zero. " +
+                    "Make sure that the content has a non-zero size."
+            )
+        }
+
+        composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
+
+        val bitmap =
+            createBitmap(composeView.measuredWidth, composeView.measuredHeight)
+
+        bitmap.applyCanvas { composeView.draw(this) }
+
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    } finally {
+        host.removeView(composeView)
     }
-
-    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
-
-    val bitmap =
-        createBitmap(composeView.measuredWidth, composeView.measuredHeight)
-
-    bitmap.applyCanvas { composeView.draw(this) }
-
-    parent.removeView(composeView)
-
-    return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
