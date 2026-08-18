@@ -62,8 +62,9 @@ public fun rememberComposeBitmapDescriptor(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                 )
+                alpha = 0f
                 setParentCompositionContext(compositionContext)
-                setContent(currentContent)
+                setContent { currentContent() }
             }
             .also(host::addView)
         onDispose {

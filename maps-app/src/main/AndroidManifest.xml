@@ -59,6 +59,9 @@
             android:name=".markerexamples.AdvancedMarkersActivity"
             android:exported="true" />
         <activity
+            android:name=".markerexamples.MarkerComposablePerformanceActivity"
+            android:exported="true" />
+        <activity
             android:name=".MapInColumnActivity"
             android:exported="true" />
         <activity
