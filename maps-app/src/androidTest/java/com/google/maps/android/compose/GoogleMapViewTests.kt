@@ -259,6 +259,49 @@ class GoogleMapViewTests {
         }
     }
 
+    @Test
+    fun testAdvancedMarkerInfoWindowContentDoesNotCrash() {
+        // Regression test for https://github.com/googlemaps/android-maps-compose/issues/822:
+        // AdvancedMarker didn't expose infoContent/infoWindow customization, even though the
+        // underlying implementation already supported it. Custom info window content is
+        // rendered to a bitmap by ComposeInfoWindowAdapter (not present in the Compose
+        // semantics tree), so this asserts the composable wires up and shows without crashing
+        // rather than asserting on-screen content.
+        lateinit var markerState: MarkerState
+
+        initMap {
+            markerState = rememberUpdatedMarkerState(position = startingPosition)
+            AdvancedMarkerInfoWindowContent(state = markerState) {
+                Text(text = "custom advanced marker info window")
+            }
+        }
+
+        composeTestRule.runOnUiThread {
+            markerState.showInfoWindow()
+        }
+        composeTestRule.waitForIdle()
+    }
+
+    @Test
+    fun testAdvancedMarkerInfoWindowDoesNotCrash() {
+        // Regression test for https://github.com/googlemaps/android-maps-compose/issues/822:
+        // see testAdvancedMarkerInfoWindowContentDoesNotCrash for why this doesn't assert
+        // on-screen content.
+        lateinit var markerState: MarkerState
+
+        initMap {
+            markerState = rememberUpdatedMarkerState(position = startingPosition)
+            AdvancedMarkerInfoWindow(state = markerState) {
+                Text(text = "custom advanced marker whole info window")
+            }
+        }
+
+        composeTestRule.runOnUiThread {
+            markerState.showInfoWindow()
+        }
+        composeTestRule.waitForIdle()
+    }
+
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateInsideMarkerInfoWindowComposableCannotBeReused() {
         initMap {
