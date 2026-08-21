@@ -162,7 +162,16 @@ public fun GoogleMap(
             // out of focus traversal entirely.
             modifier = if (focusable) modifier.focusable() else modifier,
             factory = { context ->
-                val options = googleMapOptionsFactory()
+                val options = googleMapOptionsFactory().let { opts ->
+                    // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
+                    // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
+                    // apply it to GoogleMapOptions so MapView is created with it.
+                    if (mapColorScheme != null && opts.mapColorScheme == 0) {
+                        opts.mapColorScheme(mapColorScheme.value)
+                    } else {
+                        opts
+                    }
+                }
                 cameraPositionState.isLiteMode = options.liteMode == true
                 mapViewFactory(context, options).also { mapView ->
                     mapView.applyFocusability(focusable)
