@@ -23,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
