@@ -27,8 +27,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapColorScheme
 import com.google.common.truth.Truth.assertThat
 import com.google.maps.android.compose.LatLngSubject.Companion.assertThat
 import kotlinx.coroutines.runBlocking
@@ -88,15 +91,51 @@ class GoogleMapViewTests {
 
     @Test
     fun testRightInitialColorScheme() {
-        initMap()
-        assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.FOLLOW_SYSTEM)
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
     }
 
     @Test
     fun testRightColorSchemeAfterChangingIt() {
-        mapColorScheme = ComposeMapColorScheme.DARK
-        initMap()
-        assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.DARK)
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                mapColorScheme = ComposeMapColorScheme.DARK,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+    }
+
+    @Test
+    fun testColorSchemeInOptionsNotOverwritten() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().mapColorScheme(MapColorScheme.DARK)
+                },
+                mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        // When googleMapOptionsFactory explicitly sets a color scheme (e.g. DARK), it should not be overwritten by mapColorScheme
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
     }
 
     @Test
