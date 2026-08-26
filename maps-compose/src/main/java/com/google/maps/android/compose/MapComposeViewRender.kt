@@ -63,11 +63,18 @@ private val unspecifiedMeasureSpec =
  * [com.google.android.gms.maps.GoogleMap.InfoWindowAdapter]) that take ownership of the view they
  * receive and re-parent it into their own hierarchy — which would otherwise crash with
  * "The specified child already has a parent" if handed a view still attached elsewhere.
+ *
+ * Returns `null` if this [MapView] is no longer attached to a window by the time [content] is
+ * measured. That happens when the Maps SDK's own async render request (which drives this call)
+ * lands after Compose has already unparented the [MapView] (e.g. `LazyColumn` recycling/detach):
+ * the composition never gets a real layout pass, so it measures to zero size. There's no info
+ * window worth rendering for a map that's already being torn down, so this is treated as "nothing
+ * to show" rather than an error.
  */
 internal fun MapView.renderComposableToBitmap(
     parentContext: CompositionContext,
     content: @Composable () -> Unit,
-): Bitmap {
+): Bitmap? {
     val containerView = ensureContainerView()
     val composeView = ComposeView(context).apply {
         layoutParams = ViewGroup.LayoutParams(
@@ -80,13 +87,21 @@ internal fun MapView.renderComposableToBitmap(
     containerView.addView(composeView)
 
     composeView.measure(unspecifiedMeasureSpec, unspecifiedMeasureSpec)
-    check(composeView.measuredWidth > 0 && composeView.measuredHeight > 0) {
-        "The info window content was measured to have a width or height of zero. " +
-            "Make sure that the content has a non-zero size."
-    }
-    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
+    val width = composeView.measuredWidth
+    val height = composeView.measuredHeight
 
-    val bitmap = createBitmap(composeView.measuredWidth, composeView.measuredHeight)
+    if (width <= 0 || height <= 0) {
+        containerView.removeView(composeView)
+        check(!isAttachedToWindow) {
+            "The info window content was measured to have a width or height of zero. " +
+                "Make sure that the content has a non-zero size."
+        }
+        return null
+    }
+
+    composeView.layout(0, 0, width, height)
+
+    val bitmap = createBitmap(width, height)
     bitmap.applyCanvas { composeView.draw(this) }
 
     containerView.removeView(composeView)
