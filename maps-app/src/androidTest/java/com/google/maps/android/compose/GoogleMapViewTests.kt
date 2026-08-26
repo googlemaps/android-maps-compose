@@ -183,9 +183,9 @@ class GoogleMapViewTests {
     fun testCameraZoomIn() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
-            }
+            // moveCamera() is synchronous, so onCameraMoveStarted/onCameraIdle can both
+            // fire before Compose observes the intermediate `isMoving = true` state.
+            // Only wait for the move to have settled before checking the result.
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
@@ -197,9 +197,9 @@ class GoogleMapViewTests {
     fun testCameraZoomOut() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = false) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
-            }
+            // moveCamera() is synchronous, so onCameraMoveStarted/onCameraIdle can both
+            // fire before Compose observes the intermediate `isMoving = true` state.
+            // Only wait for the move to have settled before checking the result.
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
