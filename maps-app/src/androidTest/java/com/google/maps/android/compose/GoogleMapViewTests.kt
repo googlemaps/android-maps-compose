@@ -40,6 +40,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 class GoogleMapViewTests {
     @get:Rule
@@ -183,13 +184,24 @@ class GoogleMapViewTests {
     fun testCameraZoomIn() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
-            // moveCamera() is synchronous, so onCameraMoveStarted/onCameraIdle can both
-            // fire before Compose observes the intermediate `isMoving = true` state.
-            // Only wait for the move to have settled before checking the result.
+            val expectedZoom = startingZoom + 1f
+            // Non-animated camera updates (CameraPositionState.move) execute synchronously via
+            // GoogleMap.moveCamera(). The Maps SDK fires OnCameraMoveStartedListener (setting
+            // isMoving = true) and OnCameraIdleListener (setting isMoving = false) in rapid succession.
+            //
+            // Because Compose test polling samples state across frames, polling for the transient
+            // `isMoving = true` state is flaky. Instead:
+            // 1. We first wait until the zoom transition has actually occurred.
+            // 2. We then wait for the camera to settle completely (!isMoving).
+            composeTestRule.waitUntil(timeout3) {
+                abs(cameraPositionState.position.zoom - expectedZoom) <= assertRoundingError
+            }
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(expectedZoom)
+
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom + 1f)
+            assertThat(cameraPositionState.isMoving).isFalse()
         }
     }
 
@@ -197,13 +209,24 @@ class GoogleMapViewTests {
     fun testCameraZoomOut() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = false) {
-            // moveCamera() is synchronous, so onCameraMoveStarted/onCameraIdle can both
-            // fire before Compose observes the intermediate `isMoving = true` state.
-            // Only wait for the move to have settled before checking the result.
+            val expectedZoom = startingZoom - 1f
+            // Non-animated camera updates (CameraPositionState.move) execute synchronously via
+            // GoogleMap.moveCamera(). The Maps SDK fires OnCameraMoveStartedListener (setting
+            // isMoving = true) and OnCameraIdleListener (setting isMoving = false) in rapid succession.
+            //
+            // Because Compose test polling samples state across frames, polling for the transient
+            // `isMoving = true` state is flaky. Instead:
+            // 1. We first wait until the zoom transition has actually occurred.
+            // 2. We then wait for the camera to settle completely (!isMoving).
+            composeTestRule.waitUntil(timeout3) {
+                abs(cameraPositionState.position.zoom - expectedZoom) <= assertRoundingError
+            }
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(expectedZoom)
+
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom - 1f)
+            assertThat(cameraPositionState.isMoving).isFalse()
         }
     }
 
