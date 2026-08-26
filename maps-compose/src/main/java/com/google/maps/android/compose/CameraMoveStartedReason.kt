@@ -14,8 +14,6 @@
 package com.google.maps.android.compose
 
 import androidx.compose.runtime.Immutable
-import com.google.maps.android.compose.CameraMoveStartedReason.Companion.fromInt
-import com.google.maps.android.compose.CameraMoveStartedReason.NO_MOVEMENT_YET
 import com.google.maps.android.compose.CameraMoveStartedReason.UNKNOWN
 
 /**
