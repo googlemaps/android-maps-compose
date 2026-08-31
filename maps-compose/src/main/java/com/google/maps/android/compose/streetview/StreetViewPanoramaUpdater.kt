@@ -39,11 +39,13 @@ internal class StreetViewPanoramaPropertiesNode(
         panorama.setOnStreetViewPanoramaLongClickListener {
             eventListeners.onLongClick(it)
         }
+        // Both Java listener interfaces lack @NonNull, so GMS can deliver null. Guard the
+        // assignments to prevent the Kotlin compiler's implicit null-check from crashing.
         panorama.setOnStreetViewPanoramaCameraChangeListener {
-            cameraPositionState.rawPanoramaCamera = it
+            it?.let { cameraPositionState.rawPanoramaCamera = it }
         }
         panorama.setOnStreetViewPanoramaChangeListener {
-            cameraPositionState.rawLocation = it
+            it?.let { cameraPositionState.rawLocation = it }
         }
     }
 

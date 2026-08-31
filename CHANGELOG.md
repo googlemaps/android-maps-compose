@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.5.0](https://github.com/googlemaps/android-maps-compose/compare/v8.4.0...v8.5.0) (2026-08-17)
+
+
+### Features
+
+* expose info window customization for advanced markers ([#965](https://github.com/googlemaps/android-maps-compose/issues/965)) ([4c65f8c](https://github.com/googlemaps/android-maps-compose/commit/4c65f8c05017fba36af2286b0114d9c3288802e8))
+
+
+### Bug Fixes
+
+* avoid re-parenting crash for MarkerInfoWindowContent/MarkerInfoWindowComposable ([#953](https://github.com/googlemaps/android-maps-compose/issues/953)) ([12f35a4](https://github.com/googlemaps/android-maps-compose/commit/12f35a4af2090265042c0bbab12084ce5c114f39))
+* avoid zero-size crash in rememberComposeBitmapDescriptor when used inside Clustering ([#963](https://github.com/googlemaps/android-maps-compose/issues/963)) ([11a2430](https://github.com/googlemaps/android-maps-compose/commit/11a2430291d263ad84ff73ca4d82ef2797cc7bd0))
+* rename InvalidatingComposeView getRotation param to avoid View shadowing ([#952](https://github.com/googlemaps/android-maps-compose/issues/952)) ([1d971cd](https://github.com/googlemaps/android-maps-compose/commit/1d971cd14fb7f708d246ae2b17836950538f1e56))
+
 ## [8.4.0](https://github.com/googlemaps/android-maps-compose/compare/v8.3.1...v8.4.0) (2026-07-16)
 
 

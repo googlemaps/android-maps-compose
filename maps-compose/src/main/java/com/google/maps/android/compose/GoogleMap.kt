@@ -43,7 +43,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.savedstate.compose.LocalSavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
@@ -117,6 +121,15 @@ public fun GoogleMap(
         return
     }
 
+    // The Maps SDK measures Compose info-window content from its own Handler, asynchronously.
+    // If that measure lands after Compose has unparented the MapView (e.g. on LazyColumn
+    // recycling), the info window's ComposeView can no longer resolve a ViewTreeLifecycleOwner
+    // via its ancestors, since that tag lives on this AndroidView's holder rather than on the
+    // MapView itself. Pinning the owners directly onto the MapView keeps them resolvable from
+    // its own subtree regardless of where Compose has parented it.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val savedStateRegistryOwner = LocalSavedStateRegistryOwner.current
+
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
     val mapClickListeners = remember { MapClickListeners() }.also {
@@ -162,10 +175,21 @@ public fun GoogleMap(
             // out of focus traversal entirely.
             modifier = if (focusable) modifier.focusable() else modifier,
             factory = { context ->
-                val options = googleMapOptionsFactory()
+                val options = googleMapOptionsFactory().let { opts ->
+                    // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
+                    // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
+                    // apply it to GoogleMapOptions so MapView is created with it.
+                    if (mapColorScheme != null && opts.mapColorScheme == 0) {
+                        opts.mapColorScheme(mapColorScheme.value)
+                    } else {
+                        opts
+                    }
+                }
                 cameraPositionState.isLiteMode = options.liteMode == true
                 mapViewFactory(context, options).also { mapView ->
                     mapView.applyFocusability(focusable)
+                    mapView.setViewTreeLifecycleOwner(lifecycleOwner)
+                    mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
 
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
@@ -217,6 +241,8 @@ public fun GoogleMap(
             },
             update = { mapView ->
                 mapView.applyFocusability(focusable)
+                mapView.setViewTreeLifecycleOwner(lifecycleOwner)
+                mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
                 if (subcompositionJob == null) {
                     subcompositionJob = parentCompositionScope.launchSubcomposition(
                         mapUpdaterState,

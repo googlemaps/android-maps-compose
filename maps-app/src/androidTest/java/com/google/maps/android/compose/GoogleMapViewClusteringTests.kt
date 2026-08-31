@@ -167,4 +167,39 @@ class GoogleMapViewClusteringTests {
             assertThat(marker.rotation).isEqualTo(180f)
         }
     }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusterItemContentUsingRememberComposeBitmapDescriptorDoesNotCrash() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val items = listOf(MyItem(startingPosition, "Item", "Snippet", 0f))
+
+        // Regression test for https://github.com/googlemaps/android-maps-compose/issues/694:
+        // rememberComposeBitmapDescriptor used to throw "measured to have a width or height of
+        // zero" when called from content composed inside Clustering's clusterItemContent,
+        // because its parent (InvalidatingComposeView) hadn't been through an Android layout
+        // pass yet at that point.
+        val marker = initMapAndGetMarker(clusterManagerHolder) {
+            Clustering(
+                items = items,
+                clusterItemContent = {
+                    rememberComposeBitmapDescriptor {
+                        Surface(modifier = Modifier.size(20.dp)) {
+                            Text("X")
+                        }
+                    }
+                    Surface(modifier = Modifier.size(20.dp)) {
+                        Text("X")
+                    }
+                },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                }
+            )
+        }
+
+        composeTestRule.runOnUiThread {
+            assertThat(marker.isVisible).isTrue()
+        }
+    }
 }

@@ -27,8 +27,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.gms.maps.GoogleMapOptions
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapColorScheme
 import com.google.common.truth.Truth.assertThat
 import com.google.maps.android.compose.LatLngSubject.Companion.assertThat
 import kotlinx.coroutines.runBlocking
@@ -37,6 +40,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 class GoogleMapViewTests {
     @get:Rule
@@ -88,15 +92,51 @@ class GoogleMapViewTests {
 
     @Test
     fun testRightInitialColorScheme() {
-        initMap()
-        assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.FOLLOW_SYSTEM)
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
     }
 
     @Test
     fun testRightColorSchemeAfterChangingIt() {
-        mapColorScheme = ComposeMapColorScheme.DARK
-        initMap()
-        assertThat(mapColorScheme).isEqualTo(ComposeMapColorScheme.DARK)
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                mapColorScheme = ComposeMapColorScheme.DARK,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+    }
+
+    @Test
+    fun testColorSchemeInOptionsNotOverwritten() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().mapColorScheme(MapColorScheme.DARK)
+                },
+                mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        // When googleMapOptionsFactory explicitly sets a color scheme (e.g. DARK), it should not be overwritten by mapColorScheme
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
     }
 
     @Test
@@ -144,13 +184,24 @@ class GoogleMapViewTests {
     fun testCameraZoomIn() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
+            val expectedZoom = startingZoom + 1f
+            // Non-animated camera updates (CameraPositionState.move) execute synchronously via
+            // GoogleMap.moveCamera(). The Maps SDK fires OnCameraMoveStartedListener (setting
+            // isMoving = true) and OnCameraIdleListener (setting isMoving = false) in rapid succession.
+            //
+            // Because Compose test polling samples state across frames, polling for the transient
+            // `isMoving = true` state is flaky. Instead:
+            // 1. We first wait until the zoom transition has actually occurred.
+            // 2. We then wait for the camera to settle completely (!isMoving).
+            composeTestRule.waitUntil(timeout3) {
+                abs(cameraPositionState.position.zoom - expectedZoom) <= assertRoundingError
             }
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(expectedZoom)
+
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom + 1f)
+            assertThat(cameraPositionState.isMoving).isFalse()
         }
     }
 
@@ -158,13 +209,24 @@ class GoogleMapViewTests {
     fun testCameraZoomOut() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = false) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
+            val expectedZoom = startingZoom - 1f
+            // Non-animated camera updates (CameraPositionState.move) execute synchronously via
+            // GoogleMap.moveCamera(). The Maps SDK fires OnCameraMoveStartedListener (setting
+            // isMoving = true) and OnCameraIdleListener (setting isMoving = false) in rapid succession.
+            //
+            // Because Compose test polling samples state across frames, polling for the transient
+            // `isMoving = true` state is flaky. Instead:
+            // 1. We first wait until the zoom transition has actually occurred.
+            // 2. We then wait for the camera to settle completely (!isMoving).
+            composeTestRule.waitUntil(timeout3) {
+                abs(cameraPositionState.position.zoom - expectedZoom) <= assertRoundingError
             }
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(expectedZoom)
+
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom - 1f)
+            assertThat(cameraPositionState.isMoving).isFalse()
         }
     }
 
@@ -207,6 +269,22 @@ class GoogleMapViewTests {
         }
     }
 
+    @Test
+    fun testCameraZoomLevels() {
+        assertThat(cameraPositionState.minZoomLevel).isNull()
+        assertThat(cameraPositionState.maxZoomLevel).isNull()
+
+        initMap()
+
+        composeTestRule.runOnUiThread {
+            val minZoomLevel = cameraPositionState.minZoomLevel
+            val maxZoomLevel = cameraPositionState.maxZoomLevel
+            assertThat(minZoomLevel).isNotNull()
+            assertThat(maxZoomLevel).isNotNull()
+            assertThat(minZoomLevel!!).isAtMost(maxZoomLevel!!)
+        }
+    }
+
     @Test(expected = IllegalStateException::class)
     fun testMarkerStateCannotBeReused() {
         initMap {
@@ -241,6 +319,49 @@ class GoogleMapViewTests {
                 }
             }
         }
+    }
+
+    @Test
+    fun testAdvancedMarkerInfoWindowContentDoesNotCrash() {
+        // Regression test for https://github.com/googlemaps/android-maps-compose/issues/822:
+        // AdvancedMarker didn't expose infoContent/infoWindow customization, even though the
+        // underlying implementation already supported it. Custom info window content is
+        // rendered to a bitmap by ComposeInfoWindowAdapter (not present in the Compose
+        // semantics tree), so this asserts the composable wires up and shows without crashing
+        // rather than asserting on-screen content.
+        lateinit var markerState: MarkerState
+
+        initMap {
+            markerState = rememberUpdatedMarkerState(position = startingPosition)
+            AdvancedMarkerInfoWindowContent(state = markerState) {
+                Text(text = "custom advanced marker info window")
+            }
+        }
+
+        composeTestRule.runOnUiThread {
+            markerState.showInfoWindow()
+        }
+        composeTestRule.waitForIdle()
+    }
+
+    @Test
+    fun testAdvancedMarkerInfoWindowDoesNotCrash() {
+        // Regression test for https://github.com/googlemaps/android-maps-compose/issues/822:
+        // see testAdvancedMarkerInfoWindowContentDoesNotCrash for why this doesn't assert
+        // on-screen content.
+        lateinit var markerState: MarkerState
+
+        initMap {
+            markerState = rememberUpdatedMarkerState(position = startingPosition)
+            AdvancedMarkerInfoWindow(state = markerState) {
+                Text(text = "custom advanced marker whole info window")
+            }
+        }
+
+        composeTestRule.runOnUiThread {
+            markerState.showInfoWindow()
+        }
+        composeTestRule.waitForIdle()
     }
 
     @Test(expected = IllegalStateException::class)
