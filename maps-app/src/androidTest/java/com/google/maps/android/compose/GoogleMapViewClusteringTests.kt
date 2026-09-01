@@ -80,12 +80,12 @@ class GoogleMapViewClusteringTests {
         composeTestRule.waitUntil(timeoutMillis = 10_000) {
             composeTestRule.runOnUiThread {
                 val cm = clusterManagerHolder[0]
-                cm != null && cm.markerCollection.markers.isNotEmpty()
+                cm != null && cm.markerCollection.getMarkers().isNotEmpty()
             }
         }
 
         return composeTestRule.runOnUiThread {
-            clusterManagerHolder[0]!!.markerCollection.markers.first()
+            clusterManagerHolder[0]!!.markerCollection.getMarkers().first()
         }
     }
 
