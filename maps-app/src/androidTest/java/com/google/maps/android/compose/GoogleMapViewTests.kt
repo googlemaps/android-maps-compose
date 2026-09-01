@@ -91,6 +91,35 @@ class GoogleMapViewTests {
     }
 
     @Test
+    fun testDefaultColorSchemeIsFollowSystem() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
+    }
+
+    @Test
+    fun testDefaultColorSchemeWithGoogleMapOptionsFactory() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = { GoogleMapOptions().liteMode(false) },
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
+    }
+
+    @Test
     fun testRightInitialColorScheme() {
         var capturedOptions: GoogleMapOptions? = null
         composeTestRule.setContent {
