@@ -7,7 +7,7 @@ androidCompileSdk = "37"
 androidMinSdk = "23"
 androidTargetSdk = "37"
 
-agp = "9.3.1"
+agp = "9.4.0"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.37.0"
 kotlin = "2.4.10"
@@ -28,6 +28,7 @@ materialIconsExtendedAndroid = "1.7.8"
 # Google Maps Platform
 mapsecrets = "2.0.1"
 mapsktx = "6.3.0"
+mapsutils = "5.2.0"
 
 # Testing
 androidCore = "1.7.0"
@@ -72,6 +73,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 # Google Maps Platform
 maps-ktx-std = { module = "com.google.maps.android:maps-ktx", version.ref = "mapsktx" }
 maps-ktx-utils = { module = "com.google.maps.android:maps-utils-ktx", version.ref = "mapsktx" }
+maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsutils" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
 
 # Testing
