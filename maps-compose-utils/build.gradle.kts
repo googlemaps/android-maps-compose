@@ -84,7 +84,6 @@ dependencies {
     implementation(libs.kotlin)
     implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.ktx.utils)
-    api(libs.maps.utils)
 
     testImplementation(libs.test.junit)
 }
