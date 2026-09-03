@@ -1,5 +1,20 @@
 # Changelog
 
+## [8.6.0](https://github.com/googlemaps/android-maps-compose/compare/v8.5.0...v8.6.0) (2026-09-03)
+
+
+### Features
+
+* expose map zoom limits ([#949](https://github.com/googlemaps/android-maps-compose/issues/949)) ([e0d4572](https://github.com/googlemaps/android-maps-compose/commit/e0d4572f8b4291e285fe529b8e500be10696c6d0))
+* **maps-compose:** default mapColorScheme to FOLLOW_SYSTEM in GoogleMap ([#986](https://github.com/googlemaps/android-maps-compose/issues/986)) ([5f1d438](https://github.com/googlemaps/android-maps-compose/commit/5f1d4382a8f67cf526f7a9b647f4c9babf0893b8))
+
+
+### Bug Fixes
+
+* guard against null in StreetView panorama change listeners ([#970](https://github.com/googlemaps/android-maps-compose/issues/970)) ([6147f75](https://github.com/googlemaps/android-maps-compose/commit/6147f75ba5d6e39b4a1fa8ae3b18acb50e2e1189))
+* **maps-compose:** apply mapColorScheme to GoogleMapOptions during MapView creation ([#976](https://github.com/googlemaps/android-maps-compose/issues/976)) ([7dec2b7](https://github.com/googlemaps/android-maps-compose/commit/7dec2b7a38260821970160373836bed126458d80))
+* pin ViewTreeLifecycleOwner/SavedStateRegistryOwner on MapView to prevent info window crash ([#972](https://github.com/googlemaps/android-maps-compose/issues/972)) ([4024515](https://github.com/googlemaps/android-maps-compose/commit/4024515b0fb3d7efd817104de619f336c6418a36))
+
 ## [8.5.0](https://github.com/googlemaps/android-maps-compose/compare/v8.4.0...v8.5.0) (2026-08-17)
 
 
