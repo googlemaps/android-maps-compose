@@ -7,17 +7,19 @@ androidCompileSdk = "37"
 androidMinSdk = "23"
 androidTargetSdk = "37"
 
-agp = "9.3.1"
+agp = "9.4.0"
+dependencyAnalysis = "3.19.1"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.37.0"
 kotlin = "2.4.10"
 kotlinxCoroutines = "1.11.0"
+versions = "0.61.0"
 
 # Android
 activitycompose = "1.13.0"
 androidx-core = "1.19.0"
 androidx-startup = "1.2.0"
-compose-bom = "2026.06.01"
+compose-bom = "2026.08.00"
 constraintlayout = "2.2.2"
 
 # Material
@@ -27,7 +29,7 @@ materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
-mapsktx = "6.3.0"
+mapsktx = "6.4.1"
 
 # Testing
 androidCore = "1.7.0"
@@ -95,6 +97,8 @@ truth = { module = "com.google.truth:truth", version.ref = "truth" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
