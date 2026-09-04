@@ -22,3 +22,8 @@ secrets.properties
 # This covers new IDEs, like Antigravity
 .vscode/
 build-logic/**/bin/
+
+# Python
+__pycache__/
+*.py[cod]
+
