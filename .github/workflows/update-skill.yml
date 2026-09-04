@@ -43,12 +43,15 @@ jobs:
           # Find the tag immediately preceding this one
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${GITHUB_REF_NAME}^ 2>/dev/null || echo "")
           
+          # Scope diff to code and build changes, excluding docs and workflows to reduce injection surface
+          DIFF_OPTS="-- . ':(exclude)*.md' ':(exclude).github' ':(exclude)*.txt' ':(exclude)*.png' ':(exclude)*.jpg'"
+          
           if [ -z "$PREVIOUS_TAG" ]; then
             # If no previous tag, diff against the initial commit
             INITIAL_COMMIT=$(git rev-list --max-parents=0 HEAD)
-            git diff $INITIAL_COMMIT..HEAD > release_diff.patch
+            eval git diff "$INITIAL_COMMIT..HEAD" $DIFF_OPTS > release_diff.patch
           else
-            git diff $PREVIOUS_TAG..$GITHUB_REF_NAME > release_diff.patch
+            eval git diff "$PREVIOUS_TAG..$GITHUB_REF_NAME" $DIFF_OPTS > release_diff.patch
           fi
           
       - name: Update Skill via Gemini
@@ -56,19 +59,20 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python .github/scripts/update_skill.py
-          rm release_diff.patch
+          rm -f release_diff.patch
         
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
           commit-message: "docs: update SKILL.md based on release ${{ github.ref_name }}"
-          author: googlemaps-bot <googlemaps-bot@google.com>
-          committer: googlemaps-bot <googlemaps-bot@google.com>
+          author: googlemaps-bot <googlemaps-bot@users.noreply.github.com>
+          committer: googlemaps-bot <googlemaps-bot@users.noreply.github.com>
           title: "docs: update SKILL.md for release ${{ github.ref_name }}"
-          body: "Automatically generated PR to update `SKILL.md` for the latest release `${{ github.ref_name }}`."
+          body: "Automatically generated draft PR to update `SKILL.md` for the latest release `${{ github.ref_name }}`. Requires maintainer review."
           branch: "update-skill-for-${{ github.ref_name }}"
           base: main
+          draft: true
+          reviewers: LoyalAbbas,kikoso
           labels: |
             docs
-            automerge
