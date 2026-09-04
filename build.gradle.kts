@@ -30,12 +30,12 @@ buildscript {
 }
 
 plugins {
-    alias(libs.plugins.dokka)
+    id("org.jetbrains.dokka") version "2.1.0"
     alias(libs.plugins.compose.compiler) apply false
-    alias(libs.plugins.dependency.analysis)
-    alias(libs.plugins.versions)
+    id("com.autonomousapps.dependency-analysis") version "3.4.1"
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+
 }
 
 val projectArtifactId by extra { project: Project ->
@@ -49,7 +49,7 @@ val projectArtifactId by extra { project: Project ->
 allprojects {
     group = "com.google.maps.android"
     // {x-release-please-start-version}
-    version = "8.6.0"
+    version = "9.0.0-rc02"
     // {x-release-please-end}
 }
 
@@ -58,4 +58,39 @@ tasks.register<Exec>("installAndLaunch") {
     group = "install"
     dependsOn(":maps-app:installDebug")
     commandLine("adb", "shell", "am", "start", "-n", "com.google.maps.android.compose/.MainActivity")
+}
+
+// What it does:
+// Scans all Kotlin source files across the project (excluding build directories) and replaces any
+// import references to "com.google.maps.android.ktx" with the canonical "com.google.maps.android" package.
+//
+// Why:
+// Starting in android-maps-utils v6.0.0-rc01, all Kotlin extensions, DSL builders, and coroutine
+// wrappers previously in android-maps-ktx were consolidated into android-maps-utils under the
+// canonical package "com.google.maps.android". The old "*.ktx.*" symbols are deprecated typealiases
+// and forwarding bridges. Migrating the imports removes compiler deprecation warnings and ensures
+// the Compose library depends directly on canonical core utilities.
+tasks.register("migrateKtxImports") {
+    description = "Updates Kotlin source files to drop the 'ktx' package segment from Google Maps Android imports."
+    group = "refactoring"
+    doLast {
+        val count = java.util.concurrent.atomic.AtomicInteger(0)
+        fileTree(projectDir) {
+            include("**/*.kt")
+            exclude("**/build/**")
+        }.forEach { file ->
+            val content = file.readText()
+            if (content.contains("com.google.maps.android.ktx")) {
+                val updated = content
+                    .replace("com.google.maps.android.ktx.utils.", "com.google.maps.android.")
+                    .replace("com.google.maps.android.ktx.", "com.google.maps.android.")
+                if (updated != content) {
+                    file.writeText(updated)
+                    count.incrementAndGet()
+                    println("Updated imports in: ${file.relativeTo(projectDir)}")
+                }
+            }
+        }
+        println("Migration complete. Updated ${count.get()} files.")
+    }
 }

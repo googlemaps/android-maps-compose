@@ -93,7 +93,9 @@ class PublishingConventionPlugin : Plugin<Project> {
             )
 
             publishToMavenCentral()
-            signAllPublications()
+            if (findProperty("signing.keyId")?.toString()?.isNotEmpty() == true || System.getenv("ORG_GRADLE_PROJECT_signingInMemoryKey") != null) {
+                signAllPublications()
+            }
 
             pom {
                 name.set(project.name)
