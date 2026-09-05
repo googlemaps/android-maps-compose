@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.google.maps.android.compose.markerexamples.AdvancedMarkersActivity
 import com.google.maps.android.compose.markerexamples.MarkerClusteringActivity
 import com.google.maps.android.compose.markerexamples.MarkerClusteringRotationActivity
+import com.google.maps.android.compose.markerexamples.MarkerComposablePerformanceActivity
 import com.google.maps.android.compose.markerexamples.draggablemarkerscollectionwithpolygon.DraggableMarkersCollectionWithPolygonActivity
 import com.google.maps.android.compose.markerexamples.markerdragevents.MarkerDragEventsActivity
 import com.google.maps.android.compose.markerexamples.markerscollection.MarkersCollectionActivity
@@ -172,6 +173,11 @@ sealed class ActivityGroup(
                 R.string.draggable_markers_collection_with_polygon_activity,
                 R.string.draggable_markers_collection_with_polygon_activity_description,
                 DraggableMarkersCollectionWithPolygonActivity::class
+            ),
+            Activity(
+                R.string.marker_composable_performance_activity,
+                R.string.marker_composable_performance_activity_description,
+                MarkerComposablePerformanceActivity::class
             ),
         )
     )
