@@ -68,10 +68,12 @@ kotlin {
                 implementation("org.jetbrains.compose.runtime:runtime:1.7.3")
                 implementation("org.jetbrains.compose.foundation:foundation:1.7.3")
                 implementation("org.jetbrains.compose.ui:ui:1.7.3")
-                // Multiplatform clustering from android-maps-utils; substituted with the
-                // local ../android-maps-utils composite build (see settings.gradle.kts).
-                api("com.google.maps.android:maps-model:5.2.0")
-                api("com.google.maps.android:clustering:5.2.0")
+                // Multiplatform clustering from android-maps-utils (KMP branch); resolved from
+                // mavenLocal or the composite build (see settings.gradle.kts). Uses the repo's
+                // public artifactIds so it conflict-resolves as the same module as the AAR that
+                // maps-compose-utils pulls from Maven Central instead of duplicating its classes.
+                api("com.google.maps.android:android-maps-utils-maps-model:5.2.0")
+                api("com.google.maps.android:android-maps-utils-clustering:5.2.0")
             }
         }
         androidMain {
