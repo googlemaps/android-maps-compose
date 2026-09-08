@@ -1,5 +1,57 @@
 # Changelog
 
+## [8.6.0](https://github.com/googlemaps/android-maps-compose/compare/v8.5.0...v8.6.0) (2026-09-03)
+
+
+### Features
+
+* expose map zoom limits ([#949](https://github.com/googlemaps/android-maps-compose/issues/949)) ([e0d4572](https://github.com/googlemaps/android-maps-compose/commit/e0d4572f8b4291e285fe529b8e500be10696c6d0))
+* **maps-compose:** default mapColorScheme to FOLLOW_SYSTEM in GoogleMap ([#986](https://github.com/googlemaps/android-maps-compose/issues/986)) ([5f1d438](https://github.com/googlemaps/android-maps-compose/commit/5f1d4382a8f67cf526f7a9b647f4c9babf0893b8))
+
+
+### Bug Fixes
+
+* guard against null in StreetView panorama change listeners ([#970](https://github.com/googlemaps/android-maps-compose/issues/970)) ([6147f75](https://github.com/googlemaps/android-maps-compose/commit/6147f75ba5d6e39b4a1fa8ae3b18acb50e2e1189))
+* **maps-compose:** apply mapColorScheme to GoogleMapOptions during MapView creation ([#976](https://github.com/googlemaps/android-maps-compose/issues/976)) ([7dec2b7](https://github.com/googlemaps/android-maps-compose/commit/7dec2b7a38260821970160373836bed126458d80))
+* pin ViewTreeLifecycleOwner/SavedStateRegistryOwner on MapView to prevent info window crash ([#972](https://github.com/googlemaps/android-maps-compose/issues/972)) ([4024515](https://github.com/googlemaps/android-maps-compose/commit/4024515b0fb3d7efd817104de619f336c6418a36))
+
+## [8.5.0](https://github.com/googlemaps/android-maps-compose/compare/v8.4.0...v8.5.0) (2026-08-17)
+
+
+### Features
+
+* expose info window customization for advanced markers ([#965](https://github.com/googlemaps/android-maps-compose/issues/965)) ([4c65f8c](https://github.com/googlemaps/android-maps-compose/commit/4c65f8c05017fba36af2286b0114d9c3288802e8))
+
+
+### Bug Fixes
+
+* avoid re-parenting crash for MarkerInfoWindowContent/MarkerInfoWindowComposable ([#953](https://github.com/googlemaps/android-maps-compose/issues/953)) ([12f35a4](https://github.com/googlemaps/android-maps-compose/commit/12f35a4af2090265042c0bbab12084ce5c114f39))
+* avoid zero-size crash in rememberComposeBitmapDescriptor when used inside Clustering ([#963](https://github.com/googlemaps/android-maps-compose/issues/963)) ([11a2430](https://github.com/googlemaps/android-maps-compose/commit/11a2430291d263ad84ff73ca4d82ef2797cc7bd0))
+* rename InvalidatingComposeView getRotation param to avoid View shadowing ([#952](https://github.com/googlemaps/android-maps-compose/issues/952)) ([1d971cd](https://github.com/googlemaps/android-maps-compose/commit/1d971cd14fb7f708d246ae2b17836950538f1e56))
+
+## [8.4.0](https://github.com/googlemaps/android-maps-compose/compare/v8.3.1...v8.4.0) (2026-07-16)
+
+
+### Features
+
+* add rotation support to cluster item API ([#943](https://github.com/googlemaps/android-maps-compose/issues/943)) ([3430231](https://github.com/googlemaps/android-maps-compose/commit/343023171d583a52426cc53513e264e8ccbfa788))
+* allow GoogleMap to opt out of keyboard focus traversal ([#945](https://github.com/googlemaps/android-maps-compose/issues/945)) ([7049991](https://github.com/googlemaps/android-maps-compose/commit/7049991755f26dfc251ca5075de3bef93673902c))
+
+
+### Bug Fixes
+
+* **deps:** update dependencies across android-maps-compose ([d4064c7](https://github.com/googlemaps/android-maps-compose/commit/d4064c7307f2a970ce63f4856073a43cc476e400))
+* keep ComposeView attached while info window is shown for compose-ui 1.10+ compat ([#931](https://github.com/googlemaps/android-maps-compose/issues/931)) ([995ff38](https://github.com/googlemaps/android-maps-compose/commit/995ff3822e98df2707e9e5f2b43339d6cee27517))
+* prevent ComposeUiClusterRenderer crash on fast back gesture with compose-ui 1.10+ ([#930](https://github.com/googlemaps/android-maps-compose/issues/930)) ([3882afa](https://github.com/googlemaps/android-maps-compose/commit/3882afa582fda77b08c50587b4192f6205309cf0))
+
+## [8.3.1](https://github.com/googlemaps/android-maps-compose/compare/v8.3.0...v8.3.1) (2026-07-07)
+
+
+### Bug Fixes
+
+* keep maps as single tab focus targets ([#935](https://github.com/googlemaps/android-maps-compose/issues/935)) ([2f5b340](https://github.com/googlemaps/android-maps-compose/commit/2f5b340db673a8fc13826b32aed4dc506e312972))
+* toggle map color scheme from system state ([#933](https://github.com/googlemaps/android-maps-compose/issues/933)) ([ec1276c](https://github.com/googlemaps/android-maps-compose/commit/ec1276c44d3ac732ceaa6108540cd669d1360581))
+
 ## [8.3.0](https://github.com/googlemaps/android-maps-compose/compare/v8.2.2...v8.3.0) (2026-04-09)
 
 

@@ -113,6 +113,20 @@ public class CameraPositionState private constructor(
         get() = map?.projection
 
     /**
+     * The minimum zoom level for the currently bound map, or `null` if this state is not currently
+     * bound to a [GoogleMap].
+     */
+    public val minZoomLevel: Float?
+        get() = map?.minZoomLevel
+
+    /**
+     * The maximum zoom level for the currently bound map, or `null` if this state is not currently
+     * bound to a [GoogleMap].
+     */
+    public val maxZoomLevel: Float?
+        get() = map?.maxZoomLevel
+
+    /**
      * Local source of truth for the current camera position.
      * While [map] is non-null this reflects the current position of [map] as it changes.
      * While [map] is null it reflects the last known map position, or the last value set by

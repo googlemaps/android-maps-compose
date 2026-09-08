@@ -25,6 +25,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -167,6 +168,7 @@ fun GoogleMapView(
     var mapVisible by remember { mutableStateOf(true) }
 
     var darkMode by remember { mutableStateOf(mapColorScheme) }
+    val systemInDarkTheme = isSystemInDarkTheme()
 
     if (mapVisible) {
         GoogleMap(
@@ -303,11 +305,7 @@ fun GoogleMapView(
             MapButton(
                 text = "Toggle Dark Mode",
                 onClick = {
-                    darkMode =
-                        if (darkMode == ComposeMapColorScheme.DARK)
-                            ComposeMapColorScheme.LIGHT
-                        else
-                            ComposeMapColorScheme.DARK
+                    darkMode = toggledMapColorScheme(darkMode, systemInDarkTheme)
                 },
                 modifier = Modifier
                     .testTag("toggleDarkMode")
@@ -344,6 +342,19 @@ fun GoogleMapView(
             }
         )
         DebugView(cameraPositionState, singaporeState)
+    }
+}
+
+internal fun toggledMapColorScheme(
+    current: ComposeMapColorScheme,
+    systemInDarkTheme: Boolean,
+): ComposeMapColorScheme = when (current) {
+    ComposeMapColorScheme.LIGHT -> ComposeMapColorScheme.DARK
+    ComposeMapColorScheme.DARK -> ComposeMapColorScheme.LIGHT
+    ComposeMapColorScheme.FOLLOW_SYSTEM -> if (systemInDarkTheme) {
+        ComposeMapColorScheme.LIGHT
+    } else {
+        ComposeMapColorScheme.DARK
     }
 }
 

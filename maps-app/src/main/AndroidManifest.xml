@@ -71,6 +71,9 @@
             android:name=".markerexamples.MarkerClusteringActivity"
             android:exported="true" />
         <activity
+            android:name=".markerexamples.MarkerClusteringRotationActivity"
+            android:exported="true" />
+        <activity
             android:name=".LocationTrackingActivity"
             android:exported="true" />
         <activity

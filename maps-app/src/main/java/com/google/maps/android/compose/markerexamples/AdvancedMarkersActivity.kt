@@ -24,13 +24,18 @@ import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapsSdkInitializedCallback
@@ -40,6 +45,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.PinConfig
 import com.google.maps.android.compose.AdvancedMarker
+import com.google.maps.android.compose.AdvancedMarkerInfoWindowContent
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -138,13 +144,24 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                         .setBorderColor(Color.WHITE)
                         .build()
 
-                    AdvancedMarker(
+                    // AdvancedMarkerInfoWindowContent lets you customize the info window's
+                    // content while keeping the default info window frame. Tap this marker
+                    // to see it.
+                    AdvancedMarkerInfoWindowContent(
                         state = marker1State,
                         onClick = markerClick,
                         collisionBehavior = 1,
                         pinConfig = pinConfig,
-                        title="Marker 1"
-                    )
+                        title = "Marker 1"
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .background(ComposeColor.Yellow)
+                                .padding(8.dp)
+                        ) {
+                            Text("Custom advanced marker info window!")
+                        }
+                    }
 
                     val glyphOne = PinConfig.Glyph("A", Color.BLACK)
                     val pinConfig2 = PinConfig.builder()

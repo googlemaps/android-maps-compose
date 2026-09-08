@@ -18,46 +18,51 @@ on:
   pull_request:
     branches:
       - main
+
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   lint:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: '21'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
       - name: Run Android Lint
         run: ./gradlew lint
 
       - name: Upload SARIF from maps-compose
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: maps-compose/build/reports/lint-results.sarif
           category: maps-compose
 
       - name: Upload SARIF from maps-compose-utils
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: maps-compose-utils/build/reports/lint-results.sarif
           category: maps-compose-utils
 
       - name: Upload SARIF from maps-compose-widgets
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: maps-compose-widgets/build/reports/lint-results.sarif
           category: maps-compose-widgets
 
       - name: Upload SARIF from maps-app
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
         with:
           sarif_file: maps-app/build/reports/lint-results.sarif
           category: maps-app

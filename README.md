@@ -29,12 +29,12 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:8.3.0' // {x-release-please-version}
+    implementation 'com.google.maps.android:maps-compose:8.6.0' // {x-release-please-version}
     // Optionally, you can include the Compose utils library for Clustering,
     // Street View metadata checks, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:8.3.0' // {x-release-please-version}
+    implementation 'com.google.maps.android:maps-compose-utils:8.6.0' // {x-release-please-version}
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:8.3.0' // {x-release-please-version}
+    implementation 'com.google.maps.android:maps-compose-widgets:8.6.0' // {x-release-please-version}
 }
 ```
 
@@ -54,6 +54,9 @@ To run the demo app, ensure you've met the requirements above then:
 ## Documentation
 
 See the [documentation] for a full list of classes and their methods.
+
+### Guides
+* [Supporting Dark Theme in Lite Mode Maps](docs/lite-mode-dark-theme.md)
 
 ## Usage
 
