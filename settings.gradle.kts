@@ -38,6 +38,30 @@ plugins {
 }
 rootProject.name = "android-maps-compose"
 
+// The maps-compose-multiplatform module depends on the experimental KMP branch of
+// android-maps-utils (feat/experimental-kmp-clustering), which provides multiplatform
+// clustering algorithms and the common LatLng/CameraPosition model types.
+//
+// Default consumption path: publish those modules to mavenLocal and enable the
+// mavenLocal repository (see dependencyResolutionManagement above):
+//   (in ../android-maps-utils) ./gradlew :maps-model:publishToMavenLocal :clustering:publishToMavenLocal
+//   (here)                     ./gradlew -PuseMavenLocal=true <task>
+//
+// Alternative for tight iteration: -PuseLocalMapsUtils=true substitutes the two
+// coordinates with a composite build of ../android-maps-utils. Note that with the
+// composite, platform compilations (android/iOS) work but the shared-metadata
+// compilation (compileCommonMainKotlinMetadata, and thus assemble) fails: Kotlin's
+// granular metadata transformation currently skips project dependencies substituted
+// across included builds, so common code cannot be analyzed against them.
+if (providers.gradleProperty("useLocalMapsUtils").orNull == "true") {
+    includeBuild("../android-maps-utils") {
+        dependencySubstitution {
+            substitute(module("com.google.maps.android:clustering")).using(project(":clustering"))
+            substitute(module("com.google.maps.android:maps-model")).using(project(":maps-model"))
+        }
+    }
+}
+
 include(":maps-app")
 include(":maps-compose")
 include(":maps-compose-widgets")
