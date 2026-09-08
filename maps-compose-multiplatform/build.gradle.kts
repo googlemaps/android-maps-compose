@@ -68,6 +68,10 @@ kotlin {
                 implementation("org.jetbrains.compose.runtime:runtime:1.7.3")
                 implementation("org.jetbrains.compose.foundation:foundation:1.7.3")
                 implementation("org.jetbrains.compose.ui:ui:1.7.3")
+                // Multiplatform clustering from android-maps-utils; substituted with the
+                // local ../android-maps-utils composite build (see settings.gradle.kts).
+                api("com.google.maps.android:maps-model:5.2.0")
+                api("com.google.maps.android:clustering:5.2.0")
             }
         }
         androidMain {
