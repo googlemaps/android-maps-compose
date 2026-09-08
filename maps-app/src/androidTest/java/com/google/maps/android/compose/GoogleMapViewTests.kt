@@ -27,6 +27,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.CameraPosition
@@ -166,6 +167,61 @@ class GoogleMapViewTests {
         }
         // When googleMapOptionsFactory explicitly sets a color scheme (e.g. DARK), it should not be overwritten by mapColorScheme
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+    }
+
+    @Test
+    fun testLiteModePreservesColorSchemeAndLiteModeInOptions() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
+                mapColorScheme = ComposeMapColorScheme.DARK,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.liteMode).isTrue()
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+    }
+
+    @Test
+    fun testLiteModeWithTerrainMapTypePreservesOptions() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = {
+                    GoogleMapOptions()
+                        .liteMode(true)
+                        .mapType(GoogleMap.MAP_TYPE_TERRAIN)
+                },
+                mapColorScheme = ComposeMapColorScheme.DARK,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.liteMode).isTrue()
+        assertThat(capturedOptions?.mapType).isEqualTo(GoogleMap.MAP_TYPE_TERRAIN)
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+    }
+
+    @Test
+    fun testLiteModeDefaultColorSchemeIsFollowSystem() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.liteMode).isTrue()
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
     }
 
     @Test

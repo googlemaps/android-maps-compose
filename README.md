@@ -55,6 +55,9 @@ To run the demo app, ensure you've met the requirements above then:
 
 See the [documentation] for a full list of classes and their methods.
 
+### Guides
+* [Supporting Dark Theme in Lite Mode Maps](docs/lite-mode-dark-theme.md)
+
 ## Usage
 
 Adding a map to your app looks like the following:
