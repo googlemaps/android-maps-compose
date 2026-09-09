@@ -46,8 +46,8 @@ def validate_response(response_text: str) -> bool:
     return True
 
 def get_gemini_response(api_key, system_instruction, user_content):
-    # Using gemini-3.5-flash for fast and reliable answering
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}"
+    model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
     headers = {'Content-Type': 'application/json'}
     data = {
         "system_instruction": {
