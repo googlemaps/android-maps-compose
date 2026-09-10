@@ -17,20 +17,17 @@
 // buildSrc/src/main/kotlin/PublishingConventionPlugin.kt
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
-import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
-import org.gradle.api.tasks.testing.Test
-import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
-import org.gradle.testing.jacoco.tasks.JacocoReport
 
 class PublishingConventionPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.run {
 
             applyPlugins()
-            configureJacoco()
+            configureKover()
             configureVanniktechPublishing()
         }
     }
@@ -38,47 +35,19 @@ class PublishingConventionPlugin : Plugin<Project> {
     private fun Project.applyPlugins() {
         apply(plugin = "com.android.library")
         apply(plugin = "org.jetbrains.dokka")
-        apply(plugin = "org.gradle.jacoco")
+        apply(plugin = "org.jetbrains.kotlinx.kover")
         apply(plugin = "com.vanniktech.maven.publish")
     }
 
-    private fun Project.configureJacoco() {
-        configure<JacocoPluginExtension> {
-            toolVersion = "0.8.15" // Compatible with newer JDKs
-        }
-
-        // AGP 9.0+ built-in Jacoco support or manual configuration.
-        // We create a "jacocoTestReport" task to match the CI workflow.
-        
-        tasks.register<JacocoReport>("jacocoTestReport") {
-             // Dependencies
-             dependsOn("testDebugUnitTest")
-             
-             reports {
-                 xml.required.set(true)
-                 html.required.set(true)
-             }
-             
-             // Source directories
-             val mainSrc = "${layout.projectDirectory}/src/main/java"
-             sourceDirectories.setFrom(files(mainSrc))
-             
-             // Class directories - AGP 9's built-in Kotlin compiler outputs to
-             // intermediates/built_in_kotlinc/, not the legacy tmp/kotlin-classes/ path.
-             classDirectories.setFrom(
-                 fileTree(layout.buildDirectory.dir("intermediates/built_in_kotlinc/debug")) {
-                     include("**/classes/**")
-                 },
-                 fileTree(layout.buildDirectory.dir("intermediates/javac/debug")) {
-                     include("**/classes/**")
-                     exclude("**/R.class", "**/R\$*.class", "**/BuildConfig.class")
-                 }
-             )
-             
-             // Execution data from the unit test task
-             executionData.setFrom(fileTree(layout.buildDirectory.get()) {
-                 include("outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec")
-             })
+    private fun Project.configureKover() {
+        configure<KoverProjectExtension> {
+            reports {
+                filters {
+                    excludes {
+                        androidGeneratedClasses()
+                    }
+                }
+            }
         }
     }
 

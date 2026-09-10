@@ -29,7 +29,7 @@ dependencies {
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.android.gradle.plugin)
     implementation(libs.dokka.plugin)
-    implementation(libs.org.jacoco.core)
+    implementation(libs.kover.gradle.plugin)
     implementation(libs.gradle.maven.publish.plugin)
 
 }
