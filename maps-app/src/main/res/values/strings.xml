@@ -84,6 +84,9 @@
   <string name="ground_overlay_activity">Ground Overlay</string>
   <string name="ground_overlay_activity_description">Adding a ground overlay to the map.</string>
 
+  <string name="marker_composable_performance_activity">MarkerComposable Performance</string>
+  <string name="marker_composable_performance_activity_description">High-performance rendering and rapid dynamic updates across 50+ MarkerComposable instances.</string>
+
   <!-- Demo group titles -->
   <string name="map_types_title">Map Types</string>
   <string name="map_features_title">Map Features</string>
