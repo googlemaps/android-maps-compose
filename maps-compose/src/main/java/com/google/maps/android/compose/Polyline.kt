@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.StyleSpan
-import com.google.maps.android.ktx.addPolyline
+import com.google.maps.android.addPolyline
 
 internal class PolylineNode(
     val polyline: Polyline,

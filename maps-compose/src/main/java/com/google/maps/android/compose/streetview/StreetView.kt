@@ -39,8 +39,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.StreetViewPanoramaView
 import com.google.android.gms.maps.model.StreetViewPanoramaOrientation
-import com.google.maps.android.ktx.MapsExperimentalFeature
-import com.google.maps.android.ktx.awaitStreetViewPanorama
+import com.google.maps.android.MapsExperimentalFeature
+import com.google.maps.android.awaitStreetViewPanorama
 import kotlinx.coroutines.awaitCancellation
 
 /**

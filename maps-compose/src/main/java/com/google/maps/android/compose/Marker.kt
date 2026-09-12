@@ -37,7 +37,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.PinConfig
-import com.google.maps.android.ktx.addMarker
+import com.google.maps.android.addMarker
 
 internal class MarkerNode(
     val compositionContext: CompositionContext,

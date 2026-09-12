@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.ktx.utils.sphericalDistance
+import com.google.maps.android.sphericalDistance
 import org.junit.runner.RunWith
 
 

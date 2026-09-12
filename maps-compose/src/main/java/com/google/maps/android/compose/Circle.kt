@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.toArgb
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
-import com.google.maps.android.ktx.addCircle
+import com.google.maps.android.addCircle
 
 internal class CircleNode(
     val circle: Circle,

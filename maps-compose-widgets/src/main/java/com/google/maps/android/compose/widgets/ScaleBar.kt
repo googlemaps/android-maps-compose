@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.Projection
 import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.ktx.utils.sphericalDistance
+import com.google.maps.android.sphericalDistance
 import kotlinx.coroutines.delay
 
 internal fun calculateDistance(
