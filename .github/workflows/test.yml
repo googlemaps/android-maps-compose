@@ -29,6 +29,8 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      USE_MAVEN_LOCAL: "true"
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -43,6 +45,19 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+
+    - name: Checkout android-maps-utils (experimental KMP branch)
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: googlemaps/android-maps-utils
+        ref: feat/experimental-kmp-clustering
+        path: maps-utils-kmp
+
+    - name: Publish multiplatform maps-utils modules to mavenLocal
+      working-directory: maps-utils-kmp
+      run: |
+        printf 'MAPS_API_KEY=PLACEHOLDER\nPLACES_API_KEY=PLACEHOLDER\nMAP_ID=PLACEHOLDER\n' > secrets.properties
+        ./gradlew :maps-model:publishToMavenLocal :clustering:publishToMavenLocal
 
     - name: Build modules
       run: ./gradlew build koverXmlReportDebug -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:generateReleaseScreenshotTestConfig --stacktrace
