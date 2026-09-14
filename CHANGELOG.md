@@ -1,5 +1,13 @@
 # Changelog
 
+## [9.0.0](https://github.com/googlemaps/android-maps-compose/compare/v8.6.0...v9.0.0) (2026-09-14)
+
+### Features & Breaking Changes
+
+* **android-maps-utils 6.0.0**: Upgraded `android-maps-utils` dependency to `6.0.0`, completing the migration from deprecated `android-maps-ktx` to canonical Kotlin extensions consolidated within `android-maps-utils`.
+* **Kover Migration**: Replaced legacy JaCoCo coverage with Kover.
+* **Java 11 Retained**: Library bytecode target remains on Java 11 for broad compatibility.
+
 ## [9.0.0-rc02](https://github.com/googlemaps/android-maps-compose/compare/v8.6.0...v9.0.0-rc02) (2026-08-31)
 
 ### Chores
