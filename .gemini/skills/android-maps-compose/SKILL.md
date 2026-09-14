@@ -15,13 +15,13 @@ Verify the latest versions if possible, but use these as a baseline:
 ```kotlin
 dependencies {
     // Google Maps Compose library
-    implementation("com.google.maps.android:maps-compose:9.0.0-rc02") // x-release-please-version
+    implementation("com.google.maps.android:maps-compose:9.0.0") // x-release-please-version
 
     // Optional: Maps Compose Utilities (for clustering, etc.)
-    // implementation("com.google.maps.android:maps-compose-utils:9.0.0-rc02") // x-release-please-version
+    // implementation("com.google.maps.android:maps-compose-utils:9.0.0") // x-release-please-version
 
     // Optional: Maps Compose Widgets (for UI components)
-    // implementation("com.google.maps.android:maps-compose-widgets:9.0.0-rc02") // x-release-please-version
+    // implementation("com.google.maps.android:maps-compose-widgets:9.0.0") // x-release-please-version
 }
 ```
 
