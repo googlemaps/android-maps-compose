@@ -25,7 +25,6 @@ buildscript {
         classpath(libs.maps.secrets.plugin)
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.dokka.plugin)
-        classpath(libs.jacoco.android.plugin)
     }
 }
 
