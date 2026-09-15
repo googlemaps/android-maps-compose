@@ -79,6 +79,21 @@ CSV_FIELDS = [
     "instruction_pct",
 ]
 
+# Modules each suite records. None means "every module that produced a report".
+#
+# The instrumentation list is restricted on purpose. createDebugCoverageReport
+# emits a report for every module with enableAndroidTestCoverage, including
+# maps-compose and maps-compose-utils, which have no androidTest sources at
+# all. Those reports list every class at 0%, which reads as "untested" when the
+# code is in fact exercised by maps-app's tests and simply attributed there.
+# Recording them would drag the instrumentation total from 20.83% to 10.08% and
+# say something false about the libraries, so only the modules that actually
+# own instrumentation tests are tracked.
+MODULE_ALLOWLIST = {
+    "unit": None,
+    "instrumentation": ("maps-app", "maps-compose-widgets"),
+}
+
 DEFAULT_CSV = "coverage/history.csv"
 DEFAULT_MARKDOWN = "coverage/COVERAGE.md"
 
@@ -138,8 +153,16 @@ def parse_report(report_path: str) -> dict[str, dict[str, int]]:
     return counters
 
 
-def collect(pattern: str, required: bool = True) -> dict[str, dict[str, dict[str, int]]]:
-    """Parse every matching report and add a TOTAL across all of them."""
+def collect(
+    pattern: str,
+    required: bool = True,
+    allow: tuple[str, ...] | None = None,
+) -> dict[str, dict[str, dict[str, int]]]:
+    """Parse every matching report and add a TOTAL across the tracked modules.
+
+    ``allow`` restricts which modules are recorded; ``None`` records all of
+    them. TOTAL is summed after filtering, so it reflects only what is tracked.
+    """
     reports = sorted(glob.glob(pattern))
     if not reports:
         if required:
@@ -147,6 +170,15 @@ def collect(pattern: str, required: bool = True) -> dict[str, dict[str, dict[str
         return {}
 
     modules = {module_name(path): parse_report(path) for path in reports}
+    if allow is not None:
+        missing = [name for name in allow if name not in modules]
+        if missing:
+            print(f"Warning: no report found for {', '.join(missing)}", file=sys.stderr)
+        modules = {name: c for name, c in modules.items() if name in allow}
+        if not modules:
+            if required:
+                sys.exit(f"No reports matched the tracked modules {list(allow)}.")
+            return {}
 
     total = {kind: {"covered": 0, "total": 0} for kind in COUNTERS}
     for counters in modules.values():
@@ -213,8 +245,17 @@ def resolve_pattern(args: argparse.Namespace) -> str:
     return args.reports or SUITES[args.suite]
 
 
+def resolve_allow(args: argparse.Namespace) -> tuple[str, ...] | None:
+    """Tracked modules: --modules overrides, "all" disables filtering."""
+    if not args.modules:
+        return MODULE_ALLOWLIST.get(args.suite)
+    if args.modules.strip().lower() == "all":
+        return None
+    return tuple(m.strip() for m in args.modules.split(",") if m.strip())
+
+
 def cmd_summary(args: argparse.Namespace) -> None:
-    modules = collect(resolve_pattern(args))
+    modules = collect(resolve_pattern(args), allow=resolve_allow(args))
     summary = {
         module: {
             "line_pct": pct(c["LINE"]["covered"], c["LINE"]["total"]),
@@ -230,7 +271,9 @@ def cmd_summary(args: argparse.Namespace) -> None:
 
 
 def cmd_append(args: argparse.Namespace) -> None:
-    modules = collect(resolve_pattern(args), required=not args.optional)
+    modules = collect(
+        resolve_pattern(args), required=not args.optional, allow=resolve_allow(args)
+    )
     if not modules:
         print(f"No {args.suite} reports found; skipping (--optional).")
         return
@@ -352,9 +395,12 @@ def cmd_render(args: argparse.Namespace) -> None:
         rows,
         "instrumentation",
         "Instrumentation tests",
-        "Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` "
-        "is the demo app rather than a published library, but it is where most "
-        "of the test suite lives.",
+        "Emulator tests run by `./gradlew createDebugCoverageReport`, covering "
+        "the modules that own androidTest sources. `maps-app` is the demo app "
+        "rather than a published library, but it is where most of the test "
+        "suite lives. `maps-compose` and `maps-compose-utils` are not listed: "
+        "they have no instrumentation tests of their own, and their code is "
+        "exercised through `maps-app`.",
     )
 
     # Trend: one line per recorded commit, newest first, with the change in
@@ -418,7 +464,7 @@ def cmd_render(args: argparse.Namespace) -> None:
 
 
 def cmd_compare(args: argparse.Namespace) -> None:
-    modules = collect(resolve_pattern(args))
+    modules = collect(resolve_pattern(args), allow=resolve_allow(args))
     baseline = latest_entry(read_history(args.csv), args.suite)
 
     lines = [args.marker, f"## Coverage ({args.suite} tests)", ""]
@@ -487,6 +533,12 @@ def add_common(parser: argparse.ArgumentParser) -> None:
         "--reports",
         default="",
         help="glob matching the XML reports; defaults to the suite's usual path",
+    )
+    parser.add_argument(
+        "--modules",
+        default="",
+        help='comma-separated modules to track, or "all" for every module '
+        "reported; defaults to the suite's tracked list",
     )
 
 
