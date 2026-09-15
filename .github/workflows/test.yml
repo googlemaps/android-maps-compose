@@ -29,6 +29,9 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -49,6 +52,35 @@ jobs:
 
     - name: Run Screenshot Tests
       run: ./gradlew :maps-app:validateDebugScreenshotTest
+
+    # Post (or update) a single sticky comment showing how this PR moves unit
+    # coverage relative to the last entry recorded on main. Instrumentation
+    # coverage gets its own comment from instrumentation-test.yml. Pull requests
+    # from forks get a read-only token and cannot comment, so they are skipped.
+    - name: Comment coverage delta
+      continue-on-error: true
+      if: >-
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        PR: ${{ github.event.pull_request.number }}
+        MARKER: '<!-- coverage-history-comment -->'
+      run: |
+        python3 .github/scripts/coverage_history.py compare --suite unit \
+          --base "${{ github.base_ref }}" --out coverage-comment.md
+
+        # Reuse the existing comment if this workflow already posted one.
+        ID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+          --jq "[.[] | select(.body | startswith(\"$MARKER\"))] | first | .id // empty")
+        if [ -n "$ID" ]; then
+          gh api --method PATCH "repos/$REPO/issues/comments/$ID" \
+            -F body=@coverage-comment.md
+        else
+          gh api --method POST "repos/$REPO/issues/$PR/comments" \
+            -F body=@coverage-comment.md
+        fi
 
     - name: Upload build reports
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
