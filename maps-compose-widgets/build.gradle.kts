@@ -58,6 +58,12 @@ android {
             enableAndroidTestCoverage = true
         }
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 kotlin {
@@ -96,9 +102,24 @@ dependencies {
     api(libs.maps.ktx.utils)
 
     testImplementation(libs.test.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.truth)
+    testImplementation(libs.mockk)
+    testImplementation(libs.androidx.test.compose.ui)
+    testImplementation(libs.androidx.activity.compose)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.maps.robolectric.shadows)
+
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.espresso)
     androidTestImplementation(libs.androidx.test.junit.ktx)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.truth)
+}
+
+tasks.withType<Test>().configureEach {
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    })
 }
