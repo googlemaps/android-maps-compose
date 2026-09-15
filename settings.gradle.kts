@@ -17,6 +17,9 @@
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven {
+            url = uri(rootDir.resolve("repo"))
+        }
         if (providers.gradleProperty("useMavenLocal").orNull == "true" ||
             providers.environmentVariable("USE_MAVEN_LOCAL").orNull == "true") {
             mavenLocal()
@@ -40,3 +43,18 @@ include(":maps-compose")
 include(":maps-compose-widgets")
 include(":maps-compose-utils")
 include(":docs")
+
+listOf(
+    file("../../android-maps-robolectric/main"),
+    file("../android-maps-robolectric/main"),
+    file("../android-maps-robolectric"),
+).firstOrNull { it.resolve("settings.gradle.kts").exists() }?.let { mapsRobolectricDir ->
+    includeBuild(mapsRobolectricDir) {
+        dependencySubstitution {
+            substitute(module("com.google.android.maps.testing:golden"))
+                .using(project(":golden-testing"))
+            substitute(module("com.google.android.maps.robolectric:shadows"))
+                .using(project(":robolectric-testing"))
+        }
+    }
+}
