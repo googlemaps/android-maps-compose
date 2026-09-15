@@ -15,14 +15,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `2344932` (#994), recorded 2026-09-15T14:59:20Z.
+Measured at `2344932` (#994), recorded 2026-09-15T15:02:19Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-compose` | 0/1953 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/1800 | 0.00% |
+| `maps-compose` | 0/1,953 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/1,800 | 0.00% |
 | `maps-compose-utils` | 11/540 | 2.04% | `░░░░░░░░░░░░░░░░░░░░` | 2/412 | 0.49% |
 | `maps-compose-widgets` | 0/146 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/68 | 0.00% |
-| **TOTAL** | 11/2639 | 0.42% | `░░░░░░░░░░░░░░░░░░░░` | 2/2280 | 0.09% |
+| **TOTAL** | 11/2,639 | 0.42% | `░░░░░░░░░░░░░░░░░░░░` | 2/2,280 | 0.09% |
 
 ### Instrumentation tests
 
