@@ -15,7 +15,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `2344932` (#994), recorded 2026-09-15T15:02:19Z.
+Measured at `a24cc53` (#1000), recorded 2026-09-15T18:47:12Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -26,7 +26,15 @@ Measured at `2344932` (#994), recorded 2026-09-15T15:02:19Z.
 
 ### Instrumentation tests
 
-_No data recorded yet._
+Emulator tests run by `./gradlew createDebugCoverageReport`, covering the modules that own androidTest sources. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. `maps-compose` and `maps-compose-utils` are not listed: they have no instrumentation tests of their own, and their code is exercised through `maps-app`.
+
+Measured at `a24cc53` (#1000), recorded 2026-09-15T18:47:12Z.
+
+| Module | Lines | Line % | | Branches | Branch % |
+| --- | ---: | ---: | --- | ---: | ---: |
+| `maps-app` | 509/2,338 | 21.77% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
+| `maps-compose-widgets` | 10/149 | 6.71% | `█░░░░░░░░░░░░░░░░░░░` | 0/48 | 0.00% |
+| **TOTAL** | 519/2,487 | 20.87% | `████░░░░░░░░░░░░░░░░` | 80/450 | 17.78% |
 
 ## Trend (last 30 commits)
 
@@ -34,4 +42,5 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-09-15 | `a24cc53` | #1000 | 0.42% | 0.00 | 20.87% | n/a | ci: record unit and instrumentation test coverage history |
 | 2026-09-15 | `2344932` | #994 | 0.42% | n/a | n/a | n/a | build: migrate unit test coverage from JaCoCo to Kover |
