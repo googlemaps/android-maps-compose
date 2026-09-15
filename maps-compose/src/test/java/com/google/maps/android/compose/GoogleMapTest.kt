@@ -39,15 +39,17 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.common.truth.Truth.assertThat
 import com.google.maps.android.robolectric.annotation.EnableMapsShadows
-import com.google.maps.android.robolectric.shadows.ShadowGoogleMap
-import com.google.maps.android.robolectric.shadows.ShadowMapView
+import com.google.maps.android.robolectric.ktx.circles
+import com.google.maps.android.robolectric.ktx.clickMarker
+import com.google.maps.android.robolectric.ktx.createTestMap
+import com.google.maps.android.robolectric.ktx.markers
+import com.google.maps.android.robolectric.truth.GoogleMapSubject.Companion.assertThat
 import com.google.maps.android.robolectric.truth.LatLngSubject
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadow.api.Shadow
 
 // [START maps_compose_google_map_composable_test]
 @RunWith(RobolectricTestRunner::class)
@@ -91,8 +93,7 @@ internal class GoogleMapTest {
 
         composeTestRule.waitForIdle()
 
-        assertThat(underlyingMap).isNotNull()
-        val shadowMap = Shadow.extract(underlyingMap) as ShadowGoogleMap
+        val map = checkNotNull(underlyingMap)
 
         // Verify camera position
         LatLngSubject.assertThat(cameraState.position.target)
@@ -101,16 +102,16 @@ internal class GoogleMapTest {
         assertThat(cameraState.position.zoom).isEqualTo(11f)
 
         // Verify Marker rendered via MapApplier
-        assertThat(shadowMap.markers).hasSize(1)
-        val marker = shadowMap.markers.first()
-        assertThat(marker.title).isEqualTo("Sydney Flagship")
+        assertThat(map).hasMarkerCount(1)
+        assertThat(map).hasMarkerWithTitle("Sydney Flagship")
+        val marker = map.markers.first()
         LatLngSubject.assertThat(marker.position)
             .isWithin(1.0)
             .of(sydney)
 
         // Verify Circle rendered via MapApplier
-        assertThat(shadowMap.circles).hasSize(1)
-        val circle = shadowMap.circles.first()
+        assertThat(map).hasCircleCount(1)
+        val circle = map.circles.first()
         assertThat(circle.radius).isEqualTo(1500.0)
         LatLngSubject.assertThat(circle.center)
             .isWithin(1.0)
@@ -146,12 +147,11 @@ internal class GoogleMapTest {
 
         composeTestRule.waitForIdle()
 
-        assertThat(underlyingMap).isNotNull()
-        val shadowMap = Shadow.extract(underlyingMap) as ShadowGoogleMap
-        val marker = shadowMap.markers.first()
+        val map = checkNotNull(underlyingMap)
+        val marker = map.markers.first()
 
         // Simulate user clicking on marker
-        shadowMap.clickMarker(marker)
+        map.clickMarker(marker)
         composeTestRule.waitForIdle()
 
         assertThat(markerClicked).isTrue()
@@ -183,16 +183,15 @@ internal class GoogleMapTest {
         }
 
         composeTestRule.waitForIdle()
-        assertThat(underlyingMap).isNotNull()
-        val shadowMap = Shadow.extract(underlyingMap) as ShadowGoogleMap
-        assertThat(shadowMap.markers).hasSize(1)
+        val map = checkNotNull(underlyingMap)
+        assertThat(map).hasMarkerCount(1)
 
         // Mutate Compose state to remove marker
         showMarker = false
         composeTestRule.waitForIdle()
 
         // Assert that the marker was dynamically removed from the map
-        assertThat(shadowMap.markers).isEmpty()
+        assertThat(map).hasNoMarkers()
     }
 
     @Test
@@ -220,7 +219,7 @@ internal class GoogleMapTest {
     @Test
     internal fun testGoogleMap_customMapViewDelegateFactory_lifecycleAndMarkerComposable() {
         val lifecycleEvents = mutableListOf<String>()
-        val fakeGoogleMap = ShadowMapView.createFakeGoogleMap()
+        val fakeGoogleMap = createTestMap()
         var customDelegate: MapViewDelegate<FrameLayout>? = null
 
         composeTestRule.setContent {
@@ -276,9 +275,8 @@ internal class GoogleMapTest {
         assertThat(customDelegate).isNotNull()
         assertThat(lifecycleEvents).containsExactly("onCreate", "onStart", "onResume").inOrder()
 
-        val shadowMap = Shadow.extract(fakeGoogleMap) as ShadowGoogleMap
-        assertThat(shadowMap.markers).hasSize(2)
-        assertThat(shadowMap.markers.map { it.title }).containsExactly("Delegated Marker", "Composable Marker")
+        assertThat(fakeGoogleMap).hasMarkerCount(2)
+        assertThat(fakeGoogleMap.markers.map { it.title }).containsExactly("Delegated Marker", "Composable Marker")
     }
 }
 // [END maps_compose_google_map_composable_test]
