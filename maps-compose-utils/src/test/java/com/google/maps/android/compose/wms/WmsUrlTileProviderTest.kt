@@ -16,15 +16,18 @@
 
 package com.google.maps.android.compose.wms
 
+import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
+import java.net.URL
 
+// [START maps_compose_utils_wms_url_tile_provider_test]
 public class WmsUrlTileProviderTest {
 
     private val worldSize: Double = 6378137.0 * kotlin.math.PI
 
     @Test
-    public fun testGetBoundingBoxZoom0() {
+    public fun testGetBoundingBoxZoom0(): Unit {
         val provider = WmsUrlTileProvider { _, _, _, _, _ -> "" }
         val bbox = provider.getBoundingBox(0, 0, 0)
 
@@ -34,7 +37,7 @@ public class WmsUrlTileProviderTest {
     }
 
     @Test
-    public fun testGetBoundingBoxZoom1() {
+    public fun testGetBoundingBoxZoom1(): Unit {
         val provider = WmsUrlTileProvider { _, _, _, _, _ -> "" }
 
         // Zoom 1, Tile 0,0 (Top Left)
@@ -49,7 +52,7 @@ public class WmsUrlTileProviderTest {
     }
 
     @Test
-    public fun testGetBoundingBoxSpecificTile() {
+    public fun testGetBoundingBoxSpecificTile(): Unit {
         val provider = WmsUrlTileProvider { _, _, _, _, _ -> "" }
 
         // Zoom 2, Tile 1,1
@@ -62,4 +65,27 @@ public class WmsUrlTileProviderTest {
         val expected = doubleArrayOf(-worldSize / 2, 0.0, 0.0, worldSize / 2)
         assertArrayEquals(expected, bbox, 0.001)
     }
+
+    @Test
+    public fun testGetTileUrl_validUrl_returnsParsedUrl(): Unit {
+        val provider = WmsUrlTileProvider { xMin, yMin, xMax, yMax, zoom ->
+            "https://example.com/wms?bbox=$xMin,$yMin,$xMax,$yMax&zoom=$zoom"
+        }
+        val tileUrl = provider.getTileUrl(0, 0, 1)
+        assertThat(tileUrl).isNotNull()
+        assertThat(tileUrl).isEqualTo(
+            URL("https://example.com/wms?bbox=-${worldSize},0.0,0.0,${worldSize}&zoom=1")
+        )
+    }
+
+    @Test
+    public fun testGetTileUrl_malformedUrl_returnsNull(): Unit {
+        val provider = WmsUrlTileProvider { _, _, _, _, _ ->
+            "not a valid url ://"
+        }
+        val tileUrl = provider.getTileUrl(0, 0, 1)
+        assertThat(tileUrl).isNull()
+    }
 }
+// [END maps_compose_utils_wms_url_tile_provider_test]
+
