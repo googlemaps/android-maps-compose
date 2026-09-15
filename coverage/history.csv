@@ -1,0 +1,5 @@
+timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,branches_covered,branches_total,branch_pct,instructions_covered,instructions_total,instruction_pct
+2026-09-15T15:02:19Z,2344932,994,build: migrate unit test coverage from JaCoCo to Kover,unit,maps-compose,0,1953,0.0,0,1800,0.0,0,25121,0.0
+2026-09-15T15:02:19Z,2344932,994,build: migrate unit test coverage from JaCoCo to Kover,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6602,1.06
+2026-09-15T15:02:19Z,2344932,994,build: migrate unit test coverage from JaCoCo to Kover,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1491,0.0
+2026-09-15T15:02:19Z,2344932,994,build: migrate unit test coverage from JaCoCo to Kover,unit,TOTAL,11,2639,0.42,2,2280,0.09,70,33214,0.21
