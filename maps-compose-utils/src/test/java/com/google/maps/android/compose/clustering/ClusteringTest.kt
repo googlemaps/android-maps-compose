@@ -114,7 +114,9 @@ internal class ClusteringTest {
         val shadowMap = Shadow.extract(underlyingMap) as ShadowGoogleMap
         assertThat(managerFromCallback).isNotNull()
 
-        // ClusterManager should have added markers to the map
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+            shadowMap.markers.isNotEmpty()
+        }
         assertThat(shadowMap.markers.isNotEmpty()).isTrue()
     }
 
@@ -143,6 +145,9 @@ internal class ClusteringTest {
         }
 
         composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+            decoratedItem != null
+        }
         assertThat(decoratedItem).isEqualTo(items.first())
     }
 
@@ -163,8 +168,11 @@ internal class ClusteringTest {
         }
 
         composeTestRule.waitForIdle()
-        assertThat(clusterManager).isNotNull()
-        assertThat(clusterManager!!.algorithm.items).hasSize(1)
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+            clusterManager?.algorithm?.items?.size == 1
+        }
+        val manager = checkNotNull(clusterManager)
+        assertThat(manager.algorithm.items).hasSize(1)
 
         // Update items list
         itemsState = listOf(
@@ -172,8 +180,10 @@ internal class ClusteringTest {
             SampleClusterItem(LatLng(20.1, 20.1), "Updated 2")
         )
         composeTestRule.waitForIdle()
-
-        assertThat(clusterManager.algorithm.items).hasSize(2)
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+            manager.algorithm.items.size == 2
+        }
+        assertThat(manager.algorithm.items).hasSize(2)
     }
 
     @Test
