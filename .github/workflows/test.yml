@@ -67,9 +67,12 @@ jobs:
         REPO: ${{ github.repository }}
         PR: ${{ github.event.pull_request.number }}
         MARKER: '<!-- coverage-history-comment -->'
+        # Bound through the environment rather than expanded into the script:
+        # a branch name can contain shell metacharacters.
+        BASE_REF: ${{ github.base_ref }}
       run: |
         python3 .github/scripts/coverage_history.py compare --suite unit \
-          --base "${{ github.base_ref }}" --out coverage-comment.md
+          --base "$BASE_REF" --out coverage-comment.md
 
         # Reuse the existing comment if this workflow already posted one.
         ID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \

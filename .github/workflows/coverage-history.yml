@@ -45,6 +45,8 @@ jobs:
       pull-requests: read
 
     steps:
+      # Credentials are deliberately persisted here: the final step pushes the
+      # updated history back to main, so persist-credentials must stay enabled.
       - name: Checkout Repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -95,6 +97,8 @@ jobs:
           ls -l instrumentation-coverage
 
       - name: Append to coverage history
+        env:
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           SUBJECT=$(git log -1 --pretty=%s)
           # Squash-merged PRs end their subject with "(#123)". The number is
@@ -103,11 +107,11 @@ jobs:
           SUBJECT=$(printf '%s' "$SUBJECT" | sed 's/ (#[0-9]\{1,\})$//')
 
           python3 .github/scripts/coverage_history.py append --suite unit \
-            --commit "${{ github.sha }}" --pr "$PR" --subject "$SUBJECT"
+            --commit "$COMMIT_SHA" --pr "$PR" --subject "$SUBJECT"
 
           python3 .github/scripts/coverage_history.py append --suite instrumentation \
             --reports 'instrumentation-coverage/*.xml' --optional \
-            --commit "${{ github.sha }}" --pr "$PR" --subject "$SUBJECT"
+            --commit "$COMMIT_SHA" --pr "$PR" --subject "$SUBJECT"
 
           python3 .github/scripts/coverage_history.py render
 
