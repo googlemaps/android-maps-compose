@@ -28,7 +28,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.maps.robolectric.annotation.EnableMapsShadows
-import com.google.android.maps.robolectric.shadows.ShadowGoogleMap
 import com.google.common.truth.Truth.assertThat
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
@@ -41,7 +40,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadow.api.Shadow
 
 // [START maps_compose_utils_clustering_test]
 @RunWith(RobolectricTestRunner::class)
@@ -111,13 +109,11 @@ internal class ClusteringTest {
         composeTestRule.waitForIdle()
 
         assertThat(underlyingMap).isNotNull()
-        val shadowMap = Shadow.extract(underlyingMap) as ShadowGoogleMap
-        assertThat(managerFromCallback).isNotNull()
-
         composeTestRule.waitUntil(timeoutMillis = 5000) {
-            shadowMap.markers.isNotEmpty()
+            managerFromCallback?.algorithm?.items?.size == items.size
         }
-        assertThat(shadowMap.markers.isNotEmpty()).isTrue()
+        val manager = checkNotNull(managerFromCallback)
+        assertThat(manager.algorithm.items).containsExactlyElementsIn(items)
     }
 
     @Test
