@@ -11,7 +11,7 @@ agp = "9.4.0"
 dependencyAnalysis = "3.19.1"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.37.0"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 kotlinxCoroutines = "1.11.0"
 versions = "0.61.0"
 
