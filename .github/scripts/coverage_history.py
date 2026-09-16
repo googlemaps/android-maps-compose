@@ -364,6 +364,37 @@ def render_current(rows: list[dict], suite: str, heading: str, note: str) -> lis
     return lines
 
 
+def row_key(row: dict) -> tuple[str, str, str]:
+    """Identity of a history row: one module, one suite, one commit."""
+    return (row.get("commit", ""), row.get("suite", ""), row.get("module", ""))
+
+
+def cmd_merge(args: argparse.Namespace) -> None:
+    """Re-apply locally added rows on top of a refreshed history file.
+
+    Two runs appending to the end of the CSV cannot be merged by git: both
+    touch the same region and the rebase conflicts. The rows are independent
+    records, though, so the correct resolution is simply "keep both". This
+    reads the rows we added, rebases them onto whatever is now on the branch,
+    and drops any that are already there.
+    """
+    base = read_history(args.csv)
+    ours = read_history(args.ours)
+
+    present = {row_key(row) for row in base}
+    added = [row for row in ours if row_key(row) not in present]
+    if not added:
+        print("No local rows to re-apply.")
+        return
+
+    with open(args.csv, "a", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=CSV_FIELDS, lineterminator="\n")
+        if not base:
+            writer.writeheader()
+        writer.writerows(added)
+    print(f"Re-applied {len(added)} row(s) onto {args.csv}")
+
+
 def cmd_render(args: argparse.Namespace) -> None:
     rows = read_history(args.csv)
     if not rows:
@@ -380,6 +411,16 @@ def cmd_render(args: argparse.Namespace) -> None:
         "The two suites are reported separately and are **not additive**. They",
         "instrument different code with different runners, and merging them would",
         "require combining the raw execution data rather than the XML reports.",
+        "",
+        "> **What the instrumentation number measures.** It is dominated by",
+        "> `maps-app`, which is the internal sample app, not a published artifact.",
+        "> It is *not* a direct measurement of the published `maps-compose`",
+        "> library. The library's code is exercised heavily by `maps-app`'s tests,",
+        "> but JaCoCo attributes coverage to the module that runs the tests, so it",
+        "> is counted under `maps-app`. Read the instrumentation figure as how",
+        "> much of the sample app, and through it the library, is exercised on a",
+        "> device. The unit table is the one that measures the published library",
+        "> modules directly.",
         "",
         "## Current",
         "",
@@ -562,6 +603,13 @@ def main() -> None:
         help="skip quietly instead of failing when no reports are present",
     )
     append.set_defaults(func=cmd_append)
+
+    merge = subparsers.add_parser(
+        "merge", help="re-apply locally added rows onto a refreshed history CSV"
+    )
+    merge.add_argument("--csv", default=DEFAULT_CSV, help="refreshed file to merge into")
+    merge.add_argument("--ours", required=True, help="our copy, holding the new rows")
+    merge.set_defaults(func=cmd_merge)
 
     render = subparsers.add_parser("render", help="regenerate COVERAGE.md from the CSV")
     render.add_argument("--csv", default=DEFAULT_CSV)
