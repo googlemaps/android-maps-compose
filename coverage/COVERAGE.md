@@ -15,7 +15,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `a24cc53` (#1000), recorded 2026-09-15T18:47:12Z.
+Measured at `2266449` (#999), recorded 2026-09-16T10:24:19Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -28,7 +28,7 @@ Measured at `a24cc53` (#1000), recorded 2026-09-15T18:47:12Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`, covering the modules that own androidTest sources. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. `maps-compose` and `maps-compose-utils` are not listed: they have no instrumentation tests of their own, and their code is exercised through `maps-app`.
 
-Measured at `a24cc53` (#1000), recorded 2026-09-15T18:47:12Z.
+Measured at `2266449` (#999), recorded 2026-09-16T10:24:19Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -42,5 +42,6 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-09-16 | `2266449` | #999 | 0.42% | 0.00 | 20.87% | 0.00 | chore(deps): bump androidx.compose:compose-bom |
 | 2026-09-15 | `a24cc53` | #1000 | 0.42% | 0.00 | 20.87% | n/a | ci: record unit and instrumentation test coverage history |
 | 2026-09-15 | `2344932` | #994 | 0.42% | n/a | n/a | n/a | build: migrate unit test coverage from JaCoCo to Kover |
