@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Records unit test coverage in coverage/history.csv after every merge to main,
-# so coverage can be tracked over time. Release-please commits and the
-# workflow's own commits are skipped.
+# Records test coverage after every merge to main.
+#
+# The history is written to the "coverage-history" branch, never to main.
+# Branch protection on main uses strict required status checks, so any commit
+# pushed to main marks every open pull request out-of-date and forces
+# contributors to update their branch and re-run CI. Keeping the data on its
+# own branch means recording coverage costs contributors nothing.
 name: Record coverage history
 
 on:
@@ -25,31 +29,46 @@ on:
 permissions:
   contents: read
 
-# Serialize runs so two quick merges cannot race on pushing the history file.
+# Serialize runs so two merges cannot race on pushing the history branch.
 concurrency:
   group: coverage-history
   cancel-in-progress: false
 
+env:
+  # Branch holding history.csv and COVERAGE.md.
+  DATA_BRANCH: coverage-history
+  # How long to wait for the pull request's emulator run to finish before
+  # giving up and recording unit coverage only. instrumentation-test.yml takes
+  # 16-28 minutes, while the required checks finish in 6-13, so a pull request
+  # merged as soon as it is green usually leaves the emulator still running.
+  INSTRUMENTATION_WAIT_SECONDS: '1800'
+  # How often to re-check that run while waiting.
+  INSTRUMENTATION_POLL_SECONDS: '60'
+
 jobs:
   record:
-    # Skip release-please's release commits and this workflow's own commits.
-    # (The commit below carries [skip ci] as well, and pushes made with
-    # GITHUB_TOKEN do not trigger workflows, so this is belt and braces.)
+    # Skip release-please's release commits. The history no longer lands on
+    # main, so this workflow cannot retrigger itself.
     if: >-
-      !startsWith(github.event.head_commit.message, 'chore(main): release') &&
-      !startsWith(github.event.head_commit.message, 'chore: update coverage history')
+      !startsWith(github.event.head_commit.message, 'chore(main): release')
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      actions: read      # to download the pull request's instrumentation artifact
-      pull-requests: read
+      actions: read      # to find and download the emulator run's artifact
 
     steps:
-      # Credentials are deliberately persisted here: the final step pushes the
-      # updated history back to main, so persist-credentials must stay enabled.
       - name: Checkout Repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
+
+      # Credentials are deliberately persisted on this checkout only: the steps
+      # below push the updated history to the data branch.
+      - name: Checkout coverage history branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.DATA_BRANCH }}
+          path: coverage-data
           token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO || secrets.GITHUB_TOKEN }}
 
       - name: Set up JDK 21
@@ -61,69 +80,117 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
-      - name: Run unit tests and generate coverage reports
-        run: ./gradlew koverXmlReportDebug --stacktrace
-
-      # Instrumentation tests need an emulator on an expensive macOS runner, and
-      # they already ran on the pull request. Reuse that run's artifact instead
-      # of running the emulator again. Best effort: if the PR predates this
-      # workflow, the run failed, or the artifact expired, only unit coverage is
-      # recorded for this commit.
-      - name: Download instrumentation coverage from the pull request run
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-        run: |
-          PR=$(git log -1 --pretty=%s | sed -n 's/.*(#\([0-9]\{1,\}\))$/\1/p')
-          if [ -z "$PR" ]; then
-            echo "No pull request in the commit subject; skipping instrumentation."
-            exit 0
-          fi
-
-          # A pull_request-triggered run is keyed by the PR's head commit, not
-          # by the squash commit that landed on main.
-          HEAD_SHA=$(gh api "repos/$REPO/pulls/$PR" --jq .head.sha)
-          RUN=$(gh api \
-            "repos/$REPO/actions/workflows/instrumentation-test.yml/runs?head_sha=$HEAD_SHA" \
-            --jq '[.workflow_runs[] | select(.conclusion == "success")] | first | .id // empty')
-          if [ -z "$RUN" ]; then
-            echo "No successful instrumentation run for $HEAD_SHA; skipping."
-            exit 0
-          fi
-
-          gh run download "$RUN" --repo "$REPO" \
-            --name instrumentation-coverage --dir instrumentation-coverage
-          ls -l instrumentation-coverage
-
-      - name: Append to coverage history
-        env:
-          COMMIT_SHA: ${{ github.sha }}
+      - name: Resolve commit metadata
+        id: meta
         run: |
           SUBJECT=$(git log -1 --pretty=%s)
           # Squash-merged PRs end their subject with "(#123)". The number is
           # recorded in its own column, so drop it from the subject text.
           PR=$(printf '%s' "$SUBJECT" | sed -n 's/.*(#\([0-9]\{1,\}\))$/\1/p')
           SUBJECT=$(printf '%s' "$SUBJECT" | sed 's/ (#[0-9]\{1,\})$//')
+          {
+            echo "pr=$PR"
+            echo "subject<<EOF"
+            echo "$SUBJECT"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-          python3 .github/scripts/coverage_history.py append --suite unit \
-            --commit "$COMMIT_SHA" --pr "$PR" --subject "$SUBJECT"
+      - name: Run unit tests and generate coverage reports
+        run: ./gradlew koverXmlReportDebug --stacktrace
 
-          python3 .github/scripts/coverage_history.py append --suite instrumentation \
-            --reports 'instrumentation-coverage/*.xml' --optional \
-            --commit "$COMMIT_SHA" --pr "$PR" --subject "$SUBJECT"
-
-          python3 .github/scripts/coverage_history.py render
-
-      - name: Commit coverage history
+      # Record unit coverage straight away. If anything below goes wrong, this
+      # commit has already been captured.
+      - name: Record unit coverage
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ steps.meta.outputs.pr }}
+          SUBJECT: ${{ steps.meta.outputs.subject }}
         run: |
-          git config user.name 'googlemaps-bot'
-          git config user.email 'googlemaps-bot@google.com'
-          git add coverage/history.csv coverage/COVERAGE.md
-          if git diff --staged --quiet; then
-            echo "Coverage history unchanged; nothing to commit."
+          python3 .github/scripts/coverage_history.py append --suite unit \
+            --csv coverage-data/history.csv \
+            --commit "$COMMIT_SHA" --pr "$PR_NUMBER" --subject "$SUBJECT"
+          python3 .github/scripts/coverage_history.py render \
+            --csv coverage-data/history.csv --out coverage-data/COVERAGE.md
+
+      - name: Push unit coverage
+        run: |
+          .github/scripts/push_coverage_history.sh 'chore: record unit coverage'
+
+      # The emulator already ran on the pull request, so its artifact is reused
+      # instead of booting another macOS runner. It is usually still running at
+      # merge time, so wait for it rather than recording the commit as having
+      # no instrumentation data at all.
+      - name: Wait for the pull request's emulator run
+        id: emulator
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.meta.outputs.pr }}
+        run: |
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No pull request in the commit subject; skipping instrumentation."
             exit 0
           fi
-          git commit -m 'chore: update coverage history [skip ci]'
-          git pull --rebase origin main
-          git push origin HEAD:main
+
+          # A pull_request-triggered run is keyed by the PR's head commit, not
+          # by the squash commit that landed on main.
+          HEAD_SHA=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq .head.sha)
+          RUNS="repos/$REPO/actions/workflows/instrumentation-test.yml/runs?head_sha=$HEAD_SHA"
+
+          DEADLINE=$(( $(date +%s) + INSTRUMENTATION_WAIT_SECONDS ))
+          while :; do
+            INFO=$(gh api "$RUNS" --jq '.workflow_runs[0] | "\(.id) \(.status) \(.conclusion)"' 2>/dev/null || true)
+            if [ -z "$INFO" ] || [ "$INFO" = "null" ]; then
+              echo "No emulator run exists for $HEAD_SHA; skipping instrumentation."
+              exit 0
+            fi
+            set -- $INFO
+            ID="$1"; STATUS="$2"; CONCLUSION="$3"
+
+            if [ "$STATUS" = "completed" ]; then
+              if [ "$CONCLUSION" = "success" ]; then
+                echo "run_id=$ID" >> "$GITHUB_OUTPUT"
+                echo "Emulator run $ID succeeded."
+                exit 0
+              fi
+              echo "Emulator run $ID finished as '$CONCLUSION'; skipping instrumentation."
+              exit 0
+            fi
+
+            if [ "$(date +%s)" -ge "$DEADLINE" ]; then
+              echo "Emulator run $ID still '$STATUS' after the wait window; skipping."
+              echo "Instrumentation coverage will be missing for this commit."
+              exit 0
+            fi
+
+            echo "Emulator run $ID is '$STATUS'; re-checking in ${INSTRUMENTATION_POLL_SECONDS}s."
+            sleep "$INSTRUMENTATION_POLL_SECONDS"
+          done
+
+      - name: Record instrumentation coverage
+        if: steps.emulator.outputs.run_id != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ steps.emulator.outputs.run_id }}
+          COMMIT_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ steps.meta.outputs.pr }}
+          SUBJECT: ${{ steps.meta.outputs.subject }}
+        run: |
+          gh run download "$RUN_ID" --repo "$REPO" \
+            --name instrumentation-coverage --dir instrumentation-coverage
+          ls -l instrumentation-coverage
+
+          python3 .github/scripts/coverage_history.py append --suite instrumentation \
+            --csv coverage-data/history.csv \
+            --reports 'instrumentation-coverage/*.xml' --optional \
+            --commit "$COMMIT_SHA" --pr "$PR_NUMBER" --subject "$SUBJECT"
+          python3 .github/scripts/coverage_history.py render \
+            --csv coverage-data/history.csv --out coverage-data/COVERAGE.md
+
+      - name: Push instrumentation coverage
+        if: steps.emulator.outputs.run_id != ''
+        run: |
+          .github/scripts/push_coverage_history.sh 'chore: record instrumentation coverage'
