@@ -10,3 +10,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-09-15T18:47:12Z,a24cc53,1000,ci: record unit and instrumentation test coverage history,instrumentation,maps-app,509,2338,21.77,80,402,19.9,4799,19503,24.61
 2026-09-15T18:47:12Z,a24cc53,1000,ci: record unit and instrumentation test coverage history,instrumentation,maps-compose-widgets,10,149,6.71,0,48,0.0,62,892,6.95
 2026-09-15T18:47:12Z,a24cc53,1000,ci: record unit and instrumentation test coverage history,instrumentation,TOTAL,519,2487,20.87,80,450,17.78,4861,20395,23.83
+2026-09-17T21:45:37Z,2405308,1006,ci: move coverage history off main and wait for the emulator run,unit,maps-compose,0,1953,0.0,0,1800,0.0,0,25121,0.0
+2026-09-17T21:45:37Z,2405308,1006,ci: move coverage history off main and wait for the emulator run,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6602,1.06
+2026-09-17T21:45:37Z,2405308,1006,ci: move coverage history off main and wait for the emulator run,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1491,0.0
+2026-09-17T21:45:37Z,2405308,1006,ci: move coverage history off main and wait for the emulator run,unit,TOTAL,11,2639,0.42,2,2280,0.09,70,33214,0.21
