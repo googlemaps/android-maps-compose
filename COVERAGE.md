@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `2405308` (#1006), recorded 2026-09-17T21:45:37Z.
+Measured at `0eae049` (#996), recorded 2026-09-18T21:29:12Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -52,6 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-09-18 | `0eae049` | #996 | 0.42% | 0.00 | n/a | n/a | chore(deps): bump github/codeql-action/upload-sarif |
 | 2026-09-17 | `2405308` | #1006 | 0.42% | 0.00 | 20.87% | 0.00 | ci: move coverage history off main and wait for the emulator run |
 | 2026-09-15 | `a24cc53` | #1000 | 0.42% | 0.00 | 20.87% | n/a | ci: record unit and instrumentation test coverage history |
 | 2026-09-15 | `2344932` | #994 | 0.42% | n/a | n/a | n/a | build: migrate unit test coverage from JaCoCo to Kover |
