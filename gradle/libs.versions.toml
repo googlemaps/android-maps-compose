@@ -8,7 +8,7 @@ androidMinSdk = "23"
 androidTargetSdk = "37"
 
 agp = "9.4.0"
-dependencyAnalysis = "3.19.1"
+dependencyAnalysis = "3.19.2"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.37.0"
 kotlin = "2.4.10"
