@@ -19,7 +19,7 @@ versions = "0.61.0"
 activitycompose = "1.13.0"
 androidx-core = "1.19.0"
 androidx-startup = "1.2.0"
-compose-bom = "2026.08.00"
+compose-bom = "2026.09.00"
 constraintlayout = "2.2.2"
 
 # Material
