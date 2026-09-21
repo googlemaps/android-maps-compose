@@ -29,6 +29,9 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -45,10 +48,42 @@ jobs:
       uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
 
     - name: Build modules
-      run: ./gradlew build jacocoTestReport -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:generateReleaseScreenshotTestConfig --stacktrace
+      run: ./gradlew build koverXmlReportDebug -x :maps-app:generateDebugScreenshotTestConfig -x :maps-app:generateReleaseScreenshotTestConfig --stacktrace
 
     - name: Run Screenshot Tests
       run: ./gradlew :maps-app:validateDebugScreenshotTest
+
+    # Post (or update) a single sticky comment showing how this PR moves unit
+    # coverage relative to the last entry recorded on main. Instrumentation
+    # coverage gets its own comment from instrumentation-test.yml. Pull requests
+    # from forks get a read-only token and cannot comment, so they are skipped.
+    - name: Comment coverage delta
+      continue-on-error: true
+      if: >-
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        PR: ${{ github.event.pull_request.number }}
+        MARKER: '<!-- coverage-history-comment -->'
+        # Bound through the environment rather than expanded into the script:
+        # a branch name can contain shell metacharacters.
+        BASE_REF: ${{ github.base_ref }}
+      run: |
+        python3 .github/scripts/coverage_history.py compare --suite unit \
+          --base "$BASE_REF" --out coverage-comment.md
+
+        # Reuse the existing comment if this workflow already posted one.
+        ID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+          --jq "[.[] | select(.body | startswith(\"$MARKER\"))] | first | .id // empty")
+        if [ -n "$ID" ]; then
+          gh api --method PATCH "repos/$REPO/issues/comments/$ID" \
+            -F body=@coverage-comment.md
+        else
+          gh api --method POST "repos/$REPO/issues/$PR/comments" \
+            -F body=@coverage-comment.md
+        fi
 
     - name: Upload build reports
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

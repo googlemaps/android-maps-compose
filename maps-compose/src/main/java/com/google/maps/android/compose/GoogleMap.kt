@@ -89,7 +89,7 @@ import kotlinx.coroutines.launch
  * @param onPOIClick lambda invoked when a POI is clicked
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
- * @param mapColorScheme Defines the color scheme for the Map.
+ * @param mapColorScheme Defines the color scheme for the Map. Defaults to [ComposeMapColorScheme.FOLLOW_SYSTEM].
  * @param content the content of the map
  */
 @Composable
@@ -111,7 +111,7 @@ public fun GoogleMap(
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = DefaultMapContentPadding,
-    mapColorScheme: ComposeMapColorScheme? = null,
+    mapColorScheme: ComposeMapColorScheme? = ComposeMapColorScheme.FOLLOW_SYSTEM,
     mapViewFactory: (Context, GoogleMapOptions) -> MapView = ::MapView,
     content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
