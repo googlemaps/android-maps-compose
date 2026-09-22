@@ -35,17 +35,25 @@ DATA_DIR="${DATA_DIR:-coverage-data}"
 DATA_BRANCH="${DATA_BRANCH:-coverage-history}"
 SCRIPT="${SCRIPT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/coverage_history.py}"
 
+# Every generated file published on the data branch. COVERAGE.md and the badge
+# are both derived from history.csv, so they are regenerated, not merged.
+FILES=(history.csv COVERAGE.md coverage-badge.json)
+
 cd "$DATA_DIR"
 
 git config user.name 'googlemaps-bot'
 git config user.email 'googlemaps-bot@google.com'
 
-if git diff --quiet -- history.csv COVERAGE.md; then
+# Stage first and compare the index: a newly generated file is untracked, and
+# "git diff" does not see untracked files, so checking before staging would
+# skip the commit the first time a new output appears.
+git add -- "${FILES[@]}"
+
+if git diff --cached --quiet -- "${FILES[@]}"; then
   echo "Coverage history unchanged; nothing to commit."
   exit 0
 fi
 
-git add history.csv COVERAGE.md
 git commit -m "$MESSAGE"
 
 for attempt in 1 2 3; do
@@ -65,13 +73,15 @@ for attempt in 1 2 3; do
 
   python3 "$SCRIPT" merge --csv history.csv --ours "$OURS"
   python3 "$SCRIPT" render --csv history.csv --out COVERAGE.md
+  python3 "$SCRIPT" badge --csv history.csv --out coverage-badge.json
 
-  if git diff --quiet -- history.csv COVERAGE.md; then
+  git add -- "${FILES[@]}"
+
+  if git diff --cached --quiet -- "${FILES[@]}"; then
     echo "Our rows are already on $DATA_BRANCH; nothing left to push."
     exit 0
   fi
 
-  git add history.csv COVERAGE.md
   git commit -m "$MESSAGE"
 done
 

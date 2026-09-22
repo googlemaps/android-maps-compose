@@ -2,6 +2,7 @@
 ![Release](https://github.com/googlemaps/android-maps-compose/workflows/Release/badge.svg)
 ![Stable](https://img.shields.io/badge/stability-stable-green)
 [![Tests/Build](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml)
+[![Instrumented coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgooglemaps%2Fandroid-maps-compose%2Fcoverage-history%2Fcoverage-badge.json)](https://github.com/googlemaps/android-maps-compose/blob/coverage-history/COVERAGE.md)
 
 ![Contributors](https://img.shields.io/github/contributors/googlemaps/android-maps-compose?color=green)
 [![License](https://img.shields.io/github/license/googlemaps/android-maps-compose?color=blue)][license]
