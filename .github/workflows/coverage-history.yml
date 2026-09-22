@@ -35,7 +35,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # Branch holding history.csv and COVERAGE.md.
+  # Branch holding history.csv, COVERAGE.md and coverage-badge.json.
   DATA_BRANCH: coverage-history
   # How long to wait for the pull request's emulator run to finish before
   # giving up and recording unit coverage only. instrumentation-test.yml takes
@@ -111,6 +111,8 @@ jobs:
             --commit "$COMMIT_SHA" --pr "$PR_NUMBER" --subject "$SUBJECT"
           python3 .github/scripts/coverage_history.py render \
             --csv coverage-data/history.csv --out coverage-data/COVERAGE.md
+          python3 .github/scripts/coverage_history.py badge \
+            --csv coverage-data/history.csv --out coverage-data/coverage-badge.json
 
       - name: Push unit coverage
         run: |
@@ -189,6 +191,8 @@ jobs:
             --commit "$COMMIT_SHA" --pr "$PR_NUMBER" --subject "$SUBJECT"
           python3 .github/scripts/coverage_history.py render \
             --csv coverage-data/history.csv --out coverage-data/COVERAGE.md
+          python3 .github/scripts/coverage_history.py badge \
+            --csv coverage-data/history.csv --out coverage-data/coverage-badge.json
 
       - name: Push instrumentation coverage
         if: steps.emulator.outputs.run_id != ''
