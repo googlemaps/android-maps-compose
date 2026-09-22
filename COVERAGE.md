@@ -38,13 +38,13 @@ Measured at `b0d6420` (#1009), recorded 2026-09-22T18:23:07Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`, covering the modules that own androidTest sources. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. `maps-compose` and `maps-compose-utils` are not listed: they have no instrumentation tests of their own, and their code is exercised through `maps-app`.
 
-Measured at `2405308` (#1006), recorded 2026-09-17T21:45:40Z.
+Measured at `b0d6420` (#1009), recorded 2026-09-22T18:23:10Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 509/2,338 | 21.77% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
+| `maps-app` | 508/2,338 | 21.73% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
 | `maps-compose-widgets` | 10/149 | 6.71% | `█░░░░░░░░░░░░░░░░░░░` | 0/48 | 0.00% |
-| **TOTAL** | 519/2,487 | 20.87% | `████░░░░░░░░░░░░░░░░` | 80/450 | 17.78% |
+| **TOTAL** | 518/2,487 | 20.83% | `████░░░░░░░░░░░░░░░░` | 80/450 | 17.78% |
 
 ## Trend (last 30 commits)
 
@@ -52,7 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-09-22 | `b0d6420` | #1009 | 0.42% | 0.00 | n/a | n/a | feat(ci): publish an instrumented coverage badge |
+| 2026-09-22 | `b0d6420` | #1009 | 0.42% | 0.00 | 20.83% | n/a | feat(ci): publish an instrumented coverage badge |
 | 2026-09-18 | `0eae049` | #996 | 0.42% | 0.00 | n/a | n/a | chore(deps): bump github/codeql-action/upload-sarif |
 | 2026-09-17 | `2405308` | #1006 | 0.42% | 0.00 | 20.87% | 0.00 | ci: move coverage history off main and wait for the emulator run |
 | 2026-09-15 | `a24cc53` | #1000 | 0.42% | 0.00 | 20.87% | n/a | ci: record unit and instrumentation test coverage history |

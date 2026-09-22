@@ -25,3 +25,6 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-09-22T18:23:07Z,b0d6420,1009,feat(ci): publish an instrumented coverage badge,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6602,1.06
 2026-09-22T18:23:07Z,b0d6420,1009,feat(ci): publish an instrumented coverage badge,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1491,0.0
 2026-09-22T18:23:07Z,b0d6420,1009,feat(ci): publish an instrumented coverage badge,unit,TOTAL,11,2639,0.42,2,2280,0.09,70,33214,0.21
+2026-09-22T18:23:10Z,b0d6420,1009,feat(ci): publish an instrumented coverage badge,instrumentation,maps-app,508,2338,21.73,80,402,19.9,4796,19503,24.59
+2026-09-22T18:23:10Z,b0d6420,1009,feat(ci): publish an instrumented coverage badge,instrumentation,maps-compose-widgets,10,149,6.71,0,48,0.0,62,892,6.95
+2026-09-22T18:23:10Z,b0d6420,1009,feat(ci): publish an instrumented coverage badge,instrumentation,TOTAL,518,2487,20.83,80,450,17.78,4858,20395,23.82
