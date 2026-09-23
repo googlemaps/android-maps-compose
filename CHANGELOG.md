@@ -1,5 +1,12 @@
 # Changelog
 
+## [8.7.0](https://github.com/googlemaps/android-maps-compose/compare/v8.6.0...v8.7.0) (2026-09-23)
+
+
+### Features
+
+* **ci:** publish an instrumented coverage badge ([#1009](https://github.com/googlemaps/android-maps-compose/issues/1009)) ([b0d6420](https://github.com/googlemaps/android-maps-compose/commit/b0d64204c8e30c36725e71decccd8fb2662c3dc8))
+
 ## [8.6.0](https://github.com/googlemaps/android-maps-compose/compare/v8.5.0...v8.6.0) (2026-09-03)
 
 
