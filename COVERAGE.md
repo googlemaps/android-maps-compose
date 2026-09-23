@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `b0d6420` (#1009), recorded 2026-09-22T18:23:07Z.
+Measured at `74aa729` (#1008), recorded 2026-09-23T19:50:40Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -52,6 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-09-23 | `74aa729` | #1008 | 0.42% | 0.00 | n/a | n/a | ci: group dependabot minor and patch updates |
 | 2026-09-22 | `b0d6420` | #1009 | 0.42% | 0.00 | 20.83% | n/a | feat(ci): publish an instrumented coverage badge |
 | 2026-09-18 | `0eae049` | #996 | 0.42% | 0.00 | n/a | n/a | chore(deps): bump github/codeql-action/upload-sarif |
 | 2026-09-17 | `2405308` | #1006 | 0.42% | 0.00 | 20.87% | 0.00 | ci: move coverage history off main and wait for the emulator run |
