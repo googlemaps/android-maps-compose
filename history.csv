@@ -32,3 +32,6 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-09-23T19:50:40Z,74aa729,1008,ci: group dependabot minor and patch updates,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6602,1.06
 2026-09-23T19:50:40Z,74aa729,1008,ci: group dependabot minor and patch updates,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1491,0.0
 2026-09-23T19:50:40Z,74aa729,1008,ci: group dependabot minor and patch updates,unit,TOTAL,11,2639,0.42,2,2280,0.09,70,33214,0.21
+2026-09-23T19:50:43Z,74aa729,1008,ci: group dependabot minor and patch updates,instrumentation,maps-app,508,2338,21.73,79,402,19.65,4795,19503,24.59
+2026-09-23T19:50:43Z,74aa729,1008,ci: group dependabot minor and patch updates,instrumentation,maps-compose-widgets,10,149,6.71,0,48,0.0,62,892,6.95
+2026-09-23T19:50:43Z,74aa729,1008,ci: group dependabot minor and patch updates,instrumentation,TOTAL,518,2487,20.83,79,450,17.56,4857,20395,23.81
