@@ -35,8 +35,8 @@ def sanitize_content(text: str) -> str:
     return text.replace("</issue_content>", "&lt;/issue_content&gt;").replace("<issue_content>", "&lt;issue_content&gt;")
 
 def get_gemini_response(api_key, system_instruction, user_content):
-    # Using the stable Gemini 3.5 Flash
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={api_key}"
+    model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
     headers = {'Content-Type': 'application/json'}
     data = {
         "system_instruction": {
