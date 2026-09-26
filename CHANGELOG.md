@@ -1,5 +1,22 @@
 # Changelog
 
+## [9.0.0-rc03](https://github.com/googlemaps/android-maps-compose/compare/v8.6.0...v9.0.0-rc03) (2026-09-15)
+
+### Chores
+
+* Update android-maps-utils dependency to 6.0.0-rc04
+* Migrate from deprecated android-maps-ktx to canonical android-maps-utils extensions
+* Retain Java 11 bytecode target for broad compatibility
+* Replaced legacy JaCoCo coverage with Kover
+
+## [9.0.0-rc02](https://github.com/googlemaps/android-maps-compose/compare/v8.6.0...v9.0.0-rc02) (2026-08-31)
+
+### Chores
+
+* Rebase on main branch (including ViewTreeLifecycleOwner/SavedStateRegistryOwner pin on MapView #972 and 8.6.0 releases)
+* Update android-maps-utils dependency to 6.0.0-rc03
+* Migrate from deprecated android-maps-ktx to canonical android-maps-utils extensions
+
 ## [8.6.0](https://github.com/googlemaps/android-maps-compose/compare/v8.5.0...v8.6.0) (2026-09-03)
 
 
