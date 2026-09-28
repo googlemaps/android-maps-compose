@@ -59,7 +59,7 @@ class GoogleMapViewClusteringTests {
         clusterManagerHolder: Array<ClusterManager<MyItem>?>,
         content: @Composable () -> Unit
     ): Marker {
-        check(hasValidApiKey) { "Maps API key not specified" }
+        assumeValidApiKey()
         val countDownLatch = CountDownLatch(1)
 
         composeTestRule.setContent {

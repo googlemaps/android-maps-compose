@@ -53,7 +53,7 @@ class GoogleMapViewTests {
     private var mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM
 
     private fun initMap(content: @Composable () -> Unit = {}) {
-        check(hasValidApiKey) { "Maps API key not specified" }
+        assumeValidApiKey()
         val countDownLatch = CountDownLatch(1)
 
         val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext

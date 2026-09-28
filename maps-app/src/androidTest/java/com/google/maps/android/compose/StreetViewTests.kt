@@ -43,6 +43,8 @@ class StreetViewTests {
 
     @OptIn(MapsExperimentalFeature::class)
     private fun initStreetView(onClick: (StreetViewPanoramaOrientation) -> Unit = {}) {
+        assumeValidApiKey()
+
         composeTestRule.setContent {
             StreetView(
                 Modifier.semantics { contentDescription = "StreetView" },

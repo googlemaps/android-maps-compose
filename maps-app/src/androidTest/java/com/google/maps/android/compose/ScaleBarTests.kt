@@ -49,7 +49,7 @@ class ScaleBarTests {
     private lateinit var density: Density
 
     private fun initScaleBar(initialZoom: Float, initialPosition: LatLng) {
-        check(hasValidApiKey) { "Maps API key not specified" }
+        assumeValidApiKey()
 
         val countDownLatch = CountDownLatch(1)
 
