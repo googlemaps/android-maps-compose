@@ -61,6 +61,7 @@ jobs:
       - name: Run Auto-Fix Script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           ISSUE_TITLE: ${{ github.event.issue.title || github.event.inputs.title }}
           ISSUE_BODY: ${{ github.event.issue.body || github.event.inputs.body }}
           ISSUE_NUMBER: ${{ github.event.issue.number || github.event.inputs.number }}
