@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `61c3cf0` (#1024), recorded 2026-10-01T20:30:19Z.
+Measured at `597c8db` (#1023), recorded 2026-10-01T22:29:21Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -36,7 +36,7 @@ Measured at `61c3cf0` (#1024), recorded 2026-10-01T20:30:19Z.
 
 ### Instrumentation tests
 
-Emulator tests run by `./gradlew createDebugCoverageReport`, covering the modules that own androidTest sources. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. `maps-compose` and `maps-compose-utils` are not listed: they have no instrumentation tests of their own, and their code is exercised through `maps-app`.
+Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
 Measured at `61c3cf0` (#1024), recorded 2026-10-01T20:48:33Z.
 
@@ -52,6 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-01 | `597c8db` | #1023 | 0.42% | 0.00 | n/a | n/a | test: report instrumentation coverage of the library modules |
 | 2026-10-01 | `61c3cf0` | #1024 | 0.42% | 0.00 | 20.79% | 0.00 | ci: compare unit coverage against the coverage-history branch |
 | 2026-10-01 | `0c49e8d` | #1002 | 0.42% | 0.00 | 20.79% | 0.00 | feat!: migrate from android-maps-ktx to android-maps-utils (v9.0.0) |
 | 2026-10-01 | `29a87be` | #1007 | 0.42% | 0.00 | 20.79% | -0.08 | test: add end-to-end smoke tests covering every demo activity |
