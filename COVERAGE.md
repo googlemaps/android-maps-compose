@@ -38,13 +38,13 @@ Measured at `29a87be` (#1007), recorded 2026-10-01T18:22:30Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`, covering the modules that own androidTest sources. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. `maps-compose` and `maps-compose-utils` are not listed: they have no instrumentation tests of their own, and their code is exercised through `maps-app`.
 
-Measured at `1bbf27e` (#995), recorded 2026-10-01T17:59:52Z.
+Measured at `29a87be` (#1007), recorded 2026-10-01T18:22:34Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 509/2,338 | 21.77% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
+| `maps-app` | 508/2,342 | 21.69% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
 | `maps-compose-widgets` | 10/149 | 6.71% | `█░░░░░░░░░░░░░░░░░░░` | 0/48 | 0.00% |
-| **TOTAL** | 519/2,487 | 20.87% | `████░░░░░░░░░░░░░░░░` | 80/450 | 17.78% |
+| **TOTAL** | 518/2,491 | 20.79% | `████░░░░░░░░░░░░░░░░` | 80/450 | 17.78% |
 
 ## Trend (last 30 commits)
 
@@ -52,7 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-01 | `29a87be` | #1007 | 0.42% | 0.00 | n/a | n/a | test: add end-to-end smoke tests covering every demo activity |
+| 2026-10-01 | `29a87be` | #1007 | 0.42% | 0.00 | 20.79% | -0.08 | test: add end-to-end smoke tests covering every demo activity |
 | 2026-10-01 | `1bbf27e` | #995 | 0.42% | 0.00 | 20.87% | +0.04 | ci: support GEMINI_MODEL repository variable in triage-issue workflow |
 | 2026-10-01 | `5c38780` | #1019 | 0.42% | 0.00 | 20.83% | -0.04 | ci: merge generated docs PRs from the docs workflow |
 | 2026-10-01 | `109b74a` | #1020 | 0.42% | 0.00 | 20.87% | 0.00 | test: wait for clustered markers instead of map load in clustering tests |
