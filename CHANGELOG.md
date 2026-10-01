@@ -1,5 +1,17 @@
 # Changelog
 
+## [9.0.0](https://github.com/googlemaps/android-maps-compose/compare/v8.6.0...v9.0.0) (2026-10-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate from android-maps-ktx to android-maps-utils (v9.0.0) ([#1002](https://github.com/googlemaps/android-maps-compose/issues/1002))
+
+### Features
+
+* **ci:** publish an instrumented coverage badge ([#1009](https://github.com/googlemaps/android-maps-compose/issues/1009)) ([b0d6420](https://github.com/googlemaps/android-maps-compose/commit/b0d64204c8e30c36725e71decccd8fb2662c3dc8))
+* migrate from android-maps-ktx to android-maps-utils (v9.0.0) ([#1002](https://github.com/googlemaps/android-maps-compose/issues/1002)) ([0c49e8d](https://github.com/googlemaps/android-maps-compose/commit/0c49e8dd8c135f57e38cad13d4995dfe74c050b7))
+
 ## [8.6.0](https://github.com/googlemaps/android-maps-compose/compare/v8.5.0...v8.6.0) (2026-09-03)
 
 
