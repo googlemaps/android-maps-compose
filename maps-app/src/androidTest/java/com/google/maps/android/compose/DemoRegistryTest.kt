@@ -48,6 +48,28 @@ class DemoRegistryTest {
     }
 
     /**
+     * The reverse of [everyDemoIsDeclaredInTheManifest]: an activity declared in the manifest but
+     * missing from the menu builds cleanly and is simply unreachable, and no smoke test covers it.
+     */
+    @Test
+    fun everyDeclaredActivityIsInTheMenu() {
+        val demoPackage = MainActivity::class.java.`package`!!.name
+
+        @Suppress("DEPRECATION")
+        val declared = context.packageManager
+            .getPackageInfo(context.packageName, PackageManager.GET_ACTIVITIES)
+            .activities
+            .orEmpty()
+            .map { it.name }
+            .filter { it.startsWith("$demoPackage.") }
+            .toSet() - MainActivity::class.java.name
+
+        val inMenu = demos.map { it.kClass.java.name }.toSet()
+
+        assertThat(declared - inMenu).isEmpty()
+    }
+
+    /**
      * The demo list launches each entry with a bare [android.content.Intent], which only works
      * for activities the system will start from the sample's own task.
      */
