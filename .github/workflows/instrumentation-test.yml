@@ -24,10 +24,12 @@ on:
 
 jobs:
   run-instrumentation-test:
-    runs-on: macOS-latest-large # enables hardware acceleration in the virtual machine
+    # Ubuntu runners support KVM, which boots the API 36 emulator in about a minute. On
+    # macOS-latest-large it took over five minutes and the job hit its timeout.
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
     - name: Checkout Repo
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -56,6 +58,12 @@ jobs:
 
     - name: Build debug
       run: ./gradlew assembleDebug
+
+    - name: Enable KVM
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
 
     - name: Run instrumentation tests
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
