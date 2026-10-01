@@ -31,7 +31,7 @@ class RecompositionActivityTests {
 
     @Test
     fun testChangeLocationButton_MovesCameraToNewLocation() {
-        check(hasValidApiKey) { "Maps API key not specified" }
+        assumeValidApiKey()
         val initialPosition = singapore
         val cameraPositionState = CameraPositionState(
             position = CameraPosition.fromLatLngZoom(initialPosition, 11f)

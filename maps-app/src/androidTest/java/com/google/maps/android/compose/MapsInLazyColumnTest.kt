@@ -58,7 +58,7 @@ class MapsInLazyColumnTests {
     private lateinit var cameraPositionStates: Map<MapItemId, CameraPositionState>
 
     private fun initMaps() {
-        check(hasValidApiKey) { "Maps API key not specified" }
+        assumeValidApiKey()
 
         composeTestRule.setContent {
             val lazyListState = rememberLazyListState()

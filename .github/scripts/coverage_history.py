@@ -32,6 +32,7 @@ Kover emits JaCoCo's schema, so one parser handles both. Commands:
   render   regenerate the human-readable COVERAGE.md from that CSV
   compare  render a markdown coverage diff against the last recorded entry,
            for posting on a pull request
+  badge    emit shields.io endpoint JSON for the latest recorded total
 
 Standard library only, so it runs on any CI image without extra setup.
 """
@@ -563,6 +564,55 @@ def cmd_compare(args: argparse.Namespace) -> None:
         print(body)
 
 
+# shields.io endpoint schema: https://shields.io/badges/endpoint-badge
+BADGE_SCHEMA_VERSION = 1
+
+# Floor percentages, highest first. Anything under the last floor is red.
+BADGE_COLORS = (
+    (90.0, "brightgreen"),
+    (75.0, "green"),
+    (60.0, "yellowgreen"),
+    (40.0, "yellow"),
+    (20.0, "orange"),
+)
+
+
+def badge_color(percentage: float) -> str:
+    for floor, color in BADGE_COLORS:
+        if percentage >= floor:
+            return color
+    return "red"
+
+
+def cmd_badge(args: argparse.Namespace) -> None:
+    """Write shields.io endpoint JSON for one suite's latest TOTAL row.
+
+    Read by an endpoint badge in README.md. The file is published on the
+    coverage history branch rather than main, so refreshing the badge costs
+    contributors nothing (see coverage-history.yml for why that matters).
+
+    A suite with no recorded entry yet renders as "unknown" rather than
+    failing, so the badge degrades quietly instead of breaking the README.
+    """
+    total = latest_entry(read_history(args.csv), args.suite).get("TOTAL")
+    if total is None:
+        payload = {"message": "unknown", "color": "lightgrey"}
+    else:
+        percentage = float(total[args.metric])
+        payload = {
+            "message": f"{percentage:.0f}%",
+            "color": badge_color(percentage),
+        }
+
+    payload = {"schemaVersion": BADGE_SCHEMA_VERSION, "label": args.label, **payload}
+    text = json.dumps(payload, indent=2) + "\n"
+    if args.out:
+        with open(args.out, "w", encoding="utf-8") as handle:
+            handle.write(text)
+    else:
+        sys.stdout.write(text)
+
+
 def add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--suite",
@@ -629,6 +679,30 @@ def main() -> None:
         help="hidden marker used to find and update the existing PR comment",
     )
     compare.set_defaults(func=cmd_compare)
+
+    badge = subparsers.add_parser(
+        "badge", help="emit shields.io endpoint JSON for the latest total"
+    )
+    badge.add_argument(
+        "--suite",
+        choices=sorted(SUITES),
+        default="instrumentation",
+        help="which suite to report (default: instrumentation)",
+    )
+    badge.add_argument("--csv", default=DEFAULT_CSV)
+    badge.add_argument("--out", default="", help="write here instead of stdout")
+    badge.add_argument(
+        "--label",
+        default="coverage (instrumented)",
+        help="text on the left half of the badge",
+    )
+    badge.add_argument(
+        "--metric",
+        default="line_pct",
+        choices=("line_pct", "branch_pct", "instruction_pct"),
+        help="which percentage to display (default: line_pct)",
+    )
+    badge.set_defaults(func=cmd_badge)
 
     args = parser.parse_args()
     args.func(args)
