@@ -60,6 +60,23 @@ Note that the library modules currently have almost no unit tests. The bulk of
 the suite is instrumentation tests under `maps-app/src/androidTest`, so the
 `unit` numbers are near zero by nature rather than by regression.
 
+The emulator suite includes a demo smoke test in
+`maps-app/src/androidTest/.../smoke`. `DemoSmokeTest` opens every demo from the
+menu, waits for its map, zooms out and back in, and navigates back.
+`DemoCatalogTest` fails if a demo activity is declared in the manifest but
+missing from the menu, so add new demos to `allActivityGroups` in `Demo.kt` and
+they are covered automatically. To run only the smoke test with a device or
+emulator attached:
+
+```bash
+./gradlew :maps-app:connectedDebugAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.package=com.google.maps.android.compose.smoke
+```
+
+Add `-Pandroid.testInstrumentationRunnerArguments.requireMapLoaded=true` to also
+wait for map tiles to render, which needs a real key. CI sets it when the key
+secret is available.
+
 Running `maps-app` requires a Maps API key: put `MAPS_API_KEY=...` in
 `secrets.properties` at the repo root (see `local.defaults.properties` for the
 template). Never hardcode or commit API keys.
