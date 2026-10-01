@@ -550,7 +550,7 @@ def cmd_compare(args: argparse.Namespace) -> None:
     lines += [
         "",
         f"<sub>Line and branch coverage from {args.suite} test reports. History "
-        f"is recorded in `coverage/history.csv` after each merge to "
+        f"is recorded on the `coverage-history` branch after each merge to "
         f"`{args.base}`.</sub>",
         "",
     ]
