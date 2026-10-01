@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.maps.android.compose
+package com.google.maps.android.compose.smoke
 
 import android.app.Activity
 import android.os.SystemClock
@@ -30,6 +30,12 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import com.google.android.gms.maps.MapView
 import com.google.common.truth.Truth.assertWithMessage
+import com.google.maps.android.compose.ActivityGroup
+import com.google.maps.android.compose.MainActivity
+import com.google.maps.android.compose.StreetViewActivity
+import com.google.maps.android.compose.allActivityGroups
+import com.google.maps.android.compose.demoTestTag
+import com.google.maps.android.compose.groupTestTag
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.google.maps.android.compose
+package com.google.maps.android.compose.smoke
 
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
+import com.google.maps.android.compose.MainActivity
+import com.google.maps.android.compose.allActivityGroups
 import org.junit.Test
 
 /**

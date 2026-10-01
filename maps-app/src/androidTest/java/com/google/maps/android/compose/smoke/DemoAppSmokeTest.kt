@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.google.maps.android.compose
+package com.google.maps.android.compose.smoke
 
+import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
@@ -28,6 +29,8 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.StreetViewPanoramaView
 import com.google.common.truth.Truth.assertThat
 import com.google.common.truth.Truth.assertWithMessage
+import com.google.maps.android.compose.allActivityGroups
+import com.google.maps.android.compose.hasValidApiKey
 import org.junit.After
 import org.junit.Assume.assumeTrue
 import org.junit.Before
@@ -200,11 +203,15 @@ class DemoAppSmokeTest(
      * tiles to render each time. The `GoogleMap` composable registers its loaded callback once,
      * so replacing it means a demo's own `onMapLoaded` stops firing for the rest of the test,
      * which only affects UI such as loading indicators. Demos showing Street View are skipped.
+     *
+     * A map that is fully on screen is preferred: in demos with several maps in a scrolling list,
+     * a map partly off screen may never report that it finished loading.
      */
     private fun ActivityScenario<ComponentActivity>.zoomOutAndBackIn() {
         var mapView: MapView? = null
         onActivity { activity ->
-            mapView = activity.window.decorView.mapSurfaces().filterIsInstance<MapView>().firstOrNull()
+            val mapViews = activity.window.decorView.mapSurfaces().filterIsInstance<MapView>()
+            mapView = mapViews.firstOrNull { it.isFullyOnScreen() } ?: mapViews.firstOrNull()
         }
         val view = mapView ?: return
 
@@ -238,6 +245,13 @@ class DemoAppSmokeTest(
     private fun assertNoUncaughtExceptions() {
         val failure = uncaughtExceptions.firstOrNull() ?: return
         throw AssertionError("$demoName crashed on a background thread", failure)
+    }
+
+    /** True when this view is shown and its whole area is visible on screen. */
+    private fun View.isFullyOnScreen(): Boolean {
+        if (!isShown || width == 0 || height == 0) return false
+        val visible = Rect()
+        return getGlobalVisibleRect(visible) && visible.width() == width && visible.height() == height
     }
 
     /** Depth-first walk collecting every Maps SDK surface below this view. */
