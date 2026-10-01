@@ -38,13 +38,15 @@ Measured at `597c8db` (#1023), recorded 2026-10-01T22:29:21Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `61c3cf0` (#1024), recorded 2026-10-01T20:48:33Z.
+Measured at `597c8db` (#1023), recorded 2026-10-01T22:29:25Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 508/2,342 | 21.69% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
-| `maps-compose-widgets` | 10/149 | 6.71% | `█░░░░░░░░░░░░░░░░░░░` | 0/48 | 0.00% |
-| **TOTAL** | 518/2,491 | 20.79% | `████░░░░░░░░░░░░░░░░` | 80/450 | 17.78% |
+| `maps-app` | 509/2,342 | 21.73% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
+| `maps-compose` | 1,444/2,072 | 69.69% | `██████████████░░░░░░` | 548/1,360 | 40.29% |
+| `maps-compose-utils` | 350/579 | 60.45% | `████████████░░░░░░░░` | 94/320 | 29.38% |
+| `maps-compose-widgets` | 112/149 | 75.17% | `███████████████░░░░░` | 15/48 | 31.25% |
+| **TOTAL** | 2,415/5,142 | 46.97% | `█████████░░░░░░░░░░░` | 737/2,130 | 34.60% |
 
 ## Trend (last 30 commits)
 
@@ -52,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-01 | `597c8db` | #1023 | 0.42% | 0.00 | n/a | n/a | test: report instrumentation coverage of the library modules |
+| 2026-10-01 | `597c8db` | #1023 | 0.42% | 0.00 | 46.97% | +26.18 | test: report instrumentation coverage of the library modules |
 | 2026-10-01 | `61c3cf0` | #1024 | 0.42% | 0.00 | 20.79% | 0.00 | ci: compare unit coverage against the coverage-history branch |
 | 2026-10-01 | `0c49e8d` | #1002 | 0.42% | 0.00 | 20.79% | 0.00 | feat!: migrate from android-maps-ktx to android-maps-utils (v9.0.0) |
 | 2026-10-01 | `29a87be` | #1007 | 0.42% | 0.00 | 20.79% | -0.08 | test: add end-to-end smoke tests covering every demo activity |
