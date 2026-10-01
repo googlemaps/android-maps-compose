@@ -54,7 +54,7 @@ jobs:
       run: ./gradlew :maps-app:validateDebugScreenshotTest
 
     # Post (or update) a single sticky comment showing how this PR moves unit
-    # coverage relative to the last entry recorded on main. Instrumentation
+    # coverage relative to the last entry recorded for main. Instrumentation
     # coverage gets its own comment from instrumentation-test.yml. Pull requests
     # from forks get a read-only token and cannot comment, so they are skipped.
     - name: Comment coverage delta
@@ -71,8 +71,14 @@ jobs:
         # a branch name can contain shell metacharacters.
         BASE_REF: ${{ github.base_ref }}
       run: |
+        # The history lives on the coverage-history branch, not on main. Without
+        # it compare falls back to absolute numbers, so a failed fetch is fine.
+        git fetch --depth=1 origin coverage-history \
+          && git show FETCH_HEAD:history.csv > coverage-baseline.csv \
+          || echo "No coverage history available; reporting absolute numbers."
+
         python3 .github/scripts/coverage_history.py compare --suite unit \
-          --base "$BASE_REF" --out coverage-comment.md
+          --base "$BASE_REF" --csv coverage-baseline.csv --out coverage-comment.md
 
         # Reuse the existing comment if this workflow already posted one.
         ID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
