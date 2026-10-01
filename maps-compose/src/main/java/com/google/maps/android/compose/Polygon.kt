@@ -23,7 +23,7 @@ import com.google.android.gms.maps.model.JointType
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
 import com.google.android.gms.maps.model.Polygon
-import com.google.maps.android.ktx.addPolygon
+import com.google.maps.android.addPolygon
 
 internal class PolygonNode(
     val polygon: Polygon,
