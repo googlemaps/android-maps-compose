@@ -58,7 +58,7 @@ jobs:
         arch: x86
         disable-animations: true
         # The demo smoke tests run in their own workflow, see demo-smoke-test.yml.
-        script: ./gradlew createDebugCoverageReport --stacktrace -Pandroid.testInstrumentationRunnerArguments.notPackage=com.google.maps.android.compose.smoke
+        script: ./gradlew createDebugCoverageReport :maps-app:createLibraryCoverageReports --stacktrace -Pandroid.testInstrumentationRunnerArguments.notPackage=com.google.maps.android.compose.smoke
 
     # Stage the coverage reports flat, named after their module, and publish
     # them so the post-merge "Record coverage history" workflow can read them
@@ -72,6 +72,12 @@ jobs:
         for report in */build/reports/coverage/androidTest/debug/connected/report.xml; do
           [ -e "$report" ] || continue
           cp "$report" "instrumentation-coverage/${report%%/*}.xml"
+        done
+        # Library modules, reported from the coverage data of every emulator test run. This
+        # replaces maps-compose-widgets' own report, which only counted its own tests.
+        for report in maps-app/build/reports/library-coverage/*.xml; do
+          [ -e "$report" ] || continue
+          cp "$report" instrumentation-coverage/
         done
         ls -l instrumentation-coverage
 
@@ -88,7 +94,10 @@ jobs:
       uses: madrapps/jacoco-report@e51ce1f46f7f8b5331593f935e59cbaf44b84920 # v1.8.0
       with:
         paths: |
-          ${{ github.workspace }}/maps-app/build/reports/coverage/androidTest/debug/connected/report.xml
+          ${{ github.workspace }}/maps-app/build/reports/coverage/androidTest/debug/connected/report.xml,
+          ${{ github.workspace }}/maps-app/build/reports/library-coverage/maps-compose.xml,
+          ${{ github.workspace }}/maps-app/build/reports/library-coverage/maps-compose-utils.xml,
+          ${{ github.workspace }}/maps-app/build/reports/library-coverage/maps-compose-widgets.xml
         token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
         min-coverage-overall: 26
         min-coverage-changed-files: 60
