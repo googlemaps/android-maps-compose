@@ -20,41 +20,30 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionContext
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import androidx.core.graphics.createBitmap
 
 @MapsComposeExperimentalApi
 @Composable
 public fun rememberComposeBitmapDescriptor(
     vararg keys: Any,
     content: @Composable () -> Unit,
-): BitmapDescriptor {
+): BitmapDescriptor? {
+    var bitmapDescriptor by remember { mutableStateOf<BitmapDescriptor?>(null) }
     val parent = LocalView.current as ViewGroup
-    val compositionContext = rememberCompositionContext()
-    val currentContent by rememberUpdatedState(content)
-
-    return remember(parent, compositionContext, currentContent, *keys) {
-        renderComposableToBitmapDescriptor(parent, compositionContext, currentContent)
-    }
-}
-
-private val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-
-private fun renderComposableToBitmapDescriptor(
-    parent: ViewGroup,
-    compositionContext: CompositionContext,
-    content: @Composable () -> Unit,
-): BitmapDescriptor {
-    // Host the throwaway rendering ComposeView on the window's root view rather than on `parent`
+    // Host the rendering ComposeView on the window's root view rather than on `parent`
     // directly. `parent` (LocalView.current) can itself be mid-attach with no Android layout pass
     // performed on it yet -- e.g. when this is called from content composed inside a Clustering
     // item, which is first composed while its own hosting view is still being attached to its
@@ -62,43 +51,59 @@ private fun renderComposableToBitmapDescriptor(
     // surrounding composition regardless of which Android View it's physically parented under, so
     // it's safe to use a different, already-laid-out ViewGroup as the Android host.
     val host = parent.rootView as? ViewGroup ?: parent
-    val canvasOfHolding = Canvas()
+    val compositionContext = rememberCompositionContext()
+    val currentContent by rememberUpdatedState(content)
+    val composeView = remember { ComposeView(host.context) }
 
-    val composeView =
-        ComposeView(host.context)
+    DisposableEffect(host) {
+        composeView
             .apply {
                 layoutParams = ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                 )
+                alpha = 0f
                 setParentCompositionContext(compositionContext)
-                setContent(content)
+                setContent { currentContent() }
             }
             .also(host::addView)
-
-    try {
-        // AndroidComposeView triggers LayoutNode's layout phase in the View draw phase, so trigger a
-        // draw to an empty canvas to force that.
-        composeView.draw(canvasOfHolding)
-
-        composeView.measure(measureSpec, measureSpec)
-
-        if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
-            throw IllegalStateException(
-                "The ComposeView was measured to have a width or height of zero. " +
-                    "Make sure that the content has a non-zero size."
-            )
+        onDispose {
+            host.removeView(composeView)
         }
-
-        composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
-
-        val bitmap =
-            createBitmap(composeView.measuredWidth, composeView.measuredHeight)
-
-        bitmap.applyCanvas { composeView.draw(this) }
-
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
-    } finally {
-        host.removeView(composeView)
     }
+
+    LaunchedEffect(*keys) {
+        bitmapDescriptor = renderComposableToBitmapDescriptor(composeView)
+    }
+
+    return bitmapDescriptor
+}
+
+private val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+private val canvasOfHolding = Canvas()
+
+private fun renderComposableToBitmapDescriptor(
+    composeView: ComposeView,
+): BitmapDescriptor {
+    // AndroidComposeView triggers LayoutNode's layout phase in the View draw phase, so trigger a
+    // draw to an empty canvas to force that.
+    composeView.draw(canvasOfHolding)
+
+    composeView.measure(measureSpec, measureSpec)
+
+    if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
+        throw IllegalStateException(
+            "The ComposeView was measured to have a width or height of zero. " +
+                "Make sure that the content has a non-zero size."
+        )
+    }
+
+    composeView.layout(0, 0, composeView.measuredWidth, composeView.measuredHeight)
+
+    val bitmap =
+        createBitmap(composeView.measuredWidth, composeView.measuredHeight)
+
+    bitmap.applyCanvas { composeView.draw(this) }
+
+    return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
