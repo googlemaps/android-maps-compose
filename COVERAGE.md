@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `1bbf27e` (#995), recorded 2026-10-01T17:59:48Z.
+Measured at `29a87be` (#1007), recorded 2026-10-01T18:22:30Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -52,6 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-01 | `29a87be` | #1007 | 0.42% | 0.00 | n/a | n/a | test: add end-to-end smoke tests covering every demo activity |
 | 2026-10-01 | `1bbf27e` | #995 | 0.42% | 0.00 | 20.87% | +0.04 | ci: support GEMINI_MODEL repository variable in triage-issue workflow |
 | 2026-10-01 | `5c38780` | #1019 | 0.42% | 0.00 | 20.83% | -0.04 | ci: merge generated docs PRs from the docs workflow |
 | 2026-10-01 | `109b74a` | #1020 | 0.42% | 0.00 | 20.87% | 0.00 | test: wait for clustered markers instead of map load in clustering tests |
