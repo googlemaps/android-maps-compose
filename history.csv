@@ -49,3 +49,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-01T13:04:50Z,109b74a,1020,test: wait for clustered markers instead of map load in clustering tests,instrumentation,maps-app,509,2338,21.77,80,402,19.9,4816,19503,24.69
 2026-10-01T13:04:50Z,109b74a,1020,test: wait for clustered markers instead of map load in clustering tests,instrumentation,maps-compose-widgets,10,149,6.71,0,48,0.0,62,892,6.95
 2026-10-01T13:04:50Z,109b74a,1020,test: wait for clustered markers instead of map load in clustering tests,instrumentation,TOTAL,519,2487,20.87,80,450,17.78,4878,20395,23.92
+2026-10-01T16:09:28Z,5c38780,1019,ci: merge generated docs PRs from the docs workflow,unit,maps-compose,0,1953,0.0,0,1800,0.0,0,25121,0.0
+2026-10-01T16:09:28Z,5c38780,1019,ci: merge generated docs PRs from the docs workflow,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6602,1.06
+2026-10-01T16:09:28Z,5c38780,1019,ci: merge generated docs PRs from the docs workflow,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1491,0.0
+2026-10-01T16:09:28Z,5c38780,1019,ci: merge generated docs PRs from the docs workflow,unit,TOTAL,11,2639,0.42,2,2280,0.09,70,33214,0.21

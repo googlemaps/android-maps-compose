@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `109b74a` (#1020), recorded 2026-10-01T13:04:44Z.
+Measured at `5c38780` (#1019), recorded 2026-10-01T16:09:28Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -52,6 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-01 | `5c38780` | #1019 | 0.42% | 0.00 | n/a | n/a | ci: merge generated docs PRs from the docs workflow |
 | 2026-10-01 | `109b74a` | #1020 | 0.42% | 0.00 | 20.87% | 0.00 | test: wait for clustered markers instead of map load in clustering tests |
 | 2026-09-28 | `977ab46` | #1016 | 0.42% | 0.00 | 20.87% | +0.04 | test: skip map instrumentation tests when no Maps API key is available |
 | 2026-09-23 | `74aa729` | #1008 | 0.42% | 0.00 | 20.83% | 0.00 | ci: group dependabot minor and patch updates |
