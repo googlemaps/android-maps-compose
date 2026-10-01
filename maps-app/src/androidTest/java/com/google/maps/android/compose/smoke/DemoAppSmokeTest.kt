@@ -124,9 +124,16 @@ class DemoAppSmokeTest(
         }
     }
 
+    /** Also catches crashes while the demo is torn down after the test body. */
     @After
     fun tearDown() {
-        Thread.setDefaultUncaughtExceptionHandler(defaultHandler)
+        try {
+            assertNoUncaughtExceptions()
+        } finally {
+            // Only restore what setUp replaced: if the key check skipped the test, defaultHandler
+            // was never read, and restoring null would disable crash reporting for later tests.
+            defaultHandler?.let { Thread.setDefaultUncaughtExceptionHandler(it) }
+        }
     }
 
     @Test
@@ -251,7 +258,9 @@ class DemoAppSmokeTest(
     private fun View.isFullyOnScreen(): Boolean {
         if (!isShown || width == 0 || height == 0) return false
         val visible = Rect()
-        return getGlobalVisibleRect(visible) && visible.width() == width && visible.height() == height
+        return getGlobalVisibleRect(visible) &&
+            visible.width() == width &&
+            visible.height() == height
     }
 
     /** Depth-first walk collecting every Maps SDK surface below this view. */
