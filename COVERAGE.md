@@ -38,7 +38,7 @@ Measured at `0c49e8d` (#1002), recorded 2026-10-01T19:20:17Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`, covering the modules that own androidTest sources. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. `maps-compose` and `maps-compose-utils` are not listed: they have no instrumentation tests of their own, and their code is exercised through `maps-app`.
 
-Measured at `29a87be` (#1007), recorded 2026-10-01T18:22:34Z.
+Measured at `0c49e8d` (#1002), recorded 2026-10-01T19:20:21Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -52,7 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-01 | `0c49e8d` | #1002 | 0.42% | 0.00 | n/a | n/a | feat!: migrate from android-maps-ktx to android-maps-utils (v9.0.0) |
+| 2026-10-01 | `0c49e8d` | #1002 | 0.42% | 0.00 | 20.79% | 0.00 | feat!: migrate from android-maps-ktx to android-maps-utils (v9.0.0) |
 | 2026-10-01 | `29a87be` | #1007 | 0.42% | 0.00 | 20.79% | -0.08 | test: add end-to-end smoke tests covering every demo activity |
 | 2026-10-01 | `1bbf27e` | #995 | 0.42% | 0.00 | 20.87% | +0.04 | ci: support GEMINI_MODEL repository variable in triage-issue workflow |
 | 2026-10-01 | `5c38780` | #1019 | 0.42% | 0.00 | 20.83% | -0.04 | ci: merge generated docs PRs from the docs workflow |
