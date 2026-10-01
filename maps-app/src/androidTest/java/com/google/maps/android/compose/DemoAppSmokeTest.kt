@@ -21,9 +21,13 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
+import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.StreetViewPanoramaView
 import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.Truth.assertWithMessage
 import org.junit.After
 import org.junit.Assume.assumeTrue
 import org.junit.Before
@@ -31,6 +35,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /**
  * End-to-end smoke test covering every demo in the sample app.
@@ -44,6 +50,8 @@ import java.util.concurrent.CopyOnWriteArrayList
  * Each demo is checked for three things:
  * - it reaches [Lifecycle.State.RESUMED] without throwing,
  * - a map surface ([MapView] or [StreetViewPanoramaView]) is attached and laid out,
+ * - its map survives a zoom out and back in, which exercises the camera listeners the demos and
+ *   the library hook into,
  * - nothing crashes on a background thread while it is open.
  *
  * This deliberately does not assert on map *content*. Verifying that a particular marker or
@@ -64,6 +72,12 @@ class DemoAppSmokeTest(
 
         private const val POLL_INTERVAL_MS = 250L
 
+        /** How long to wait for tiles to render when `requireMapLoaded` is set. */
+        private const val MAP_LOADED_TIMEOUT_MS = 30_000L
+
+        /** Time given to a demo to react to a camera change before the next check. */
+        private const val SETTLE_MS = 1_500L
+
         /**
          * Demos that legitimately show no map surface of their own. Keep this empty unless a
          * demo really is map-free; an entry here is a hole in the coverage, not a fix.
@@ -83,6 +97,14 @@ class DemoAppSmokeTest(
                     )
                 }
     }
+
+    /**
+     * Tiles only render with a real key, so waiting for them is opt-in: pass
+     * `-Pandroid.testInstrumentationRunnerArguments.requireMapLoaded=true`. CI does when the key
+     * secret is available.
+     */
+    private val requireMapLoaded =
+        InstrumentationRegistry.getArguments().getString("requireMapLoaded").toBoolean()
 
     private val uncaughtExceptions = CopyOnWriteArrayList<Throwable>()
     private var defaultHandler: Thread.UncaughtExceptionHandler? = null
@@ -110,7 +132,9 @@ class DemoAppSmokeTest(
             scenario.assertResumed()
             if (demoName !in DEMOS_WITHOUT_MAP_SURFACE) {
                 scenario.awaitMapSurface()
+                scenario.zoomOutAndBackIn()
             }
+            scenario.assertResumed()
             assertNoUncaughtExceptions()
         }
     }
@@ -169,6 +193,46 @@ class DemoAppSmokeTest(
         throw AssertionError(
             "$demoName did not show a map within ${MAP_SURFACE_TIMEOUT_MS}ms: $detail",
         )
+    }
+
+    /**
+     * Zooms the demo's map out and back in. When [requireMapLoaded] is set, also waits for the
+     * tiles to render each time. The `GoogleMap` composable registers its loaded callback once,
+     * so replacing it means a demo's own `onMapLoaded` stops firing for the rest of the test,
+     * which only affects UI such as loading indicators. Demos showing Street View are skipped.
+     */
+    private fun ActivityScenario<ComponentActivity>.zoomOutAndBackIn() {
+        var mapView: MapView? = null
+        onActivity { activity ->
+            mapView = activity.window.decorView.mapSurfaces().filterIsInstance<MapView>().firstOrNull()
+        }
+        val view = mapView ?: return
+
+        var map: GoogleMap? = null
+        val ready = CountDownLatch(1)
+        onActivity {
+            view.getMapAsync {
+                map = it
+                ready.countDown()
+            }
+        }
+        assertWithMessage("$demoName map was not ready within ${MAP_SURFACE_TIMEOUT_MS}ms")
+            .that(ready.await(MAP_SURFACE_TIMEOUT_MS, TimeUnit.MILLISECONDS))
+            .isTrue()
+
+        for (delta in floatArrayOf(-1f, 1f)) {
+            val loaded = CountDownLatch(1)
+            onActivity {
+                if (requireMapLoaded) map!!.setOnMapLoadedCallback { loaded.countDown() }
+                map!!.moveCamera(CameraUpdateFactory.zoomBy(delta))
+            }
+            if (requireMapLoaded) {
+                assertWithMessage("$demoName map did not finish loading after zooming")
+                    .that(loaded.await(MAP_LOADED_TIMEOUT_MS, TimeUnit.MILLISECONDS))
+                    .isTrue()
+            }
+            Thread.sleep(SETTLE_MS)
+        }
     }
 
     private fun assertNoUncaughtExceptions() {
