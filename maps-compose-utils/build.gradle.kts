@@ -35,8 +35,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -54,7 +54,7 @@ android {
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_11)
+        jvmTarget.set(JvmTarget.JVM_17)
         freeCompilerArgs.addAll(
             "-Xexplicit-api=strict",
             "-opt-in=kotlin.RequiresOptIn"
@@ -83,7 +83,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.kotlin)
     implementation(libs.kotlinx.coroutines.android)
-    api(libs.maps.ktx.utils)
+    api(libs.maps.utils)
 
     testImplementation(libs.test.junit)
 }

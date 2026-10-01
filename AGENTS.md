@@ -86,7 +86,7 @@ template). Never hardcode or commit API keys.
 - Do not use wildcard imports (`import foo.*`); use explicit imports.
 - Avoid fully qualified class names in source code whenever possible; declare explicit imports at the file level instead (except to resolve naming collisions).
 - Library modules compile with `-Xexplicit-api=strict`. All public classes, functions, and properties must declare explicit visibility (`public`) and explicit return types.
-- Published library modules target **Java 11** (`JvmTarget.JVM_11`, `JavaVersion.VERSION_11`). Do NOT upgrade the bytecode target to Java 17 or 21, to prevent breaking downstream consumers on AGP < 8.0 with Kotlin inlining errors.
+- Published library modules target **Java 17** (`JvmTarget.JVM_17`, `JavaVersion.VERSION_17`), matching `android-maps-utils` 6.0+. Do not downgrade bytecode to Java 8 or Java 11.
 - Follow the [Jetpack Compose API guidelines](https://github.com/androidx/androidx/blob/androidx-main/compose/docs/compose-api-guidelines.md) strictly for any public API.
 - Composable functions are PascalCase; the first optional parameter of a
   composable is `modifier: Modifier = Modifier`.
