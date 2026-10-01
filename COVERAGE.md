@@ -38,7 +38,7 @@ Measured at `109b74a` (#1020), recorded 2026-10-01T13:04:44Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`, covering the modules that own androidTest sources. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. `maps-compose` and `maps-compose-utils` are not listed: they have no instrumentation tests of their own, and their code is exercised through `maps-app`.
 
-Measured at `977ab46` (#1016), recorded 2026-09-28T17:40:41Z.
+Measured at `109b74a` (#1020), recorded 2026-10-01T13:04:50Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -52,7 +52,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-01 | `109b74a` | #1020 | 0.42% | 0.00 | n/a | n/a | test: wait for clustered markers instead of map load in clustering tests |
+| 2026-10-01 | `109b74a` | #1020 | 0.42% | 0.00 | 20.87% | 0.00 | test: wait for clustered markers instead of map load in clustering tests |
 | 2026-09-28 | `977ab46` | #1016 | 0.42% | 0.00 | 20.87% | +0.04 | test: skip map instrumentation tests when no Maps API key is available |
 | 2026-09-23 | `74aa729` | #1008 | 0.42% | 0.00 | 20.83% | 0.00 | ci: group dependabot minor and patch updates |
 | 2026-09-22 | `b0d6420` | #1009 | 0.42% | 0.00 | 20.83% | n/a | feat(ci): publish an instrumented coverage badge |
