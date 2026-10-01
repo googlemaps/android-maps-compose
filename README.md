@@ -2,6 +2,7 @@
 ![Release](https://github.com/googlemaps/android-maps-compose/workflows/Release/badge.svg)
 ![Stable](https://img.shields.io/badge/stability-stable-green)
 [![Tests/Build](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml/badge.svg)](https://github.com/googlemaps/android-maps-compose/actions/workflows/test.yml)
+[![Instrumented coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgooglemaps%2Fandroid-maps-compose%2Fcoverage-history%2Fcoverage-badge.json)](https://github.com/googlemaps/android-maps-compose/blob/coverage-history/COVERAGE.md)
 
 ![Contributors](https://img.shields.io/github/contributors/googlemaps/android-maps-compose?color=green)
 [![License](https://img.shields.io/github/license/googlemaps/android-maps-compose?color=blue)][license]
@@ -29,12 +30,12 @@ You no longer need to specify the Maps SDK for Android or its Utility Library as
 
 ```groovy
 dependencies {
-    implementation 'com.google.maps.android:maps-compose:8.5.0' // {x-release-please-version}
+    implementation 'com.google.maps.android:maps-compose:9.0.0' // {x-release-please-version}
     // Optionally, you can include the Compose utils library for Clustering,
     // Street View metadata checks, etc.
-    implementation 'com.google.maps.android:maps-compose-utils:8.5.0' // {x-release-please-version}
+    implementation 'com.google.maps.android:maps-compose-utils:9.0.0' // {x-release-please-version}
     // Optionally, you can include the widgets library for ScaleBar, etc.
-    implementation 'com.google.maps.android:maps-compose-widgets:8.5.0' // {x-release-please-version}
+    implementation 'com.google.maps.android:maps-compose-widgets:9.0.0' // {x-release-please-version}
 }
 ```
 
@@ -54,6 +55,9 @@ To run the demo app, ensure you've met the requirements above then:
 ## Documentation
 
 See the [documentation] for a full list of classes and their methods.
+
+### Guides
+* [Supporting Dark Theme in Lite Mode Maps](docs/lite-mode-dark-theme.md)
 
 ## Usage
 

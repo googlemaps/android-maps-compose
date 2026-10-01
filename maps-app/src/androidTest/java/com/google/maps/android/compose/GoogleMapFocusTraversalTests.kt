@@ -52,7 +52,7 @@ class GoogleMapFocusTraversalTests {
     )
 
     private fun initMaps() {
-        check(hasValidApiKey) { "Maps API key not specified" }
+        assumeValidApiKey()
 
         composeTestRule.setContent {
             MapsInLazyColumn(
@@ -89,7 +89,7 @@ class GoogleMapFocusTraversalTests {
     @OptIn(ExperimentalTestApi::class)
     @Test
     fun nonFocusableMapIsSkippedDuringTabTraversal() {
-        check(hasValidApiKey) { "Maps API key not specified" }
+        assumeValidApiKey()
 
         composeTestRule.setContent {
             Column {

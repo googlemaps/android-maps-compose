@@ -27,6 +27,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.CameraPosition
@@ -40,6 +41,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 class GoogleMapViewTests {
     @get:Rule
@@ -51,7 +53,7 @@ class GoogleMapViewTests {
     private var mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM
 
     private fun initMap(content: @Composable () -> Unit = {}) {
-        check(hasValidApiKey) { "Maps API key not specified" }
+        assumeValidApiKey()
         val countDownLatch = CountDownLatch(1)
 
         val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -87,6 +89,35 @@ class GoogleMapViewTests {
     fun testStartingCameraPosition() {
         initMap()
         assertThat(cameraPositionState.position.target).isEqualTo(startingPosition)
+    }
+
+    @Test
+    fun testDefaultColorSchemeIsFollowSystem() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
+    }
+
+    @Test
+    fun testDefaultColorSchemeWithGoogleMapOptionsFactory() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = { GoogleMapOptions().liteMode(false) },
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
     }
 
     @Test
@@ -139,6 +170,61 @@ class GoogleMapViewTests {
     }
 
     @Test
+    fun testLiteModePreservesColorSchemeAndLiteModeInOptions() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
+                mapColorScheme = ComposeMapColorScheme.DARK,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.liteMode).isTrue()
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+    }
+
+    @Test
+    fun testLiteModeWithTerrainMapTypePreservesOptions() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = {
+                    GoogleMapOptions()
+                        .liteMode(true)
+                        .mapType(GoogleMap.MAP_TYPE_TERRAIN)
+                },
+                mapColorScheme = ComposeMapColorScheme.DARK,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.liteMode).isTrue()
+        assertThat(capturedOptions?.mapType).isEqualTo(GoogleMap.MAP_TYPE_TERRAIN)
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+    }
+
+    @Test
+    fun testLiteModeDefaultColorSchemeIsFollowSystem() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.liteMode).isTrue()
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
+    }
+
+    @Test
     fun testCameraReportsMoving() {
         initMap()
         assertThat(cameraPositionState.cameraMoveStartedReason).isEqualTo(CameraMoveStartedReason.NO_MOVEMENT_YET)
@@ -183,13 +269,24 @@ class GoogleMapViewTests {
     fun testCameraZoomIn() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = true) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
+            val expectedZoom = startingZoom + 1f
+            // Non-animated camera updates (CameraPositionState.move) execute synchronously via
+            // GoogleMap.moveCamera(). The Maps SDK fires OnCameraMoveStartedListener (setting
+            // isMoving = true) and OnCameraIdleListener (setting isMoving = false) in rapid succession.
+            //
+            // Because Compose test polling samples state across frames, polling for the transient
+            // `isMoving = true` state is flaky. Instead:
+            // 1. We first wait until the zoom transition has actually occurred.
+            // 2. We then wait for the camera to settle completely (!isMoving).
+            composeTestRule.waitUntil(timeout3) {
+                abs(cameraPositionState.position.zoom - expectedZoom) <= assertRoundingError
             }
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(expectedZoom)
+
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom + 1f)
+            assertThat(cameraPositionState.isMoving).isFalse()
         }
     }
 
@@ -197,13 +294,24 @@ class GoogleMapViewTests {
     fun testCameraZoomOut() {
         initMap()
         zoom(shouldAnimate = false, zoomIn = false) {
-            composeTestRule.waitUntil(timeout2) {
-                cameraPositionState.isMoving
+            val expectedZoom = startingZoom - 1f
+            // Non-animated camera updates (CameraPositionState.move) execute synchronously via
+            // GoogleMap.moveCamera(). The Maps SDK fires OnCameraMoveStartedListener (setting
+            // isMoving = true) and OnCameraIdleListener (setting isMoving = false) in rapid succession.
+            //
+            // Because Compose test polling samples state across frames, polling for the transient
+            // `isMoving = true` state is flaky. Instead:
+            // 1. We first wait until the zoom transition has actually occurred.
+            // 2. We then wait for the camera to settle completely (!isMoving).
+            composeTestRule.waitUntil(timeout3) {
+                abs(cameraPositionState.position.zoom - expectedZoom) <= assertRoundingError
             }
+            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(expectedZoom)
+
             composeTestRule.waitUntil(timeout3) {
                 !cameraPositionState.isMoving
             }
-            assertThat(cameraPositionState.position.zoom).isWithin(assertRoundingError.toFloat()).of(startingZoom - 1f)
+            assertThat(cameraPositionState.isMoving).isFalse()
         }
     }
 

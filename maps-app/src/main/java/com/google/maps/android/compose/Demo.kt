@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -241,6 +242,12 @@ val allActivityGroups = listOf(
     ActivityGroup.Performance,
 )
 
+/** Test tag for a group header in [DemoList], used by the instrumented smoke test. */
+internal fun groupTestTag(group: ActivityGroup): String = "group:${group.title}"
+
+/** Test tag for a demo card in [DemoList], used by the instrumented smoke test. */
+internal fun demoTestTag(activity: Activity): String = "demo:${activity.kClass.java.name}"
+
 /**
  * A composable function that displays a collapsible list of demo activity groups. This is the
  * main UI component for the main screen.
@@ -295,6 +302,7 @@ private fun DemoActivityItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
+            .testTag(demoTestTag(activity))
             .clickable { onActivityClick(activity.kClass) }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -320,6 +328,7 @@ private fun GroupHeaderItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .testTag(groupTestTag(group))
             .clickable {
                 onGroupClicked()
             }

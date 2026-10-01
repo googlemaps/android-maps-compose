@@ -57,8 +57,9 @@ internal class ComposeInfoWindowAdapter(
     private fun renderToImageView(
         markerNode: MarkerNode,
         content: @Composable () -> Unit,
-    ): View {
+    ): View? {
         val bitmap = mapView.renderComposableToBitmap(markerNode.compositionContext, content)
+            ?: return null
         return ImageView(mapView.context).apply {
             layoutParams = ViewGroup.LayoutParams(bitmap.width, bitmap.height)
             scaleType = ImageView.ScaleType.FIT_XY

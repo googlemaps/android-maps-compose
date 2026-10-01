@@ -18,6 +18,7 @@ package com.google.maps.android.compose
 
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
+import org.junit.Assume.assumeTrue
 const val timeout2 = 2_000L
 const val timeout3 = 3_000L
 const val timeout5 = 5_000L
@@ -25,6 +26,17 @@ const val MAP_LOAD_TIMEOUT_SECONDS = 30L
 
 val hasValidApiKey: Boolean =
     BuildConfig.MAPS_API_KEY.isNotBlank() && BuildConfig.MAPS_API_KEY != "YOUR_API_KEY"
+
+/**
+ * Skips the calling test unless a real Maps API key is configured.
+ *
+ * Without a key the map never loads, so these tests have nothing to assert. Treating that as a
+ * skipped test rather than a failure keeps the build honest on forks and on Dependabot pull
+ * requests, neither of which can read the repository secret that supplies the key.
+ */
+fun assumeValidApiKey() {
+    assumeTrue("Maps API key not specified", hasValidApiKey)
+}
 
 const val assertRoundingError: Double = 0.01
 

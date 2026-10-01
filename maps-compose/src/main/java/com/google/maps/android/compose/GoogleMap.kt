@@ -43,7 +43,11 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.savedstate.compose.LocalSavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
@@ -51,7 +55,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
 
-import com.google.maps.android.ktx.awaitMap
+import com.google.maps.android.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +89,7 @@ import kotlinx.coroutines.launch
  * @param onPOIClick lambda invoked when a POI is clicked
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
- * @param mapColorScheme Defines the color scheme for the Map.
+ * @param mapColorScheme Defines the color scheme for the Map. Defaults to [ComposeMapColorScheme.FOLLOW_SYSTEM].
  * @param content the content of the map
  */
 @Composable
@@ -107,7 +111,7 @@ public fun GoogleMap(
     onMyLocationClick: ((Location) -> Unit)? = null,
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = DefaultMapContentPadding,
-    mapColorScheme: ComposeMapColorScheme? = null,
+    mapColorScheme: ComposeMapColorScheme? = ComposeMapColorScheme.FOLLOW_SYSTEM,
     mapViewFactory: (Context, GoogleMapOptions) -> MapView = ::MapView,
     content: @Composable @GoogleMapComposable () -> Unit = {},
 ) {
@@ -116,6 +120,15 @@ public fun GoogleMap(
         Box(modifier = modifier)
         return
     }
+
+    // The Maps SDK measures Compose info-window content from its own Handler, asynchronously.
+    // If that measure lands after Compose has unparented the MapView (e.g. on LazyColumn
+    // recycling), the info window's ComposeView can no longer resolve a ViewTreeLifecycleOwner
+    // via its ancestors, since that tag lives on this AndroidView's holder rather than on the
+    // MapView itself. Pinning the owners directly onto the MapView keeps them resolvable from
+    // its own subtree regardless of where Compose has parented it.
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val savedStateRegistryOwner = LocalSavedStateRegistryOwner.current
 
     // rememberUpdatedState and friends are used here to make these values observable to
     // the subcomposition without providing a new content function each recomposition
@@ -175,6 +188,8 @@ public fun GoogleMap(
                 cameraPositionState.isLiteMode = options.liteMode == true
                 mapViewFactory(context, options).also { mapView ->
                     mapView.applyFocusability(focusable)
+                    mapView.setViewTreeLifecycleOwner(lifecycleOwner)
+                    mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
 
                     val componentCallbacks = object : ComponentCallbacks2 {
                         override fun onConfigurationChanged(newConfig: Configuration) {}
@@ -226,6 +241,8 @@ public fun GoogleMap(
             },
             update = { mapView ->
                 mapView.applyFocusability(focusable)
+                mapView.setViewTreeLifecycleOwner(lifecycleOwner)
+                mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
                 if (subcompositionJob == null) {
                     subcompositionJob = parentCompositionScope.launchSubcomposition(
                         mapUpdaterState,

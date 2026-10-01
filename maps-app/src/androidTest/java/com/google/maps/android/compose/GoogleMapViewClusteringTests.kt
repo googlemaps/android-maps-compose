@@ -38,7 +38,6 @@ import com.google.maps.android.compose.markerexamples.MyItem
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 class GoogleMapViewClusteringTests {
@@ -59,33 +58,30 @@ class GoogleMapViewClusteringTests {
         clusterManagerHolder: Array<ClusterManager<MyItem>?>,
         content: @Composable () -> Unit
     ): Marker {
-        check(hasValidApiKey) { "Maps API key not specified" }
-        val countDownLatch = CountDownLatch(1)
+        assumeValidApiKey()
 
         composeTestRule.setContent {
             GoogleMapView(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
-                onMapLoaded = {
-                    countDownLatch.countDown()
-                }
             ) {
                 content()
             }
         }
 
-        val mapLoaded = countDownLatch.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-        assertThat(mapLoaded).isTrue()
-
-        composeTestRule.waitUntil(timeoutMillis = 10_000) {
+        // Wait for the clustered marker itself rather than for onMapLoaded. Markers are added once
+        // the map is ready, while onMapLoaded also waits for every tile to render, which can take
+        // longer than the timeout on a slow CI emulator and made these tests flaky.
+        val timeoutMillis = TimeUnit.SECONDS.toMillis(MAP_LOAD_TIMEOUT_SECONDS)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
             composeTestRule.runOnUiThread {
                 val cm = clusterManagerHolder[0]
-                cm != null && cm.markerCollection.markers.isNotEmpty()
+                cm != null && cm.markerCollection.getMarkers().isNotEmpty()
             }
         }
 
         return composeTestRule.runOnUiThread {
-            clusterManagerHolder[0]!!.markerCollection.markers.first()
+            clusterManagerHolder[0]!!.markerCollection.getMarkers().first()
         }
     }
 
