@@ -45,7 +45,14 @@ jobs:
       env:
         MAPS_API_KEY: ${{ secrets.ACTIONS_API_KEY }}
       run: |
-        [ -z "$MAPS_API_KEY" ] && MAPS_API_KEY="YOUR_API_KEY"; echo "MAPS_API_KEY=$MAPS_API_KEY" >> ./secrets.properties
+        # Tiles only render with a real key, so only then does the demo smoke test wait for maps to load.
+        if [ -z "$MAPS_API_KEY" ]; then
+          MAPS_API_KEY="YOUR_API_KEY"
+          echo "REQUIRE_MAP_LOADED=false" >> "$GITHUB_ENV"
+        else
+          echo "REQUIRE_MAP_LOADED=true" >> "$GITHUB_ENV"
+        fi
+        echo "MAPS_API_KEY=$MAPS_API_KEY" >> ./secrets.properties
 
     - name: Build debug
       run: ./gradlew assembleDebug
@@ -53,11 +60,14 @@ jobs:
     - name: Run instrumentation tests
       uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
       with:
-        api-level: 29
+        # Emulators never update Google Play services, so the image's bundled version is what the
+        # maps run on. Older images bundle Play services where adding advanced markers crashes
+        # inside Play services. API 36 images bundle 25.26, which works.
+        api-level: 36
         target: google_apis
-        arch: x86
+        arch: x86_64
         disable-animations: true
-        script: ./gradlew createDebugCoverageReport --stacktrace
+        script: ./gradlew createDebugCoverageReport --stacktrace -Pandroid.testInstrumentationRunnerArguments.requireMapLoaded=$REQUIRE_MAP_LOADED
 
     # Stage the coverage reports flat, named after their module, and publish
     # them so the post-merge "Record coverage history" workflow can read them
