@@ -52,13 +52,14 @@ jobs:
           :maps-compose-multiplatform:checkKotlinAbi
           :maps-compose-multiplatform:linkPodDebugFrameworkIosSimulatorArm64
           :maps-compose-multiplatform:linkPodDebugFrameworkIosArm64
+          :maps-compose-multiplatform-demo:compileKotlinIosArm64
 
       # The app reads its key from secrets.properties at build time and falls back to a
       # placeholder, which is enough to compile.
       - name: Build the iOS demo app
         working-directory: iosApp
         run: |
-          (cd .. && ./gradlew :maps-compose-multiplatform:generateDummyFramework)
+          (cd .. && ./gradlew :maps-compose-multiplatform-demo:generateDummyFramework)
           ruby create_project.rb
           pod install
           xcodebuild build \
@@ -67,4 +68,5 @@ jobs:
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -configuration Debug \
+            ARCHS=arm64 \
             CODE_SIGNING_ALLOWED=NO

@@ -1,6 +1,6 @@
 import UIKit
 import GoogleMaps
-import maps_compose_multiplatform
+import maps_compose_multiplatform_demo
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,10 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSServices.provideAPIKey(DeveloperSecrets.mapsApiKey)
 
         window = UIWindow(frame: UIScreen.main.bounds)
-        let sampleListVC = SampleListViewController()
-        let navController = UINavigationController(rootViewController: sampleListVC)
-        
-        window?.rootViewController = navController
+        // The demos are shared with the Android demo app, see maps-compose-multiplatform-demo.
+        window?.rootViewController = MainViewControllerKt.MainViewController()
         window?.makeKeyAndVisible()
         
         return true

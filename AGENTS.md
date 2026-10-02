@@ -14,6 +14,7 @@ libraries live in three modules; the rest of the repo supports them.
 | `maps-compose-utils` | Utilities layer: clustering and other android-maps-utils integrations |
 | `maps-compose-widgets` | Widget composables built on top of the core library |
 | `maps-compose-multiplatform` | Experimental Compose Multiplatform map for Android and iOS, see below |
+| `maps-compose-multiplatform-demo` | Demo screens shared by `maps-app` and `iosApp`; not published |
 | `maps-app` | Demo app exercising the libraries |
 | `iosApp` | iOS demo app for `maps-compose-multiplatform`, see `iosApp/README.md` |
 | `docs` | Dokka documentation aggregation |
@@ -51,6 +52,13 @@ Google Maps SDK for iOS through CocoaPods). Its iOS targets only build on macOS,
   android-maps-utils (`mapsutilsKmp` in the version catalog). While that is a `-SNAPSHOT`,
   publishing a release of this module fails on purpose.
 - There is no `iosX64` target: Compose Multiplatform no longer publishes it.
+- Map content (`Marker`, `Polyline`, ...) does not emit UI. Each call registers a node in the
+  map's `MapNodeRegistry` while it is in the composition; `androidMain` draws the nodes with
+  maps-compose, `iosMain` keeps one `GMSOverlay` per node and updates it in place. A new kind of
+  content needs a node class in `MapContent.kt` and a case on both platforms.
+- Demos go in `maps-compose-multiplatform-demo` so both apps show them. Open one directly with
+  `adb shell am start -n com.google.maps.android.compose/.KmpMapActivity --ei demo <index>` or
+  `xcrun simctl launch booted com.google.maps.android.compose.iosApp -demo <index>`.
 
 Coverage is tracked over time. After every merge to `main`, the
 `Record coverage history` workflow appends a row per module per suite to
