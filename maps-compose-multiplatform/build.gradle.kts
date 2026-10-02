@@ -28,8 +28,7 @@ kotlin {
         minSdk = libs.versions.androidMinSdk.get().toInt()
     }
     
-    // Enable iOS targets
-    iosX64()
+    // Enable iOS targets. No iosX64 (Intel simulators): Compose Multiplatform dropped it in 1.11.
     iosArm64()
     iosSimulatorArm64()
 
@@ -65,15 +64,14 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("org.jetbrains.compose.runtime:runtime:1.7.3")
-                implementation("org.jetbrains.compose.foundation:foundation:1.7.3")
-                implementation("org.jetbrains.compose.ui:ui:1.7.3")
-                // Multiplatform clustering from android-maps-utils (KMP branch); resolved from
-                // mavenLocal or the composite build (see settings.gradle.kts). Uses the repo's
-                // public artifactIds so it conflict-resolves as the same module as the AAR that
-                // maps-compose-utils pulls from Maven Central instead of duplicating its classes.
-                api("com.google.maps.android:android-maps-utils-maps-model:5.2.0")
-                api("com.google.maps.android:android-maps-utils-clustering:5.2.0")
+                implementation(libs.compose.multiplatform.runtime)
+                implementation(libs.compose.multiplatform.foundation)
+                implementation(libs.compose.multiplatform.ui)
+                // Multiplatform clustering from the android-maps-utils KMP branch, published as
+                // a snapshot (see settings.gradle.kts). It shares its artifactId with the AAR that
+                // maps-compose-utils pulls from Maven Central, so the two resolve to one module.
+                api(libs.maps.utils.kmp.maps.model)
+                api(libs.maps.utils.kmp.clustering)
             }
         }
         androidMain {
