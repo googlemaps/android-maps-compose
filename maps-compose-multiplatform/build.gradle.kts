@@ -25,6 +25,12 @@ kotlin {
         namespace = "com.google.maps.android.compose.multiplatform"
         compileSdk = libs.versions.androidCompileSdk.get().toInt()
         minSdk = libs.versions.androidMinSdk.get().toInt()
+
+        // Runs commonTest on the JVM as well as on the iOS simulator.
+        withHostTestBuilder {
+        }.configure {
+            isReturnDefaultValues = true
+        }
     }
 
     cocoapods {
@@ -67,6 +73,11 @@ kotlin {
                 // maps-compose-utils pulls from Maven Central, so the two resolve to one module.
                 api(libs.maps.utils.kmp.maps.model)
                 api(libs.maps.utils.kmp.clustering)
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
             }
         }
         androidMain {
