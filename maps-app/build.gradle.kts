@@ -21,6 +21,7 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.screenshot)
+    jacoco
 }
 
 android {
@@ -30,11 +31,9 @@ android {
 
     buildTypes {
         getByName("debug") {
-            enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
         getByName("release") {
-            enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
     }
@@ -147,4 +146,52 @@ secrets {
     // A properties file containing default secret values. This file can be
     // checked in version control.
     defaultPropertiesFileName = "local.defaults.properties"
+}
+
+
+// The emulator tests live mostly in maps-app, but the code they exercise is mostly in the
+// library modules. Each module's createDebugCoverageReport only reports its own classes, so the
+// library code exercised from maps-app was never counted. These reports read the coverage data
+// of every emulator test run and report one library module each.
+val libraryModules = listOf("maps-compose", "maps-compose-utils", "maps-compose-widgets")
+val emulatorTestModules = listOf("maps-app", "maps-compose-widgets")
+
+val createLibraryCoverageReports = tasks.register("createLibraryCoverageReports") {
+    group = "verification"
+    description = "Instrumentation coverage of each library module, from all emulator test runs."
+}
+
+libraryModules.forEach { module ->
+    val taskName = module.split("-").joinToString("") { it.replaceFirstChar(Char::uppercase) }
+    val report = tasks.register<JacocoReport>("create${taskName}CoverageReport") {
+        group = "verification"
+        description = "Instrumentation coverage of $module, from all emulator test runs."
+        emulatorTestModules.forEach { testModule ->
+            mustRunAfter(":$testModule:createDebugCoverageReport")
+        }
+        executionData.setFrom(
+            emulatorTestModules.map { testModule ->
+                val coverageDir =
+                    "$testModule/build/outputs/code_coverage/debugAndroidTest/connected"
+                fileTree(rootProject.layout.projectDirectory.dir(coverageDir)) {
+                    include("**/*.ec")
+                }
+            }
+        )
+        val classesDir = "$module/build/intermediates/built_in_kotlinc/debug"
+        classDirectories.setFrom(
+            fileTree(rootProject.layout.projectDirectory.dir(classesDir)) {
+                exclude("**/R.class", "**/R$*.class", "**/BuildConfig.*", "**/Manifest*.*")
+            }
+        )
+        sourceDirectories.setFrom(rootProject.file("$module/src/main/java"))
+        reports {
+            xml.required.set(true)
+            xml.outputLocation.set(
+                layout.buildDirectory.file("reports/library-coverage/$module.xml")
+            )
+            html.required.set(false)
+        }
+    }
+    createLibraryCoverageReports.configure { dependsOn(report) }
 }

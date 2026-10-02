@@ -41,7 +41,7 @@ env:
   # giving up and recording unit coverage only. instrumentation-test.yml takes
   # 16-28 minutes, while the required checks finish in 6-13, so a pull request
   # merged as soon as it is green usually leaves the emulator still running.
-  INSTRUMENTATION_WAIT_SECONDS: '1800'
+  INSTRUMENTATION_WAIT_SECONDS: '2700'
   # How often to re-check that run while waiting.
   INSTRUMENTATION_POLL_SECONDS: '60'
 
