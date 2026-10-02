@@ -61,36 +61,7 @@ class PublishingConventionPlugin : Plugin<Project> {
                 )
             )
 
-            publishToMavenCentral()
-            signAllPublications()
-
-            pom {
-                name.set(project.name)
-                description.set("Jetpack Compose components for the Maps SDK for Android")
-                url.set("https://github.com/googlemaps/android-maps-compose")
-                licenses {
-                    license {
-                        name.set("The Apache Software License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        distribution.set("repo")
-                    }
-                }
-                scm {
-                    connection.set("scm:git@github.com:googlemaps/android-maps-compose.git")
-                    developerConnection.set("scm:git@github.com:googlemaps/android-maps-compose.git")
-                    url.set("https://github.com/googlemaps/android-maps-compose")
-                }
-                developers {
-                    developer {
-                        id.set("google")
-                        name.set("Google Inc.")
-                    }
-                }
-                organization {
-                    name.set("Google Inc")
-                    url.set("http://developers.google.com/maps")
-                }
-            }
+            configureMapsComposePublishing(project)
         }
     }
 }

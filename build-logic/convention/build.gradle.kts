@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.dokka.plugin)
     implementation(libs.kover.gradle.plugin)
     implementation(libs.gradle.maven.publish.plugin)
+    implementation(libs.binary.compatibility.validator)
 
 }
 
@@ -39,6 +40,10 @@ gradlePlugin {
         register("publishingConventionPlugin") {
             id = "android.maps.compose.PublishingConventionPlugin"
             implementationClass = "PublishingConventionPlugin"
+        }
+        register("kmpPublishingConventionPlugin") {
+            id = "android.maps.compose.KmpPublishingConventionPlugin"
+            implementationClass = "KmpPublishingConventionPlugin"
         }
     }
 }
