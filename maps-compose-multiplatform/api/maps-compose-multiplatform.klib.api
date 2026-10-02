@@ -1,0 +1,53 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <com.google.maps.android:maps-compose-multiplatform>
+final enum class com.google.maps.android.compose.multiplatform/MapType : kotlin/Enum<com.google.maps.android.compose.multiplatform/MapType> { // com.google.maps.android.compose.multiplatform/MapType|null[0]
+    enum entry HYBRID // com.google.maps.android.compose.multiplatform/MapType.HYBRID|null[0]
+    enum entry NONE // com.google.maps.android.compose.multiplatform/MapType.NONE|null[0]
+    enum entry NORMAL // com.google.maps.android.compose.multiplatform/MapType.NORMAL|null[0]
+    enum entry SATELLITE // com.google.maps.android.compose.multiplatform/MapType.SATELLITE|null[0]
+    enum entry TERRAIN // com.google.maps.android.compose.multiplatform/MapType.TERRAIN|null[0]
+
+    final val entries // com.google.maps.android.compose.multiplatform/MapType.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.google.maps.android.compose.multiplatform/MapType> // com.google.maps.android.compose.multiplatform/MapType.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.google.maps.android.compose.multiplatform/MapType // com.google.maps.android.compose.multiplatform/MapType.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.google.maps.android.compose.multiplatform/MapType> // com.google.maps.android.compose.multiplatform/MapType.values|values#static(){}[0]
+}
+
+final class com.google.maps.android.compose.multiplatform/MapMarker { // com.google.maps.android.compose.multiplatform/MapMarker|null[0]
+    constructor <init>(kotlin/Double, kotlin/Double, kotlin/String? = ..., kotlin/String? = ...) // com.google.maps.android.compose.multiplatform/MapMarker.<init>|<init>(kotlin.Double;kotlin.Double;kotlin.String?;kotlin.String?){}[0]
+
+    final val latitude // com.google.maps.android.compose.multiplatform/MapMarker.latitude|{}latitude[0]
+        final fun <get-latitude>(): kotlin/Double // com.google.maps.android.compose.multiplatform/MapMarker.latitude.<get-latitude>|<get-latitude>(){}[0]
+    final val longitude // com.google.maps.android.compose.multiplatform/MapMarker.longitude|{}longitude[0]
+        final fun <get-longitude>(): kotlin/Double // com.google.maps.android.compose.multiplatform/MapMarker.longitude.<get-longitude>|<get-longitude>(){}[0]
+    final val snippet // com.google.maps.android.compose.multiplatform/MapMarker.snippet|{}snippet[0]
+        final fun <get-snippet>(): kotlin/String? // com.google.maps.android.compose.multiplatform/MapMarker.snippet.<get-snippet>|<get-snippet>(){}[0]
+    final val title // com.google.maps.android.compose.multiplatform/MapMarker.title|{}title[0]
+        final fun <get-title>(): kotlin/String? // com.google.maps.android.compose.multiplatform/MapMarker.title.<get-title>|<get-title>(){}[0]
+
+    final fun component1(): kotlin/Double // com.google.maps.android.compose.multiplatform/MapMarker.component1|component1(){}[0]
+    final fun component2(): kotlin/Double // com.google.maps.android.compose.multiplatform/MapMarker.component2|component2(){}[0]
+    final fun component3(): kotlin/String? // com.google.maps.android.compose.multiplatform/MapMarker.component3|component3(){}[0]
+    final fun component4(): kotlin/String? // com.google.maps.android.compose.multiplatform/MapMarker.component4|component4(){}[0]
+    final fun copy(kotlin/Double = ..., kotlin/Double = ..., kotlin/String? = ..., kotlin/String? = ...): com.google.maps.android.compose.multiplatform/MapMarker // com.google.maps.android.compose.multiplatform/MapMarker.copy|copy(kotlin.Double;kotlin.Double;kotlin.String?;kotlin.String?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.google.maps.android.compose.multiplatform/MapMarker.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.google.maps.android.compose.multiplatform/MapMarker.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.google.maps.android.compose.multiplatform/MapMarker.toString|toString(){}[0]
+}
+
+final val com.google.maps.android.compose.multiplatform/com_google_maps_android_compose_multiplatform_MapMarker$stableprop // com.google.maps.android.compose.multiplatform/com_google_maps_android_compose_multiplatform_MapMarker$stableprop|#static{}com_google_maps_android_compose_multiplatform_MapMarker$stableprop[0]
+
+final fun com.google.maps.android.compose.multiplatform/ClusteredGoogleMap(androidx.compose.ui/Modifier?, kotlin/Double, kotlin/Double, kotlin/Float, com.google.maps.android.compose.multiplatform/MapType?, kotlin/Boolean, kotlin/Boolean, kotlin/Boolean, kotlin.collections/List<com.google.maps.android.compose.multiplatform/MapMarker>?, kotlin/Int, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.google.maps.android.compose.multiplatform/ClusteredGoogleMap|ClusteredGoogleMap(androidx.compose.ui.Modifier?;kotlin.Double;kotlin.Double;kotlin.Float;com.google.maps.android.compose.multiplatform.MapType?;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean;kotlin.collections.List<com.google.maps.android.compose.multiplatform.MapMarker>?;kotlin.Int;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.google.maps.android.compose.multiplatform/GoogleMap(androidx.compose.ui/Modifier?, kotlin/Double, kotlin/Double, kotlin/Float, com.google.maps.android.compose.multiplatform/MapType?, kotlin/Boolean, kotlin/Boolean, kotlin/Boolean, kotlin.collections/List<com.google.maps.android.compose.multiplatform/MapMarker>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.google.maps.android.compose.multiplatform/GoogleMap|GoogleMap(androidx.compose.ui.Modifier?;kotlin.Double;kotlin.Double;kotlin.Float;com.google.maps.android.compose.multiplatform.MapType?;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean;kotlin.collections.List<com.google.maps.android.compose.multiplatform.MapMarker>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.google.maps.android.compose.multiplatform/GoogleMapViewController(kotlin/Double, kotlin/Double, kotlin/Float): platform.UIKit/UIViewController // com.google.maps.android.compose.multiplatform/GoogleMapViewController|GoogleMapViewController(kotlin.Double;kotlin.Double;kotlin.Float){}[0]
+final fun com.google.maps.android.compose.multiplatform/GoogleMapViewController(kotlin/Double, kotlin/Double, kotlin/Float, com.google.maps.android.compose.multiplatform/MapType, kotlin/Boolean, kotlin/Boolean, kotlin/Boolean, kotlin.collections/List<com.google.maps.android.compose.multiplatform/MapMarker>): platform.UIKit/UIViewController // com.google.maps.android.compose.multiplatform/GoogleMapViewController|GoogleMapViewController(kotlin.Double;kotlin.Double;kotlin.Float;com.google.maps.android.compose.multiplatform.MapType;kotlin.Boolean;kotlin.Boolean;kotlin.Boolean;kotlin.collections.List<com.google.maps.android.compose.multiplatform.MapMarker>){}[0]
+final fun com.google.maps.android.compose.multiplatform/GoogleMapViewController(kotlin/Double, kotlin/Double, kotlin/Float, kotlin/Double?, kotlin/Double?, kotlin/String?): platform.UIKit/UIViewController // com.google.maps.android.compose.multiplatform/GoogleMapViewController|GoogleMapViewController(kotlin.Double;kotlin.Double;kotlin.Float;kotlin.Double?;kotlin.Double?;kotlin.String?){}[0]
+final fun com.google.maps.android.compose.multiplatform/clusterMarkers(kotlin.collections/List<com.google.maps.android.compose.multiplatform/MapMarker>, kotlin/Float, kotlin/Int = ...): kotlin.collections/List<com.google.maps.android.compose.multiplatform/MapMarker> // com.google.maps.android.compose.multiplatform/clusterMarkers|clusterMarkers(kotlin.collections.List<com.google.maps.android.compose.multiplatform.MapMarker>;kotlin.Float;kotlin.Int){}[0]
+final fun com.google.maps.android.compose.multiplatform/com_google_maps_android_compose_multiplatform_MapMarker$stableprop_getter(): kotlin/Int // com.google.maps.android.compose.multiplatform/com_google_maps_android_compose_multiplatform_MapMarker$stableprop_getter|com_google_maps_android_compose_multiplatform_MapMarker$stableprop_getter(){}[0]
