@@ -15,27 +15,22 @@
  */
 
 plugins {
-    kotlin("multiplatform")
+    id("android.maps.compose.KmpPublishingConventionPlugin")
     kotlin("native.cocoapods")
-    id("com.android.kotlin.multiplatform.library")
     alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.google.maps.android.compose.multiplatform"
         compileSdk = libs.versions.androidCompileSdk.get().toInt()
         minSdk = libs.versions.androidMinSdk.get().toInt()
     }
-    
-    // Enable iOS targets. No iosX64 (Intel simulators): Compose Multiplatform dropped it in 1.11.
-    iosArm64()
-    iosSimulatorArm64()
 
     cocoapods {
         summary = "Multiplatform Google Maps wrapper"
         homepage = "https://github.com/googlemaps/android-maps-compose"
-        version = "1.0"
+        version = project.version.toString()
         ios.deploymentTarget = "16.0"
         pod("GoogleMaps") {
             version = "10.14.0.0"
@@ -84,6 +79,24 @@ kotlin {
             dependencies {
                 // Uses native MapKit via platform libraries
             }
+        }
+    }
+}
+
+mavenPublishing {
+    coordinates(artifactId = "maps-compose-multiplatform")
+}
+
+// A release must not depend on a snapshot of android-maps-utils: consumers could not resolve it,
+// and it would change under them. Move mapsutilsKmp to a release before publishing one.
+val mapsUtilsKmpVersion = libs.versions.mapsutilsKmp.get()
+tasks.withType<PublishToMavenRepository>().configureEach {
+    val releasing = !project.version.toString().endsWith("-SNAPSHOT")
+    doFirst {
+        check(!(releasing && mapsUtilsKmpVersion.endsWith("-SNAPSHOT"))) {
+            "Cannot publish ${project.version} of maps-compose-multiplatform against " +
+                "android-maps-utils $mapsUtilsKmpVersion. Update mapsutilsKmp in " +
+                "gradle/libs.versions.toml to a released version first."
         }
     }
 }

@@ -10,6 +10,7 @@ androidTargetSdk = "37"
 agp = "9.4.0"
 dependencyAnalysis = "3.19.1"
 dokka = "2.2.0"
+binaryCompatibilityValidator = "0.18.2"
 gradleMavenPublishPlugin = "0.37.0"
 kotlin = "2.4.10"
 kotlinxCoroutines = "1.11.0"
@@ -50,6 +51,7 @@ truth = "1.4.5"
 [libraries]
 # Base
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+binary-compatibility-validator = { module = "org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin", version.ref = "binaryCompatibilityValidator" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "gradleMavenPublishPlugin" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
