@@ -1,0 +1,40 @@
+public final class com/google/maps/android/compose/multiplatform/ClusteringKt {
+	public static final fun ClusteredGoogleMap (Landroidx/compose/ui/Modifier;DDFLcom/google/maps/android/compose/multiplatform/MapType;ZZZLjava/util/List;ILandroidx/compose/runtime/Composer;II)V
+	public static final fun clusterMarkers (Ljava/util/List;FI)Ljava/util/List;
+	public static synthetic fun clusterMarkers$default (Ljava/util/List;FIILjava/lang/Object;)Ljava/util/List;
+}
+
+public final class com/google/maps/android/compose/multiplatform/GoogleMapKt {
+	public static final fun GoogleMap (Landroidx/compose/ui/Modifier;DDFLcom/google/maps/android/compose/multiplatform/MapType;ZZZLjava/util/List;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/google/maps/android/compose/multiplatform/MapMarker {
+	public static final field $stable I
+	public fun <init> (DDLjava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (DDLjava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()D
+	public final fun component2 ()D
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (DDLjava/lang/String;Ljava/lang/String;)Lcom/google/maps/android/compose/multiplatform/MapMarker;
+	public static synthetic fun copy$default (Lcom/google/maps/android/compose/multiplatform/MapMarker;DDLjava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/google/maps/android/compose/multiplatform/MapMarker;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getLatitude ()D
+	public final fun getLongitude ()D
+	public final fun getSnippet ()Ljava/lang/String;
+	public final fun getTitle ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/maps/android/compose/multiplatform/MapType : java/lang/Enum {
+	public static final field HYBRID Lcom/google/maps/android/compose/multiplatform/MapType;
+	public static final field NONE Lcom/google/maps/android/compose/multiplatform/MapType;
+	public static final field NORMAL Lcom/google/maps/android/compose/multiplatform/MapType;
+	public static final field SATELLITE Lcom/google/maps/android/compose/multiplatform/MapType;
+	public static final field TERRAIN Lcom/google/maps/android/compose/multiplatform/MapType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/google/maps/android/compose/multiplatform/MapType;
+	public static fun values ()[Lcom/google/maps/android/compose/multiplatform/MapType;
+}
+
