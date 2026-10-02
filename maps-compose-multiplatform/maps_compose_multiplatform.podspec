@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'maps_compose_multiplatform'
-    spec.version                  = '1.0'
+    spec.version                  = '9.0.0'
     spec.homepage                 = 'https://github.com/googlemaps/android-maps-compose'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
     spec.summary                  = 'Multiplatform Google Maps wrapper'
     spec.vendored_frameworks      = 'build/cocoapods/framework/maps_compose_multiplatform.framework'
     spec.libraries                = 'c++'
-    spec.ios.deployment_target    = '15.0'
+    spec.ios.deployment_target    = '16.0'
     spec.dependency 'GoogleMaps', '10.14.0.0'
     if !Dir.exist?('build/cocoapods/framework/maps_compose_multiplatform.framework') || Dir.empty?('build/cocoapods/framework/maps_compose_multiplatform.framework')
         raise "
