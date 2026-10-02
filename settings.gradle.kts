@@ -23,6 +23,13 @@ dependencyResolutionManagement {
         }
         google()
         mavenCentral()
+        // Snapshots of the android-maps-utils KMP branch, used by maps-compose-multiplatform.
+        maven("https://central.sonatype.com/repository/maven-snapshots/") {
+            mavenContent {
+                snapshotsOnly()
+                includeGroup("com.google.maps.android")
+            }
+        }
     }
 }
 pluginManagement {
@@ -40,24 +47,24 @@ rootProject.name = "android-maps-compose"
 
 // The maps-compose-multiplatform module depends on the experimental KMP branch of
 // android-maps-utils (feat/experimental-kmp-clustering), which provides multiplatform
-// clustering algorithms and the common LatLng/CameraPosition model types.
+// clustering algorithms and the common LatLng/CameraPosition model types. By default they come
+// from the snapshot repository above, published with that repo's "Publish snapshot" workflow.
 //
-// Default consumption path: publish those modules to mavenLocal and enable the
-// mavenLocal repository (see dependencyResolutionManagement above):
+// To try unpublished changes, publish them to mavenLocal and build with -PuseMavenLocal=true:
 //   (in ../android-maps-utils) ./gradlew :maps-model:publishToMavenLocal :clustering:publishToMavenLocal
-//   (here)                     ./gradlew -PuseMavenLocal=true <task>
 //
-// Alternative for tight iteration: -PuseLocalMapsUtils=true substitutes the two
-// coordinates with a composite build of ../android-maps-utils. Note that with the
-// composite, platform compilations (android/iOS) work but the shared-metadata
-// compilation (compileCommonMainKotlinMetadata, and thus assemble) fails: Kotlin's
-// granular metadata transformation currently skips project dependencies substituted
-// across included builds, so common code cannot be analyzed against them.
+// -PuseLocalMapsUtils=true instead substitutes them with a composite build of
+// ../android-maps-utils. With the composite, platform compilations (android/iOS) work but the
+// shared-metadata compilation (compileCommonMainKotlinMetadata, and thus assemble) fails:
+// Kotlin's granular metadata transformation skips project dependencies substituted across
+// included builds, so common code cannot be analyzed against them.
 if (providers.gradleProperty("useLocalMapsUtils").orNull == "true") {
     includeBuild("../android-maps-utils") {
         dependencySubstitution {
-            substitute(module("com.google.maps.android:clustering")).using(project(":clustering"))
-            substitute(module("com.google.maps.android:maps-model")).using(project(":maps-model"))
+            substitute(module("com.google.maps.android:android-maps-utils-clustering"))
+                .using(project(":clustering"))
+            substitute(module("com.google.maps.android:android-maps-utils-maps-model"))
+                .using(project(":maps-model"))
         }
     }
 }
