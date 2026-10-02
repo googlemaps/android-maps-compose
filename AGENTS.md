@@ -13,7 +13,9 @@ libraries live in three modules; the rest of the repo supports them.
 | `maps-compose` | Core library: `GoogleMap` composable, camera state, markers, shapes |
 | `maps-compose-utils` | Utilities layer: clustering and other android-maps-utils integrations |
 | `maps-compose-widgets` | Widget composables built on top of the core library |
+| `maps-compose-multiplatform` | Experimental Compose Multiplatform map for Android and iOS, see below |
 | `maps-app` | Demo app exercising the libraries |
+| `iosApp` | iOS demo app for `maps-compose-multiplatform`, see `iosApp/README.md` |
 | `docs` | Dokka documentation aggregation |
 
 Shared Gradle conventions are in `build-logic/` (included build).
@@ -27,6 +29,28 @@ Shared Gradle conventions are in `build-logic/` (included build).
 ./gradlew lint                                   # Android Lint across all modules
 ./gradlew :maps-app:validateDebugScreenshotTest  # validate screenshot tests
 ```
+
+### Kotlin Multiplatform (experimental)
+
+`maps-compose-multiplatform` targets Android (wrapping `maps-compose`) and iOS (wrapping the
+Google Maps SDK for iOS through CocoaPods). Its iOS targets only build on macOS, which is why
+`.github/workflows/multiplatform.yml` and the publish workflow run on macOS runners.
+
+```bash
+./gradlew :maps-compose-multiplatform:allTests        # commonTest on the JVM and the iOS simulator
+./gradlew :maps-compose-multiplatform:checkKotlinAbi  # public API of every target against api/
+./gradlew :maps-compose-multiplatform:updateKotlinAbi # after an intended public API change
+```
+
+- Shared code goes in `commonMain`; only platform glue goes in `androidMain` and `iosMain`.
+  Tests go in `commonTest` so they run on both platforms.
+- The public API is checked for each target: the iOS klibs in `api/*.klib.api` and the Android
+  target in `api/maps-compose-multiplatform.api`. Run `updateKotlinAbi` and commit the result
+  with any intended API change.
+- Clustering and the shared `LatLng` come from the multiplatform modules of
+  android-maps-utils (`mapsutilsKmp` in the version catalog). While that is a `-SNAPSHOT`,
+  publishing a release of this module fails on purpose.
+- There is no `iosX64` target: Compose Multiplatform no longer publishes it.
 
 Coverage is tracked over time. After every merge to `main`, the
 `Record coverage history` workflow appends a row per module per suite to
