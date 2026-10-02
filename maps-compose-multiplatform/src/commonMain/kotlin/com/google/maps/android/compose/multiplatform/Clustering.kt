@@ -17,90 +17,114 @@
 package com.google.maps.android.compose.multiplatform
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Color
+import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm
-import com.google.maps.android.model.LatLng
-import com.google.maps.android.model.latitude
-import com.google.maps.android.model.longitude
+import com.google.maps.android.model.zoom
+import kotlin.math.floor
+import kotlinx.coroutines.launch
 
 /**
- * Adapts a [MapMarker] to android-maps-utils' [ClusterItem] so it can be fed to the
- * multiplatform clustering algorithms.
+ * Groups [items] that are close together on screen into clusters, at the given [zoom].
+ *
+ * This is the algorithm [Clustering] uses, exposed for code that draws clusters itself.
+ *
+ * @param maxDistanceBetweenClusteredItems the largest distance, in density-independent pixels,
+ * between items that share a cluster
  */
-private class MapMarkerClusterItem(
-    val marker: MapMarker,
-) : ClusterItem {
-    override val position: LatLng = LatLng(marker.latitude, marker.longitude)
-
-    override val title: String? = marker.title
-
-    override val snippet: String? = marker.snippet
-
-    override val zIndex: Float? = null
+public fun <T : ClusterItem> clusterItems(
+    items: Collection<T>,
+    zoom: Float,
+    maxDistanceBetweenClusteredItems: Int = DEFAULT_MAX_DISTANCE,
+): List<Cluster<T>> {
+    if (items.isEmpty()) return emptyList()
+    val algorithm = NonHierarchicalDistanceBasedAlgorithm<T>()
+    algorithm.maxDistanceBetweenClusteredItems = maxDistanceBetweenClusteredItems
+    algorithm.addItems(items)
+    return algorithm.getClusters(zoom).toList()
 }
 
 /**
- * Groups [markers] into clusters for the given [zoom] level using the multiplatform
- * clustering algorithm from android-maps-utils. Runs entirely in common code, so Android
- * and iOS produce identical clusters.
+ * Draws [items] as markers, grouping the ones close together on screen into a single cluster
+ * marker. Clusters are recomputed as the camera zooms, once per whole zoom level.
  *
- * Clusters of one item pass the original marker through; larger clusters are represented
- * by a marker at the cluster position whose title carries the cluster size.
+ * Must be called from the content of a [GoogleMap].
+ *
+ * @param onClusterClick called when a cluster marker is tapped. Return true to consume the tap;
+ * otherwise the camera zooms in on the cluster.
+ * @param onClusterItemClick called when the marker of a single item is tapped. Return true to
+ * consume the tap and skip showing its info window.
+ * @param clusterTitle the info window title of a cluster marker
+ * @param clusterColor the pin color of cluster markers, to tell them apart from single items
+ * @param maxDistanceBetweenClusteredItems the largest distance, in density-independent pixels,
+ * between items that share a cluster
  */
-public fun clusterMarkers(
-    markers: List<MapMarker>,
-    zoom: Float,
-    maxDistanceBetweenClusteredItems: Int = 100,
-): List<MapMarker> {
-    val algorithm = NonHierarchicalDistanceBasedAlgorithm<MapMarkerClusterItem>()
-    algorithm.maxDistanceBetweenClusteredItems = maxDistanceBetweenClusteredItems
-    algorithm.addItems(markers.map { MapMarkerClusterItem(it) })
-    return algorithm.getClusters(zoom).map { cluster ->
-        val items = cluster.items
-        if (items.size == 1) {
-            items.first().marker
+@Composable
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    clusterTitle: (Cluster<T>) -> String = { "${it.size} items" },
+    clusterColor: Color = DefaultClusterColor,
+    maxDistanceBetweenClusteredItems: Int = DEFAULT_MAX_DISTANCE,
+) {
+    val cameraPositionState = checkNotNull(LocalCameraPositionState.current) {
+        "Clustering must be called from the content of a GoogleMap."
+    }
+    // The algorithm only distinguishes whole zoom levels, so skip the fractional changes of a
+    // pinch or an animation.
+    val zoomLevel by remember(cameraPositionState) {
+        derivedStateOf { floor(cameraPositionState.position.zoom) }
+    }
+    val clusters = remember(items, zoomLevel, maxDistanceBetweenClusteredItems) {
+        clusterItems(items, zoomLevel, maxDistanceBetweenClusteredItems)
+    }
+    val scope = rememberCoroutineScope()
+
+    clusters.forEach { cluster ->
+        if (cluster.size == 1) {
+            val item = cluster.items.first()
+            key(item) {
+                Marker(
+                    state = rememberMarkerState(item.position),
+                    title = item.title,
+                    snippet = item.snippet,
+                    zIndex = item.zIndex ?: 0f,
+                    onClick = { onClusterItemClick(item) },
+                )
+            }
         } else {
-            MapMarker(
-                latitude = cluster.position.latitude,
-                longitude = cluster.position.longitude,
-                title = "${items.size} items",
-            )
+            // A cluster has no identity across zoom levels, so key it by its position and size.
+            key(cluster.position, cluster.size) {
+                Marker(
+                    state = rememberMarkerState(cluster.position),
+                    title = clusterTitle(cluster),
+                    color = clusterColor,
+                    onClick = {
+                        if (!onClusterClick(cluster)) {
+                            scope.launch {
+                                cameraPositionState.animate(
+                                    cameraPosition(cluster.position, zoomLevel + CLUSTER_ZOOM_STEP),
+                                )
+                            }
+                        }
+                        true
+                    },
+                )
+            }
         }
     }
 }
 
-/**
- * A [GoogleMap] that clusters [markers] with android-maps-utils' multiplatform clustering
- * algorithm before rendering them. Clustering is recomputed when the markers or [zoom]
- * change.
- */
-@Composable
-public fun ClusteredGoogleMap(
-    modifier: Modifier = Modifier,
-    latitude: Double,
-    longitude: Double,
-    zoom: Float = 10f,
-    mapType: MapType = MapType.NORMAL,
-    myLocationEnabled: Boolean = false,
-    scrollGesturesEnabled: Boolean = true,
-    zoomGesturesEnabled: Boolean = true,
-    markers: List<MapMarker> = emptyList(),
-    maxDistanceBetweenClusteredItems: Int = 100,
-) {
-    val clustered = remember(markers, zoom, maxDistanceBetweenClusteredItems) {
-        clusterMarkers(markers, zoom, maxDistanceBetweenClusteredItems)
-    }
-    GoogleMap(
-        modifier = modifier,
-        latitude = latitude,
-        longitude = longitude,
-        zoom = zoom,
-        mapType = mapType,
-        myLocationEnabled = myLocationEnabled,
-        scrollGesturesEnabled = scrollGesturesEnabled,
-        zoomGesturesEnabled = zoomGesturesEnabled,
-        markers = clustered,
-    )
-}
+private const val DEFAULT_MAX_DISTANCE = 100
+
+private val DefaultClusterColor = Color(0xFF1A73E8)
+
+/** How far a tap on a cluster zooms in: enough to split most clusters. */
+private const val CLUSTER_ZOOM_STEP = 2f

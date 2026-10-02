@@ -14,7 +14,6 @@ group = project.main_group.new_group('iosApp', 'iosApp')
 
 # Reference source files inside the group
 app_delegate_ref = group.new_file('AppDelegate.swift')
-sample_list_ref = group.new_file('SampleListViewController.swift')
 secrets_ref = group.new_file('DeveloperSecrets.swift')
 info_plist_ref = group.new_file('Info.plist')
 
@@ -31,6 +30,9 @@ target.build_configurations.each do |config|
   config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
   config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
   config.build_settings['AD_HOC_CODE_SIGNING_ALLOWED'] = 'YES'
+  # The Kotlin framework has no iosX64 target (Compose Multiplatform dropped it), so only build
+  # Apple silicon simulators.
+  config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'x86_64'
 end
 
 # Add a Build Phase Run Script to populate secrets before compilation
@@ -64,7 +66,6 @@ target.build_phases.insert(0, populate_secrets_phase)
 # Add files to their respective build phases
 source_build_phase = target.source_build_phase
 source_build_phase.add_file_reference(app_delegate_ref)
-source_build_phase.add_file_reference(sample_list_ref)
 source_build_phase.add_file_reference(secrets_ref)
 
 project.save
