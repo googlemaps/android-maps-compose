@@ -6,6 +6,15 @@ inhibit_all_warnings!
 target 'iosApp' do
   use_frameworks!
   
-  # Reference our local KMP module via its podspec path
-  pod 'maps_compose_multiplatform', :path => '../maps-compose-multiplatform'
+  # The shared demo screens, which bring in maps-compose-multiplatform and the GoogleMaps pod.
+  pod 'maps_compose_multiplatform_demo', :path => '../maps-compose-multiplatform-demo'
+end
+
+# Match the app: the Kotlin framework has no iosX64 target, so pods skip Intel simulators too.
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'x86_64'
+    end
+  end
 end

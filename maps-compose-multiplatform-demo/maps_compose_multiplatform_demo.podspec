@@ -1,32 +1,32 @@
 Pod::Spec.new do |spec|
-    spec.name                     = 'maps_compose_multiplatform'
+    spec.name                     = 'maps_compose_multiplatform_demo'
     spec.version                  = '9.0.0'
     spec.homepage                 = 'https://github.com/googlemaps/android-maps-compose'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
     spec.license                  = ''
-    spec.summary                  = 'Multiplatform Google Maps wrapper'
-    spec.vendored_frameworks      = 'build/cocoapods/framework/maps_compose_multiplatform.framework'
+    spec.summary                  = 'Demos of maps-compose-multiplatform'
+    spec.vendored_frameworks      = 'build/cocoapods/framework/maps_compose_multiplatform_demo.framework'
     spec.libraries                = 'c++'
     spec.ios.deployment_target    = '16.0'
     spec.dependency 'GoogleMaps', '10.14.0.0'
-    if !Dir.exist?('build/cocoapods/framework/maps_compose_multiplatform.framework') || Dir.empty?('build/cocoapods/framework/maps_compose_multiplatform.framework')
+    if !Dir.exist?('build/cocoapods/framework/maps_compose_multiplatform_demo.framework') || Dir.empty?('build/cocoapods/framework/maps_compose_multiplatform_demo.framework')
         raise "
-        Kotlin framework 'maps_compose_multiplatform' doesn't exist yet, so a proper Xcode project can't be generated.
+        Kotlin framework 'maps_compose_multiplatform_demo' doesn't exist yet, so a proper Xcode project can't be generated.
         'pod install' should be executed after running ':generateDummyFramework' Gradle task:
-            ./gradlew :maps-compose-multiplatform:generateDummyFramework
+            ./gradlew :maps-compose-multiplatform-demo:generateDummyFramework
         Alternatively, proper pod installation is performed during Gradle sync in the IDE (if Podfile location is set)"
     end
     spec.xcconfig = {
         'ENABLE_USER_SCRIPT_SANDBOXING' => 'NO',
     }
     spec.pod_target_xcconfig = {
-        'KOTLIN_PROJECT_PATH' => ':maps-compose-multiplatform',
-        'PRODUCT_MODULE_NAME' => 'maps_compose_multiplatform',
+        'KOTLIN_PROJECT_PATH' => ':maps-compose-multiplatform-demo',
+        'PRODUCT_MODULE_NAME' => 'maps_compose_multiplatform_demo',
     }
     spec.script_phases = [
         {
-            :name => 'Build maps_compose_multiplatform',
+            :name => 'Build maps_compose_multiplatform_demo',
             :execution_position => :before_compile,
             :shell_path => '/bin/sh',
             :script => <<-SCRIPT

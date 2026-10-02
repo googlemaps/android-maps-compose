@@ -19,31 +19,19 @@ package com.google.maps.android.compose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
-import com.google.maps.android.compose.multiplatform.GoogleMap
-import com.google.maps.android.compose.multiplatform.MapMarker
+import com.google.maps.android.compose.multiplatform.demo.MultiplatformDemoApp
 
+/**
+ * The maps-compose-multiplatform demos, the same screens the iOS demo app shows. Opens on the
+ * first demo, so that this entry shows a map like every other entry of the demo app, or on the
+ * demo at the `demo` extra, for example
+ * `adb shell am start -n com.google.maps.android.compose/.KmpMapActivity --ei demo 3`.
+ */
 class KmpMapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Renders the multiplatform Map Composable
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                latitude = 37.7749, // San Francisco
-                longitude = -122.4194,
-                zoom = 12f,
-                markers = listOf(
-                    MapMarker(
-                        latitude = 37.7749,
-                        longitude = -122.4194,
-                        title = "San Francisco",
-                        snippet = "Welcome to SF!"
-                    )
-                )
-            )
+            MultiplatformDemoApp(startDemo = intent.getIntExtra("demo", 0))
         }
     }
 }
-

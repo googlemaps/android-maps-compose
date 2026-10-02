@@ -1,8 +1,10 @@
 # iOS demo app
 
-Demos of `maps-compose-multiplatform` on iOS, the counterpart of the multiplatform demo in
-`maps-app`. It needs a Mac with Xcode, CocoaPods and the `xcodeproj` gem (installed with
-CocoaPods).
+Demos of `maps-compose-multiplatform` on iOS. The screens come from
+`maps-compose-multiplatform-demo`, the same ones the "Multiplatform demos" entry of `maps-app`
+shows; this app only hosts them.
+
+It needs a Mac with Xcode, CocoaPods and the `xcodeproj` gem (installed with CocoaPods).
 
 ## Run it
 
@@ -18,7 +20,7 @@ CocoaPods).
 2. From the repository root, create the placeholder framework CocoaPods links against:
 
    ```bash
-   ./gradlew :maps-compose-multiplatform:generateDummyFramework
+   ./gradlew :maps-compose-multiplatform-demo:generateDummyFramework
    ```
 
 3. Generate the Xcode project and install the pods:
@@ -34,6 +36,12 @@ CocoaPods).
 
 4. Open `iosApp.xcworkspace` (not the `.xcodeproj`), select the `iosApp` scheme and an iOS
    simulator, and run. Xcode builds the Kotlin framework through Gradle as part of the build.
+
+To open a demo directly, pass its index in the demo list:
+
+```bash
+xcrun simctl launch booted com.google.maps.android.compose.iosApp -demo 3
+```
 
 To build from the command line, as CI does:
 
