@@ -93,3 +93,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-01T22:29:25Z,597c8db,1023,test: report instrumentation coverage of the library modules,instrumentation,maps-compose-utils,350,579,60.45,94,320,29.38,2651,4735,55.99
 2026-10-01T22:29:25Z,597c8db,1023,test: report instrumentation coverage of the library modules,instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
 2026-10-01T22:29:25Z,597c8db,1023,test: report instrumentation coverage of the library modules,instrumentation,TOTAL,2415,5142,46.97,737,2130,34.6,18355,41353,44.39
+2026-10-05T09:09:13Z,6597744,1022,chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates,unit,maps-compose,0,1953,0.0,0,1800,0.0,0,25127,0.0
+2026-10-05T09:09:13Z,6597744,1022,chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6607,1.06
+2026-10-05T09:09:13Z,6597744,1022,chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
+2026-10-05T09:09:13Z,6597744,1022,chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates,unit,TOTAL,11,2639,0.42,2,2280,0.09,70,33222,0.21
