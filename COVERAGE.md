@@ -38,15 +38,15 @@ Measured at `6597744` (#1022), recorded 2026-10-05T09:09:13Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `597c8db` (#1023), recorded 2026-10-01T22:29:25Z.
+Measured at `6597744` (#1022), recorded 2026-10-05T09:09:17Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-app` | 509/2,342 | 21.73% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
-| `maps-compose` | 1,444/2,072 | 69.69% | `██████████████░░░░░░` | 548/1,360 | 40.29% |
-| `maps-compose-utils` | 350/579 | 60.45% | `████████████░░░░░░░░` | 94/320 | 29.38% |
+| `maps-compose` | 1,446/2,072 | 69.79% | `██████████████░░░░░░` | 548/1,360 | 40.29% |
+| `maps-compose-utils` | 349/579 | 60.28% | `████████████░░░░░░░░` | 94/320 | 29.38% |
 | `maps-compose-widgets` | 112/149 | 75.17% | `███████████████░░░░░` | 15/48 | 31.25% |
-| **TOTAL** | 2,415/5,142 | 46.97% | `█████████░░░░░░░░░░░` | 737/2,130 | 34.60% |
+| **TOTAL** | 2,416/5,142 | 46.99% | `█████████░░░░░░░░░░░` | 737/2,130 | 34.60% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-05 | `6597744` | #1022 | 0.42% | 0.00 | n/a | n/a | chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates |
+| 2026-10-05 | `6597744` | #1022 | 0.42% | 0.00 | 46.99% | +0.02 | chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates |
 | 2026-10-01 | `597c8db` | #1023 | 0.42% | 0.00 | 46.97% | +26.18 | test: report instrumentation coverage of the library modules |
 | 2026-10-01 | `61c3cf0` | #1024 | 0.42% | 0.00 | 20.79% | 0.00 | ci: compare unit coverage against the coverage-history branch |
 | 2026-10-01 | `0c49e8d` | #1002 | 0.42% | 0.00 | 20.79% | 0.00 | feat!: migrate from android-maps-ktx to android-maps-utils (v9.0.0) |
