@@ -92,6 +92,47 @@ class GoogleMapViewTests {
     }
 
     @Test
+    fun testInitialCameraPositionIsAppliedToGoogleMapOptions() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                cameraPositionState = cameraPositionState,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+
+        assertThat(capturedOptions?.camera?.target).isEqualTo(startingPosition)
+        assertThat(capturedOptions?.camera?.zoom).isEqualTo(startingZoom)
+    }
+
+    @Test
+    fun testInitialCameraPositionDoesNotOverrideGoogleMapOptionsFactory() {
+        val configuredPosition = LatLng(7.89, 10.11)
+        val configuredZoom = 12f
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                cameraPositionState = cameraPositionState,
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().camera(
+                        CameraPosition.fromLatLngZoom(configuredPosition, configuredZoom)
+                    )
+                },
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+
+        assertThat(capturedOptions?.camera?.target).isEqualTo(configuredPosition)
+        assertThat(capturedOptions?.camera?.zoom).isEqualTo(configuredZoom)
+    }
+
+    @Test
     fun testDefaultColorSchemeIsFollowSystem() {
         var capturedOptions: GoogleMapOptions? = null
         composeTestRule.setContent {
