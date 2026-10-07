@@ -176,19 +176,21 @@ public fun GoogleMap(
             // out of focus traversal entirely.
             modifier = if (focusable) modifier.focusable() else modifier,
             factory = { context ->
-                val options = googleMapOptionsFactory().let { opts ->
-                    // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
-                    // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
-                    // apply it to GoogleMapOptions so MapView is created with it.
-                    // Lite mode does not support color schemes, and older Play services throw
-                    // UnsupportedOperationException for it, so it is never applied there (#1028).
-                    if (mapColorScheme != null && opts.mapColorScheme == 0 && opts.liteMode != true) {
-                        opts.mapColorScheme(mapColorScheme.value)
-                    } else {
-                        opts
-                    }
+                val baseOptions = googleMapOptionsFactory()
+                val isLiteMode = baseOptions.liteMode == true
+                // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
+                // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
+                // apply it to GoogleMapOptions so MapView is created with it.
+                // Lite mode does not support color schemes, and older Play services throw
+                // UnsupportedOperationException for it, so it is never applied there (#1028).
+                val applyColorScheme =
+                    mapColorScheme != null && baseOptions.mapColorScheme == 0 && !isLiteMode
+                val options = if (applyColorScheme) {
+                    baseOptions.mapColorScheme(mapColorScheme.value)
+                } else {
+                    baseOptions
                 }
-                cameraPositionState.isLiteMode = options.liteMode == true
+                cameraPositionState.isLiteMode = isLiteMode
                 mapViewFactory(context, options).also { mapView ->
                     mapView.applyFocusability(focusable)
                     mapView.setViewTreeLifecycleOwner(lifecycleOwner)
@@ -216,7 +218,7 @@ public fun GoogleMap(
                     mapView.tag = MapTagData(
                         componentCallbacks,
                         lifecycleObserver,
-                        isLiteMode = options.liteMode == true,
+                        isLiteMode = isLiteMode,
                     )
 
                     // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
@@ -250,7 +252,6 @@ public fun GoogleMap(
                 mapView.applyFocusability(focusable)
                 mapView.setViewTreeLifecycleOwner(lifecycleOwner)
                 mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
-                mapUpdaterState.isLiteMode = mapView.tagData.isLiteMode
                 if (subcompositionJob == null) {
                     subcompositionJob = parentCompositionScope.launchSubcomposition(
                         mapUpdaterState,
@@ -298,7 +299,12 @@ private fun CoroutineScope.launchSubcomposition(
     ) {
         val map = mapView.awaitMap()
         val composition = Composition(
-            applier = MapApplier(map, mapView, mapClickListeners),
+            applier = MapApplier(
+                map,
+                mapView,
+                mapClickListeners,
+                isLiteMode = mapView.tagData.isLiteMode,
+            ),
             parent = parentComposition
         )
 
@@ -339,13 +345,6 @@ internal class MapUpdaterState(
     var mapProperties by mutableStateOf(mapProperties)
     var mapUiSettings by mutableStateOf(mapUiSettings)
     var mapColorScheme by mutableStateOf(mapColorScheme)
-
-    /**
-     * Whether the [MapView] was created in Lite mode. Copied from [MapTagData] on every
-     * `AndroidView` update, because a reused [MapView] skips the factory while this state is
-     * recreated.
-     */
-    var isLiteMode: Boolean = false
 }
 
 /** Used to store things in the tag which must be retrievable across recompositions */
