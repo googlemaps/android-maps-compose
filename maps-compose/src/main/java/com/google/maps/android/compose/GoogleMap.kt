@@ -189,7 +189,6 @@ public fun GoogleMap(
                     }
                 }
                 cameraPositionState.isLiteMode = options.liteMode == true
-                mapUpdaterState.isLiteMode = options.liteMode == true
                 mapViewFactory(context, options).also { mapView ->
                     mapView.applyFocusability(focusable)
                     mapView.setViewTreeLifecycleOwner(lifecycleOwner)
@@ -214,7 +213,11 @@ public fun GoogleMap(
 
                     val lifecycleObserver = MapLifecycleEventObserver(mapView)
 
-                    mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
+                    mapView.tag = MapTagData(
+                        componentCallbacks,
+                        lifecycleObserver,
+                        isLiteMode = options.liteMode == true,
+                    )
 
                     // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
                     val onAttachStateListener = object : View.OnAttachStateChangeListener {
@@ -247,6 +250,7 @@ public fun GoogleMap(
                 mapView.applyFocusability(focusable)
                 mapView.setViewTreeLifecycleOwner(lifecycleOwner)
                 mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
+                mapUpdaterState.isLiteMode = mapView.tagData.isLiteMode
                 if (subcompositionJob == null) {
                     subcompositionJob = parentCompositionScope.launchSubcomposition(
                         mapUpdaterState,
@@ -336,14 +340,19 @@ internal class MapUpdaterState(
     var mapUiSettings by mutableStateOf(mapUiSettings)
     var mapColorScheme by mutableStateOf(mapColorScheme)
 
-    /** Set once from the [GoogleMapOptions] the [MapView] is created with. */
+    /**
+     * Whether the [MapView] was created in Lite mode. Copied from [MapTagData] on every
+     * `AndroidView` update, because a reused [MapView] skips the factory while this state is
+     * recreated.
+     */
     var isLiteMode: Boolean = false
 }
 
 /** Used to store things in the tag which must be retrievable across recompositions */
 private data class MapTagData(
     val componentCallbacks: ComponentCallbacks,
-    val lifecycleObserver: MapLifecycleEventObserver
+    val lifecycleObserver: MapLifecycleEventObserver,
+    val isLiteMode: Boolean,
 )
 
 private val MapView.tagData: MapTagData
