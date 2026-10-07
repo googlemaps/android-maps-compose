@@ -90,6 +90,7 @@ import kotlinx.coroutines.launch
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
  * @param mapColorScheme Defines the color scheme for the Map. Defaults to [ComposeMapColorScheme.FOLLOW_SYSTEM].
+ * Not applied to Lite mode maps, which do not support color schemes.
  * @param content the content of the map
  */
 @Composable
@@ -179,13 +180,16 @@ public fun GoogleMap(
                     // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
                     // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
                     // apply it to GoogleMapOptions so MapView is created with it.
-                    if (mapColorScheme != null && opts.mapColorScheme == 0) {
+                    // Lite mode does not support color schemes, and older Play services throw
+                    // UnsupportedOperationException for it, so it is never applied there (#1028).
+                    if (mapColorScheme != null && opts.mapColorScheme == 0 && opts.liteMode != true) {
                         opts.mapColorScheme(mapColorScheme.value)
                     } else {
                         opts
                     }
                 }
                 cameraPositionState.isLiteMode = options.liteMode == true
+                mapUpdaterState.isLiteMode = options.liteMode == true
                 mapViewFactory(context, options).also { mapView ->
                     mapView.applyFocusability(focusable)
                     mapView.setViewTreeLifecycleOwner(lifecycleOwner)
@@ -331,6 +335,9 @@ internal class MapUpdaterState(
     var mapProperties by mutableStateOf(mapProperties)
     var mapUiSettings by mutableStateOf(mapUiSettings)
     var mapColorScheme by mutableStateOf(mapColorScheme)
+
+    /** Set once from the [GoogleMapOptions] the [MapView] is created with. */
+    var isLiteMode: Boolean = false
 }
 
 /** Used to store things in the tag which must be retrievable across recompositions */

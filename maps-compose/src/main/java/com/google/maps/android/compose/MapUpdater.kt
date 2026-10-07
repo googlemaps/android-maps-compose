@@ -138,7 +138,8 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
         set(mapProperties.maxZoomPreference) { map.setMaxZoomPreference(it) }
         set(mapProperties.minZoomPreference) { map.setMinZoomPreference(it) }
         set(mapColorScheme) {
-            if (it != null) {
+            // Lite mode does not support color schemes; see the GoogleMapOptions setup in GoogleMap.
+            if (it != null && !isLiteMode) {
                 map.mapColorScheme = it
             }
         }
