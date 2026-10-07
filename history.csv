@@ -106,3 +106,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-07T19:57:50Z,43eff64,1021,chore(deps): bump github/codeql-action/upload-sarif,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6607,1.06
 2026-10-07T19:57:50Z,43eff64,1021,chore(deps): bump github/codeql-action/upload-sarif,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
 2026-10-07T19:57:50Z,43eff64,1021,chore(deps): bump github/codeql-action/upload-sarif,unit,TOTAL,11,2639,0.42,2,2280,0.09,70,33222,0.21
+2026-10-07T19:57:54Z,43eff64,1021,chore(deps): bump github/codeql-action/upload-sarif,instrumentation,maps-app,508,2342,21.69,80,402,19.9,4818,19524,24.68
+2026-10-07T19:57:54Z,43eff64,1021,chore(deps): bump github/codeql-action/upload-sarif,instrumentation,maps-compose,1446,2072,69.79,548,1360,40.29,10252,16210,63.24
+2026-10-07T19:57:54Z,43eff64,1021,chore(deps): bump github/codeql-action/upload-sarif,instrumentation,maps-compose-utils,349,579,60.28,94,320,29.38,2650,4736,55.95
+2026-10-07T19:57:54Z,43eff64,1021,chore(deps): bump github/codeql-action/upload-sarif,instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
+2026-10-07T19:57:54Z,43eff64,1021,chore(deps): bump github/codeql-action/upload-sarif,instrumentation,TOTAL,2415,5142,46.97,737,2130,34.6,18370,41359,44.42
