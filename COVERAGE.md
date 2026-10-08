@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `8af2400` (#1030), recorded 2026-10-08T15:47:46Z.
+Measured at `cb74115` (#1031), recorded 2026-10-08T16:00:30Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-08 | `cb74115` | #1031 | 0.41% | 0.00 | n/a | n/a | chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin |
 | 2026-10-08 | `8af2400` | #1030 | 0.41% | 0.00 | 47.09% | 0.00 | chore(build): remove foojay toolchain resolver |
 | 2026-10-08 | `622d2f4` | #1025 | 0.41% | 0.00 | 47.09% | n/a | docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes |
 | 2026-10-08 | `114aaa5` | #1029 | 0.41% | -0.01 | n/a | n/a | fix(maps-compose): do not apply mapColorScheme to Lite mode maps |
