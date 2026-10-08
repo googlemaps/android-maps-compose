@@ -24,6 +24,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
+import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.algo.NonHierarchicalViewBasedAlgorithm
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.GoogleMap
@@ -74,6 +77,7 @@ import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.singapore2
 import kotlin.random.Random
+import kotlinx.coroutines.delay
 
 private val TAG = MarkerClusteringActivity::class.simpleName
 
@@ -107,57 +111,107 @@ fun GoogleMapClustering() {
     }
 }
 
+@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun GoogleMapClustering(items: List<MyItem>) {
     var clusteringType by remember {
         mutableStateOf(ClusteringType.Default)
     }
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(singapore2, 6f)
+    val keyedItems = remember { mutableStateListOf<MyItem>() }
+    var updateCount by remember { mutableIntStateOf(0) }
+    var lastUpdatedItemIndex by remember { mutableIntStateOf(-1) }
+    var clusterManager by remember { mutableStateOf<ClusterManager<MyItem>?>(null) }
+
+    LaunchedEffect(clusteringType) {
+        if (clusteringType == ClusteringType.KeyedDiff) {
+            keyedItems.clear()
+            keyedItems.addAll(
+                List(5_000) { index ->
+                    val row = index / 100
+                    val column = index % 100
+                    MyItem(
+                        position = LatLng(
+                            singapore2.latitude + (row - 25) * 0.001f,
+                            singapore2.longitude + (column - 50) * 0.001f,
+                        ),
+                        title = "item-$index",
+                        snippet = "Frequently updated keyed cluster item",
+                        zIndex = 0f,
+                    )
+                }
+            )
+            var nextItemIndex = 0
+            while (true) {
+                delay(500)
+                repeat(100) {
+                    val index = nextItemIndex++ % keyedItems.size
+                    val item = keyedItems[index]
+                    val direction = if (updateCount % 2 == 0) 1 else -1
+                    keyedItems[index] = item.copy(
+                        position = LatLng(
+                            item.position.latitude + direction * 0.0002,
+                            item.position.longitude + direction * 0.0002,
+                        )
+                    )
+                }
+                lastUpdatedItemIndex = (nextItemIndex - 1) % keyedItems.size
+                updateCount++
+            }
+        } else {
+            keyedItems.clear()
         }
-    ) {
-        when (clusteringType) {
-            ClusteringType.Default -> {
-                DefaultClustering(
-                    items = items,
-                )
-            }
-
-            ClusteringType.CustomUi -> {
-                CustomUiClustering(
-                    items = items,
-                )
-            }
-
-            ClusteringType.CustomRenderer -> {
-                CustomRendererClustering(
-                    items = items,
-                )
-            }
-
-            ClusteringType.Decorations -> {
-                DecorationsClustering(
-                    items = items,
-                )
-            }
-        }
-
-        MarkerInfoWindow(
-            state = rememberUpdatedMarkerState(position = singapore2),
-            onClick = {
-                Log.d(TAG, "Non-cluster marker clicked! $it")
-                true
-            }
-        )
     }
 
-    ClusteringTypeControls(
-        onClusteringTypeClick = {
-            clusteringType = it
-        },
-    )
+    Box(Modifier.fillMaxSize()) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = rememberCameraPositionState {
+                position = CameraPosition.fromLatLngZoom(singapore2, 6f)
+            }
+        ) {
+            when (clusteringType) {
+                ClusteringType.Default -> DefaultClustering(items)
+                ClusteringType.CustomUi -> CustomUiClustering(items)
+                ClusteringType.CustomRenderer -> CustomRendererClustering(items)
+                ClusteringType.Decorations -> DecorationsClustering(items)
+                ClusteringType.KeyedDiff -> Clustering(
+                    items = keyedItems,
+                    key = { item -> item.title },
+                    onClusterManager = { clusterManager = it },
+                )
+            }
+
+            MarkerInfoWindow(
+                state = rememberUpdatedMarkerState(position = singapore2),
+                onClick = {
+                    Log.d(TAG, "Non-cluster marker clicked! $it")
+                    true
+                }
+            )
+        }
+
+        if (clusteringType == ClusteringType.KeyedDiff) {
+            val managerItems = clusterManager?.algorithm?.items.orEmpty()
+            val lastUpdatedItem = managerItems.firstOrNull { it.title == "item-$lastUpdatedItemIndex" }
+            Surface(
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 72.dp),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+            ) {
+                Column(Modifier.padding(8.dp)) {
+                    Text("Keyed diff demo: 5,000 items; 100 updates / 500 ms")
+                    Text(
+                        "Update $updateCount · ${managerItems.size} items · " +
+                            "item $lastUpdatedItemIndex at ${lastUpdatedItem?.position}"
+                    )
+                }
+            }
+        }
+
+        ClusteringTypeControls(
+            modifier = Modifier.align(Alignment.TopCenter),
+            onClusteringTypeClick = { clusteringType = it },
+        )
+    }
 }
 
 @OptIn(MapsComposeExperimentalApi::class)
@@ -354,6 +408,7 @@ private fun ClusteringTypeControls(
                     ClusteringType.CustomUi -> "Custom UI"
                     ClusteringType.CustomRenderer -> "Custom Renderer"
                     ClusteringType.Decorations -> "Decorations"
+                    ClusteringType.KeyedDiff -> "Keyed diff (5k)"
                 },
                 onClick = { onClusteringTypeClick(it) }
             )
@@ -380,6 +435,7 @@ private enum class ClusteringType {
     CustomUi,
     CustomRenderer,
     Decorations,
+    KeyedDiff,
 }
 
 data class MyItem(
