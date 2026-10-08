@@ -104,7 +104,7 @@ jobs:
         token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO }}
         min-coverage-overall: 26
         min-coverage-changed-files: 60
-        title: Code Coverage
+        title: Coverage (instrumentation tests)
         debug-mode: false
         update-comment: true
 
