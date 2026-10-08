@@ -112,6 +112,9 @@ public fun ClusteringMarkerProperties(
  * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
  * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
  * @param clusterRenderer an optional ClusterRenderer that can be used to specify the algorithm used by the rendering.
+ * @param key an optional stable, unique key for each item. When supplied, items with the same key
+ * are treated as updates when their values differ. Without a key, items are identified by their
+ * `equals` and `hashCode` implementations.
  */
 @Composable
 @GoogleMapComposable
@@ -161,6 +164,7 @@ public fun <T : ClusterItem> Clustering(
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
+    key: ((T) -> Any)? = null,
     clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
 ) {
     val clusterManager = rememberClusterManager(
@@ -186,6 +190,7 @@ public fun <T : ClusterItem> Clustering(
         clusterManager = clusterManager,
         clusterItemDecoration = clusterItemDecoration,
         renderer = clusterManager.renderer,
+        key = key,
     )
 }
 
@@ -207,6 +212,9 @@ public fun <T : ClusterItem> Clustering(
  * @param clusterItemContentZIndex the z-index of the non-clustered item
  * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
  * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
+ * @param key an optional stable, unique key for each item. When supplied, items with the same key
+ * are treated as updates when their values differ. Without a key, items are identified by their
+ * `equals` and `hashCode` implementations.
  */
 @Composable
 @GoogleMapComposable
@@ -225,6 +233,7 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentZIndex: Float = 0.0f,
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
+    key: ((T) -> Any)? = null,
     clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
 ) {
     Clustering(
@@ -243,6 +252,7 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentRotation = clusterItemContentRotation,
         clusterItemDecoration = clusterItemDecoration,
         onClusterManager = null,
+        key = key,
     )
 }
 
@@ -264,6 +274,9 @@ public fun <T : ClusterItem> Clustering(
  * @param clusterItemContentZIndex the z-index of the non-clustered item
  * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
  * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
+ * @param key an optional stable, unique key for each item. When supplied, items with the same key
+ * are treated as updates when their values differ. Without a key, items are identified by their
+ * `equals` and `hashCode` implementations.
  * @param onClusterManager an optional lambda invoked with the clusterManager as a param when both
  * the clusterManager and renderer are set up, allowing callers a customization hook.
  */
@@ -285,6 +298,7 @@ public fun <T : ClusterItem> Clustering(
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
     clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    key: ((T) -> Any)? = null,
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ) {
     val clusterManager = rememberClusterManager<T>()
@@ -322,6 +336,7 @@ public fun <T : ClusterItem> Clustering(
             clusterManager = clusterManager,
             clusterItemDecoration = clusterItemDecoration,
             renderer = renderer,
+            key = key,
         )
     }
 }
@@ -331,6 +346,9 @@ public fun <T : ClusterItem> Clustering(
  *
  * @param items all items to show
  * @param clusterManager a [ClusterManager] that can be used to specify the algorithm used by the rendering.
+ * @param key an optional stable, unique key for each item. When supplied, items with the same key
+ * are treated as updates when their values differ. Without a key, items are identified by their
+ * `equals` and `hashCode` implementations.
  */
 @Composable
 @GoogleMapComposable
@@ -338,13 +356,15 @@ public fun <T : ClusterItem> Clustering(
 public fun <T : ClusterItem> Clustering(
     items: Collection<T>,
     clusterManager: ClusterManager<T>,
+    key: ((T) -> Any)? = null,
     clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
 ) {
     Clustering(
         items = items,
         clusterManager = clusterManager,
         clusterItemDecoration = clusterItemDecoration,
-        renderer = null
+        renderer = null,
+        key = key,
     )
 }
 
@@ -356,6 +376,7 @@ internal fun <T : ClusterItem> Clustering(
     clusterManager: ClusterManager<T>,
     clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
     renderer: ClusterRenderer<T>? = null,
+    key: ((T) -> Any)? = null,
 ) {
     ResetMapListeners(clusterManager)
     InputHandler(
@@ -376,12 +397,37 @@ internal fun <T : ClusterItem> Clustering(
             }
     }
     val itemsState = rememberUpdatedState(items)
-    LaunchedEffect(itemsState) {
-        snapshotFlow { itemsState.value.toList() }
-            .collect { items ->
-                clusterManager.clearItems()
-                clusterManager.addItems(items)
-                clusterManager.cluster()
+    val keyState = rememberUpdatedState(key)
+    LaunchedEffect(clusterManager, itemsState, keyState) {
+        var previousKeyedItems: Map<Any, T>? = null
+        var previousUsedExplicitKey: Boolean? = null
+        snapshotFlow { itemsState.value.toList() to keyState.value }
+            .collect { (items, itemKey) ->
+                val currentKeyedItems = clusterItemsByKey(items, itemKey)
+                val previousItems = previousKeyedItems
+                val usesExplicitKey = itemKey != null
+
+                if (previousItems == null || previousUsedExplicitKey != usesExplicitKey) {
+                    // Reset on the first update or when switching identity strategies.
+                    clusterManager.clearItems()
+                    clusterManager.addItems(items)
+                    clusterManager.cluster()
+                } else {
+                    val diff = diffClusterItems(previousItems, currentKeyedItems)
+                    val removedItems = diff.removed + diff.updated.map { (oldItem, _) -> oldItem }
+                    val addedItems = diff.added + diff.updated.map { (_, newItem) -> newItem }
+                    if (removedItems.isNotEmpty()) {
+                        clusterManager.removeItems(removedItems)
+                    }
+                    if (addedItems.isNotEmpty()) {
+                        clusterManager.addItems(addedItems)
+                    }
+                    if (diff.hasChanges) {
+                        clusterManager.cluster()
+                    }
+                }
+                previousKeyedItems = currentKeyedItems
+                previousUsedExplicitKey = usesExplicitKey
             }
     }
     DisposableEffect(itemsState) {
