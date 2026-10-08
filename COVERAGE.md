@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `43eff64` (#1021), recorded 2026-10-07T19:57:50Z.
+Measured at `114aaa5` (#1029), recorded 2026-10-08T15:15:06Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-compose` | 0/1,953 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/1,800 | 0.00% |
+| `maps-compose` | 0/1,965 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/1,804 | 0.00% |
 | `maps-compose-utils` | 11/540 | 2.04% | `░░░░░░░░░░░░░░░░░░░░` | 2/412 | 0.49% |
 | `maps-compose-widgets` | 0/146 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/68 | 0.00% |
-| **TOTAL** | 11/2,639 | 0.42% | `░░░░░░░░░░░░░░░░░░░░` | 2/2,280 | 0.09% |
+| **TOTAL** | 11/2,651 | 0.41% | `░░░░░░░░░░░░░░░░░░░░` | 2/2,284 | 0.09% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-08 | `114aaa5` | #1029 | 0.41% | -0.01 | n/a | n/a | fix(maps-compose): do not apply mapColorScheme to Lite mode maps |
 | 2026-10-07 | `43eff64` | #1021 | 0.42% | 0.00 | 46.97% | -0.02 | chore(deps): bump github/codeql-action/upload-sarif |
 | 2026-10-05 | `6597744` | #1022 | 0.42% | 0.00 | 46.99% | +0.02 | chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates |
 | 2026-10-01 | `597c8db` | #1023 | 0.42% | 0.00 | 46.97% | +26.18 | test: report instrumentation coverage of the library modules |
