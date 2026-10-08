@@ -211,7 +211,7 @@ class GoogleMapViewTests {
     }
 
     @Test
-    fun testLiteModePreservesColorSchemeAndLiteModeInOptions() {
+    fun testLiteModeDoesNotApplyColorSchemeToOptions() {
         var capturedOptions: GoogleMapOptions? = null
         composeTestRule.setContent {
             GoogleMap(
@@ -224,7 +224,7 @@ class GoogleMapViewTests {
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
-        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.LIGHT)
     }
 
     @Test
@@ -246,11 +246,11 @@ class GoogleMapViewTests {
         }
         assertThat(capturedOptions?.liteMode).isTrue()
         assertThat(capturedOptions?.mapType).isEqualTo(GoogleMap.MAP_TYPE_TERRAIN)
-        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.LIGHT)
     }
 
     @Test
-    fun testLiteModeDefaultColorSchemeIsFollowSystem() {
+    fun testLiteModeDoesNotApplyDefaultColorSchemeToOptions() {
         var capturedOptions: GoogleMapOptions? = null
         composeTestRule.setContent {
             GoogleMap(
@@ -262,7 +262,27 @@ class GoogleMapViewTests {
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
-        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.LIGHT)
+    }
+
+    @Test
+    fun testLiteModePreservesColorSchemeSetInOptions() {
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                googleMapOptionsFactory = {
+                    GoogleMapOptions()
+                        .liteMode(true)
+                        .mapColorScheme(MapColorScheme.DARK)
+                },
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                }
+            )
+        }
+        assertThat(capturedOptions?.liteMode).isTrue()
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
     }
 
     @Test
