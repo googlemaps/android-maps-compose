@@ -38,7 +38,7 @@ Measured at `8af2400` (#1030), recorded 2026-10-08T15:47:46Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `622d2f4` (#1025), recorded 2026-10-08T15:39:05Z.
+Measured at `8af2400` (#1030), recorded 2026-10-08T15:58:56Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-08 | `8af2400` | #1030 | 0.41% | 0.00 | n/a | n/a | chore(build): remove foojay toolchain resolver |
+| 2026-10-08 | `8af2400` | #1030 | 0.41% | 0.00 | 47.09% | 0.00 | chore(build): remove foojay toolchain resolver |
 | 2026-10-08 | `622d2f4` | #1025 | 0.41% | 0.00 | 47.09% | n/a | docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes |
 | 2026-10-08 | `114aaa5` | #1029 | 0.41% | -0.01 | n/a | n/a | fix(maps-compose): do not apply mapColorScheme to Lite mode maps |
 | 2026-10-07 | `43eff64` | #1021 | 0.42% | 0.00 | 46.97% | -0.02 | chore(deps): bump github/codeql-action/upload-sarif |
