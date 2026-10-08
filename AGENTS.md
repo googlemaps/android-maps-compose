@@ -45,7 +45,7 @@ cannot be merged from their XML reports:
 | Suite | Produced by | Covers |
 | --- | --- | --- |
 | `unit` | `koverXmlReportDebug` | the three published library modules |
-| `instrumentation` | `createDebugCoverageReport` (emulator) | `maps-app` and `maps-compose-widgets` |
+| `instrumentation` | `createDebugCoverageReport` and `:maps-app:createLibraryCoverageReports` (emulator) | `maps-app`, plus `maps-compose`, `maps-compose-utils` and `maps-compose-widgets` as exercised by all emulator tests |
 
 Instrumentation coverage is not re-measured after merge; the post-merge
 workflow reuses the artifact from the pull request's emulator run, so no extra
