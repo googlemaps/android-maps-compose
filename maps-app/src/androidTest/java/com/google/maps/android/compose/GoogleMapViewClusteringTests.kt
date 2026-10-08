@@ -30,7 +30,9 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.common.truth.Truth.assertThat
+import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.clustering.ClusteringMarkerProperties
@@ -196,6 +198,90 @@ class GoogleMapViewClusteringTests {
 
         composeTestRule.runOnUiThread {
             assertThat(marker.isVisible).isTrue()
+        }
+    }
+
+    private fun MarkerOptions.getContentDescription(): String? {
+        val field = MarkerOptions::class.java.declaredFields.firstOrNull {
+            it.type == String::class.java && it.name != "zzb" && it.name != "zzc"
+        } ?: MarkerOptions::class.java.getDeclaredField("zzr")
+        field.isAccessible = true
+        return field.get(this) as? String
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusteringPropagatesItemTitleToMarkerContentDescription() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val items = listOf(MyItem(startingPosition, "Store Location 42", "Snippet", 0f))
+
+        initMapAndGetMarker(clusterManagerHolder) {
+            Clustering(
+                items = items,
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                }
+            )
+        }
+
+        composeTestRule.runOnUiThread {
+            val cm = clusterManagerHolder[0]!!
+            val renderer = cm.renderer
+            val method = renderer.javaClass.methods.firstOrNull {
+                it.name == "onBeforeClusterItemRendered" && it.parameterTypes.size == 2
+            } ?: renderer.javaClass.getDeclaredMethod(
+                "onBeforeClusterItemRendered",
+                ClusterItem::class.java,
+                MarkerOptions::class.java
+            ).apply { isAccessible = true }
+
+            val markerOptions = MarkerOptions()
+            method.invoke(renderer, items.first(), markerOptions)
+
+            // Regression test for #683 / #706: Clustered pins currently do not set contentDescription,
+            // resulting in TalkBack announcing generic "Map Marker" instead of the pin title.
+            assertThat(markerOptions.getContentDescription()).isEqualTo("Store Location 42")
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusteringMarkerPropertiesCustomContentDescription() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val items = listOf(MyItem(startingPosition, "Store Location 42", "Snippet", 0f))
+
+        initMapAndGetMarker(clusterManagerHolder) {
+            Clustering(
+                items = items,
+                clusterItemContent = {
+                    ClusteringMarkerProperties(
+                        contentDescription = "Custom Accessibility Pin Description"
+                    )
+                    Surface(modifier = Modifier.size(20.dp)) {
+                        Text("X")
+                    }
+                },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                }
+            )
+        }
+
+        composeTestRule.runOnUiThread {
+            val cm = clusterManagerHolder[0]!!
+            val renderer = cm.renderer
+            val method = renderer.javaClass.methods.firstOrNull {
+                it.name == "onBeforeClusterItemRendered" && it.parameterTypes.size == 2
+            } ?: renderer.javaClass.getDeclaredMethod(
+                "onBeforeClusterItemRendered",
+                ClusterItem::class.java,
+                MarkerOptions::class.java
+            ).apply { isAccessible = true }
+
+            val markerOptions = MarkerOptions()
+            method.invoke(renderer, items.first(), markerOptions)
+
+            assertThat(markerOptions.getContentDescription()).isEqualTo("Custom Accessibility Pin Description")
         }
     }
 }

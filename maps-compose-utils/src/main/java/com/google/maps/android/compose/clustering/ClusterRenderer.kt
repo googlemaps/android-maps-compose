@@ -300,6 +300,11 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             markerOptions.anchor(anchor.x, anchor.y)
             markerOptions.zIndex(props?.zIndex ?: clusterContentZIndexState.value)
             markerOptions.rotation(props?.rotation ?: clusterContentRotationState.value)
+            props?.contentDescription?.let {
+                if (it.isNotEmpty()) {
+                    markerOptions.contentDescription(it)
+                }
+            }
         }
     }
 
@@ -324,7 +329,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         super.onBeforeClusterItemRendered(item, markerOptions)
         if (!scope.isActive) return
 
-        if (clusterItemContentState.value != null) {
+        val contentDesc = if (clusterItemContentState.value != null) {
             val viewInfo = keysToViews[ViewKey.Item(item)] ?: createAndAddView(ViewKey.Item(item))
             markerOptions.icon(renderViewToBitmapDescriptor(viewInfo.view))
 
@@ -333,6 +338,13 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             markerOptions.anchor(anchor.x, anchor.y)
             markerOptions.zIndex(props.zIndex ?: clusterItemContentZIndexState.value)
             markerOptions.rotation(props.rotation ?: clusterItemContentRotationState.value)
+            props.contentDescription ?: item.title
+        } else {
+            item.title
+        }
+
+        if (!contentDesc.isNullOrEmpty()) {
+            markerOptions.contentDescription(contentDesc)
         }
     }
 
@@ -394,7 +406,15 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             val rotation = getRotationOverride()
             val anchor = getAnchor()
             val zIndex = getZIndex()
-            LaunchedEffect(properties.anchor, properties.zIndex, properties.rotation, rotation, anchor, zIndex) {
+            LaunchedEffect(
+                properties.anchor,
+                properties.zIndex,
+                properties.rotation,
+                properties.contentDescription,
+                rotation,
+                anchor,
+                zIndex
+            ) {
                 invalidate()
             }
             CompositionLocalProvider(

@@ -60,6 +60,8 @@ public class ClusteringMarkerProperties {
         internal set
     public var rotation: Float? by mutableStateOf(null)
         internal set
+    public var contentDescription: String? by mutableStateOf(null)
+        internal set
 }
 
 /**
@@ -78,18 +80,22 @@ public val LocalClusteringMarkerProperties: androidx.compose.runtime.ProvidableC
  * will be used.
  * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point.
  * If null, the default rotation specified in [Clustering] will be used.
+ * @param contentDescription the content description for accessibility purposes. If null, the title
+ * of the [ClusterItem] will be used as a fallback for cluster items.
  */
 @Composable
 public fun ClusteringMarkerProperties(
     anchor: Offset? = null,
     zIndex: Float? = null,
     rotation: Float? = null,
+    contentDescription: String? = null,
 ) {
     val properties = LocalClusteringMarkerProperties.current
     SideEffect {
         properties.anchor = anchor
         properties.zIndex = zIndex
         properties.rotation = rotation
+        properties.contentDescription = contentDescription
     }
 }
 
