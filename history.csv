@@ -119,3 +119,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-08T15:17:50Z,622d2f4,1025,docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6607,1.06
 2026-10-08T15:17:50Z,622d2f4,1025,docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
 2026-10-08T15:17:50Z,622d2f4,1025,docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes,unit,TOTAL,11,2651,0.41,2,2284,0.09,70,33253,0.21
+2026-10-08T15:39:05Z,622d2f4,1025,docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes,instrumentation,maps-app,508,2342,21.69,80,402,19.9,4818,19524,24.68
+2026-10-08T15:39:05Z,622d2f4,1025,docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes,instrumentation,maps-compose,1458,2084,69.96,554,1366,40.56,10280,16238,63.31
+2026-10-08T15:39:05Z,622d2f4,1025,docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes,instrumentation,maps-compose-utils,349,579,60.28,94,320,29.38,2650,4736,55.95
+2026-10-08T15:39:05Z,622d2f4,1025,docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes,instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
+2026-10-08T15:39:05Z,622d2f4,1025,docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes,instrumentation,TOTAL,2427,5154,47.09,743,2136,34.78,18398,41387,44.45

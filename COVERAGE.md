@@ -38,15 +38,15 @@ Measured at `622d2f4` (#1025), recorded 2026-10-08T15:17:50Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `43eff64` (#1021), recorded 2026-10-07T19:57:54Z.
+Measured at `622d2f4` (#1025), recorded 2026-10-08T15:39:05Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-app` | 508/2,342 | 21.69% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
-| `maps-compose` | 1,446/2,072 | 69.79% | `██████████████░░░░░░` | 548/1,360 | 40.29% |
+| `maps-compose` | 1,458/2,084 | 69.96% | `██████████████░░░░░░` | 554/1,366 | 40.56% |
 | `maps-compose-utils` | 349/579 | 60.28% | `████████████░░░░░░░░` | 94/320 | 29.38% |
 | `maps-compose-widgets` | 112/149 | 75.17% | `███████████████░░░░░` | 15/48 | 31.25% |
-| **TOTAL** | 2,415/5,142 | 46.97% | `█████████░░░░░░░░░░░` | 737/2,130 | 34.60% |
+| **TOTAL** | 2,427/5,154 | 47.09% | `█████████░░░░░░░░░░░` | 743/2,136 | 34.78% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-08 | `622d2f4` | #1025 | 0.41% | 0.00 | n/a | n/a | docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes |
+| 2026-10-08 | `622d2f4` | #1025 | 0.41% | 0.00 | 47.09% | n/a | docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes |
 | 2026-10-08 | `114aaa5` | #1029 | 0.41% | -0.01 | n/a | n/a | fix(maps-compose): do not apply mapColorScheme to Lite mode maps |
 | 2026-10-07 | `43eff64` | #1021 | 0.42% | 0.00 | 46.97% | -0.02 | chore(deps): bump github/codeql-action/upload-sarif |
 | 2026-10-05 | `6597744` | #1022 | 0.42% | 0.00 | 46.99% | +0.02 | chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates |
