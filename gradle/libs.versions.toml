@@ -81,6 +81,7 @@ maps-utils-core = { module = "com.google.maps.android:android-maps-utils-core", 
 compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 compose-multiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
+maps-utils-kmp-core = { module = "com.google.maps.android:android-maps-utils-core", version.ref = "mapsutilsKmp" }
 maps-utils-kmp-clustering = { module = "com.google.maps.android:android-maps-utils-clustering", version.ref = "mapsutilsKmp" }
 maps-utils-kmp-maps-model = { module = "com.google.maps.android:android-maps-utils-maps-model", version.ref = "mapsutilsKmp" }
 maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsutils" }

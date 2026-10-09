@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -47,6 +48,13 @@ import com.google.maps.android.compose.multiplatform.Polyline
 import com.google.maps.android.compose.multiplatform.cameraPosition
 import com.google.maps.android.compose.multiplatform.rememberCameraPositionState
 import com.google.maps.android.compose.multiplatform.rememberMarkerState
+import com.google.maps.android.location.Location
+import com.google.maps.android.location.LocationPriority
+import com.google.maps.android.location.accuracyMeters
+import com.google.maps.android.location.latLng
+import com.google.maps.android.location.latitude
+import com.google.maps.android.location.locationEvents
+import com.google.maps.android.location.longitude
 import com.google.maps.android.model.LatLng
 import com.google.maps.android.model.latitude
 import com.google.maps.android.model.longitude
@@ -272,3 +280,92 @@ internal fun MapClicksDemo() {
 private fun Double.format(): String = (round(this * 10_000) / 10_000).toString()
 
 private fun Boolean.onOff(): String = if (this) "on" else "off"
+
+
+@Composable
+internal fun LocationFlowDemo() {
+    val controller = rememberPlatformLocationController()
+    val camera = rememberCameraPositionState { position = cameraPosition(SanFrancisco, 14f) }
+    val markerState = rememberMarkerState(SanFrancisco)
+    var latestLocation by remember { mutableStateOf<Location?>(null) }
+    var fixCount by remember { mutableIntStateOf(0) }
+    var priority by remember { mutableStateOf(LocationPriority.HIGH_ACCURACY) }
+    val trail = remember { mutableStateListOf<LatLng>() }
+
+    LaunchedEffect(controller.locationSource, priority, controller.hasPermission) {
+        if (!controller.hasPermission) {
+            latestLocation = null
+            return@LaunchedEffect
+        }
+        controller.locationSource.locationEvents(
+            intervalMs = 1_000L,
+            minUpdateDistanceM = 0f,
+            priority = priority,
+        ).collect { location ->
+            latestLocation = location
+            fixCount++
+            val target = location.latLng
+            if (trail.lastOrNull() != target) {
+                trail += target
+            }
+            markerState.position = target
+            camera.animate(cameraPosition(target, 15f))
+        }
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        GoogleMap(Modifier.fillMaxSize(), cameraPositionState = camera) {
+            val loc = latestLocation
+            if (loc != null && controller.hasPermission) {
+                Marker(
+                    state = markerState,
+                    title = "Live Location (KMP Flow)",
+                    snippet = "Fix #$fixCount (${loc.latitude.format()}, ${loc.longitude.format()})",
+                )
+                val accuracyRadius = loc.accuracyMeters.toDouble().coerceAtLeast(25.0)
+                Circle(
+                    center = loc.latLng,
+                    radius = accuracyRadius,
+                    fillColor = Color(0x441A73E8),
+                    strokeColor = Accent,
+                    strokeWidth = 3f,
+                )
+                if (trail.size >= 2) {
+                    Polyline(
+                        points = trail.toList(),
+                        color = Accent,
+                        width = 8f,
+                    )
+                }
+            }
+        }
+        DemoControls(Modifier.align(Alignment.TopStart)) {
+            if (!controller.hasPermission) {
+                DemoLabel(
+                    "Location permission required.\n" +
+                        "Grant permission to stream live LocationSource updates.",
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DemoButton("Grant Permission") { controller.requestPermission() }
+                    DemoButton("App Settings") { controller.openAppSettings() }
+                }
+            } else {
+                val loc = latestLocation
+                if (loc == null) {
+                    DemoLabel("Waiting for LocationSource.locationEvents()...")
+                } else {
+                    DemoLabel(
+                        "Flow Fix #$fixCount: ${loc.latitude.format()}, ${loc.longitude.format()}\n" +
+                            "Accuracy: ${loc.accuracyMeters.toDouble().format()}m · Mode: ${priority.name}",
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DemoButton("High Accuracy") { priority = LocationPriority.HIGH_ACCURACY }
+                    DemoButton("Balanced") { priority = LocationPriority.BALANCED_POWER_ACCURACY }
+                }
+            }
+        }
+    }
+}
