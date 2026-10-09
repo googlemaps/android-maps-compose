@@ -100,6 +100,29 @@ public fun ClusteringMarkerProperties(
 }
 
 /**
+ * Helper function to specify properties for the marker representing a cluster or cluster item.
+ *
+ * Retained for binary compatibility with binaries compiled against earlier versions.
+ */
+@Deprecated(
+    message = "Retained for binary compatibility.",
+    level = DeprecationLevel.HIDDEN,
+)
+@Composable
+public fun ClusteringMarkerProperties(
+    anchor: Offset? = null,
+    zIndex: Float? = null,
+    rotation: Float? = null,
+) {
+    ClusteringMarkerProperties(
+        anchor = anchor,
+        zIndex = zIndex,
+        rotation = rotation,
+        contentDescription = null,
+    )
+}
+
+/**
  * Groups many items on a map based on zoom level.
  *
  * @param items all items to show

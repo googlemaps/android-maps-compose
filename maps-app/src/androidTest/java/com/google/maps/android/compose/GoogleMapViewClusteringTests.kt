@@ -201,12 +201,34 @@ class GoogleMapViewClusteringTests {
         }
     }
 
-    private fun MarkerOptions.getContentDescription(): String? {
-        val field = MarkerOptions::class.java.declaredFields.firstOrNull {
-            it.type == String::class.java && it.name != "zzb" && it.name != "zzc"
-        } ?: MarkerOptions::class.java.getDeclaredField("zzr")
-        field.isAccessible = true
-        return field.get(this) as? String
+    /**
+     * Inspects non-null String fields on [MarkerOptions] to extract contentDescription
+     * dynamically without hardcoding obfuscated Play services field names.
+     */
+    private fun MarkerOptions.findCustomContentDescription(): String? {
+        for (field in MarkerOptions::class.java.declaredFields) {
+            if (field.type == String::class.java) {
+                field.isAccessible = true
+                val value = field.get(this) as? String
+                if (value != null && value != this.title && value != this.snippet) {
+                    return value
+                }
+            }
+        }
+        return null
+    }
+
+    private fun MarkerOptions.countStringFieldOccurrences(target: String): Int {
+        var count = 0
+        for (field in MarkerOptions::class.java.declaredFields) {
+            if (field.type == String::class.java) {
+                field.isAccessible = true
+                if (field.get(this) == target) {
+                    count++
+                }
+            }
+        }
+        return count
     }
 
     @OptIn(MapsComposeExperimentalApi::class)
@@ -216,7 +238,7 @@ class GoogleMapViewClusteringTests {
         val items = listOf(MyItem(startingPosition, "Store Location 42", "Snippet", 0f))
 
         initMapAndGetMarker(clusterManagerHolder) {
-            Clustering(
+            Clustering<MyItem>(
                 items = items,
                 onClusterManager = { cm ->
                     clusterManagerHolder[0] = cm
@@ -238,9 +260,10 @@ class GoogleMapViewClusteringTests {
             val markerOptions = MarkerOptions()
             method.invoke(renderer, items.first(), markerOptions)
 
-            // Regression test for #683 / #706: Clustered pins currently do not set contentDescription,
-            // resulting in TalkBack announcing generic "Map Marker" instead of the pin title.
-            assertThat(markerOptions.getContentDescription()).isEqualTo("Store Location 42")
+            // When no custom description is supplied, fallback to item.title is populated on MarkerOptions.
+            // Both title and contentDescription fields hold "Store Location 42" (count == 2),
+            // whereas before the fix contentDescription remained null (count == 1).
+            assertThat(markerOptions.countStringFieldOccurrences("Store Location 42")).isEqualTo(2)
         }
     }
 
@@ -248,10 +271,11 @@ class GoogleMapViewClusteringTests {
     @Test
     fun testClusteringMarkerPropertiesCustomContentDescription() {
         val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        // Item title is deliberately distinct from the custom contentDescription
         val items = listOf(MyItem(startingPosition, "Store Location 42", "Snippet", 0f))
 
         initMapAndGetMarker(clusterManagerHolder) {
-            Clustering(
+            Clustering<MyItem>(
                 items = items,
                 clusterItemContent = {
                     ClusteringMarkerProperties(
@@ -281,7 +305,7 @@ class GoogleMapViewClusteringTests {
             val markerOptions = MarkerOptions()
             method.invoke(renderer, items.first(), markerOptions)
 
-            assertThat(markerOptions.getContentDescription()).isEqualTo("Custom Accessibility Pin Description")
+            assertThat(markerOptions.findCustomContentDescription()).isEqualTo("Custom Accessibility Pin Description")
         }
     }
 }
