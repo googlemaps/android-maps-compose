@@ -75,6 +75,10 @@ internal actual fun rememberPlatformLocationController(): PlatformLocationContro
         }
     }
 
+    // TODO(https://github.com/googlemaps/android-maps-utils/issues/1818): Once
+    //  LocationManager.asLocationSource() handles cached lastKnownLocation emission and
+    //  coarse-permission/indoor fallback directly in android-maps-utils, simplify this to
+    //  `remember(manager) { manager.asLocationSource() }` matching PlatformLocationSource.ios.kt.
     val locationSource = remember(appContext) {
         val manager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         LocationSource { intervalMs, minUpdateDistanceM, priority ->
