@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.kotlin)
     implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.utils)
+    api("com.google.maps.android:android-maps-utils-clustering:5.2.0")
 
     testImplementation(libs.test.junit)
 }
