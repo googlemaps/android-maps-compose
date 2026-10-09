@@ -341,27 +341,28 @@ public fun MarkerComposable(
     content: @UiComposable @Composable () -> Unit,
 ) {
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
-
-    MarkerImpl(
-        state = state,
-        contentDescription = contentDescription,
-        alpha = alpha,
-        anchor = anchor,
-        draggable = draggable,
-        flat = flat,
-        icon = icon,
-        infoWindowAnchor = infoWindowAnchor,
-        rotation = rotation,
-        snippet = snippet,
-        tag = tag,
-        title = title,
-        visible = visible,
-        zIndex = zIndex,
-        onClick = onClick,
-        onInfoWindowClick = onInfoWindowClick,
-        onInfoWindowClose = onInfoWindowClose,
-        onInfoWindowLongClick = onInfoWindowLongClick,
-    )
+    if (icon != null) {
+        MarkerImpl(
+            state = state,
+            contentDescription = contentDescription,
+            alpha = alpha,
+            anchor = anchor,
+            draggable = draggable,
+            flat = flat,
+            icon = icon,
+            infoWindowAnchor = infoWindowAnchor,
+            rotation = rotation,
+            snippet = snippet,
+            tag = tag,
+            title = title,
+            visible = visible,
+            zIndex = zIndex,
+            onClick = onClick,
+            onInfoWindowClick = onInfoWindowClick,
+            onInfoWindowClose = onInfoWindowClose,
+            onInfoWindowLongClick = onInfoWindowLongClick,
+        )
+    }
 }
 
 /**
@@ -489,27 +490,28 @@ public fun MarkerInfoWindowComposable(
     content: @UiComposable @Composable () -> Unit,
 ) {
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
-
-    MarkerImpl(
-        state = state,
-        alpha = alpha,
-        anchor = anchor,
-        draggable = draggable,
-        flat = flat,
-        icon = icon,
-        infoWindowAnchor = infoWindowAnchor,
-        rotation = rotation,
-        snippet = snippet,
-        tag = tag,
-        title = title,
-        visible = visible,
-        zIndex = zIndex,
-        onClick = onClick,
-        onInfoWindowClick = onInfoWindowClick,
-        onInfoWindowClose = onInfoWindowClose,
-        onInfoWindowLongClick = onInfoWindowLongClick,
-        infoWindow = infoContent,
-    )
+    if (icon != null) {
+        MarkerImpl(
+            state = state,
+            alpha = alpha,
+            anchor = anchor,
+            draggable = draggable,
+            flat = flat,
+            icon = icon,
+            infoWindowAnchor = infoWindowAnchor,
+            rotation = rotation,
+            snippet = snippet,
+            tag = tag,
+            title = title,
+            visible = visible,
+            zIndex = zIndex,
+            onClick = onClick,
+            onInfoWindowClick = onInfoWindowClick,
+            onInfoWindowClose = onInfoWindowClose,
+            onInfoWindowLongClick = onInfoWindowLongClick,
+            infoWindow = infoContent,
+        )
+    }
 }
 
 /**
