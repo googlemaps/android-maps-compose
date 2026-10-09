@@ -30,7 +30,9 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.common.truth.Truth.assertThat
+import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.clustering.ClusteringMarkerProperties
@@ -196,6 +198,114 @@ class GoogleMapViewClusteringTests {
 
         composeTestRule.runOnUiThread {
             assertThat(marker.isVisible).isTrue()
+        }
+    }
+
+    /**
+     * Inspects non-null String fields on [MarkerOptions] to extract contentDescription
+     * dynamically without hardcoding obfuscated Play services field names.
+     */
+    private fun MarkerOptions.findCustomContentDescription(): String? {
+        for (field in MarkerOptions::class.java.declaredFields) {
+            if (field.type == String::class.java) {
+                field.isAccessible = true
+                val value = field.get(this) as? String
+                if (value != null && value != this.title && value != this.snippet) {
+                    return value
+                }
+            }
+        }
+        return null
+    }
+
+    private fun MarkerOptions.countStringFieldOccurrences(target: String): Int {
+        var count = 0
+        for (field in MarkerOptions::class.java.declaredFields) {
+            if (field.type == String::class.java) {
+                field.isAccessible = true
+                if (field.get(this) == target) {
+                    count++
+                }
+            }
+        }
+        return count
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusteringPropagatesItemTitleToMarkerContentDescription() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val items = listOf(MyItem(startingPosition, "Store Location 42", "Snippet", 0f))
+
+        initMapAndGetMarker(clusterManagerHolder) {
+            Clustering<MyItem>(
+                items = items,
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                }
+            )
+        }
+
+        composeTestRule.runOnUiThread {
+            val cm = clusterManagerHolder[0]!!
+            val renderer = cm.renderer
+            val method = renderer.javaClass.methods.firstOrNull {
+                it.name == "onBeforeClusterItemRendered" && it.parameterTypes.size == 2
+            } ?: renderer.javaClass.getDeclaredMethod(
+                "onBeforeClusterItemRendered",
+                ClusterItem::class.java,
+                MarkerOptions::class.java
+            ).apply { isAccessible = true }
+
+            val markerOptions = MarkerOptions()
+            method.invoke(renderer, items.first(), markerOptions)
+
+            // When no custom description is supplied, fallback to item.title is populated on MarkerOptions.
+            // Both title and contentDescription fields hold "Store Location 42" (count == 2),
+            // whereas before the fix contentDescription remained null (count == 1).
+            assertThat(markerOptions.countStringFieldOccurrences("Store Location 42")).isEqualTo(2)
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusteringMarkerPropertiesCustomContentDescription() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        // Item title is deliberately distinct from the custom contentDescription
+        val items = listOf(MyItem(startingPosition, "Store Location 42", "Snippet", 0f))
+
+        initMapAndGetMarker(clusterManagerHolder) {
+            Clustering<MyItem>(
+                items = items,
+                clusterItemContent = {
+                    ClusteringMarkerProperties(
+                        contentDescription = "Custom Accessibility Pin Description"
+                    )
+                    Surface(modifier = Modifier.size(20.dp)) {
+                        Text("X")
+                    }
+                },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                }
+            )
+        }
+
+        composeTestRule.runOnUiThread {
+            val cm = clusterManagerHolder[0]!!
+            val renderer = cm.renderer
+            val method = renderer.javaClass.methods.firstOrNull {
+                it.name == "onBeforeClusterItemRendered" && it.parameterTypes.size == 2
+            } ?: renderer.javaClass.getDeclaredMethod(
+                "onBeforeClusterItemRendered",
+                ClusterItem::class.java,
+                MarkerOptions::class.java
+            ).apply { isAccessible = true }
+
+            val markerOptions = MarkerOptions()
+            method.invoke(renderer, items.first(), markerOptions)
+
+            assertThat(markerOptions.findCustomContentDescription()).isEqualTo("Custom Accessibility Pin Description")
         }
     }
 }
