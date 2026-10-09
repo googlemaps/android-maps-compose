@@ -45,7 +45,10 @@ OUTPUT_FILE="${SRCROOT}/iosApp/DeveloperSecrets.swift"
 API_KEY="YOUR_API_KEY"
 
 if [ -f "$SECRETS_PATH" ]; then
-    EXTRACTED_KEY=$(grep -E "^MAPS_API_KEY=" "$SECRETS_PATH" | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+    EXTRACTED_KEY=$(grep -E "^IOS_MAPS_API_KEY=" "$SECRETS_PATH" | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+    if [ -z "$EXTRACTED_KEY" ]; then
+        EXTRACTED_KEY=$(grep -E "^MAPS_API_KEY=" "$SECRETS_PATH" | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+    fi
     if [ ! -z "$EXTRACTED_KEY" ]; then
         API_KEY="$EXTRACTED_KEY"
     fi
