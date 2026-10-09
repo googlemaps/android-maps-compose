@@ -142,3 +142,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-08T16:07:37Z,cb74115,1031,chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin,instrumentation,maps-compose-utils,0,579,0.0,0,320,0.0,0,4736,0.0
 2026-10-08T16:07:37Z,cb74115,1031,chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin,instrumentation,maps-compose-widgets,10,149,6.71,0,48,0.0,59,889,6.64
 2026-10-08T16:07:37Z,cb74115,1031,chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin,instrumentation,TOTAL,507,5154,9.84,105,2136,4.92,3584,41387,8.66
+2026-10-09T16:40:33Z,85a56aa,1034,ci: skip the coverage comment on pull requests from forks,unit,maps-compose,0,1965,0.0,0,1804,0.0,0,25158,0.0
+2026-10-09T16:40:33Z,85a56aa,1034,ci: skip the coverage comment on pull requests from forks,unit,maps-compose-utils,11,540,2.04,2,412,0.49,70,6607,1.06
+2026-10-09T16:40:33Z,85a56aa,1034,ci: skip the coverage comment on pull requests from forks,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
+2026-10-09T16:40:33Z,85a56aa,1034,ci: skip the coverage comment on pull requests from forks,unit,TOTAL,11,2651,0.41,2,2284,0.09,70,33253,0.21
