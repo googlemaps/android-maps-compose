@@ -38,15 +38,15 @@ Measured at `85a56aa` (#1034), recorded 2026-10-09T16:40:33Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `cb74115` (#1031), recorded 2026-10-08T16:07:37Z.
+Measured at `85a56aa` (#1034), recorded 2026-10-09T16:40:37Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 26/2,342 | 1.11% | `░░░░░░░░░░░░░░░░░░░░` | 0/402 | 0.00% |
-| `maps-compose` | 471/2,084 | 22.60% | `█████░░░░░░░░░░░░░░░` | 105/1,366 | 7.69% |
-| `maps-compose-utils` | 0/579 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/320 | 0.00% |
-| `maps-compose-widgets` | 10/149 | 6.71% | `█░░░░░░░░░░░░░░░░░░░` | 0/48 | 0.00% |
-| **TOTAL** | 507/5,154 | 9.84% | `██░░░░░░░░░░░░░░░░░░` | 105/2,136 | 4.92% |
+| `maps-app` | 508/2,342 | 21.69% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
+| `maps-compose` | 1,458/2,084 | 69.96% | `██████████████░░░░░░` | 554/1,366 | 40.56% |
+| `maps-compose-utils` | 349/579 | 60.28% | `████████████░░░░░░░░` | 94/320 | 29.38% |
+| `maps-compose-widgets` | 112/149 | 75.17% | `███████████████░░░░░` | 15/48 | 31.25% |
+| **TOTAL** | 2,427/5,154 | 47.09% | `█████████░░░░░░░░░░░` | 743/2,136 | 34.78% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-09 | `85a56aa` | #1034 | 0.41% | 0.00 | n/a | n/a | ci: skip the coverage comment on pull requests from forks |
+| 2026-10-09 | `85a56aa` | #1034 | 0.41% | 0.00 | 47.09% | +37.25 | ci: skip the coverage comment on pull requests from forks |
 | 2026-10-08 | `cb74115` | #1031 | 0.41% | 0.00 | 9.84% | -37.25 | chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin |
 | 2026-10-08 | `8af2400` | #1030 | 0.41% | 0.00 | 47.09% | 0.00 | chore(build): remove foojay toolchain resolver |
 | 2026-10-08 | `622d2f4` | #1025 | 0.41% | 0.00 | 47.09% | n/a | docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes |
