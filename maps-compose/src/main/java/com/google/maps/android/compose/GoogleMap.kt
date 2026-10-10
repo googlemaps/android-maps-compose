@@ -177,6 +177,12 @@ public fun GoogleMap(
             modifier = if (focusable) modifier.focusable() else modifier,
             factory = { context ->
                 val baseOptions = googleMapOptionsFactory()
+                // If the initial camera position is not explicitly set in
+                // googleMapOptionsFactory, apply CameraPositionState.position before MapView
+                // creation to avoid displaying the default camera while the map initializes.
+                if (baseOptions.camera == null) {
+                    baseOptions.camera(cameraPositionState.position)
+                }
                 val isLiteMode = baseOptions.liteMode == true
                 // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
                 // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
