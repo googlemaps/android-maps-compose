@@ -85,5 +85,104 @@ public class ClusterItemsDiffTest {
         assertTrue(diff.updated.isEmpty())
     }
 
+    @Test
+    public fun emptyCollectionsHaveNoChanges() {
+        assertTrue(clusterItemsByKey(emptyList<Item>(), key = null).isEmpty())
+        assertTrue(clusterItemsByKey(emptyList<Item>(), key = { it.id }).isEmpty())
+        val diff = diffClusterItems(emptyMap<String, Item>(), emptyMap())
+
+        assertTrue(diff.added.isEmpty())
+        assertTrue(diff.removed.isEmpty())
+        assertTrue(diff.updated.isEmpty())
+        assertFalse(diff.hasChanges)
+    }
+
+    @Test
+    public fun emptyCurrentCollectionRemovesAllItems() {
+        val item = Item("first", 1)
+        val diff = diffClusterItems(mapOf("first" to item), emptyMap())
+
+        assertEquals(listOf(item), diff.removed)
+        assertTrue(diff.added.isEmpty())
+        assertTrue(diff.updated.isEmpty())
+        assertTrue(diff.hasChanges)
+    }
+
+    @Test
+    public fun duplicateKeysKeepLastItemAndReportEachDuplicate() {
+        val duplicates = mutableListOf<Any>()
+        val first = Item("same", 1)
+        val last = Item("same", 3)
+        val other = Item("other", 4)
+        val keyedItems = clusterItemsByKey(
+            listOf(first, other, first.copy(value = 2), last),
+            key = { it.id },
+            onDuplicateKey = { duplicates.add(it) },
+        )
+
+        assertEquals(mapOf("same" to last, "other" to other), keyedItems)
+        assertEquals(listOf("same", "same"), duplicates)
+    }
+
+    @Test
+    public fun uniqueExplicitKeysDoNotReportDuplicates() {
+        val duplicates = mutableListOf<Any>()
+        val item = Item("first", 1)
+        val keyedItems = clusterItemsByKey(
+            listOf(item),
+            key = { it.id },
+            onDuplicateKey = { duplicates.add(it) },
+        )
+
+        assertEquals(mapOf("first" to item), keyedItems)
+        assertTrue(duplicates.isEmpty())
+    }
+
+    @Test
+    public fun unkeyedEqualItemsAreDeduplicatedWithoutWarning() {
+        val duplicates = mutableListOf<Any>()
+        val item = Item("same", 1)
+        val keyedItems = clusterItemsByKey(
+            listOf(item, item.copy()),
+            key = null,
+            onDuplicateKey = { duplicates.add(it) },
+        )
+
+        assertEquals(mapOf(item to item), keyedItems)
+        assertTrue(duplicates.isEmpty())
+    }
+
+    @Test
+    public fun unkeyedChangedItemsAreRemovedAndAddedRatherThanUpdated() {
+        val old = Item("same", 1)
+        val current = old.copy(value = 2)
+        val diff = diffClusterItems(
+            clusterItemsByKey(listOf(old), key = null),
+            clusterItemsByKey(listOf(current), key = null),
+        )
+
+        assertEquals(listOf(old), diff.removed)
+        assertEquals(listOf(current), diff.added)
+        assertTrue(diff.updated.isEmpty())
+    }
+
+    @Test
+    public fun reportsAddRemoveAndUpdateInSamePass() {
+        val removed = Item("removed", 1)
+        val old = Item("updated", 2)
+        val current = old.copy(value = 3)
+        val added = Item("added", 4)
+        val kept = Item("kept", 5)
+        val diff = diffClusterItems(
+            clusterItemsByKey(listOf(removed, old, kept), key = { it.id }),
+            clusterItemsByKey(listOf(current, added, kept.copy()), key = { it.id }),
+        )
+
+        assertEquals(listOf(added), diff.added)
+        assertEquals(listOf(removed), diff.removed)
+        assertEquals(listOf(old to current), diff.updated)
+        assertTrue(diff.hasChanges)
+    }
+
     private data class Item(val id: String, val value: Int)
 }

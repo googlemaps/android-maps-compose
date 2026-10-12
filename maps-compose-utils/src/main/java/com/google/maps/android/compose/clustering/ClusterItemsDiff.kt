@@ -28,14 +28,13 @@ internal data class ClusterItemsDiff<T>(
 internal fun <T : Any> clusterItemsByKey(
     items: Collection<T>,
     key: ((T) -> Any)?,
+    onDuplicateKey: (Any) -> Unit = {},
 ): Map<Any, T> {
     val keyedItems = linkedMapOf<Any, T>()
     items.forEach { item ->
         val itemKey = key?.invoke(item) ?: item
-        if (key != null) {
-            require(itemKey !in keyedItems) {
-                "Clustering item keys must be unique: $itemKey"
-            }
+        if (key != null && itemKey in keyedItems) {
+            onDuplicateKey(itemKey)
         }
         keyedItems[itemKey] = item
     }
