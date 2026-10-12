@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -161,6 +162,132 @@ class GoogleMapViewClusteringTests {
 
         composeTestRule.runOnUiThread {
             assertThat(marker.rotation).isEqualTo(180f)
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testKeyedClusteringAppliesAdditionsRemovalsAndUpdates() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val firstItem = MyItem(startingPosition, "first", "Snippet", 0f)
+        val items = mutableStateOf(listOf(firstItem))
+
+        composeTestRule.setContent {
+            GoogleMapView(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+            ) {
+                Clustering(
+                    items = items.value,
+                    key = MyItem::title,
+                    onClusterManager = { clusterManagerHolder[0] = it },
+                )
+            }
+        }
+
+        val timeoutMillis = TimeUnit.SECONDS.toMillis(MAP_LOAD_TIMEOUT_SECONDS)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                clusterManagerHolder[0]?.algorithm?.items?.size == 1
+            }
+        }
+
+        val updatedPosition = LatLng(2.34, 5.67)
+        val addedItem = MyItem(LatLng(3.45, 6.78), "added", "Snippet", 0f)
+        items.value = listOf(firstItem.copy(position = updatedPosition), addedItem)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                val currentItems = clusterManagerHolder[0]?.algorithm?.items.orEmpty()
+                currentItems.size == 2 &&
+                    currentItems.any { it.title == "first" && it.position == updatedPosition } &&
+                    currentItems.any { it.title == "added" }
+            }
+        }
+
+        items.value = listOf(addedItem)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                val currentItems = clusterManagerHolder[0]?.algorithm?.items.orEmpty()
+                currentItems.size == 1 && currentItems.single().title == "added"
+            }
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testKeyedClusteringLeavesUnchangedItemsAlone() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val initialItem = MyItem(startingPosition, "same", "Snippet", 0f)
+        val items = mutableStateOf(listOf(initialItem))
+
+        composeTestRule.setContent {
+            GoogleMapView(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+            ) {
+                Clustering(
+                    items = items.value,
+                    key = MyItem::title,
+                    onClusterManager = { clusterManagerHolder[0] = it },
+                )
+            }
+        }
+
+        val timeoutMillis = TimeUnit.SECONDS.toMillis(MAP_LOAD_TIMEOUT_SECONDS)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                clusterManagerHolder[0]?.algorithm?.items?.size == 1
+            }
+        }
+        val marker = composeTestRule.runOnUiThread {
+            clusterManagerHolder[0]!!.markerCollection.getMarkers().single()
+        }
+
+        items.value = listOf(initialItem.copy())
+        composeTestRule.waitForIdle()
+
+        composeTestRule.runOnUiThread {
+            assertThat(clusterManagerHolder[0]?.algorithm?.items).containsExactly(initialItem)
+            assertThat(clusterManagerHolder[0]?.markerCollection?.getMarkers()).contains(marker)
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testUnkeyedClusteringStillUpdatesItemsByEquality() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val initialItem = MyItem(startingPosition, "first", "Snippet", 0f)
+        val items = mutableStateOf(listOf(initialItem))
+
+        composeTestRule.setContent {
+            GoogleMapView(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+            ) {
+                Clustering(
+                    items = items.value,
+                    onClusterManager = { clusterManagerHolder[0] = it },
+                )
+            }
+        }
+
+        val timeoutMillis = TimeUnit.SECONDS.toMillis(MAP_LOAD_TIMEOUT_SECONDS)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                clusterManagerHolder[0]?.algorithm?.items?.size == 1
+            }
+        }
+
+        val updatedItem = initialItem.copy(position = LatLng(2.34, 5.67))
+        val addedItem = MyItem(LatLng(3.45, 6.78), "added", "Snippet", 0f)
+        items.value = listOf(updatedItem, addedItem)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                val currentItems = clusterManagerHolder[0]?.algorithm?.items.orEmpty()
+                currentItems.size == 2 &&
+                    currentItems.any { it.title == "first" && it.position == updatedItem.position } &&
+                    currentItems.any { it.title == "added" }
+            }
         }
     }
 
