@@ -20,13 +20,10 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.SourcesJar
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
-import kotlinx.validation.KotlinApiBuildTask
-import kotlinx.validation.KotlinApiCompareTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.register
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
@@ -54,9 +51,9 @@ class KmpPublishingConventionPlugin : Plugin<Project> {
                 iosArm64()
                 iosSimulatorArm64()
 
-                // Records the public API of the iOS klibs in api/. The Android target is not
-                // supported yet, see configureAndroidApiValidation. Run updateKotlinAbi after an
-                // intended API change; checkKotlinAbi runs with check.
+                // Records the public API of every target: the iOS klibs in api/<name>.klib.api
+                // and Android in api/android/<name>.api. Run updateKotlinAbi after an intended
+                // API change; checkKotlinAbi runs with check.
                 @OptIn(ExperimentalAbiValidation::class)
                 abiValidation()
             }
@@ -94,59 +91,6 @@ class KmpPublishingConventionPlugin : Plugin<Project> {
                     pomDescription = "Compose Multiplatform components for the Maps SDKs for Android and iOS",
                 )
             }
-
-            configureAndroidApiValidation()
-        }
-    }
-
-    /**
-     * Kotlin's ABI validation does not cover the Android target of a multiplatform library, so
-     * dump its public API from the compiled classes jar with the binary-compatibility-validator
-     * tasks, into api/<name>.api, and hook them into updateKotlinAbi and checkKotlinAbi.
-     */
-    private fun Project.configureAndroidApiValidation() {
-        val projectName = name
-        val apiFile = layout.projectDirectory.file("api/$projectName.api")
-        val buildApiFile = layout.buildDirectory.file("api/android/$projectName.api")
-
-        afterEvaluate {
-            val bundleTask = tasks.findByName("bundleAndroidMainClassesToCompileJar") ?: return@afterEvaluate
-            val classesJar = layout.buildDirectory.file(
-                "intermediates/compile_library_classes_jar/androidMain/bundleAndroidMainClassesToCompileJar/classes.jar"
-            )
-
-            val androidApiBuild = tasks.register<KotlinApiBuildTask>("androidApiBuild") {
-                group = "verification"
-                description = "Builds the public Android API declaration for $projectName."
-                inputJar.set(classesJar)
-                outputApiFile.set(buildApiFile)
-                dependsOn(bundleTask)
-            }
-
-            // Writes only its own file: a Copy into api/ would claim the directory that the klib
-            // dump also writes to.
-            val androidApiDump = tasks.register("androidApiDump") {
-                group = "verification"
-                description = "Syncs the public Android API declaration of $projectName to api/$projectName.api."
-                val generated = androidApiBuild.flatMap { it.outputApiFile }
-                inputs.file(generated)
-                outputs.file(apiFile)
-                doLast {
-                    generated.get().asFile.copyTo(apiFile.asFile, overwrite = true)
-                }
-            }
-
-            val androidApiCheck = tasks.register<KotlinApiCompareTask>("androidApiCheck") {
-                group = "verification"
-                description = "Checks the public Android API of $projectName against api/$projectName.api."
-                projectApiFile.set(apiFile)
-                generatedApiFile.set(androidApiBuild.flatMap { it.outputApiFile })
-                dependsOn(androidApiBuild)
-                mustRunAfter(androidApiDump)
-            }
-
-            tasks.named("updateKotlinAbi") { dependsOn(androidApiDump) }
-            tasks.named("checkKotlinAbi") { dependsOn(androidApiCheck) }
         }
     }
 }

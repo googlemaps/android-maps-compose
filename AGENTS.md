@@ -46,7 +46,7 @@ Google Maps SDK for iOS through CocoaPods). Its iOS targets only build on macOS,
 - Shared code goes in `commonMain`; only platform glue goes in `androidMain` and `iosMain`.
   Tests go in `commonTest` so they run on both platforms.
 - The public API is checked for each target: the iOS klibs in `api/*.klib.api` and the Android
-  target in `api/maps-compose-multiplatform.api`. Run `updateKotlinAbi` and commit the result
+  target in `api/android/maps-compose-multiplatform.api`. Run `updateKotlinAbi` and commit the result
   with any intended API change.
 - Clustering and the shared `LatLng` come from the multiplatform modules of
   android-maps-utils (`mapsutilsKmp` in the version catalog). While that is a `-SNAPSHOT`,
