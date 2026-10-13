@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.0.1](https://github.com/googlemaps/android-maps-compose/compare/v9.0.0...v9.0.1) (2026-10-08)
+
+
+### Bug Fixes
+
+* **maps-compose:** do not apply mapColorScheme to Lite mode maps ([#1029](https://github.com/googlemaps/android-maps-compose/issues/1029)) ([114aaa5](https://github.com/googlemaps/android-maps-compose/commit/114aaa50f6a6e9d463a8ce5f011d23570bc71c8f))
+
 ## [9.0.0](https://github.com/googlemaps/android-maps-compose/compare/v8.6.0...v9.0.0) (2026-10-01)
 
 

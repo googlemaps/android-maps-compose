@@ -102,11 +102,7 @@ class CameraPositionStateTest {
 
         val restored = assertNotNull(CameraPositionState.Saver.restore(assertNotNull(saved)))
 
-        val position = restored.position
-        assertEquals(start.target, position.target)
-        assertEquals(start.zoom, position.zoom)
-        assertEquals(start.tilt, position.tilt)
-        assertEquals(start.bearing, position.bearing)
+        assertEquals(start, restored.position)
     }
 
     @Test

@@ -17,7 +17,7 @@ GoogleMap(
 However, when Lite Mode is enabled (`GoogleMapOptions().liteMode(true)`), the underlying Google Maps Android SDK (`play-services-maps`) functions differently:
 
 1. **Static Pre-rendered Tiles**: Lite Mode maps fetch static raster tiles rather than rendering vectors on the client GPU.
-2. **`MapColorScheme` Bypassed**: The Google Maps Android SDK explicitly ignores dynamic `MapColorScheme` configurations for Lite Mode maps.
+2. **`MapColorScheme` Bypassed**: Lite Mode maps do not support `MapColorScheme`, so Maps Compose does not apply `mapColorScheme` to them. Older versions of Google Play services throw `UnsupportedOperationException` when a color scheme is set on a Lite Mode map.
 3. **Map Types Remain in Light Mode**: Neither `MapType.NORMAL` nor `MapType.TERRAIN` will render dark tiles through `mapColorScheme`.
 
 To support dark mode on a Lite Mode map, your application must listen for system theme changes and dynamically supply a custom dark JSON style using `MapProperties.mapStyleOptions`.

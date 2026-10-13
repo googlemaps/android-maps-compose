@@ -40,6 +40,8 @@ internal class MapApplier(
     val map: GoogleMap,
     internal val mapView: MapView,
     val mapClickListeners: MapClickListeners,
+    /** Whether [mapView] was created in Lite mode, which does not support color schemes. */
+    internal val isLiteMode: Boolean,
 ) : AbstractApplier<MapNode>(MapNodeRoot) {
 
     private val decorations = mutableListOf<MapNode>()

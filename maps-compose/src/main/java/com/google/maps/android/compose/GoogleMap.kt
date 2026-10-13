@@ -90,6 +90,7 @@ import kotlinx.coroutines.launch
  * @param contentPadding the padding values used to signal that portions of the map around the edges
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
  * @param mapColorScheme Defines the color scheme for the Map. Defaults to [ComposeMapColorScheme.FOLLOW_SYSTEM].
+ * Not applied to Lite mode maps, which do not support color schemes.
  * @param content the content of the map
  */
 @Composable
@@ -175,17 +176,21 @@ public fun GoogleMap(
             // out of focus traversal entirely.
             modifier = if (focusable) modifier.focusable() else modifier,
             factory = { context ->
-                val options = googleMapOptionsFactory().let { opts ->
-                    // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
-                    // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
-                    // apply it to GoogleMapOptions so MapView is created with it.
-                    if (mapColorScheme != null && opts.mapColorScheme == 0) {
-                        opts.mapColorScheme(mapColorScheme.value)
-                    } else {
-                        opts
-                    }
+                val baseOptions = googleMapOptionsFactory()
+                val isLiteMode = baseOptions.liteMode == true
+                // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
+                // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
+                // apply it to GoogleMapOptions so MapView is created with it.
+                // Lite mode does not support color schemes, and older Play services throw
+                // UnsupportedOperationException for it, so it is never applied there (#1028).
+                val applyColorScheme =
+                    mapColorScheme != null && baseOptions.mapColorScheme == 0 && !isLiteMode
+                val options = if (applyColorScheme) {
+                    baseOptions.mapColorScheme(mapColorScheme.value)
+                } else {
+                    baseOptions
                 }
-                cameraPositionState.isLiteMode = options.liteMode == true
+                cameraPositionState.isLiteMode = isLiteMode
                 mapViewFactory(context, options).also { mapView ->
                     mapView.applyFocusability(focusable)
                     mapView.setViewTreeLifecycleOwner(lifecycleOwner)
@@ -210,7 +215,11 @@ public fun GoogleMap(
 
                     val lifecycleObserver = MapLifecycleEventObserver(mapView)
 
-                    mapView.tag = MapTagData(componentCallbacks, lifecycleObserver)
+                    mapView.tag = MapTagData(
+                        componentCallbacks,
+                        lifecycleObserver,
+                        isLiteMode = isLiteMode,
+                    )
 
                     // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
                     val onAttachStateListener = object : View.OnAttachStateChangeListener {
@@ -290,7 +299,12 @@ private fun CoroutineScope.launchSubcomposition(
     ) {
         val map = mapView.awaitMap()
         val composition = Composition(
-            applier = MapApplier(map, mapView, mapClickListeners),
+            applier = MapApplier(
+                map,
+                mapView,
+                mapClickListeners,
+                isLiteMode = mapView.tagData.isLiteMode,
+            ),
             parent = parentComposition
         )
 
@@ -336,7 +350,8 @@ internal class MapUpdaterState(
 /** Used to store things in the tag which must be retrievable across recompositions */
 private data class MapTagData(
     val componentCallbacks: ComponentCallbacks,
-    val lifecycleObserver: MapLifecycleEventObserver
+    val lifecycleObserver: MapLifecycleEventObserver,
+    val isLiteMode: Boolean,
 )
 
 private val MapView.tagData: MapTagData

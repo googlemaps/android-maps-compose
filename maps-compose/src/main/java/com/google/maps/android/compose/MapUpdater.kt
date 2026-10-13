@@ -101,6 +101,7 @@ public val DefaultMapContentPadding: PaddingValues = PaddingValues()
 internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdaterState) {
     val map = (currentComposer.applier as MapApplier).map
     val mapView = (currentComposer.applier as MapApplier).mapView
+    val isLiteMode = (currentComposer.applier as MapApplier).isLiteMode
     if (mergeDescendants) {
         mapView.importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
     }
@@ -138,7 +139,8 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
         set(mapProperties.maxZoomPreference) { map.setMaxZoomPreference(it) }
         set(mapProperties.minZoomPreference) { map.setMinZoomPreference(it) }
         set(mapColorScheme) {
-            if (it != null) {
+            // Lite mode does not support color schemes; see the GoogleMapOptions setup in GoogleMap.
+            if (it != null && !isLiteMode) {
                 map.mapColorScheme = it
             }
         }

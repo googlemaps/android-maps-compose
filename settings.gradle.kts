@@ -44,9 +44,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
 rootProject.name = "android-maps-compose"
 
 // The maps-compose-multiplatform module depends on the experimental KMP branch of

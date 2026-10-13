@@ -46,7 +46,7 @@ Google Maps SDK for iOS through CocoaPods). Its iOS targets only build on macOS,
 - Shared code goes in `commonMain`; only platform glue goes in `androidMain` and `iosMain`.
   Tests go in `commonTest` so they run on both platforms.
 - The public API is checked for each target: the iOS klibs in `api/*.klib.api` and the Android
-  target in `api/maps-compose-multiplatform.api`. Run `updateKotlinAbi` and commit the result
+  target in `api/android/maps-compose-multiplatform.api`. Run `updateKotlinAbi` and commit the result
   with any intended API change.
 - Clustering and the shared `LatLng` come from the multiplatform modules of
   android-maps-utils (`mapsutilsKmp` in the version catalog). While that is a `-SNAPSHOT`,
@@ -134,6 +134,21 @@ template). Never hardcode or commit API keys.
 - Use Conventional Commit messages (`feat:`, `fix:`, `docs:`, ...).
   release-please parses them to generate versions and CHANGELOG.md; a wrong
   prefix causes a wrong release bump. Never edit CHANGELOG.md by hand.
+- **Several changes in one PR**: a squash merge keeps only the PR title, so
+  release-please would list one entry. When a PR contains several changes that
+  belong in the changelog separately (for example several bug fixes), add a
+  commit override block at the end of the PR description, one Conventional
+  Commit per line. release-please uses these lines instead of the PR title:
+
+  ```
+  BEGIN_COMMIT_OVERRIDE
+  fix(clustering): describe the first fix
+  fix(widgets): describe the second fix
+  END_COMMIT_OVERRIDE
+  ```
+
+  The PR title still has to be a valid Conventional Commit. Each line counts
+  for the version bump, so a `feat:` or `!` line bumps accordingly.
 - Every behavior change needs a unit test in the affected module.
 - All pull requests are to be created as drafts (`gh pr create --draft`) until authorization is explicitly given to mark them ready for review. Always inform the user that the PR was created as a draft.
 - Run the module's tests and `lint` before declaring work done, and report
