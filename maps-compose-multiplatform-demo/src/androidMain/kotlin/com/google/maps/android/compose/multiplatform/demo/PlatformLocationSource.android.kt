@@ -25,25 +25,31 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.google.maps.android.location.LocationPriority
 import com.google.maps.android.location.LocationSource
 import com.google.maps.android.location.asLocationSource
 import com.google.maps.android.location.coarseLocationEvents
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.merge
 
-private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+private val LOCATION_PERMISSIONS = arrayOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.ACCESS_COARSE_LOCATION,
+)
 
 private fun Context.hasAnyLocationPermission(): Boolean =
     checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
@@ -51,6 +57,10 @@ private fun Context.hasAnyLocationPermission(): Boolean =
 
 private fun Context.hasFineLocationPermission(): Boolean =
     checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+private fun Activity.shouldShowLocationRationale(): Boolean =
+    shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ||
+        shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
 
 private tailrec fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
@@ -64,14 +74,20 @@ internal actual fun rememberPlatformLocationController(): PlatformLocationContro
     val context = LocalContext.current
     val appContext = context.applicationContext
     val activity = remember(context) { context.findActivity() }
+    val lifecycleOwner = LocalLifecycleOwner.current
     var hasPermission by remember { mutableStateOf(appContext.hasAnyLocationPermission()) }
 
-    // Continuously observe runtime permission changes so granting permission via the system
-    // dialog or revoking/re-granting it in Android Settings updates the UI immediately.
-    LaunchedEffect(appContext) {
-        while (true) {
-            hasPermission = appContext.hasAnyLocationPermission()
-            delay(500L)
+    // Re-check location permission whenever the host lifecycle resumes (covering both the
+    // system permission dialog closing and returning from Android App Settings).
+    DisposableEffect(lifecycleOwner, appContext) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                hasPermission = appContext.hasAnyLocationPermission()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
@@ -112,17 +128,17 @@ internal actual fun rememberPlatformLocationController(): PlatformLocationContro
                             intervalMs = intervalMs,
                             minUpdateDistanceM = minUpdateDistanceM,
                             priority = LocationPriority.HIGH_ACCURACY,
-                        ),
+                        ).catch { if (it !is SecurityException) throw it },
                         manager.coarseLocationEvents(
                             minTimeMs = intervalMs,
                             minDistanceM = minUpdateDistanceM,
-                        ),
+                        ).catch { if (it !is SecurityException) throw it },
                     )
                 } else {
                     manager.coarseLocationEvents(
                         minTimeMs = intervalMs,
                         minDistanceM = minUpdateDistanceM,
-                    )
+                    ).catch { if (it !is SecurityException) throw it }
                 }
 
                 stream.collect { send(it) }
@@ -140,28 +156,31 @@ internal actual fun rememberPlatformLocationController(): PlatformLocationContro
         }
     }
 
-    val requestPermission: () -> Unit = remember(activity, appContext, openAppSettings) {
+    var rationaleBeforeRequest by remember { mutableStateOf(false) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+    ) { permissions ->
+        val granted = permissions.values.any { it } || appContext.hasAnyLocationPermission()
+        hasPermission = granted
+        if (!granted) {
+            val rationaleAfterRequest = activity?.shouldShowLocationRationale() ?: false
+            // If shouldShowRequestPermissionRationale was false before the request and remains
+            // false after the request was denied, Android suppressed the permission dialog
+            // because the permission is permanently denied ("Don't ask again" / USER_FIXED).
+            if (!rationaleBeforeRequest && !rationaleAfterRequest) {
+                openAppSettings()
+            }
+        }
+    }
+
+    val requestPermission: () -> Unit = remember(activity, permissionLauncher, openAppSettings) {
         {
             if (activity == null) {
                 openAppSettings()
             } else {
-                activity.requestPermissions(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                    ),
-                    LOCATION_PERMISSION_REQUEST_CODE,
-                )
-                // On Android 11+, if the permission has the USER_FIXED flag set (because the user
-                // previously denied it twice or revoked it in Settings), Activity.requestPermissions
-                // silently drops the request ("No requestable permission in the request") without
-                // launching GrantPermissionsActivity. If our Activity still holds window focus
-                // 300ms later and permission is still not granted, fall back to opening App Settings.
-                Handler(Looper.getMainLooper()).postDelayed({
-                    if (!appContext.hasAnyLocationPermission() && activity.hasWindowFocus()) {
-                        openAppSettings()
-                    }
-                }, 300L)
+                rationaleBeforeRequest = activity.shouldShowLocationRationale()
+                permissionLauncher.launch(LOCATION_PERMISSIONS)
             }
         }
     }

@@ -282,6 +282,8 @@ private fun Double.format(): String = (round(this * 10_000) / 10_000).toString()
 private fun Boolean.onOff(): String = if (this) "on" else "off"
 
 
+private const val MAX_TRAIL_POINTS = 500
+
 @Composable
 internal fun LocationFlowDemo() {
     val controller = rememberPlatformLocationController()
@@ -306,6 +308,9 @@ internal fun LocationFlowDemo() {
             fixCount++
             val target = location.latLng
             if (trail.lastOrNull() != target) {
+                if (trail.size >= MAX_TRAIL_POINTS) {
+                    trail.removeAt(0)
+                }
                 trail += target
             }
             markerState.position = target

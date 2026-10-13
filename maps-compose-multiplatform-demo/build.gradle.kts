@@ -56,5 +56,10 @@ kotlin {
                 implementation(libs.compose.multiplatform.ui)
             }
         }
+        androidMain {
+            dependencies {
+                implementation(libs.androidx.activity.compose)
+            }
+        }
     }
 }

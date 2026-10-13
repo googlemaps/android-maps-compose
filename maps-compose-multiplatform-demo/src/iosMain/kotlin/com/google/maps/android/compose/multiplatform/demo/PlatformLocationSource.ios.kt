@@ -17,20 +17,23 @@
 package com.google.maps.android.compose.multiplatform.demo
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.google.maps.android.location.asLocationSource
-import kotlinx.coroutines.delay
 import platform.CoreLocation.CLAuthorizationStatus
 import platform.CoreLocation.CLLocationManager
+import platform.CoreLocation.CLLocationManagerDelegateProtocol
 import platform.CoreLocation.kCLAuthorizationStatusAuthorizedAlways
 import platform.CoreLocation.kCLAuthorizationStatusAuthorizedWhenInUse
+import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
+import platform.UIKit.UIApplicationDidBecomeActiveNotification
 import platform.UIKit.UIApplicationOpenSettingsURLString
+import platform.darwin.NSObject
 
 private fun CLAuthorizationStatus.isAuthorized(): Boolean =
     this == kCLAuthorizationStatusAuthorizedWhenInUse ||
@@ -41,10 +44,29 @@ internal actual fun rememberPlatformLocationController(): PlatformLocationContro
     val manager = remember { CLLocationManager() }
     var hasPermission by remember { mutableStateOf(manager.authorizationStatus.isAuthorized()) }
 
-    LaunchedEffect(manager) {
-        while (true) {
+    // Observe CoreLocation authorization changes and app foreground activation so returning
+    // from the system permission dialog or iOS Settings updates hasPermission without polling.
+    DisposableEffect(manager) {
+        val authObserver = CLLocationManager()
+        val authDelegate = object : NSObject(), CLLocationManagerDelegateProtocol {
+            override fun locationManagerDidChangeAuthorization(manager: CLLocationManager) {
+                hasPermission = manager.authorizationStatus.isAuthorized()
+            }
+        }
+        authObserver.delegate = authDelegate
+        val notificationObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+            name = UIApplicationDidBecomeActiveNotification,
+            `object` = null,
+            queue = null,
+        ) { _ ->
             hasPermission = manager.authorizationStatus.isAuthorized()
-            delay(500L)
+        }
+        onDispose {
+            // Keep authDelegate referenced until onDispose because CLLocationManager.delegate is weak.
+            if (authObserver.delegate === authDelegate) {
+                authObserver.delegate = null
+            }
+            NSNotificationCenter.defaultCenter.removeObserver(notificationObserver)
         }
     }
 
