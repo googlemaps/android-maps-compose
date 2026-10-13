@@ -73,6 +73,9 @@ public val multiplatformDemos: List<MultiplatformDemo> = listOf(
     MultiplatformDemo("Map clicks", "Tap to drop a marker, long press to clear them") {
         MapClicksDemo()
     },
+    MultiplatformDemo("Location Flow", "Live device GPS streamed via KMP LocationSource Flow") {
+        LocationFlowDemo()
+    },
 )
 
 /**
