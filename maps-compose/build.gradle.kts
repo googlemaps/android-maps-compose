@@ -92,6 +92,8 @@ dependencies {
     api(libs.maps.utils.core)
 
     testImplementation(libs.test.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.truth)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.espresso)

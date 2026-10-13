@@ -54,6 +54,7 @@ internal class MapApplier(
         map.clear()
         decorations.forEach { it.onCleared() }
         decorations.clear()
+        detachClickListeners()
     }
 
     override fun insertBottomUp(index: Int, instance: MapNode) {
@@ -220,6 +221,19 @@ internal class MapApplier(
                 },
             ),
         )
+    }
+
+    internal fun detachClickListeners() {
+        map.setOnCircleClickListener(null)
+        map.setOnGroundOverlayClickListener(null)
+        map.setOnPolygonClickListener(null)
+        map.setOnPolylineClickListener(null)
+        map.setOnMarkerClickListener(null)
+        map.setOnInfoWindowClickListener(null)
+        map.setOnInfoWindowCloseListener(null)
+        map.setOnInfoWindowLongClickListener(null)
+        map.setOnMarkerDragListener(null)
+        map.setInfoWindowAdapter(null)
     }
 }
 
