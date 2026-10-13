@@ -72,6 +72,7 @@ kotlin {
                 // a snapshot (see settings.gradle.kts). It shares its artifactId with the AAR that
                 // maps-compose-utils pulls from Maven Central, so the two resolve to one module.
                 api(libs.maps.utils.kmp.maps.model)
+                api(libs.maps.utils.kmp.core)
                 api(libs.maps.utils.kmp.clustering)
             }
         }
