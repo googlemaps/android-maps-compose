@@ -32,7 +32,7 @@ internal class MapPropertiesNode(
     contentDescription: String?,
     var density: Density,
     var layoutDirection: LayoutDirection,
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues,
 ) : MapNode {
 
     init {
@@ -115,9 +115,9 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
                 cameraPositionState = cameraPositionState,
                 density = density,
                 layoutDirection = layoutDirection,
-                contentPadding = contentPadding
+                contentPadding = contentPadding,
             )
-        }
+        },
     ) {
         // The node holds density and layoutDirection so that the updater blocks can be
         // non-capturing, allowing the compiler to turn them into singletons
@@ -145,16 +145,56 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
             }
         }
 
-        set(mapUiSettings.compassEnabled) { try { map.uiSettings.isCompassEnabled = it } catch (e: Exception) { /* HMS/microG safe, see #804 */ } }
-        set(mapUiSettings.indoorLevelPickerEnabled) { try { map.uiSettings.isIndoorLevelPickerEnabled = it } catch (e: Exception) {} }
-        set(mapUiSettings.mapToolbarEnabled) { try { map.uiSettings.isMapToolbarEnabled = it } catch (e: Exception) {} }
-        set(mapUiSettings.myLocationButtonEnabled) { try { map.uiSettings.isMyLocationButtonEnabled = it } catch (e: Exception) {} }
-        set(mapUiSettings.rotationGesturesEnabled) { try { map.uiSettings.isRotateGesturesEnabled = it } catch (e: Exception) {} }
-        set(mapUiSettings.scrollGesturesEnabled) { try { map.uiSettings.isScrollGesturesEnabled = it } catch (e: Exception) {} }
-        set(mapUiSettings.scrollGesturesEnabledDuringRotateOrZoom) { try { map.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = it } catch (e: Exception) {} }
-        set(mapUiSettings.tiltGesturesEnabled) { try { map.uiSettings.isTiltGesturesEnabled = it } catch (e: Exception) {} }
-        set(mapUiSettings.zoomControlsEnabled) { try { map.uiSettings.isZoomControlsEnabled = it } catch (e: Exception) {} }
-        set(mapUiSettings.zoomGesturesEnabled) { try { map.uiSettings.isZoomGesturesEnabled = it } catch (e: Exception) {} }
+        set(mapUiSettings.compassEnabled) {
+            try {
+                map.uiSettings.isCompassEnabled = it
+            } catch (e: Exception) { /* HMS/microG safe, see #804 */ }
+        }
+        set(mapUiSettings.indoorLevelPickerEnabled) {
+            try {
+                map.uiSettings.isIndoorLevelPickerEnabled = it
+            } catch (e: Exception) {}
+        }
+        set(mapUiSettings.mapToolbarEnabled) {
+            try {
+                map.uiSettings.isMapToolbarEnabled = it
+            } catch (e: Exception) {}
+        }
+        set(mapUiSettings.myLocationButtonEnabled) {
+            try {
+                map.uiSettings.isMyLocationButtonEnabled = it
+            } catch (e: Exception) {}
+        }
+        set(mapUiSettings.rotationGesturesEnabled) {
+            try {
+                map.uiSettings.isRotateGesturesEnabled = it
+            } catch (e: Exception) {}
+        }
+        set(mapUiSettings.scrollGesturesEnabled) {
+            try {
+                map.uiSettings.isScrollGesturesEnabled = it
+            } catch (e: Exception) {}
+        }
+        set(mapUiSettings.scrollGesturesEnabledDuringRotateOrZoom) {
+            try {
+                map.uiSettings.isScrollGesturesEnabledDuringRotateOrZoom = it
+            } catch (e: Exception) {}
+        }
+        set(mapUiSettings.tiltGesturesEnabled) {
+            try {
+                map.uiSettings.isTiltGesturesEnabled = it
+            } catch (e: Exception) {}
+        }
+        set(mapUiSettings.zoomControlsEnabled) {
+            try {
+                map.uiSettings.isZoomControlsEnabled = it
+            } catch (e: Exception) {}
+        }
+        set(mapUiSettings.zoomGesturesEnabled) {
+            try {
+                map.uiSettings.isZoomGesturesEnabled = it
+            } catch (e: Exception) {}
+        }
 
         update(cameraPositionState) { this.cameraPositionState = it }
     }
@@ -162,12 +202,12 @@ internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdat
 
 private fun MapPropertiesNode.applyContentPadding(map: GoogleMap, contentPadding: PaddingValues) {
     val node = this
-    with (this.density) {
+    with(this.density) {
         map.setPadding(
             contentPadding.calculateLeftPadding(node.layoutDirection).roundToPx(),
             contentPadding.calculateTopPadding().roundToPx(),
             contentPadding.calculateRightPadding(node.layoutDirection).roundToPx(),
-            contentPadding.calculateBottomPadding().roundToPx()
+            contentPadding.calculateBottomPadding().roundToPx(),
         )
     }
 }

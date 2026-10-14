@@ -16,23 +16,30 @@
 
 package com.google.maps.android.compose.clustering
 
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
-
 import android.content.Context
 import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.core.view.doOnAttach
 import androidx.core.view.doOnDetach
-import androidx.compose.ui.geometry.Offset
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -44,19 +51,11 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.ComposeUiViewRenderer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.android.awaitFrame
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.setViewTreeLifecycleOwner
-import androidx.savedstate.SavedStateRegistry
-import androidx.savedstate.SavedStateRegistryController
-import androidx.savedstate.SavedStateRegistryOwner
-import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
 internal interface ClusterRendererItemState<T : ClusterItem> {
     val unclusteredItems: State<Set<T>>
@@ -84,8 +83,9 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 ) : DefaultClusterRenderer<T>(
     context,
     map,
-    clusterManager
-), ClusterRendererItemState<T> {
+    clusterManager,
+),
+    ClusterRendererItemState<T> {
 
     override val unclusteredItems = mutableStateOf(emptySet<T>())
 
@@ -135,6 +135,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                                 rotation = props.rotation ?: clusterContentRotationState.value
                             }
                         }
+
                         is ViewKey.Item -> {
                             getMarker(key.item)?.apply {
                                 val props = viewInfo.view.properties
@@ -179,19 +180,17 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
      * [shouldRenderAsCluster].
      * @return a set of [ViewKey]s for each element.
      */
-    private fun Cluster<T>.computeViewKeys(): Set<ViewKey<T>> {
-        return if (shouldRenderAsCluster(this)) {
-            if (clusterContentState.value != null) {
-                setOf(ViewKey.Cluster(this))
-            } else {
-                emptySet()
-            }
+    private fun Cluster<T>.computeViewKeys(): Set<ViewKey<T>> = if (shouldRenderAsCluster(this)) {
+        if (clusterContentState.value != null) {
+            setOf(ViewKey.Cluster(this))
         } else {
-            if (clusterItemContentState.value != null) {
-                items.mapTo(mutableSetOf()) { ViewKey.Item(it) }
-            } else {
-                emptySet()
-            }
+            emptySet()
+        }
+    } else {
+        if (clusterItemContentState.value != null) {
+            items.mapTo(mutableSetOf()) { ViewKey.Item(it) }
+        } else {
+            emptySet()
         }
     }
 
@@ -224,7 +223,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                 is ViewKey.Item -> {
                     { clusterItemContentState.value?.invoke(key.item) }
                 }
-            }
+            },
         )
         view.setViewTreeLifecycleOwner(fakeLifecycleOwner)
         view.setViewTreeSavedStateRegistryOwner(fakeSavedStateRegistryOwner)
@@ -245,10 +244,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     }
 
     /** Re-render the corresponding marker whenever [view] invalidates */
-    private suspend fun collectInvalidationsAndRerender(
-        key: ViewKey<T>,
-        view: InvalidatingComposeView
-    ) {
+    private suspend fun collectInvalidationsAndRerender(key: ViewKey<T>, view: InvalidatingComposeView) {
         callbackFlow {
             // When invalidated, emit on the next frame
             var invalidated = false
@@ -278,6 +274,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                             rotation = view.properties.rotation ?: clusterContentRotationState.value
                         }
                     }
+
                     is ViewKey.Item -> {
                         getMarker(key.item)?.apply {
                             setIcon(renderViewToBitmapDescriptor(view))
@@ -361,7 +358,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         view.layout(0, 0, view.measuredWidth, view.measuredHeight)
         val bitmap = createBitmap(
             view.measuredWidth.takeIf { it > 0 } ?: 1,
-            view.measuredHeight.takeIf { it > 0 } ?: 1
+            view.measuredHeight.takeIf { it > 0 } ?: 1,
         )
         bitmap.applyCanvas {
             view.draw(this)
@@ -371,19 +368,12 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     }
 
     private sealed class ViewKey<T : ClusterItem> {
-        data class Cluster<T : ClusterItem>(
-            val cluster: com.google.maps.android.clustering.Cluster<T>
-        ) : ViewKey<T>()
+        data class Cluster<T : ClusterItem>(val cluster: com.google.maps.android.clustering.Cluster<T>) : ViewKey<T>()
 
-        data class Item<T : ClusterItem>(
-            val item: T
-        ) : ViewKey<T>()
+        data class Item<T : ClusterItem>(val item: T) : ViewKey<T>()
     }
 
-    private class ViewInfo(
-        val view: InvalidatingComposeView,
-        val onRemove: () -> Unit,
-    )
+    private class ViewInfo(val view: InvalidatingComposeView, val onRemove: () -> Unit)
 
     /**
      * An [AbstractComposeView] that calls [onInvalidate] whenever the Compose render layer is
@@ -412,12 +402,12 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                 properties.contentDescription,
                 rotation,
                 anchor,
-                zIndex
+                zIndex,
             ) {
                 invalidate()
             }
             CompositionLocalProvider(
-                LocalClusteringMarkerProperties provides properties
+                LocalClusteringMarkerProperties provides properties,
             ) {
                 content()
             }
@@ -439,8 +429,5 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
  * Resolves the accessibility content description for an individual [ClusterItem].
  * If a custom [customContentDescription] is provided, it takes precedence; otherwise falls back to [ClusterItem.getTitle].
  */
-internal fun <T : ClusterItem> resolveItemContentDescription(
-    item: T,
-    customContentDescription: String?,
-): String? = customContentDescription ?: item.title
-
+internal fun <T : ClusterItem> resolveItemContentDescription(item: T, customContentDescription: String?): String? =
+    customContentDescription ?: item.title

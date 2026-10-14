@@ -90,10 +90,12 @@ public fun StreetView(
     val currentIsStreetNamesEnabled by rememberUpdatedState(isStreetNamesEnabled)
     val currentIsUserNavigationEnabled by rememberUpdatedState(isUserNavigationEnabled)
     val currentIsZoomGesturesEnabled by rememberUpdatedState(isZoomGesturesEnabled)
-    val clickListeners by rememberUpdatedState(StreetViewPanoramaEventListeners().also {
-        it.onClick = onClick
-        it.onLongClick = onLongClick
-    })
+    val clickListeners by rememberUpdatedState(
+        StreetViewPanoramaEventListeners().also {
+            it.onClick = onClick
+            it.onLongClick = onLongClick
+        },
+    )
     val parentComposition = rememberCompositionContext()
 
     LaunchedEffect(Unit) {
@@ -105,7 +107,7 @@ public fun StreetView(
                     isStreetNamesEnabled = currentIsStreetNamesEnabled,
                     isUserNavigationEnabled = currentIsUserNavigationEnabled,
                     isZoomGesturesEnabled = currentIsZoomGesturesEnabled,
-                    clickListeners = clickListeners
+                    clickListeners = clickListeners,
                 )
             }
         }
@@ -143,51 +145,61 @@ private suspend inline fun disposingComposition(factory: () -> Composition) {
 
 private suspend inline fun StreetViewPanoramaView.newComposition(
     parent: CompositionContext,
-    noinline content: @Composable () -> Unit
+    noinline content: @Composable () -> Unit,
 ): Composition {
     val panorama = awaitStreetViewPanorama()
     Log.d("StreetView", "Location is ${panorama.location}")
     return Composition(
-        StreetViewPanoramaApplier(panorama), parent
+        StreetViewPanoramaApplier(panorama),
+        parent,
     ).apply {
         setContent(content)
     }
 }
 
-private fun StreetViewPanoramaView.lifecycleObserver(previousState: MutableState<Lifecycle.Event>): LifecycleEventObserver =
-    LifecycleEventObserver { _, event ->
-        event.targetState
-        when (event) {
-            Lifecycle.Event.ON_CREATE -> {
-                // Skip calling mapView.onCreate if the lifecycle did not go through onDestroy - in
-                // this case the GoogleMap composable also doesn't leave the composition. So,
-                // recreating the map does not restore state properly which must be avoided.
-                if (previousState.value != Lifecycle.Event.ON_STOP) {
-                    this.onCreate(Bundle())
-                }
+private fun StreetViewPanoramaView.lifecycleObserver(
+    previousState: MutableState<Lifecycle.Event>,
+): LifecycleEventObserver = LifecycleEventObserver {
+        _,
+        event,
+    ->
+    event.targetState
+    when (event) {
+        Lifecycle.Event.ON_CREATE -> {
+            // Skip calling mapView.onCreate if the lifecycle did not go through onDestroy - in
+            // this case the GoogleMap composable also doesn't leave the composition. So,
+            // recreating the map does not restore state properly which must be avoided.
+            if (previousState.value != Lifecycle.Event.ON_STOP) {
+                this.onCreate(Bundle())
             }
-            Lifecycle.Event.ON_START -> this.onStart()
-            Lifecycle.Event.ON_RESUME -> this.onResume()
-            Lifecycle.Event.ON_PAUSE -> this.onPause()
-            Lifecycle.Event.ON_STOP -> this.onStop()
-            Lifecycle.Event.ON_DESTROY -> {
-                //handled in onDispose
-            }
-            else -> throw IllegalStateException()
         }
-        previousState.value = event
+
+        Lifecycle.Event.ON_START -> this.onStart()
+
+        Lifecycle.Event.ON_RESUME -> this.onResume()
+
+        Lifecycle.Event.ON_PAUSE -> this.onPause()
+
+        Lifecycle.Event.ON_STOP -> this.onStop()
+
+        Lifecycle.Event.ON_DESTROY -> {
+            // handled in onDispose
+        }
+
+        else -> throw IllegalStateException()
+    }
+    previousState.value = event
+}
+
+private fun StreetViewPanoramaView.componentCallbacks2(): ComponentCallbacks2 = object : ComponentCallbacks2 {
+    override fun onConfigurationChanged(config: Configuration) {}
+
+    @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
+    override fun onLowMemory() {
+        this@componentCallbacks2.onLowMemory()
     }
 
-private fun StreetViewPanoramaView.componentCallbacks2(): ComponentCallbacks2 =
-    object : ComponentCallbacks2 {
-        override fun onConfigurationChanged(config: Configuration) {}
-
-        @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
-        override fun onLowMemory() {
-            this@componentCallbacks2.onLowMemory()
-        }
-
-        override fun onTrimMemory(level: Int) {
-            this@componentCallbacks2.onLowMemory()
-        }
+    override fun onTrimMemory(level: Int) {
+        this@componentCallbacks2.onLowMemory()
     }
+}

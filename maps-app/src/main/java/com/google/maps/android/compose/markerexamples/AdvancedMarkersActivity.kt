@@ -14,7 +14,6 @@
 
 package com.google.maps.android.compose.markerexamples
 
-
 import android.R.drawable.ic_menu_myplaces
 import android.annotation.SuppressLint
 import android.graphics.Color
@@ -34,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.MapsInitializer
@@ -52,7 +50,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.ui.IconGenerator
-
+import androidx.compose.ui.graphics.Color as ComposeColor
 
 private const val TAG = "AdvancedMarkersActivity"
 
@@ -63,7 +61,9 @@ private val salvador = LatLng(-12.9777, -38.5016)
 private val caracas = LatLng(10.4785, -66.9016)
 private val center = LatLng(-18.000, -58.000)
 private val defaultCameraPosition1 = CameraPosition.fromLatLngZoom(center, 2f)
-class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallback {
+class AdvancedMarkersActivity :
+    ComponentActivity(),
+    OnMapsSdkInitializedCallback {
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,9 +104,8 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                     properties = mapProperties,
                     onPOIClick = {
                         Log.d(TAG, "POI clicked: ${it.name}")
-                    }
+                    },
                 ) {
-
                     val textView = TextView(this@AdvancedMarkersActivity)
                     textView.text = "Hello!!"
                     textView.setBackgroundColor(Color.BLACK)
@@ -117,7 +116,7 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                         onClick = markerClick,
                         collisionBehavior = 1,
                         iconView = textView,
-                        title="Marker 4"
+                        title = "Marker 4",
                     )
 
                     val icon = remember {
@@ -136,7 +135,7 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                         onClick = markerClick,
                         collisionBehavior = 1,
                         icon = icon,
-                        title = "Marker 5"
+                        title = "Marker 5",
                     )
 
                     val pinConfig = PinConfig.builder()
@@ -152,12 +151,12 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                         onClick = markerClick,
                         collisionBehavior = 1,
                         pinConfig = pinConfig,
-                        title = "Marker 1"
+                        title = "Marker 1",
                     ) {
                         Box(
                             modifier = Modifier
                                 .background(ComposeColor.Yellow)
-                                .padding(8.dp)
+                                .padding(8.dp),
                         ) {
                             Text("Custom advanced marker info window!")
                         }
@@ -173,7 +172,7 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                         onClick = markerClick,
                         collisionBehavior = 1,
                         pinConfig = pinConfig2,
-                        title="Marker 2"
+                        title = "Marker 2",
                     )
 
                     val glyphImage: Int = ic_menu_myplaces
@@ -187,9 +186,8 @@ class AdvancedMarkersActivity : ComponentActivity(), OnMapsSdkInitializedCallbac
                         onClick = markerClick,
                         collisionBehavior = 1,
                         pinConfig = pinConfig3,
-                        title="Marker 3"
+                        title = "Marker 3",
                     )
-
                 }
             }
         }

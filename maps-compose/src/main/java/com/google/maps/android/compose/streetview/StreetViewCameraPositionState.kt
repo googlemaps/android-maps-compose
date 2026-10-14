@@ -30,7 +30,7 @@ import com.google.android.gms.maps.model.StreetViewSource
 
 @Composable
 public inline fun rememberStreetViewCameraPositionState(
-    crossinline init: StreetViewCameraPositionState.() -> Unit = {}
+    crossinline init: StreetViewCameraPositionState.() -> Unit = {},
 ): StreetViewCameraPositionState = remember {
     StreetViewCameraPositionState().apply(init)
 }
@@ -48,7 +48,7 @@ public class StreetViewCameraPositionState private constructor() {
     public val location: StreetViewPanoramaLocation
         get() = rawLocation
 
-    internal var rawLocation by mutableStateOf(StreetViewPanoramaLocation(arrayOf(), LatLng(0.0,0.0), ""))
+    internal var rawLocation by mutableStateOf(StreetViewPanoramaLocation(arrayOf(), LatLng(0.0, 0.0), ""))
 
     /**
      * The camera of the panorama.
@@ -59,7 +59,7 @@ public class StreetViewCameraPositionState private constructor() {
     public val panoramaCamera: StreetViewPanoramaCamera
         get() = rawPanoramaCamera
 
-    internal var rawPanoramaCamera by mutableStateOf(StreetViewPanoramaCamera(0f, 0f, 0f ))
+    internal var rawPanoramaCamera by mutableStateOf(StreetViewPanoramaCamera(0f, 0f, 0f))
 
     internal var panorama: StreetViewPanorama? = null
         set(value) {
@@ -107,7 +107,6 @@ public class StreetViewCameraPositionState private constructor() {
          * Creates a new [StreetViewCameraPositionState] object
          */
         @StateFactoryMarker
-        public operator fun invoke(): StreetViewCameraPositionState =
-            StreetViewCameraPositionState()
+        public operator fun invoke(): StreetViewCameraPositionState = StreetViewCameraPositionState()
     }
 }

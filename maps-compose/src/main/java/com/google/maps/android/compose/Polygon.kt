@@ -25,10 +25,7 @@ import com.google.android.gms.maps.model.PatternItem
 import com.google.android.gms.maps.model.Polygon
 import com.google.maps.android.addPolygon
 
-internal class PolygonNode(
-    val polygon: Polygon,
-    var onPolygonClick: (Polygon) -> Unit
-) : MapNode {
+internal class PolygonNode(val polygon: Polygon, var onPolygonClick: (Polygon) -> Unit) : MapNode {
     override fun onRemoved() {
         polygon.remove()
     }
@@ -66,7 +63,7 @@ public fun Polygon(
     tag: Any? = null,
     visible: Boolean = true,
     zIndex: Float = 0f,
-    onClick: (Polygon) -> Unit = {}
+    onClick: (Polygon) -> Unit = {},
 ) {
     if (points.isEmpty()) return // avoid SDK crash
 
@@ -105,6 +102,6 @@ public fun Polygon(
             update(tag) { this.polygon.tag = it }
             update(visible) { this.polygon.isVisible = it }
             update(zIndex) { this.polygon.zIndex = it }
-        }
+        },
     )
 }

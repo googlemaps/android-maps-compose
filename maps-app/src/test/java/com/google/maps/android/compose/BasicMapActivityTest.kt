@@ -47,13 +47,13 @@ class BasicMapActivityTest {
             toggledMapColorScheme(
                 current = ComposeMapColorScheme.FOLLOW_SYSTEM,
                 systemInDarkTheme = false,
-            )
+            ),
         ).isEqualTo(ComposeMapColorScheme.DARK)
         assertThat(
             toggledMapColorScheme(
                 current = ComposeMapColorScheme.FOLLOW_SYSTEM,
                 systemInDarkTheme = true,
-            )
+            ),
         ).isEqualTo(ComposeMapColorScheme.LIGHT)
     }
 }

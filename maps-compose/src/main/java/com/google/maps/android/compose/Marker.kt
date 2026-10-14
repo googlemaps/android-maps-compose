@@ -68,7 +68,9 @@ internal class MarkerNode(
 @Immutable
 @Deprecated("START, DRAG, END are events, not states. Avoid usage.")
 public enum class DragState {
-    START, DRAG, END
+    START,
+    DRAG,
+    END,
 }
 
 /**
@@ -106,8 +108,8 @@ public class MarkerState private constructor(position: LatLng) {
      */
     @Deprecated(
         "Use isDragging instead - dragState is not appropriate for representing \"state\";" +
-                " it is a lossy representation of drag \"events\", promoting invalid usage.",
-        level = DeprecationLevel.WARNING
+            " it is a lossy representation of drag \"events\", promoting invalid usage.",
+        level = DeprecationLevel.WARNING,
     )
     @Suppress("DEPRECATION")
     public var dragState: DragState by mutableStateOf(DragState.END)
@@ -160,9 +162,7 @@ public class MarkerState private constructor(position: LatLng) {
          * @param position the initial marker position
          */
         @StateFactoryMarker
-        public operator fun invoke(
-            position: LatLng = LatLng(0.0, 0.0)
-        ): MarkerState = MarkerState(position)
+        public operator fun invoke(position: LatLng = LatLng(0.0, 0.0)): MarkerState = MarkerState(position)
 
         /**
          * The default saver implementation for [MarkerState]
@@ -172,7 +172,7 @@ public class MarkerState private constructor(position: LatLng) {
          */
         public val Saver: Saver<MarkerState, LatLng> = Saver(
             save = { it.position },
-            restore = { MarkerState(it) }
+            restore = { MarkerState(it) },
         )
     }
 }
@@ -191,22 +191,20 @@ public class MarkerState private constructor(position: LatLng) {
 @Composable
 @Deprecated(
     message = "Use 'rememberUpdatedMarkerState' instead - It may be confusing to think " +
-            "that the state is automatically updated as the position changes, " +
-            "so it will be changed or removed.",
+        "that the state is automatically updated as the position changes, " +
+        "so it will be changed or removed.",
     replaceWith = ReplaceWith(
         expression = """
             val markerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
                 MarkerState(position)
             }
-        """
-    )
+        """,
+    ),
 )
-public fun rememberMarkerState(
-    key: String? = null,
-    position: LatLng = LatLng(0.0, 0.0)
-): MarkerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
-    MarkerState(position)
-}
+public fun rememberMarkerState(key: String? = null, position: LatLng = LatLng(0.0, 0.0)): MarkerState =
+    rememberSaveable(key = key, saver = MarkerState.Saver) {
+        MarkerState(position)
+    }
 
 /**
  * This function updates the state value according to the update of the input parameter,
@@ -215,9 +213,7 @@ public fun rememberMarkerState(
  * This cannot be used to preserve state across configuration changes.
  */
 @Composable
-public fun rememberUpdatedMarkerState(
-    position: LatLng = LatLng(0.0, 0.0)
-): MarkerState = remember {
+public fun rememberUpdatedMarkerState(position: LatLng = LatLng(0.0, 0.0)): MarkerState = remember {
     MarkerState(position = position)
 }.also { it.position = position }
 
@@ -338,7 +334,9 @@ public fun MarkerComposable(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    content: @UiComposable @Composable () -> Unit,
+    content:
+    @UiComposable @Composable
+    () -> Unit,
 ) {
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
 
@@ -412,7 +410,10 @@ public fun MarkerInfoWindow(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    content: (@UiComposable @Composable (Marker) -> Unit)? = null
+    content: (
+        @UiComposable @Composable
+        (Marker) -> Unit
+    )? = null,
 ) {
     MarkerImpl(
         state = state,
@@ -485,8 +486,13 @@ public fun MarkerInfoWindowComposable(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    infoContent: (@UiComposable @Composable (Marker) -> Unit)? = null,
-    content: @UiComposable @Composable () -> Unit,
+    infoContent: (
+        @UiComposable @Composable
+        (Marker) -> Unit
+    )? = null,
+    content:
+    @UiComposable @Composable
+    () -> Unit,
 ) {
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
 
@@ -558,7 +564,10 @@ public fun MarkerInfoWindowContent(
     onInfoWindowClick: (Marker) -> Unit = {},
     onInfoWindowClose: (Marker) -> Unit = {},
     onInfoWindowLongClick: (Marker) -> Unit = {},
-    content: (@UiComposable @Composable (Marker) -> Unit)? = null
+    content: (
+        @UiComposable @Composable
+        (Marker) -> Unit
+    )? = null,
 ) {
     MarkerImpl(
         state = state,
@@ -697,10 +706,9 @@ private fun MarkerImpl(
             }
             update(visible) { this.marker.isVisible = it }
             update(zIndex) { this.marker.zIndex = it }
-        }
+        },
     )
 }
-
 
 /**
  * A composable for an advanced marker on the map.
@@ -751,7 +759,7 @@ public fun AdvancedMarker(
     icon: BitmapDescriptor? = null,
     pinConfig: PinConfig? = null,
     iconView: View? = null,
-    collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED
+    collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED,
 ) {
     AdvancedMarkerImpl(
         state = state,
@@ -774,7 +782,7 @@ public fun AdvancedMarker(
         icon = icon,
         pinConfig = pinConfig,
         iconView = iconView,
-        collisionBehavior = collisionBehavior
+        collisionBehavior = collisionBehavior,
     )
 }
 
@@ -832,7 +840,10 @@ public fun AdvancedMarkerInfoWindow(
     pinConfig: PinConfig? = null,
     iconView: View? = null,
     collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED,
-    content: (@UiComposable @Composable (Marker) -> Unit)? = null,
+    content: (
+        @UiComposable @Composable
+        (Marker) -> Unit
+    )? = null,
 ) {
     AdvancedMarkerImpl(
         state = state,
@@ -914,7 +925,10 @@ public fun AdvancedMarkerInfoWindowContent(
     pinConfig: PinConfig? = null,
     iconView: View? = null,
     collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED,
-    content: (@UiComposable @Composable (Marker) -> Unit)? = null,
+    content: (
+        @UiComposable @Composable
+        (Marker) -> Unit
+    )? = null,
 ) {
     AdvancedMarkerImpl(
         state = state,
@@ -998,9 +1012,8 @@ private fun AdvancedMarkerImpl(
     icon: BitmapDescriptor? = null,
     pinConfig: PinConfig? = null,
     iconView: View? = null,
-    collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED
+    collisionBehavior: Int = AdvancedMarkerOptions.CollisionBehavior.REQUIRED,
 ) {
-
     val mapApplier = currentComposer.applier as? MapApplier
     val compositionContext = rememberCompositionContext()
 
@@ -1079,11 +1092,13 @@ private fun AdvancedMarkerImpl(
             }
             update(pinConfig) {
                 if (icon == null && iconView == null) {
-                    this.marker.setIcon(pinConfig?.let { it1 ->
-                        BitmapDescriptorFactory.fromPinConfig(
-                            it1
-                        )
-                    })
+                    this.marker.setIcon(
+                        pinConfig?.let { it1 ->
+                            BitmapDescriptorFactory.fromPinConfig(
+                                it1,
+                            )
+                        },
+                    )
                 }
             }
             update(icon) {
@@ -1094,6 +1109,6 @@ private fun AdvancedMarkerImpl(
 
             update(visible) { this.marker.isVisible = it }
             update(zIndex) { this.marker.zIndex = it }
-        }
+        },
     )
 }

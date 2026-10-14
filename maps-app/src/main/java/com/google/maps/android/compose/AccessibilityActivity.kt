@@ -30,7 +30,6 @@ import com.google.android.gms.maps.model.Marker
 
 private const val TAG = "AccessibilityActivity"
 
-
 class AccessibilityActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +59,7 @@ class AccessibilityActivity : ComponentActivity() {
                     uiSettings = uiSettings,
                     onPOIClick = {
                         Log.d(TAG, "POI clicked: ${it.name}")
-                    }
+                    },
                 ) {
                     val markerClick: (Marker) -> Boolean = {
                         Log.d(TAG, "${it.title} was clicked")
@@ -75,11 +74,10 @@ class AccessibilityActivity : ComponentActivity() {
                         contentDescription = "Description of the marker",
                         state = singaporeState,
                         title = "Marker in Singapore",
-                        onClick = markerClick
+                        onClick = markerClick,
                     )
                 }
             }
         }
     }
 }
-

@@ -23,14 +23,27 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -73,10 +86,10 @@ class MapInColumnActivity : ComponentActivity() {
                     columnScrollingEnabled = false
                     Log.d(
                         TAG,
-                        "User touched map - Disabling column scrolling after user touched this Box..."
+                        "User touched map - Disabling column scrolling after user touched this Box...",
                     )
                 },
-                onMapLoaded = { }
+                onMapLoaded = { },
             )
         }
     }
@@ -93,7 +106,7 @@ fun MapInColumn(
 ) {
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colors.background
+        color = MaterialTheme.colors.background,
     ) {
         var isMapLoaded by remember { mutableStateOf(false) }
 
@@ -102,9 +115,9 @@ fun MapInColumn(
                 .fillMaxSize()
                 .verticalScroll(
                     rememberScrollState(),
-                    columnScrollingEnabled
+                    columnScrollingEnabled,
                 ),
-            horizontalAlignment = Alignment.Start
+            horizontalAlignment = Alignment.Start,
         ) {
             Spacer(modifier = Modifier.padding(10.dp))
             for (i in 1..20) {
@@ -112,7 +125,7 @@ fun MapInColumn(
                     text = "Item $i",
                     modifier = Modifier
                         .padding(start = 10.dp)
-                        .testTag("Item $i")
+                        .testTag("Item $i"),
                 )
             }
             Spacer(modifier = Modifier.padding(10.dp))
@@ -120,7 +133,7 @@ fun MapInColumn(
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(200.dp),
             ) {
                 GoogleMapViewInColumn(
                     modifier = Modifier
@@ -133,15 +146,16 @@ fun MapInColumn(
                                         onMapTouched()
                                         false
                                     }
+
                                     else -> {
                                         Log.d(
                                             TAG,
-                                            "MotionEvent ${it.action} - this never triggers."
+                                            "MotionEvent ${it.action} - this never triggers.",
                                         )
                                         true
                                     }
                                 }
-                            }
+                            },
                         ),
                     cameraPositionState = cameraPositionState,
                     onMapLoaded = {
@@ -155,12 +169,12 @@ fun MapInColumn(
                             .fillMaxSize(),
                         visible = !isMapLoaded,
                         enter = EnterTransition.None,
-                        exit = fadeOut()
+                        exit = fadeOut(),
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .background(MaterialTheme.colors.background)
-                                .wrapContentSize()
+                                .wrapContentSize(),
                         )
                     }
                 }
@@ -171,7 +185,7 @@ fun MapInColumn(
                     text = "Item $i",
                     modifier = Modifier
                         .padding(start = 10.dp)
-                        .testTag("Item $i")
+                        .testTag("Item $i"),
                 )
             }
             Spacer(modifier = Modifier.padding(10.dp))
@@ -197,7 +211,7 @@ private fun GoogleMapViewInColumn(
         cameraPositionState = cameraPositionState,
         properties = mapProperties,
         uiSettings = uiSettings,
-        onMapLoaded = onMapLoaded
+        onMapLoaded = onMapLoaded,
     ) {
         // Drawing on the map is accomplished with a child-based API
         val markerClick: (Marker) -> Boolean = {

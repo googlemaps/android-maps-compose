@@ -69,7 +69,7 @@ internal inline fun StreetViewUpdater(
     isStreetNamesEnabled: Boolean,
     isUserNavigationEnabled: Boolean,
     isZoomGesturesEnabled: Boolean,
-    clickListeners: StreetViewPanoramaEventListeners
+    clickListeners: StreetViewPanoramaEventListeners,
 ) {
     val streetViewPanorama =
         (currentComposer.applier as StreetViewPanoramaApplier).streetViewPanorama
@@ -80,7 +80,7 @@ internal inline fun StreetViewUpdater(
                 panorama = streetViewPanorama,
                 eventListeners = clickListeners,
             )
-        }
+        },
     ) {
         set(isPanningGesturesEnabled) {
             panorama.isPanningGesturesEnabled = isPanningGesturesEnabled
