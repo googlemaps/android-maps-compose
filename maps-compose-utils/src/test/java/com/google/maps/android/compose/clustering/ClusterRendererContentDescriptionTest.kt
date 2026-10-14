@@ -17,7 +17,6 @@
 package com.google.maps.android.compose.clustering
 
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -32,13 +31,6 @@ public class ClusterRendererContentDescriptionTest {
         override val zIndex: Float? = null,
     ) : ClusterItem
 
-    private class TestCluster<T : ClusterItem>(
-        override val items: Collection<T>,
-        override val position: LatLng,
-    ) : Cluster<T> {
-        override val size: Int get() = items.size
-    }
-
     @Test
     public fun testResolveItemContentDescriptionFallsBackToItemTitleWhenNull() {
         val item = TestClusterItem(LatLng(1.0, 2.0), title = "Store 42")
@@ -51,7 +43,7 @@ public class ClusterRendererContentDescriptionTest {
         val item = TestClusterItem(LatLng(1.0, 2.0), title = "Store 42")
         val result = resolveItemContentDescription(
             item,
-            customContentDescription = "Custom Accessibility Pin"
+            customContentDescription = "Custom Accessibility Pin",
         )
         assertEquals("Custom Accessibility Pin", result)
     }
@@ -61,20 +53,5 @@ public class ClusterRendererContentDescriptionTest {
         val item = TestClusterItem(LatLng(1.0, 2.0), title = null)
         val result = resolveItemContentDescription(item, customContentDescription = null)
         assertNull(result)
-    }
-
-    @Test
-    public fun testResolveClusterContentDescription() {
-        val item = TestClusterItem(LatLng(1.0, 2.0), title = "Item")
-        val cluster = TestCluster(listOf(item), LatLng(1.0, 2.0))
-
-        val customResult = resolveClusterContentDescription(
-            cluster,
-            customContentDescription = "Cluster of 1 location"
-        )
-        assertEquals("Cluster of 1 location", customResult)
-
-        val defaultResult = resolveClusterContentDescription(cluster, customContentDescription = null)
-        assertNull(defaultResult)
     }
 }

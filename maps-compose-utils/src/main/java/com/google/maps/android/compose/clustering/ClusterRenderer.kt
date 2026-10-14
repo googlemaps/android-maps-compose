@@ -300,7 +300,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             markerOptions.anchor(anchor.x, anchor.y)
             markerOptions.zIndex(props?.zIndex ?: clusterContentZIndexState.value)
             markerOptions.rotation(props?.rotation ?: clusterContentRotationState.value)
-            val contentDesc = resolveClusterContentDescription(cluster, props?.contentDescription)
+            val contentDesc = props?.contentDescription
             if (!contentDesc.isNullOrEmpty()) {
                 markerOptions.contentDescription(contentDesc)
             }
@@ -444,10 +444,3 @@ internal fun <T : ClusterItem> resolveItemContentDescription(
     customContentDescription: String?,
 ): String? = customContentDescription ?: item.title
 
-/**
- * Resolves the accessibility content description for a [Cluster].
- */
-internal fun <T : ClusterItem> resolveClusterContentDescription(
-    cluster: Cluster<T>,
-    customContentDescription: String?,
-): String? = customContentDescription
