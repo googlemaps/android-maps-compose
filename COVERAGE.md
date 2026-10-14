@@ -38,15 +38,15 @@ Measured at `4322266` (#1035), recorded 2026-10-14T20:27:49Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `0bc6ecd` (#1040), recorded 2026-10-14T15:26:56Z.
+Measured at `4322266` (#1035), recorded 2026-10-14T20:27:54Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-app` | 505/2,328 | 21.69% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
 | `maps-compose` | 1,483/2,116 | 70.09% | `██████████████░░░░░░` | 554/1,366 | 40.56% |
-| `maps-compose-utils` | 344/573 | 60.03% | `████████████░░░░░░░░` | 94/320 | 29.38% |
+| `maps-compose-utils` | 364/602 | 60.47% | `████████████░░░░░░░░` | 108/346 | 31.21% |
 | `maps-compose-widgets` | 112/149 | 75.17% | `███████████████░░░░░` | 15/48 | 31.25% |
-| **TOTAL** | 2,444/5,166 | 47.31% | `█████████░░░░░░░░░░░` | 743/2,136 | 34.78% |
+| **TOTAL** | 2,464/5,195 | 47.43% | `█████████░░░░░░░░░░░` | 757/2,162 | 35.01% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-14 | `4322266` | #1035 | 0.45% | +0.03 | n/a | n/a | feat(clustering): propagate contentDescription to marker options for accessibility |
+| 2026-10-14 | `4322266` | #1035 | 0.45% | +0.03 | 47.43% | +0.12 | feat(clustering): propagate contentDescription to marker options for accessibility |
 | 2026-10-14 | `0bc6ecd` | #1040 | 0.42% | +0.01 | 47.31% | +0.22 | build: add Spotless with ktlint formatting checks |
 | 2026-10-09 | `85a56aa` | #1034 | 0.41% | 0.00 | 47.09% | +37.25 | ci: skip the coverage comment on pull requests from forks |
 | 2026-10-08 | `cb74115` | #1031 | 0.41% | 0.00 | 9.84% | -37.25 | chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin |
