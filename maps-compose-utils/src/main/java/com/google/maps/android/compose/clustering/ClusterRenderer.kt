@@ -297,6 +297,10 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             markerOptions.anchor(anchor.x, anchor.y)
             markerOptions.zIndex(props?.zIndex ?: clusterContentZIndexState.value)
             markerOptions.rotation(props?.rotation ?: clusterContentRotationState.value)
+            val contentDesc = props?.contentDescription
+            if (!contentDesc.isNullOrEmpty()) {
+                markerOptions.contentDescription(contentDesc)
+            }
         }
     }
 
@@ -321,7 +325,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         super.onBeforeClusterItemRendered(item, markerOptions)
         if (!scope.isActive) return
 
-        if (clusterItemContentState.value != null) {
+        val contentDesc = if (clusterItemContentState.value != null) {
             val viewInfo = keysToViews[ViewKey.Item(item)] ?: createAndAddView(ViewKey.Item(item))
             markerOptions.icon(renderViewToBitmapDescriptor(viewInfo.view))
 
@@ -330,6 +334,13 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             markerOptions.anchor(anchor.x, anchor.y)
             markerOptions.zIndex(props.zIndex ?: clusterItemContentZIndexState.value)
             markerOptions.rotation(props.rotation ?: clusterItemContentRotationState.value)
+            resolveItemContentDescription(item, props.contentDescription)
+        } else {
+            resolveItemContentDescription(item, null)
+        }
+
+        if (!contentDesc.isNullOrEmpty()) {
+            markerOptions.contentDescription(contentDesc)
         }
     }
 
@@ -384,7 +395,15 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             val rotation = getRotationOverride()
             val anchor = getAnchor()
             val zIndex = getZIndex()
-            LaunchedEffect(properties.anchor, properties.zIndex, properties.rotation, rotation, anchor, zIndex) {
+            LaunchedEffect(
+                properties.anchor,
+                properties.zIndex,
+                properties.rotation,
+                properties.contentDescription,
+                rotation,
+                anchor,
+                zIndex,
+            ) {
                 invalidate()
             }
             CompositionLocalProvider(
@@ -405,3 +424,10 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         }
     }
 }
+
+/**
+ * Resolves the accessibility content description for an individual [ClusterItem].
+ * If a custom [customContentDescription] is provided, it takes precedence; otherwise falls back to [ClusterItem.getTitle].
+ */
+internal fun <T : ClusterItem> resolveItemContentDescription(item: T, customContentDescription: String?): String? =
+    customContentDescription ?: item.title
