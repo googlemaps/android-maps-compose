@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `0bc6ecd` (#1040), recorded 2026-10-14T15:26:52Z.
+Measured at `4322266` (#1035), recorded 2026-10-14T20:27:49Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-compose` | 0/1,955 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/1,804 | 0.00% |
-| `maps-compose-utils` | 11/533 | 2.06% | `░░░░░░░░░░░░░░░░░░░░` | 2/412 | 0.49% |
+| `maps-compose-utils` | 12/554 | 2.17% | `░░░░░░░░░░░░░░░░░░░░` | 4/424 | 0.94% |
 | `maps-compose-widgets` | 0/146 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/68 | 0.00% |
-| **TOTAL** | 11/2,634 | 0.42% | `░░░░░░░░░░░░░░░░░░░░` | 2/2,284 | 0.09% |
+| **TOTAL** | 12/2,655 | 0.45% | `░░░░░░░░░░░░░░░░░░░░` | 4/2,296 | 0.17% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-14 | `4322266` | #1035 | 0.45% | +0.03 | n/a | n/a | feat(clustering): propagate contentDescription to marker options for accessibility |
 | 2026-10-14 | `0bc6ecd` | #1040 | 0.42% | +0.01 | 47.31% | +0.22 | build: add Spotless with ktlint formatting checks |
 | 2026-10-09 | `85a56aa` | #1034 | 0.41% | 0.00 | 47.09% | +37.25 | ci: skip the coverage comment on pull requests from forks |
 | 2026-10-08 | `cb74115` | #1031 | 0.41% | 0.00 | 9.84% | -37.25 | chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin |
