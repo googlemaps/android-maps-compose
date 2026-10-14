@@ -92,6 +92,7 @@ dependencies {
     api(libs.maps.utils.core)
 
     testImplementation(libs.test.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.truth)
 

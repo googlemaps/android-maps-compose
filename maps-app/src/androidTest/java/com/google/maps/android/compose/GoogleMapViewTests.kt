@@ -520,7 +520,7 @@ class GoogleMapViewTests {
                         MapView(context, options).also {
                             mapViews.add(WeakReference(it))
                         }
-                    }
+                    },
                 ) {
                     MarkerInfoWindowContent(
                         state = markerState,
