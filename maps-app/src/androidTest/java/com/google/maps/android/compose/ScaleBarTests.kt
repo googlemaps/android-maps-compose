@@ -54,7 +54,7 @@ class ScaleBarTests {
         val countDownLatch = CountDownLatch(1)
 
         cameraPositionState = CameraPositionState(
-            position = CameraPosition.fromLatLngZoom(initialPosition, initialZoom)
+            position = CameraPosition.fromLatLngZoom(initialPosition, initialZoom),
         )
 
         composeTestRule.setContent {
@@ -64,7 +64,7 @@ class ScaleBarTests {
                     cameraPositionState = cameraPositionState,
                     onMapLoaded = {
                         countDownLatch.countDown()
-                    }
+                    },
                 )
                 ScaleBar(cameraPositionState = cameraPositionState)
             }
@@ -127,10 +127,6 @@ class ScaleBarTests {
     }
 }
 
-internal fun Double.toFeet(): Double {
-    return this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
-}
+internal fun Double.toFeet(): Double = this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
 
-internal fun Double.toMiles(): Double {
-    return this / FEET_IN_MILE
-}
+internal fun Double.toMiles(): Double = this / FEET_IN_MILE

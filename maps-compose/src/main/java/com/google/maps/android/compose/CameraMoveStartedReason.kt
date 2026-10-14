@@ -35,7 +35,8 @@ public enum class CameraMoveStartedReason(public val value: Int) {
     NO_MOVEMENT_YET(-1),
     GESTURE(com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE),
     API_ANIMATION(com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_API_ANIMATION),
-    DEVELOPER_ANIMATION(com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION);
+    DEVELOPER_ANIMATION(com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener.REASON_DEVELOPER_ANIMATION),
+    ;
 
     public companion object {
         /**

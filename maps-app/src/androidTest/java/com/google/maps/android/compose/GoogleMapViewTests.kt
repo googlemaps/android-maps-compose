@@ -58,7 +58,6 @@ class GoogleMapViewTests {
 
         val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
-
         composeTestRule.setContent {
             GoogleMapView(
                 modifier = Modifier.fillMaxSize(),
@@ -66,7 +65,7 @@ class GoogleMapViewTests {
                 onMapLoaded = {
                     countDownLatch.countDown()
                 },
-                mapColorScheme = mapColorScheme
+                mapColorScheme = mapColorScheme,
             ) {
                 content.invoke()
             }
@@ -80,8 +79,8 @@ class GoogleMapViewTests {
         cameraPositionState = CameraPositionState(
             position = CameraPosition.fromLatLngZoom(
                 startingPosition,
-                startingZoom
-            )
+                startingZoom,
+            ),
         )
     }
 
@@ -99,7 +98,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
@@ -114,7 +113,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
@@ -129,7 +128,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
@@ -144,7 +143,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
@@ -162,7 +161,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         // When googleMapOptionsFactory explicitly sets a color scheme (e.g. DARK), it should not be overwritten by mapColorScheme
@@ -179,7 +178,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
@@ -200,7 +199,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
@@ -217,7 +216,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
@@ -237,7 +236,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
@@ -253,7 +252,9 @@ class GoogleMapViewTests {
                 cameraPositionState.isMoving
             }
             assertThat(cameraPositionState.isMoving).isTrue()
-            assertThat(cameraPositionState.cameraMoveStartedReason).isEqualTo(CameraMoveStartedReason.DEVELOPER_ANIMATION)
+            assertThat(
+                cameraPositionState.cameraMoveStartedReason,
+            ).isEqualTo(CameraMoveStartedReason.DEVELOPER_ANIMATION)
         }
     }
 
@@ -356,7 +357,7 @@ class GoogleMapViewTests {
             val projection = cameraPositionState.projection
             assertThat(projection).isNotNull()
             assertThat(
-                projection!!.visibleRegion.latLngBounds.contains(startingPosition)
+                projection!!.visibleRegion.latLngBounds.contains(startingPosition),
             ).isTrue()
         }
     }
@@ -369,7 +370,7 @@ class GoogleMapViewTests {
             assertThat(projection).isNotNull()
             val latLng = LatLng(23.4, 25.6)
             assertThat(
-                projection!!.visibleRegion.latLngBounds.contains(latLng)
+                projection!!.visibleRegion.latLngBounds.contains(latLng),
             ).isFalse()
         }
     }
@@ -395,10 +396,10 @@ class GoogleMapViewTests {
         initMap {
             val markerState = rememberUpdatedMarkerState()
             Marker(
-                state = markerState
+                state = markerState,
             )
             Marker(
-                state = markerState
+                state = markerState,
             )
         }
     }
@@ -502,8 +503,8 @@ class GoogleMapViewTests {
 
     @Test
     fun testRememberUpdatedMarkerStateBeUpdate() {
-        val testPoint0 = LatLng(0.0,0.0)
-        val testPoint1 = LatLng(37.6281576,-122.4264549)
+        val testPoint0 = LatLng(0.0, 0.0)
+        val testPoint1 = LatLng(37.6281576, -122.4264549)
         val testPoint2 = LatLng(37.500012, 127.0364185)
 
         val positionState = mutableStateOf(testPoint0)
@@ -524,11 +525,7 @@ class GoogleMapViewTests {
         assertThat(markerState.position).isEqualTo(testPoint2)
     }
 
-    private fun zoom(
-        shouldAnimate: Boolean,
-        zoomIn: Boolean,
-        assertionBlock: () -> Unit
-    ) {
+    private fun zoom(shouldAnimate: Boolean, zoomIn: Boolean, assertionBlock: () -> Unit) {
         if (!shouldAnimate) {
             composeTestRule.onNodeWithTag("cameraAnimations")
                 .assertIsDisplayed()

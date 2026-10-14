@@ -68,7 +68,7 @@ public class MapProperties(
         mapStyleOptions,
         mapType,
         maxZoomPreference,
-        minZoomPreference
+        minZoomPreference,
     )
 
     public fun copy(
@@ -93,4 +93,3 @@ public class MapProperties(
         minZoomPreference = minZoomPreference,
     )
 }
-

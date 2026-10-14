@@ -87,16 +87,13 @@ class SyncingDraggableMarkerWithDataModelActivity : ComponentActivity() {
 }
 
 @Composable
-private fun Screen(
-    dataModel: DataModel,
-    modifier: Modifier = Modifier
-) {
+private fun Screen(dataModel: DataModel, modifier: Modifier = Modifier) {
     GoogleMapWithLocation(
         modifier = modifier,
         locationData = dataModel.locationData,
         onUpdateLocation = { locationData ->
             dataModel.locationData = locationData
-        }
+        },
     )
 }
 
@@ -111,7 +108,7 @@ private fun Screen(
 private fun GoogleMapWithLocation(
     locationData: LocationData,
     modifier: Modifier = Modifier,
-    onUpdateLocation: (LocationData) -> Unit
+    onUpdateLocation: (LocationData) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
@@ -121,7 +118,7 @@ private fun GoogleMapWithLocation(
     ) {
         LocationMarker(
             locationData = locationData,
-            onLocationUpdate = onUpdateLocation
+            onLocationUpdate = onUpdateLocation,
         )
     }
 }
@@ -134,10 +131,7 @@ private fun GoogleMapWithLocation(
  * @param onLocationUpdate marker update events with updated [LocationData]
  */
 @Composable
-private fun LocationMarker(
-    locationData: LocationData,
-    onLocationUpdate: (LocationData) -> Unit
-) {
+private fun LocationMarker(locationData: LocationData, onLocationUpdate: (LocationData) -> Unit) {
     // This sets the MarkerData from our model once (model is initial source of truth)
     // and never updates it from the model afterwards,
     // because MarkerState/GoogleMap is the source of truth after initialization
@@ -155,7 +149,7 @@ private fun LocationMarker(
 
     Marker(
         state = markerState,
-        draggable = true
+        draggable = true,
     )
 
     LaunchedEffect(Unit) {

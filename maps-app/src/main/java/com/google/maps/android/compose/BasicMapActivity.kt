@@ -106,7 +106,7 @@ class BasicMapActivity : ComponentActivity() {
 
             Box(
                 modifier = Modifier.fillMaxSize()
-                    .systemBarsPadding()
+                    .systemBarsPadding(),
             ) {
                 GoogleMapView(
                     cameraPositionState = cameraPositionState,
@@ -120,12 +120,12 @@ class BasicMapActivity : ComponentActivity() {
                             .matchParentSize(),
                         visible = !isMapLoaded,
                         enter = EnterTransition.None,
-                        exit = fadeOut()
+                        exit = fadeOut(),
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .background(MaterialTheme.colorScheme.background)
-                                .wrapContentSize()
+                                .wrapContentSize(),
                         )
                     }
                 }
@@ -140,7 +140,7 @@ fun GoogleMapView(
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     onMapLoaded: () -> Unit = {},
     mapColorScheme: ComposeMapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
-    content: @Composable () -> Unit = {}
+    content: @Composable () -> Unit = {},
 ) {
     val singaporeState = rememberUpdatedMarkerState(position = singapore)
     val singapore2State = rememberUpdatedMarkerState(position = singapore2)
@@ -180,7 +180,7 @@ fun GoogleMapView(
             onPOIClick = {
                 Log.d(TAG, "POI clicked: ${it.name}")
             },
-            mapColorScheme = darkMode
+            mapColorScheme = darkMode,
         ) {
             // Drawing on the map is accomplished with a child-based API
             val markerClick: (Marker) -> Boolean = {
@@ -209,7 +209,7 @@ fun GoogleMapView(
             Marker(
                 state = singapore3State,
                 title = "Marker in Singapore",
-                onClick = markerClick
+                onClick = markerClick,
             )
             MarkerComposable(
                 title = "Marker Composable",
@@ -238,7 +238,7 @@ fun GoogleMapView(
                 title = "Marker with custom Composable info window",
                 infoContent = {
                     Text(it.title ?: "Title", color = Color.Blue)
-                }
+                },
             ) {
                 Box(
                     modifier = Modifier
@@ -275,7 +275,7 @@ fun GoogleMapView(
 
             Polygon(
                 points = polygonPoints,
-                fillColor = Color.Black.copy(alpha = 0.5f)
+                fillColor = Color.Black.copy(alpha = 0.5f),
             )
 
             content()
@@ -294,13 +294,13 @@ fun GoogleMapView(
                     cameraPositionState.position = defaultCameraPosition
                     singaporeState.position = singapore
                     singaporeState.hideInfoWindow()
-                }
+                },
             )
             MapButton(
                 text = "Toggle Map",
                 onClick = { mapVisible = !mapVisible },
                 modifier = Modifier
-                    .testTag("toggleMapVisibility")
+                    .testTag("toggleMapVisibility"),
             )
             MapButton(
                 text = "Toggle Dark Mode",
@@ -308,7 +308,7 @@ fun GoogleMapView(
                     darkMode = toggledMapColorScheme(darkMode, systemInDarkTheme)
                 },
                 modifier = Modifier
-                    .testTag("toggleDarkMode")
+                    .testTag("toggleDarkMode"),
             )
         }
         val coroutineScope = rememberCoroutineScope()
@@ -339,34 +339,32 @@ fun GoogleMapView(
             },
             onZoomControlsCheckedChange = {
                 uiSettings = uiSettings.copy(zoomControlsEnabled = it)
-            }
+            },
         )
         DebugView(cameraPositionState, singaporeState)
     }
 }
 
-internal fun toggledMapColorScheme(
-    current: ComposeMapColorScheme,
-    systemInDarkTheme: Boolean,
-): ComposeMapColorScheme = when (current) {
-    ComposeMapColorScheme.LIGHT -> ComposeMapColorScheme.DARK
-    ComposeMapColorScheme.DARK -> ComposeMapColorScheme.LIGHT
-    ComposeMapColorScheme.FOLLOW_SYSTEM -> if (systemInDarkTheme) {
-        ComposeMapColorScheme.LIGHT
-    } else {
-        ComposeMapColorScheme.DARK
+internal fun toggledMapColorScheme(current: ComposeMapColorScheme, systemInDarkTheme: Boolean): ComposeMapColorScheme =
+    when (current) {
+        ComposeMapColorScheme.LIGHT -> ComposeMapColorScheme.DARK
+
+        ComposeMapColorScheme.DARK -> ComposeMapColorScheme.LIGHT
+
+        ComposeMapColorScheme.FOLLOW_SYSTEM -> if (systemInDarkTheme) {
+            ComposeMapColorScheme.LIGHT
+        } else {
+            ComposeMapColorScheme.DARK
+        }
     }
-}
 
 @Composable
-private fun MapTypeControls(
-    onMapTypeClick: (MapType) -> Unit
-) {
+private fun MapTypeControls(onMapTypeClick: (MapType) -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
             .horizontalScroll(state = ScrollState(0)),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
         MapType.entries.forEach {
             MapTypeButton(type = it) { onMapTypeClick(it) }
@@ -375,8 +373,7 @@ private fun MapTypeControls(
 }
 
 @Composable
-private fun MapTypeButton(type: MapType, onClick: () -> Unit) =
-    MapButton(text = type.toString(), onClick = onClick)
+private fun MapTypeButton(type: MapType, onClick: () -> Unit) = MapButton(text = type.toString(), onClick = onClick)
 
 @Composable
 private fun ZoomControls(
@@ -400,7 +397,7 @@ private fun ZoomControls(
             Text(text = "Zoom Controls On?")
             Switch(
                 isZoomControlsEnabledChecked,
-                onCheckedChange = onZoomControlsCheckedChange
+                onCheckedChange = onZoomControlsCheckedChange,
             )
         }
     }
@@ -412,23 +409,20 @@ private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Mo
         modifier = modifier.padding(4.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.onPrimary,
-            contentColor = MaterialTheme.colorScheme.primary
+            contentColor = MaterialTheme.colorScheme.primary,
         ),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
     }
 }
 
 @Composable
-private fun DebugView(
-    cameraPositionState: CameraPositionState,
-    markerState: MarkerState
-) {
+private fun DebugView(cameraPositionState: CameraPositionState, markerState: MarkerState) {
     Column(
         Modifier
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         val moving =
             if (cameraPositionState.isMoving) "moving" else "not moving"
@@ -441,7 +435,6 @@ private fun DebugView(
         Text(text = "Marker position is ${markerState.position}")
     }
 }
-
 
 @Composable
 fun GoogleMapViewPreview() {

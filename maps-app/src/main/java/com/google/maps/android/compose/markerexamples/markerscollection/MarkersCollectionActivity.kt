@@ -91,10 +91,7 @@ class MarkersCollectionActivity : ComponentActivity() {
 }
 
 @Composable
-private fun Screen(
-    dataModel: DataModel,
-    modifier: Modifier = Modifier
-) = GoogleMapWithLocations(
+private fun Screen(dataModel: DataModel, modifier: Modifier = Modifier) = GoogleMapWithLocations(
     modifier = modifier,
     keyedLocationData = dataModel.locationDataMap.toList(),
     onAddLocation = { locationData ->
@@ -102,7 +99,7 @@ private fun Screen(
     },
     onDeleteLocation = { key ->
         dataModel.locationDataMap -= key
-    }
+    },
 )
 
 /**
@@ -118,18 +115,18 @@ private fun GoogleMapWithLocations(
     keyedLocationData: Collection<KeyedLocationData>,
     modifier: Modifier = Modifier,
     onAddLocation: (LocationData) -> Unit,
-    onDeleteLocation: (LocationKey) -> Unit
+    onDeleteLocation: (LocationKey) -> Unit,
 ) {
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
-        onMapClick = { position -> onAddLocation(LocationData(position)) }
+        onMapClick = { position -> onAddLocation(LocationData(position)) },
     ) {
         Locations(
             keyedLocationData = keyedLocationData,
-            onLocationClick = onDeleteLocation
+            onLocationClick = onDeleteLocation,
         )
     }
 }
@@ -141,17 +138,15 @@ private fun GoogleMapWithLocations(
  * @param onLocationClick location click events
  */
 @Composable
-private fun Locations(
-    keyedLocationData: Collection<KeyedLocationData>,
-    onLocationClick: (LocationKey) -> Unit
-) = keyedLocationData.forEach { (key, locationData) ->
-    key(key) {
-        Marker(
-            position = locationData.position,
-            onClick = {
-                onLocationClick(key)
-                true // consume click event to prevent camera move to marker
-            }
-        )
+private fun Locations(keyedLocationData: Collection<KeyedLocationData>, onLocationClick: (LocationKey) -> Unit) =
+    keyedLocationData.forEach { (key, locationData) ->
+        key(key) {
+            Marker(
+                position = locationData.position,
+                onClick = {
+                    onLocationClick(key)
+                    true // consume click event to prevent camera move to marker
+                },
+            )
+        }
     }
-}

@@ -50,13 +50,13 @@ class GoogleMapViewClusteringTests {
     @Before
     fun setUp() {
         cameraPositionState = CameraPositionState(
-            position = CameraPosition.fromLatLngZoom(startingPosition, 12f)
+            position = CameraPosition.fromLatLngZoom(startingPosition, 12f),
         )
     }
 
     private fun initMapAndGetMarker(
         clusterManagerHolder: Array<ClusterManager<MyItem>?>,
-        content: @Composable () -> Unit
+        content: @Composable () -> Unit,
     ): Marker {
         assumeValidApiKey()
 
@@ -104,7 +104,7 @@ class GoogleMapViewClusteringTests {
                 },
                 onClusterManager = { cm ->
                     clusterManagerHolder[0] = cm
-                }
+                },
             )
         }
 
@@ -137,7 +137,7 @@ class GoogleMapViewClusteringTests {
                 clusterItemContent = {
                     ClusteringMarkerProperties(
                         rotation = rotationState.floatValue,
-                        anchor = Offset(0.5f, 0.5f)
+                        anchor = Offset(0.5f, 0.5f),
                     )
                     Surface(modifier = Modifier.size(20.dp)) {
                         Text("X")
@@ -145,7 +145,7 @@ class GoogleMapViewClusteringTests {
                 },
                 onClusterManager = { cm ->
                     clusterManagerHolder[0] = cm
-                }
+                },
             )
         }
 
@@ -190,7 +190,7 @@ class GoogleMapViewClusteringTests {
                 },
                 onClusterManager = { cm ->
                     clusterManagerHolder[0] = cm
-                }
+                },
             )
         }
 

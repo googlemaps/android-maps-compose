@@ -20,12 +20,12 @@ import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
 
 class PublishingConventionPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.run {
-
             applyPlugins()
             configureKover()
             configureVanniktechPublishing()
@@ -57,8 +57,8 @@ class PublishingConventionPlugin : Plugin<Project> {
                 AndroidSingleVariantLibrary(
                     variant = "release",
                     sourcesJar = true,
-                    publishJavadocJar = true
-                )
+                    publishJavadocJar = true,
+                ),
             )
 
             publishToMavenCentral()

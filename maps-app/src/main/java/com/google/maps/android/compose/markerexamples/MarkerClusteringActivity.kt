@@ -18,7 +18,6 @@ package com.google.maps.android.compose.markerexamples
 
 import android.os.Bundle
 import android.util.Log
-import androidx.compose.ui.text.intl.Locale
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -48,11 +47,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +61,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.algo.NonHierarchicalViewBasedAlgorithm
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.MarkerInfoWindow
@@ -70,7 +71,6 @@ import com.google.maps.android.compose.clustering.rememberClusterManager
 import com.google.maps.android.compose.clustering.rememberClusterRenderer
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
-import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.singapore2
 import kotlin.random.Random
@@ -101,7 +101,7 @@ fun GoogleMapClustering() {
     }
     Box(
         modifier = Modifier.fillMaxSize()
-            .systemBarsPadding()
+            .systemBarsPadding(),
     ) {
         GoogleMapClustering(items = items)
     }
@@ -116,7 +116,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(singapore2, 6f)
-        }
+        },
     ) {
         when (clusteringType) {
             ClusteringType.Default -> {
@@ -149,7 +149,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
             onClick = {
                 Log.d(TAG, "Non-cluster marker clicked! $it")
                 true
-            }
+            },
         )
     }
 
@@ -178,7 +178,7 @@ private fun DefaultClustering(items: List<MyItem>) {
             Log.d(TAG, "Cluster item info window clicked! $it")
         },
         // Optional: Custom rendering for non-clustered items
-        clusterItemContent = null
+        clusterItemContent = null,
     )
 }
 
@@ -215,7 +215,7 @@ private fun CustomUiClustering(items: List<MyItem>) {
             if (isSelected) {
                 ClusteringMarkerProperties(
                     anchor = Offset(0.5f, 0.5f),
-                    zIndex = 1.0f
+                    zIndex = 1.0f,
                 )
             }
             CircleContent(
@@ -245,8 +245,8 @@ fun CustomRendererClustering(items: List<MyItem>) {
     clusterManager?.setAlgorithm(
         NonHierarchicalViewBasedAlgorithm(
             screenWidth.value.toInt(),
-            screenHeight.value.toInt()
-        )
+            screenHeight.value.toInt(),
+        ),
     )
     val renderer = rememberClusterRenderer(
         clusterContent = { cluster ->
@@ -292,7 +292,6 @@ fun CustomRendererClustering(items: List<MyItem>) {
             clusterManager = clusterManager,
         )
     }
-
 }
 
 @OptIn(MapsComposeExperimentalApi::class)
@@ -306,46 +305,39 @@ private fun DecorationsClustering(items: List<MyItem>) {
                 radius = 10000.0,
                 fillColor = Color.Blue.copy(alpha = 0.2f),
                 strokeColor = Color.Blue,
-                strokeWidth = 2f
+                strokeWidth = 2f,
             )
-        }
+        },
     )
 }
 
 @Composable
-private fun CircleContent(
-    color: Color,
-    text: String,
-    modifier: Modifier = Modifier,
-) {
+private fun CircleContent(color: Color, text: String, modifier: Modifier = Modifier) {
     Surface(
         modifier,
         shape = CircleShape,
         color = color,
         contentColor = Color.White,
-        border = BorderStroke(1.dp, Color.White)
+        border = BorderStroke(1.dp, Color.White),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Black,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }
 }
 
 @Composable
-private fun ClusteringTypeControls(
-    onClusteringTypeClick: (ClusteringType) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun ClusteringTypeControls(onClusteringTypeClick: (ClusteringType) -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier
             .fillMaxWidth()
             .horizontalScroll(state = ScrollState(0)),
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.Start,
     ) {
         ClusteringType.entries.forEach {
             MapButton(
@@ -355,7 +347,7 @@ private fun ClusteringTypeControls(
                     ClusteringType.CustomRenderer -> "Custom Renderer"
                     ClusteringType.Decorations -> "Decorations"
                 },
-                onClick = { onClusteringTypeClick(it) }
+                onClick = { onClusteringTypeClick(it) },
             )
         }
     }
@@ -367,9 +359,9 @@ private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Mo
         modifier = modifier.padding(4.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.onPrimary,
-            contentColor = MaterialTheme.colorScheme.primary
+            contentColor = MaterialTheme.colorScheme.primary,
         ),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
     }
