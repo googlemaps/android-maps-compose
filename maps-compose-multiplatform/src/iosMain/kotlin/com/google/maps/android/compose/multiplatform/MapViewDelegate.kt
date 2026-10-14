@@ -24,7 +24,6 @@ import cocoapods.GoogleMaps.GMSOverlay
 import cocoapods.GoogleMaps.animateToCameraPosition
 import com.google.maps.android.model.CameraPosition
 import com.google.maps.android.model.LatLng
-import kotlin.coroutines.resume
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCSignatureOverride
@@ -34,6 +33,7 @@ import platform.CoreLocation.CLLocationCoordinate2D
 import platform.CoreLocation.CLLocationCoordinate2DMake
 import platform.QuartzCore.CATransaction
 import platform.darwin.NSObject
+import kotlin.coroutines.resume
 
 /** Forwards the map's events to the camera state, the drawn nodes and the map's callbacks. */
 @OptIn(ExperimentalForeignApi::class)
@@ -43,7 +43,8 @@ internal class MapViewDelegate(
     private val onMapClick: (LatLng) -> Unit,
     private val onMapLongClick: (LatLng) -> Unit,
     private val onMapLoaded: () -> Unit,
-) : NSObject(), GMSMapViewDelegateProtocol {
+) : NSObject(),
+    GMSMapViewDelegateProtocol {
     private var loaded = false
 
     @ObjCSignatureOverride
@@ -122,8 +123,7 @@ internal class MapViewCameraController(private val mapView: GMSMapView) : Camera
 }
 
 @OptIn(ExperimentalForeignApi::class)
-internal fun LatLng.toCoordinate(): CValue<CLLocationCoordinate2D> =
-    CLLocationCoordinate2DMake(latitude, longitude)
+internal fun LatLng.toCoordinate(): CValue<CLLocationCoordinate2D> = CLLocationCoordinate2DMake(latitude, longitude)
 
 @OptIn(ExperimentalForeignApi::class)
 internal fun CValue<CLLocationCoordinate2D>.toLatLng(): LatLng = useContents { LatLng(latitude, longitude) }

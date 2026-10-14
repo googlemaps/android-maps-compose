@@ -27,8 +27,8 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm
 import com.google.maps.android.model.zoom
-import kotlin.math.floor
 import kotlinx.coroutines.launch
+import kotlin.math.floor
 
 /**
  * Groups [items] that are close together on screen into clusters, at the given [zoom].

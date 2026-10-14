@@ -41,10 +41,7 @@ import platform.UIKit.UIColor
  * drags.
  */
 @OptIn(ExperimentalForeignApi::class)
-internal class MapNodeRenderer(
-    private val mapView: GMSMapView,
-    private val registry: MapNodeRegistry,
-) {
+internal class MapNodeRenderer(private val mapView: GMSMapView, private val registry: MapNodeRegistry) {
     private val overlays = mutableMapOf<MapNode, GMSOverlay>()
     private val nodesByOverlay = mutableMapOf<GMSOverlay, MapNode>()
 
@@ -120,6 +117,7 @@ internal class MapNodeRenderer(
                 flat = node.flat
                 rotation = node.rotation.toDouble()
             }
+
             is PolylineNode -> (overlay as GMSPolyline).apply {
                 path = node.points.toPath()
                 strokeColor = node.color.toUIColor()
@@ -128,6 +126,7 @@ internal class MapNodeRenderer(
                 geodesic = node.geodesic
                 tappable = node.clickable
             }
+
             is PolygonNode -> (overlay as GMSPolygon).apply {
                 path = node.points.toPath()
                 holes = node.holes.map { it.toPath() }
@@ -137,6 +136,7 @@ internal class MapNodeRenderer(
                 geodesic = node.geodesic
                 tappable = node.clickable
             }
+
             is CircleNode -> (overlay as GMSCircle).apply {
                 position = node.center.toCoordinate()
                 radius = node.radius

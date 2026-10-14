@@ -35,9 +35,8 @@ import platform.UIKit.UIApplicationDidBecomeActiveNotification
 import platform.UIKit.UIApplicationOpenSettingsURLString
 import platform.darwin.NSObject
 
-private fun CLAuthorizationStatus.isAuthorized(): Boolean =
-    this == kCLAuthorizationStatusAuthorizedWhenInUse ||
-        this == kCLAuthorizationStatusAuthorizedAlways
+private fun CLAuthorizationStatus.isAuthorized(): Boolean = this == kCLAuthorizationStatusAuthorizedWhenInUse ||
+    this == kCLAuthorizationStatusAuthorizedAlways
 
 @Composable
 internal actual fun rememberPlatformLocationController(): PlatformLocationController {

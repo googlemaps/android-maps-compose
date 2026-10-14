@@ -104,7 +104,10 @@ class MapContentTest {
         val state = MarkerState(sanFrancisco)
         var clicked: MarkerState? = null
         runMapContentTest(content = {
-            Marker(state = state, onClick = { clicked = it; true })
+            Marker(state = state, onClick = {
+                clicked = it
+                true
+            })
         }) {
             val node = nodes.single() as MarkerNode
 

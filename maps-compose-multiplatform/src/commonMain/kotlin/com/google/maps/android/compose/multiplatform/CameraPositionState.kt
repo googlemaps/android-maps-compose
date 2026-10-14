@@ -40,9 +40,7 @@ import com.google.maps.android.model.zoom
  *
  * @param position the initial camera position, used until the map reports its own
  */
-public class CameraPositionState(
-    position: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f),
-) {
+public class CameraPositionState(position: CameraPosition = CameraPosition(LatLng(0.0, 0.0), 0f, 0f, 0f)) {
     private var rawPosition by mutableStateOf(position)
 
     /** Whether the camera is currently moving, from a gesture or an animation. */
@@ -100,7 +98,7 @@ public class CameraPositionState(
                         values[2].toFloat(),
                         values[3].toFloat(),
                         values[4].toFloat(),
-                    )
+                    ),
                 )
             },
         )
@@ -127,5 +125,4 @@ public inline fun rememberCameraPositionState(
 }
 
 /** Shorthand for a camera position looking straight down at [target]. */
-public fun cameraPosition(target: LatLng, zoom: Float): CameraPosition =
-    CameraPosition(target, zoom, 0f, 0f)
+public fun cameraPosition(target: LatLng, zoom: Float): CameraPosition = CameraPosition(target, zoom, 0f, 0f)
