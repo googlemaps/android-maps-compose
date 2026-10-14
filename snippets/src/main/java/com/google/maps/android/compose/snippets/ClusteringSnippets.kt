@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.compose.GoogleMap
@@ -28,25 +29,18 @@ import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlin.OptIn
 
+// [START maps_android_compose_clustering]
 /**
- * A lightweight representation of a marker cluster item mapped for testing.
+ * A lightweight representation of a marker cluster item.
  *
- * Implements [ClusterItem] to supply standard coordinates, title labels, and descriptions required
- * by the grouping algorithms inside maps utility libraries.
+ * Implements [ClusterItem] to supply coordinates, title labels, descriptions, and z-index.
  */
 data class SimpleClusterItem(
-  private val position: LatLng,
-  private val title: String,
-  private val snippet: String
-) : ClusterItem {
-  override fun getPosition(): LatLng = position
-
-  override fun getTitle(): String = title
-
-  override fun getSnippet(): String = snippet
-
-  override fun getZIndex(): Float? = null
-}
+  override val position: LatLng,
+  override val title: String? = null,
+  override val snippet: String? = null,
+  override val zIndex: Float? = null,
+) : ClusterItem
 
 /**
  * Demonstrates how to group multiple adjacent markers dynamically inside clusters.
@@ -58,8 +52,10 @@ data class SimpleClusterItem(
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun MarkerClusteringSnippet() {
-  // [START maps_android_compose_clustering]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   // List of items to be clustered on the map
   val clusterItems = remember {
@@ -85,5 +81,5 @@ fun MarkerClusteringSnippet() {
       }
     )
   }
-  // [END maps_android_compose_clustering]
 }
+// [END maps_android_compose_clustering]

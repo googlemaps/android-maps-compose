@@ -31,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerComposable
@@ -47,7 +49,10 @@ import com.google.maps.android.compose.rememberUpdatedMarkerState
 @Composable
 fun BasicMarkerSnippet() {
   // [START maps_android_compose_marker_basic]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
   val markerState = rememberUpdatedMarkerState(position = singapore)
 
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
@@ -65,7 +70,10 @@ fun BasicMarkerSnippet() {
 @Composable
 fun CustomMarkerIconSnippet() {
   // [START maps_android_compose_marker_custom_icon]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
   val markerState = rememberUpdatedMarkerState(position = singapore)
 
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
@@ -91,7 +99,10 @@ fun CustomMarkerIconSnippet() {
 @Composable
 fun MarkerComposableSnippet() {
   // [START maps_android_compose_marker_composable]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
   val markerState = rememberUpdatedMarkerState(position = singapore)
 
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
@@ -126,7 +137,10 @@ fun MarkerComposableSnippet() {
 @Composable
 fun CustomInfoWindowSnippet() {
   // [START maps_android_compose_marker_info_window]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
   val markerState = rememberUpdatedMarkerState(position = singapore)
 
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {

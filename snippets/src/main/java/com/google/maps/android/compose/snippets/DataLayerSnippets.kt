@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapsComposeExperimentalApi
@@ -28,6 +30,7 @@ import com.google.maps.android.data.geojson.GeoJsonLayer
 import com.google.maps.android.data.kml.KmlLayer
 import java.io.ByteArrayInputStream
 import kotlin.OptIn
+import kotlinx.coroutines.awaitCancellation
 import org.json.JSONObject
 
 /**
@@ -40,33 +43,41 @@ import org.json.JSONObject
 @Composable
 fun GeoJsonLayerSnippet() {
   // [START maps_android_compose_geojson_layer]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
-    // Use MapEffect to safely access the raw GoogleMap instance
+    // Use MapEffect to safely access the raw GoogleMap instance and manage layer lifecycle
     MapEffect(Unit) { googleMap ->
       val geoJsonData =
         JSONObject(
           """{
-                    "type": "FeatureCollection",
-                    "features": [
-                      {
-                        "type": "Feature",
-                        "properties": {},
-                        "geometry": {
-                          "type": "LineString",
-                          "coordinates": [
-                            [103.80, 1.35],
-                            [103.85, 1.40],
-                            [103.90, 1.35]
-                          ]
-                        }
-                      }
-                    ]
-                }"""
+            "type": "FeatureCollection",
+            "features": [
+              {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": [
+                    [103.80, 1.35],
+                    [103.85, 1.40],
+                    [103.90, 1.35]
+                  ]
+                }
+              }
+            ]
+          }"""
         )
       val geoJsonLayer = GeoJsonLayer(googleMap, geoJsonData)
       geoJsonLayer.addLayerToMap()
+      try {
+        awaitCancellation()
+      } finally {
+        geoJsonLayer.removeLayerFromMap()
+      }
     }
   }
   // [END maps_android_compose_geojson_layer]
@@ -82,36 +93,44 @@ fun GeoJsonLayerSnippet() {
 @Composable
 fun KmlLayerSnippet() {
   // [START maps_android_compose_kml_layer]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
   val context = LocalContext.current
 
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
-    // Use MapEffect to safely access the raw GoogleMap instance
+    // Use MapEffect to safely access the raw GoogleMap instance and manage layer lifecycle
     MapEffect(Unit) { googleMap ->
       val kmlData =
         ByteArrayInputStream(
           """<?xml version="1.0" encoding="UTF-8"?>
-                <kml xmlns="http://www.opengis.net/kml/2.2">
-                  <Placemark>
-                    <name>KML Polygon Area</name>
-                    <Polygon>
-                      <outerBoundaryIs>
-                        <LinearRing>
-                          <coordinates>
-                            103.80,1.30,0
-                            103.85,1.38,0
-                            103.90,1.30,0
-                            103.80,1.30,0
-                          </coordinates>
-                        </LinearRing>
-                      </outerBoundaryIs>
-                    </Polygon>
-                  </Placemark>
-                </kml>"""
+            <kml xmlns="http://www.opengis.net/kml/2.2">
+              <Placemark>
+                <name>KML Polygon Area</name>
+                <Polygon>
+                  <outerBoundaryIs>
+                    <LinearRing>
+                      <coordinates>
+                        103.80,1.30,0
+                        103.85,1.38,0
+                        103.90,1.30,0
+                        103.80,1.30,0
+                      </coordinates>
+                    </LinearRing>
+                  </outerBoundaryIs>
+                </Polygon>
+              </Placemark>
+            </kml>"""
             .toByteArray()
         )
       val kmlLayer = KmlLayer(googleMap, kmlData, context)
       kmlLayer.addLayerToMap()
+      try {
+        awaitCancellation()
+      } finally {
+        kmlLayer.removeLayerFromMap()
+      }
     }
   }
   // [END maps_android_compose_kml_layer]

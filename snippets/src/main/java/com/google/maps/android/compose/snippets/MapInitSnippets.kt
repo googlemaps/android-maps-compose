@@ -18,11 +18,7 @@ package com.google.maps.android.compose.snippets
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -32,8 +28,6 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.delay
 
 /**
  * Demonstrates the minimum configuration to initialize a basic, interactive Google Map.
@@ -42,22 +36,18 @@ import kotlinx.coroutines.delay
  * [rememberCameraPositionState].
  */
 @Composable
-fun BasicMapSnippet(
-  cameraPositionState: CameraPositionState = rememberCameraPositionState {
-    position =
-      CameraPosition.fromLatLngZoom(
-        LatLng(40.0150, -105.2705), // Boulder, Colorado
-        11f
-      )
-  },
-  onStateConfigured: (CameraPositionState) -> Unit = {}
-) {
-  // Expose the active camera state to test listeners
-  onStateConfigured(cameraPositionState)
-
+fun BasicMapSnippet(onStateConfigured: (CameraPositionState) -> Unit = {}) {
   // [START maps_android_compose_init_basic]
+  val boulder = LatLng(40.0150, -105.2705)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(boulder, 11f)
+  }
+
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState)
   // [END maps_android_compose_init_basic]
+
+  // Expose active camera state to test listeners
+  onStateConfigured(cameraPositionState)
 }
 
 /**
@@ -69,44 +59,30 @@ fun BasicMapSnippet(
 @Composable
 fun CustomConfigMapSnippet() {
   // [START maps_android_compose_init_custom]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
-
-  var configStep by remember { mutableIntStateOf(0) }
-
-  // Automatically cycle through 3 different configurations every 2 seconds to capture transition
-  // details
-  LaunchedEffect(Unit) {
-    while (true) {
-      delay(2000.milliseconds)
-      configStep = (configStep + 1) % 3
-    }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
   }
 
-  // Dynamically derive MapProperties based on the current state index
-  val properties =
-    remember(configStep) {
-      when (configStep) {
-        0 -> MapProperties(mapType = MapType.SATELLITE, isTrafficEnabled = false)
-        1 -> MapProperties(mapType = MapType.TERRAIN, isTrafficEnabled = true)
-        else -> MapProperties(mapType = MapType.NORMAL, isTrafficEnabled = false)
-      }
-    }
+  // Configure custom map features and layers
+  val mapProperties = remember {
+    MapProperties(mapType = MapType.SATELLITE, isTrafficEnabled = true)
+  }
 
-  // Dynamically derive MapUiSettings based on the current state index
-  val uiSettings =
-    remember(configStep) {
-      when (configStep) {
-        0 -> MapUiSettings(compassEnabled = true, zoomControlsEnabled = false)
-        1 -> MapUiSettings(compassEnabled = false, zoomControlsEnabled = true)
-        else -> MapUiSettings(compassEnabled = true, zoomControlsEnabled = false)
-      }
-    }
+  // Configure UI gestures and built-in controls
+  val mapUiSettings = remember {
+    MapUiSettings(
+      compassEnabled = true,
+      zoomControlsEnabled = false,
+      myLocationButtonEnabled = true
+    )
+  }
 
   GoogleMap(
     modifier = Modifier.fillMaxSize(),
     cameraPositionState = cameraPositionState,
-    properties = properties,
-    uiSettings = uiSettings
+    properties = mapProperties,
+    uiSettings = mapUiSettings
   )
   // [END maps_android_compose_init_custom]
 }

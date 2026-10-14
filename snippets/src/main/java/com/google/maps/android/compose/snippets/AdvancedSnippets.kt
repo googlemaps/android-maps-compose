@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Tile
@@ -57,11 +58,14 @@ import com.google.maps.android.compose.wms.WmsTileOverlay
 @Composable
 fun GroundOverlaySnippet() {
   // [START maps_android_compose_ground_overlay]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   val bounds = LatLngBounds(LatLng(1.30, 103.80), LatLng(1.40, 103.90))
 
-  // State holding our custom Ground Overlay image descriptor, deferred safely
+  // State holding custom Ground Overlay image descriptor, deferred safely
   var customGroundOverlayImage by remember { mutableStateOf<BitmapDescriptor?>(null) }
 
   // Defer GroundOverlay bitmap allocation until the Map SDK context has fully initialized
@@ -106,7 +110,10 @@ fun GroundOverlaySnippet() {
 @Composable
 fun TileOverlaySnippet() {
   // [START maps_android_compose_tile_overlay]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   // Custom TileProvider generating a translucent pink grid pattern tile dynamically
   val customTileProvider = remember {
@@ -191,7 +198,10 @@ fun WmsTileOverlaySnippet() {
 @Composable
 fun RememberComposeBitmapDescriptorSnippet() {
   // [START maps_android_compose_remember_bitmap_descriptor]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
   val markerState = rememberUpdatedMarkerState(position = singapore)
 
   // Deferred descriptor allocation state, avoiding premature Map SDK context initialization
@@ -238,7 +248,10 @@ fun RememberComposeBitmapDescriptorSnippet() {
 @Composable
 fun ScaleBarSnippet() {
   // [START maps_android_compose_scale_bar]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   Box(modifier = Modifier.fillMaxSize()) {
     GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState)

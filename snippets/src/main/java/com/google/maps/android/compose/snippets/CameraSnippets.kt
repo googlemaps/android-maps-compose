@@ -25,8 +25,8 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.delay
 
 val singapore = LatLng(1.3588227, 103.8742114)
 val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
@@ -40,15 +40,17 @@ val defaultCameraPosition = CameraPosition.fromLatLngZoom(singapore, 11f)
 @Composable
 fun MoveCameraSnippet() {
   // [START maps_android_compose_camera_move]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState)
 
-  // Instantly updates the camera position after a 2-second delay to capture the transition clearly
-  // in recordings
+  // Move the camera to a new target location instantly without animation
   LaunchedEffect(Unit) {
-    delay(2000)
-    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(LatLng(1.40, 103.77), 12f))
+    val destination = LatLng(1.40, 103.77)
+    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(destination, 12f))
   }
   // [END maps_android_compose_camera_move]
 }
@@ -62,13 +64,16 @@ fun MoveCameraSnippet() {
 @Composable
 fun AnimateCameraSnippet() {
   // [START maps_android_compose_camera_animate]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
-  // Automatically trigger the camera animation after a 2-second recording delay
+  // Smoothly animate the camera to a new target location over 2000 milliseconds
   LaunchedEffect(Unit) {
-    delay(2000)
+    val destination = LatLng(1.40, 103.77)
     cameraPositionState.animate(
-      update = CameraUpdateFactory.newLatLngZoom(LatLng(1.40, 103.77), 14f),
+      update = CameraUpdateFactory.newLatLngZoom(destination, 14f),
       durationMs = 2000
     )
   }
@@ -86,18 +91,20 @@ fun AnimateCameraSnippet() {
 @Composable
 fun RestrictCameraBoundsSnippet() {
   // [START maps_android_compose_camera_bounds]
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
+
   val southwest = LatLng(1.20, 103.60)
   val northeast = LatLng(1.45, 104.05)
   val singaporeBounds = LatLngBounds(southwest, northeast)
-
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
   GoogleMap(
     modifier = Modifier.fillMaxSize(),
     cameraPositionState = cameraPositionState,
     // Restrict camera target bounds inside MapProperties
-    properties =
-      com.google.maps.android.compose.MapProperties(latLngBoundsForCameraTarget = singaporeBounds)
+    properties = MapProperties(latLngBoundsForCameraTarget = singaporeBounds)
   )
   // [END maps_android_compose_camera_bounds]
 }

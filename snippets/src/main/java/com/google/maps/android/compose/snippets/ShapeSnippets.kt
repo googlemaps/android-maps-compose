@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
@@ -37,7 +38,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun PolylineSnippet() {
   // [START maps_android_compose_polyline]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   val points = remember { listOf(LatLng(1.35, 103.87), LatLng(1.40, 103.77), LatLng(1.45, 103.77)) }
 
@@ -56,7 +60,10 @@ fun PolylineSnippet() {
 @Composable
 fun PolygonSnippet() {
   // [START maps_android_compose_polygon]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   val points = remember { listOf(LatLng(1.35, 103.87), LatLng(1.40, 103.77), LatLng(1.40, 103.90)) }
 
@@ -80,7 +87,10 @@ fun PolygonSnippet() {
 @Composable
 fun CircleSnippet() {
   // [START maps_android_compose_circle]
-  val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
+  val singapore = LatLng(1.3588, 103.8742)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(singapore, 11f)
+  }
 
   GoogleMap(modifier = Modifier.fillMaxSize(), cameraPositionState = cameraPositionState) {
     Circle(
