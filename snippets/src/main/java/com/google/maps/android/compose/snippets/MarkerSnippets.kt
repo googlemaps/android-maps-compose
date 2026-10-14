@@ -81,7 +81,7 @@ fun CustomMarkerIconSnippet() {
       state = markerState,
       title = "Singapore Custom Icon",
       // Customizes the marker icon (e.g., azure default pin)
-      icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+      icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
       // For a custom drawable asset, use:
       // icon = BitmapDescriptorFactory.fromResource(R.drawable.my_custom_marker)
     )
@@ -110,7 +110,7 @@ fun MarkerComposableSnippet() {
     MarkerComposable(
       state = markerState,
       title = "Compose Marker",
-      keys = arrayOf("singapore_composable")
+      keys = arrayOf("singapore_composable"),
     ) {
       Box(
         modifier =
@@ -156,16 +156,19 @@ fun CustomInfoWindowSnippet() {
               .height(50.dp)
               .clip(RoundedCornerShape(8.dp))
               .background(Color.Yellow),
-          contentAlignment = Alignment.Center
+          contentAlignment = Alignment.Center,
         ) {
           Text(text = marker.title ?: "Title", color = Color.Black)
         }
-      }
+      },
     ) {
       // The marker pin representation itself (a simple blue circle Composable)
       Box(
         modifier =
-          Modifier.width(32.dp).height(32.dp).clip(RoundedCornerShape(16.dp)).background(Color.Blue)
+          Modifier.width(32.dp)
+            .height(32.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.Blue),
       )
     }
   }

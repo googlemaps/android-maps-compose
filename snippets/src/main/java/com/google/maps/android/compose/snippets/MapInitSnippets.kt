@@ -74,7 +74,7 @@ fun CustomConfigMapSnippet() {
     MapUiSettings(
       compassEnabled = true,
       zoomControlsEnabled = false,
-      myLocationButtonEnabled = true
+      myLocationButtonEnabled = true,
     )
   }
 
@@ -82,7 +82,7 @@ fun CustomConfigMapSnippet() {
     modifier = Modifier.fillMaxSize(),
     cameraPositionState = cameraPositionState,
     properties = mapProperties,
-    uiSettings = mapUiSettings
+    uiSettings = mapUiSettings,
   )
   // [END maps_android_compose_init_custom]
 }

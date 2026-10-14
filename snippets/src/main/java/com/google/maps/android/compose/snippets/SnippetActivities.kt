@@ -38,7 +38,7 @@ val MapsComposeColorScheme =
     surface = Color(0xFFFFFFFF),
     onSurface = Color(0xFF202124),
     surfaceVariant = Color(0xFFF8F9FA), // Light Gray for Card backgrounds
-    onSurfaceVariant = Color(0xFF3C4043)
+    onSurfaceVariant = Color(0xFF3C4043),
   )
 
 /**

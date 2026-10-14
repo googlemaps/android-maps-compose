@@ -74,7 +74,7 @@ fun AnimateCameraSnippet() {
     val destination = LatLng(1.40, 103.77)
     cameraPositionState.animate(
       update = CameraUpdateFactory.newLatLngZoom(destination, 14f),
-      durationMs = 2000
+      durationMs = 2000,
     )
   }
 
@@ -104,7 +104,7 @@ fun RestrictCameraBoundsSnippet() {
     modifier = Modifier.fillMaxSize(),
     cameraPositionState = cameraPositionState,
     // Restrict camera target bounds inside MapProperties
-    properties = MapProperties(latLngBoundsForCameraTarget = singaporeBounds)
+    properties = MapProperties(latLngBoundsForCameraTarget = singaporeBounds),
   )
   // [END maps_android_compose_camera_bounds]
 }

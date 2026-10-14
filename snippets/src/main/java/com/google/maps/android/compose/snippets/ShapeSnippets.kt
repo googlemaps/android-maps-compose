@@ -72,7 +72,7 @@ fun PolygonSnippet() {
       points = points,
       fillColor = Color.Red.copy(alpha = 0.3f),
       strokeColor = Color.Red,
-      strokeWidth = 5f
+      strokeWidth = 5f,
     )
   }
   // [END maps_android_compose_polygon]
@@ -98,7 +98,7 @@ fun CircleSnippet() {
       radius = 2000.0, // in meters
       fillColor = Color.Green.copy(alpha = 0.2f),
       strokeColor = Color.Green,
-      strokeWidth = 4f
+      strokeWidth = 4f,
     )
   }
   // [END maps_android_compose_circle]

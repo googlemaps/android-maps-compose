@@ -78,7 +78,7 @@ fun MarkerClusteringSnippet() {
       onClusterClick = { cluster ->
         // Handle cluster group click
         false
-      }
+      },
     )
   }
 }

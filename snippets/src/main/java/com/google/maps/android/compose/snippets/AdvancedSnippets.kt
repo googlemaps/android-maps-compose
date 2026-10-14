@@ -94,7 +94,7 @@ fun GroundOverlaySnippet() {
     if (customGroundOverlayImage != null) {
       GroundOverlay(
         position = GroundOverlayPosition.create(bounds),
-        image = customGroundOverlayImage!!
+        image = customGroundOverlayImage!!,
       )
     }
   }
@@ -164,7 +164,7 @@ fun WmsTileOverlaySnippet() {
     position =
       com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(
         LatLng(40.0150, -105.2705), // Boulder, Colorado
-        10f
+        10f,
       )
   }
 
@@ -172,7 +172,7 @@ fun WmsTileOverlaySnippet() {
     modifier = Modifier.fillMaxSize(),
     cameraPositionState = cameraPositionState,
     properties =
-      MapProperties(mapType = MapType.NONE) // Hide baseline map to isolate WMS shaded relief
+      MapProperties(mapType = MapType.NONE), // Hide baseline map to isolate WMS shaded relief
   ) {
     // USGS National Map Shaded Relief WMS Layer
     WmsTileOverlay(
@@ -182,7 +182,7 @@ fun WmsTileOverlaySnippet() {
           "&TRANSPARENT=true&LAYERS=0&SRS=EPSG:3857&WIDTH=256&HEIGHT=256" +
           "&STYLES=&BBOX=$xMin,$yMin,$xMax,$yMax"
       },
-      transparency = 0.5f
+      transparency = 0.5f,
     )
   }
   // [END maps_android_compose_wms_tile_overlay]
@@ -259,7 +259,7 @@ fun ScaleBarSnippet() {
     // Overlay the scale bar widget dynamically anchored at the top-start
     ScaleBar(
       modifier = Modifier.align(Alignment.TopStart).padding(16.dp),
-      cameraPositionState = cameraPositionState
+      cameraPositionState = cameraPositionState,
     )
   }
   // [END maps_android_compose_scale_bar]

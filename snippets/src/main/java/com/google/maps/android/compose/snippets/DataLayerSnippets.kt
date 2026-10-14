@@ -69,7 +69,7 @@ fun GeoJsonLayerSnippet() {
                 }
               }
             ]
-          }"""
+          }""",
         )
       val geoJsonLayer = GeoJsonLayer(googleMap, geoJsonData)
       geoJsonLayer.addLayerToMap()
@@ -122,7 +122,7 @@ fun KmlLayerSnippet() {
                 </Polygon>
               </Placemark>
             </kml>"""
-            .toByteArray()
+            .toByteArray(),
         )
       val kmlLayer = KmlLayer(googleMap, kmlData, context)
       kmlLayer.addLayerToMap()

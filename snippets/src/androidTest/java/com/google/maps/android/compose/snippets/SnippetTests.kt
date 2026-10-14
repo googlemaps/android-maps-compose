@@ -55,7 +55,7 @@ class SnippetTests {
       "Longitude must match Boulder CO!",
       -105.2705,
       finalPosition.target.longitude,
-      0.001
+      0.001,
     )
     assertEquals("Zoom must match 11f!", 11f, finalPosition.zoom, 0.01f)
   }

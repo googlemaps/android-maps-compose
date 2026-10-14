@@ -59,7 +59,7 @@ class MainActivity : BaseSnippetActivity() {
 fun SnippetRunnerApp(initialSnippetTitle: String? = null) {
   var selectedSnippet by remember {
     mutableStateOf(
-      SnippetRegistry.groups.flatMap { it.items }.find { it.title == initialSnippetTitle }
+      SnippetRegistry.groups.flatMap { it.items }.find { it.title == initialSnippetTitle },
     )
   }
 
@@ -71,10 +71,10 @@ fun SnippetRunnerApp(initialSnippetTitle: String? = null) {
           colors =
             TopAppBarDefaults.topAppBarColors(
               containerColor = MaterialTheme.colorScheme.primaryContainer,
-              titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+              titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            ),
         )
-      }
+      },
     ) { paddingValues ->
       LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
         SnippetRegistry.groups.forEach { group ->
@@ -83,7 +83,7 @@ fun SnippetRunnerApp(initialSnippetTitle: String? = null) {
               text = group.title,
               style = MaterialTheme.typography.titleLarge,
               color = MaterialTheme.colorScheme.primary,
-              modifier = Modifier.padding(vertical = 8.dp)
+              modifier = Modifier.padding(vertical = 8.dp),
             )
           }
           items(group.items) { item ->
@@ -93,7 +93,7 @@ fun SnippetRunnerApp(initialSnippetTitle: String? = null) {
                   selectedSnippet = item
                 },
               colors =
-                CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             ) {
               Column(modifier = Modifier.padding(16.dp)) {
                 Text(text = item.title, style = MaterialTheme.typography.titleMedium)

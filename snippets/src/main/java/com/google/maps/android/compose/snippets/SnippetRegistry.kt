@@ -41,14 +41,14 @@ object SnippetRegistry {
             SnippetItemInfo(
               title = "1. Basic Map",
               description = "Initializes a simple Google Map.",
-              content = { BasicMapSnippet() }
+              content = { BasicMapSnippet() },
             ),
             SnippetItemInfo(
               title = "2. Custom Configuration",
               description = "Initializes a Google Map with custom properties and UI settings.",
-              content = { CustomConfigMapSnippet() }
-            )
-          )
+              content = { CustomConfigMapSnippet() },
+            ),
+          ),
       ),
       SnippetGroupInfo(
         title = "Camera Control",
@@ -58,19 +58,19 @@ object SnippetRegistry {
             SnippetItemInfo(
               title = "1. Move Camera",
               description = "Instantly updates camera position.",
-              content = { MoveCameraSnippet() }
+              content = { MoveCameraSnippet() },
             ),
             SnippetItemInfo(
               title = "2. Animate Camera",
               description = "Smoothly animates camera position.",
-              content = { AnimateCameraSnippet() }
+              content = { AnimateCameraSnippet() },
             ),
             SnippetItemInfo(
               title = "3. Restrict Camera Bounds",
               description = "Restricts camera movement to a specific LatLng bounds.",
-              content = { RestrictCameraBoundsSnippet() }
-            )
-          )
+              content = { RestrictCameraBoundsSnippet() },
+            ),
+          ),
       ),
       SnippetGroupInfo(
         title = "Markers",
@@ -80,26 +80,26 @@ object SnippetRegistry {
             SnippetItemInfo(
               title = "1. Basic Marker",
               description = "Adds a basic marker to Singapore.",
-              content = { BasicMarkerSnippet() }
+              content = { BasicMarkerSnippet() },
             ),
             SnippetItemInfo(
               title = "2. Custom Marker Icon",
               description = "Adds a marker with a custom resource drawable icon.",
-              content = { CustomMarkerIconSnippet() }
+              content = { CustomMarkerIconSnippet() },
             ),
             SnippetItemInfo(
               title = "3. Marker Composable",
               description =
                 "Adds an interactive custom marker rendered using fully Jetpack Compose UI layouts.",
-              content = { MarkerComposableSnippet() }
+              content = { MarkerComposableSnippet() },
             ),
             SnippetItemInfo(
               title = "4. Custom Info Window Composable",
               description =
                 "Adds a custom InfoWindow rendered dynamically using fully Jetpack Compose UI.",
-              content = { CustomInfoWindowSnippet() }
-            )
-          )
+              content = { CustomInfoWindowSnippet() },
+            ),
+          ),
       ),
       SnippetGroupInfo(
         title = "Shapes",
@@ -109,19 +109,19 @@ object SnippetRegistry {
             SnippetItemInfo(
               title = "1. Polyline",
               description = "Draws a solid Polyline.",
-              content = { PolylineSnippet() }
+              content = { PolylineSnippet() },
             ),
             SnippetItemInfo(
               title = "2. Polygon",
               description = "Draws a filled Polygon.",
-              content = { PolygonSnippet() }
+              content = { PolygonSnippet() },
             ),
             SnippetItemInfo(
               title = "3. Circle",
               description = "Draws a solid filled Circle.",
-              content = { CircleSnippet() }
-            )
-          )
+              content = { CircleSnippet() },
+            ),
+          ),
       ),
       SnippetGroupInfo(
         title = "Clustering & Utilities",
@@ -131,9 +131,9 @@ object SnippetRegistry {
             SnippetItemInfo(
               title = "1. Marker Clustering",
               description = "Clusters multiple nearby markers dynamically.",
-              content = { MarkerClusteringSnippet() }
-            )
-          )
+              content = { MarkerClusteringSnippet() },
+            ),
+          ),
       ),
       SnippetGroupInfo(
         title = "Data Layers",
@@ -143,14 +143,14 @@ object SnippetRegistry {
             SnippetItemInfo(
               title = "1. GeoJSON Layer",
               description = "Loads a GeoJSON data layer on the map.",
-              content = { GeoJsonLayerSnippet() }
+              content = { GeoJsonLayerSnippet() },
             ),
             SnippetItemInfo(
               title = "2. KML Layer",
               description = "Loads a KML data layer on the map.",
-              content = { KmlLayerSnippet() }
-            )
-          )
+              content = { KmlLayerSnippet() },
+            ),
+          ),
       ),
       SnippetGroupInfo(
         title = "Overlays & Widgets",
@@ -160,30 +160,30 @@ object SnippetRegistry {
             SnippetItemInfo(
               title = "1. Ground Overlay",
               description = "Displays a static image clamped over coordinate bounds.",
-              content = { GroundOverlaySnippet() }
+              content = { GroundOverlaySnippet() },
             ),
             SnippetItemInfo(
               title = "2. Tile Overlay",
               description = "Displays custom styled dynamic map tile overlays.",
-              content = { TileOverlaySnippet() }
+              content = { TileOverlaySnippet() },
             ),
             SnippetItemInfo(
               title = "3. WMS Tile Overlay",
               description = "Displays tiles from a Web Map Service dynamically.",
-              content = { WmsTileOverlaySnippet() }
+              content = { WmsTileOverlaySnippet() },
             ),
             SnippetItemInfo(
               title = "4. Compose Bitmap Descriptor",
               description = "Converts a Compose Composable dynamically into a marker icon.",
-              content = { RememberComposeBitmapDescriptorSnippet() }
+              content = { RememberComposeBitmapDescriptorSnippet() },
             ),
             SnippetItemInfo(
               title = "5. Scale Bar Widget",
               description = "Overlay showing on-screen distance ratio scales based on zoom.",
-              content = { ScaleBarSnippet() }
-            )
-          )
-      )
+              content = { ScaleBarSnippet() },
+            ),
+          ),
+      ),
     )
   }
 }
