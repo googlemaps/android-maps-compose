@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.model.CameraPosition
+import com.google.maps.android.model.LatLng
 import com.google.maps.android.compose.Circle as MapsComposeCircle
 import com.google.maps.android.compose.GoogleMap as MapsComposeGoogleMap
 import com.google.maps.android.compose.MapProperties as MapsComposeMapProperties
@@ -40,8 +42,6 @@ import com.google.maps.android.compose.MarkerState as MapsComposeMarkerState
 import com.google.maps.android.compose.Polygon as MapsComposePolygon
 import com.google.maps.android.compose.Polyline as MapsComposePolyline
 import com.google.maps.android.compose.rememberCameraPositionState as rememberMapsComposeCameraPositionState
-import com.google.maps.android.model.CameraPosition
-import com.google.maps.android.model.LatLng
 
 @Composable
 internal actual fun PlatformGoogleMap(
@@ -91,6 +91,7 @@ internal actual fun PlatformGoogleMap(
             key(node) {
                 when (node) {
                     is MarkerNode -> MarkerNodeContent(node)
+
                     is PolylineNode -> MapsComposePolyline(
                         points = node.points,
                         color = node.color,
@@ -101,6 +102,7 @@ internal actual fun PlatformGoogleMap(
                         zIndex = node.zIndex,
                         onClick = { node.onClick() },
                     )
+
                     is PolygonNode -> MapsComposePolygon(
                         points = node.points,
                         holes = node.holes,
@@ -113,6 +115,7 @@ internal actual fun PlatformGoogleMap(
                         zIndex = node.zIndex,
                         onClick = { node.onClick() },
                     )
+
                     is CircleNode -> MapsComposeCircle(
                         center = node.center,
                         radius = node.radius,

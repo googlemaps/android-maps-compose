@@ -84,7 +84,7 @@ class KmpPublishingConventionPlugin : Plugin<Project> {
                     KotlinMultiplatform(
                         javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
                         sourcesJar = SourcesJar.Sources(),
-                    )
+                    ),
                 )
                 configureMapsComposePublishing(
                     project,

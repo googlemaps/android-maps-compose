@@ -62,14 +62,26 @@ public class MapProperties(
         minZoomPreference: Float = this.minZoomPreference,
         maxZoomPreference: Float = this.maxZoomPreference,
     ): MapProperties = MapProperties(
-        mapType, isMyLocationEnabled, isBuildingEnabled, isTrafficEnabled, isIndoorEnabled,
-        mapStyleJson, minZoomPreference, maxZoomPreference,
+        mapType,
+        isMyLocationEnabled,
+        isBuildingEnabled,
+        isTrafficEnabled,
+        isIndoorEnabled,
+        mapStyleJson,
+        minZoomPreference,
+        maxZoomPreference,
     )
 
     private val fields: List<Any?>
         get() = listOf(
-            mapType, isMyLocationEnabled, isBuildingEnabled, isTrafficEnabled, isIndoorEnabled,
-            mapStyleJson, minZoomPreference, maxZoomPreference,
+            mapType,
+            isMyLocationEnabled,
+            isBuildingEnabled,
+            isTrafficEnabled,
+            isIndoorEnabled,
+            mapStyleJson,
+            minZoomPreference,
+            maxZoomPreference,
         )
 
     override fun equals(other: Any?): Boolean = other is MapProperties && fields == other.fields
@@ -101,14 +113,22 @@ public class MapUiSettings(
         tiltGesturesEnabled: Boolean = this.tiltGesturesEnabled,
         zoomGesturesEnabled: Boolean = this.zoomGesturesEnabled,
     ): MapUiSettings = MapUiSettings(
-        compassEnabled, myLocationButtonEnabled, rotationGesturesEnabled, scrollGesturesEnabled,
-        tiltGesturesEnabled, zoomGesturesEnabled,
+        compassEnabled,
+        myLocationButtonEnabled,
+        rotationGesturesEnabled,
+        scrollGesturesEnabled,
+        tiltGesturesEnabled,
+        zoomGesturesEnabled,
     )
 
     private val fields: List<Any?>
         get() = listOf(
-            compassEnabled, myLocationButtonEnabled, rotationGesturesEnabled, scrollGesturesEnabled,
-            tiltGesturesEnabled, zoomGesturesEnabled,
+            compassEnabled,
+            myLocationButtonEnabled,
+            rotationGesturesEnabled,
+            scrollGesturesEnabled,
+            tiltGesturesEnabled,
+            zoomGesturesEnabled,
         )
 
     override fun equals(other: Any?): Boolean = other is MapUiSettings && fields == other.fields

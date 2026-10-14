@@ -60,9 +60,9 @@ import com.google.maps.android.model.latitude
 import com.google.maps.android.model.longitude
 import com.google.maps.android.model.target
 import com.google.maps.android.model.zoom
+import kotlinx.coroutines.launch
 import kotlin.math.round
 import kotlin.random.Random
-import kotlinx.coroutines.launch
 
 private val SanFrancisco = LatLng(37.7749, -122.4194)
 private val London = LatLng(51.5072, -0.1276)
@@ -105,12 +105,18 @@ internal fun MarkersDemo() {
                 state = rememberMarkerState(LatLng(37.8199, -122.4783)),
                 title = "Golden Gate Bridge",
                 snippet = "Tap shows this info window",
-                onClick = { taps++; false },
+                onClick = {
+                    taps++
+                    false
+                },
             )
             Marker(
                 state = rememberMarkerState(LatLng(37.8024, -122.4058)),
                 title = "Coit Tower",
-                onClick = { taps++; false },
+                onClick = {
+                    taps++
+                    false
+                },
             )
             Marker(
                 state = dragged,
@@ -280,7 +286,6 @@ internal fun MapClicksDemo() {
 private fun Double.format(): String = (round(this * 10_000) / 10_000).toString()
 
 private fun Boolean.onOff(): String = if (this) "on" else "off"
-
 
 private const val MAX_TRAIL_POINTS = 500
 

@@ -23,13 +23,13 @@ import com.google.maps.android.model.bearing
 import com.google.maps.android.model.target
 import com.google.maps.android.model.tilt
 import com.google.maps.android.model.zoom
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
-import kotlinx.coroutines.test.runTest
 
 class CameraPositionStateTest {
     private val start = CameraPosition(LatLng(37.7749, -122.4194), 12f, 30f, 90f)

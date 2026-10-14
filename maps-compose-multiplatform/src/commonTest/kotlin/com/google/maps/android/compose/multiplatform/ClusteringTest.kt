@@ -27,11 +27,7 @@ import kotlin.test.assertTrue
  * from android-maps-utils behaves the same on both.
  */
 class ClusteringTest {
-    private class Place(
-        override val title: String,
-        latitude: Double,
-        longitude: Double,
-    ) : ClusterItem {
+    private class Place(override val title: String, latitude: Double, longitude: Double) : ClusterItem {
         override val position: LatLng = LatLng(latitude, longitude)
         override val snippet: String? = null
         override val zIndex: Float? = null
