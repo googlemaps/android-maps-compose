@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 enum class ThemeOption {
     SYSTEM,
     LIGHT,
-    DARK
+    DARK,
 }
 
 /**
@@ -92,13 +92,13 @@ class LiteModeActivity : ComponentActivity() {
             MapsComposeSampleTheme(darkTheme = isDark) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
                     LiteModeScreen(
                         selectedTheme = selectedTheme,
                         onSelectTheme = { selectedTheme = it },
                         isDark = isDark,
-                        systemInDarkTheme = systemInDarkTheme
+                        systemInDarkTheme = systemInDarkTheme,
                     )
                 }
             }
@@ -145,7 +145,7 @@ fun LiteModeScreen(
     val mapProperties = remember(selectedMapType, isDark) {
         MapProperties(
             mapType = selectedMapType,
-            mapStyleOptions = if (isDark) MapStyleOptions(DARK_STYLE_JSON) else null
+            mapStyleOptions = if (isDark) MapStyleOptions(DARK_STYLE_JSON) else null,
         )
     }
 
@@ -154,7 +154,7 @@ fun LiteModeScreen(
             .fillMaxSize()
             .systemBarsPadding()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Button(
             onClick = {
@@ -163,7 +163,7 @@ fun LiteModeScreen(
                     cameraPositionState.animate(CameraUpdateFactory.newLatLng(newTarget))
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text("Animate Camera")
         }
@@ -171,55 +171,61 @@ fun LiteModeScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text("Map Type:", style = MaterialTheme.typography.labelLarge)
             FilterChip(
                 selected = selectedMapType == MapType.NORMAL,
                 onClick = { selectedMapType = MapType.NORMAL },
-                label = { Text("Normal") }
+                label = { Text("Normal") },
             )
             FilterChip(
                 selected = selectedMapType == MapType.TERRAIN,
                 onClick = { selectedMapType = MapType.TERRAIN },
-                label = { Text("Terrain") }
+                label = { Text("Terrain") },
             )
         }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text("Theme:", style = MaterialTheme.typography.labelLarge)
             FilterChip(
                 selected = selectedTheme == ThemeOption.SYSTEM,
                 onClick = { onSelectTheme(ThemeOption.SYSTEM) },
-                label = { Text("System") }
+                label = { Text("System") },
             )
             FilterChip(
                 selected = selectedTheme == ThemeOption.LIGHT,
                 onClick = { onSelectTheme(ThemeOption.LIGHT) },
-                label = { Text("Light") }
+                label = { Text("Light") },
             )
             FilterChip(
                 selected = selectedTheme == ThemeOption.DARK,
                 onClick = { onSelectTheme(ThemeOption.DARK) },
-                label = { Text("Dark") }
+                label = { Text("Dark") },
             )
         }
 
         Text(
             text = "Active: ${if (isDark) "Dark" else "Light"}" +
-                if (selectedTheme == ThemeOption.SYSTEM) " (System: ${if (systemInDarkTheme) "Dark" else "Light"})" else "",
+                if (selectedTheme ==
+                    ThemeOption.SYSTEM
+                ) {
+                    " (System: ${if (systemInDarkTheme) "Dark" else "Light"})"
+                } else {
+                    ""
+                },
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),

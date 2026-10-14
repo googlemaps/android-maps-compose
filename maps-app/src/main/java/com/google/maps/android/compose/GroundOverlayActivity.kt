@@ -15,7 +15,6 @@
 package com.google.maps.android.compose
 
 import android.os.Bundle
-import androidx.compose.ui.text.intl.Locale
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -39,12 +38,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.theme.MapsComposeSampleTheme
-import androidx.core.graphics.createBitmap
 
 class GroundOverlayActivity : ComponentActivity() {
 
@@ -83,24 +83,24 @@ fun GroundOverlayScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
+            .systemBarsPadding(),
     ) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
         ) {
             // Stable GroundOverlay (using remembered state)
             GroundOverlay(
                 position = GroundOverlayPosition.create(
                     LatLngBounds(
                         LatLng(1.35, 103.86),
-                        LatLng(1.37, 103.88)
-                    )
+                        LatLng(1.37, 103.88),
+                    ),
                 ),
                 image = imageDescriptor,
                 visible = isVisible,
                 transparency = transparency,
-                bearing = bearing
+                bearing = bearing,
             )
 
             // Stress-test GroundOverlay: Re-creating position every recomposition
@@ -109,12 +109,12 @@ fun GroundOverlayScreen() {
                 position = GroundOverlayPosition.create(
                     LatLngBounds(
                         LatLng(1.36, 103.89),
-                        LatLng(1.38, 103.91)
-                    )
+                        LatLng(1.38, 103.91),
+                    ),
                 ),
                 image = imageDescriptor,
                 transparency = 0.5f,
-                zIndex = 1f
+                zIndex = 1f,
             )
         }
 
@@ -122,7 +122,7 @@ fun GroundOverlayScreen() {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
             GroundOverlayControls(
                 isVisible = isVisible,
@@ -130,7 +130,7 @@ fun GroundOverlayScreen() {
                 transparency = transparency,
                 onTransparencyChange = { transparency = it },
                 bearing = bearing,
-                onBearingChange = { bearing = it }
+                onBearingChange = { bearing = it },
             )
         }
     }
@@ -143,13 +143,13 @@ fun GroundOverlayControls(
     transparency: Float,
     onTransparencyChange: (Float) -> Unit,
     bearing: Float,
-    onBearingChange: (Float) -> Unit
+    onBearingChange: (Float) -> Unit,
 ) {
     Surface(
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 4.dp,
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -160,13 +160,13 @@ fun GroundOverlayControls(
             Slider(
                 value = transparency,
                 onValueChange = onTransparencyChange,
-                valueRange = 0f..1f
+                valueRange = 0f..1f,
             )
             Text(text = "Bearing: ${bearing.toInt()}°")
             Slider(
                 value = bearing,
                 onValueChange = onBearingChange,
-                valueRange = 0f..360f
+                valueRange = 0f..360f,
             )
         }
     }

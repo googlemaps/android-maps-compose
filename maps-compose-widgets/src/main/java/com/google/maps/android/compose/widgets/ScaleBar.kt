@@ -52,11 +52,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.sphericalDistance
 import kotlinx.coroutines.delay
 
-internal fun calculateDistance(
-    projection: Projection,
-    width: Dp,
-    density: Density
-): Int {
+internal fun calculateDistance(projection: Projection, width: Dp, density: Density): Int {
     val widthInPixels = with(density) {
         width.toPx().toInt()
     }
@@ -106,7 +102,7 @@ public fun ScaleBar(
     }
 
     Box(
-        modifier = modifier.size(width = width, height = height)
+        modifier = modifier.size(width = width, height = height),
     ) {
         // The Canvas composable is used for custom drawing. Here, we are drawing the
         // lines of the scale bar.
@@ -130,7 +126,7 @@ public fun ScaleBar(
                     start = Offset(oneNinthWidth, midHeight),
                     end = Offset(size.width, midHeight),
                     strokeWidth = shadowStrokeWidth,
-                    cap = StrokeCap.Round
+                    cap = StrokeCap.Round,
                 )
                 // Top vertical line shadow
                 drawLine(
@@ -138,7 +134,7 @@ public fun ScaleBar(
                     start = Offset(oneNinthWidth, oneThirdHeight),
                     end = Offset(oneNinthWidth, midHeight),
                     strokeWidth = shadowStrokeWidth,
-                    cap = StrokeCap.Round
+                    cap = StrokeCap.Round,
                 )
                 // Bottom vertical line shadow
                 drawLine(
@@ -146,7 +142,7 @@ public fun ScaleBar(
                     start = Offset(oneNinthWidth, midHeight),
                     end = Offset(oneNinthWidth, twoThirdsHeight),
                     strokeWidth = shadowStrokeWidth,
-                    cap = StrokeCap.Round
+                    cap = StrokeCap.Round,
                 )
 
                 // These are the main lines of the scale bar.
@@ -157,7 +153,7 @@ public fun ScaleBar(
                     start = Offset(oneNinthWidth, midHeight),
                     end = Offset(size.width, midHeight),
                     strokeWidth = strokeWidth,
-                    cap = StrokeCap.Round
+                    cap = StrokeCap.Round,
                 )
                 // Top vertical line
                 drawLine(
@@ -165,7 +161,7 @@ public fun ScaleBar(
                     start = Offset(oneNinthWidth, oneThirdHeight),
                     end = Offset(oneNinthWidth, midHeight),
                     strokeWidth = strokeWidth,
-                    cap = StrokeCap.Round
+                    cap = StrokeCap.Round,
                 )
                 // Bottom vertical line
                 drawLine(
@@ -173,13 +169,13 @@ public fun ScaleBar(
                     start = Offset(oneNinthWidth, midHeight),
                     end = Offset(oneNinthWidth, twoThirdsHeight),
                     strokeWidth = strokeWidth,
-                    cap = StrokeCap.Round
+                    cap = StrokeCap.Round,
                 )
-            }
+            },
         )
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceAround
+            verticalArrangement = Arrangement.SpaceAround,
         ) {
             // Here, we determine the appropriate units (meters/kilometers and feet/miles)
             // based on the calculated distance in meters.
@@ -206,13 +202,13 @@ public fun ScaleBar(
                 modifier = Modifier.align(End),
                 textColor = textColor,
                 shadowColor = shadowColor,
-                text = "${imperialDistance.toInt()} $imperialUnits"
+                text = "${imperialDistance.toInt()} $imperialUnits",
             )
             ScaleText(
                 modifier = Modifier.align(End),
                 textColor = textColor,
                 shadowColor = shadowColor,
-                text = "$metricDistance $metricUnits"
+                text = "$metricDistance $metricUnits",
             )
         }
     }
@@ -267,7 +263,7 @@ public fun DisappearingScaleBar(
         visibleState = visible,
         modifier = modifier,
         enter = enterTransition,
-        exit = exitTransition
+        exit = exitTransition,
     ) {
         ScaleBar(
             width = width,
@@ -275,7 +271,7 @@ public fun DisappearingScaleBar(
             cameraPositionState = cameraPositionState,
             textColor = textColor,
             lineColor = lineColor,
-            shadowColor = shadowColor
+            shadowColor = shadowColor,
         )
     }
 }
@@ -298,9 +294,9 @@ private fun ScaleText(
             shadow = Shadow(
                 color = shadowColor,
                 offset = Offset(2f, 2f),
-                blurRadius = 1f
-            )
-        )
+                blurRadius = 1f,
+            ),
+        ),
     )
 }
 
@@ -309,18 +305,14 @@ private fun ScaleText(
  * This is a utility function used for unit conversion.
  * @return [this] meters value converted to feet
  */
-internal fun Double.toFeet(): Double {
-    return this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
-}
+internal fun Double.toFeet(): Double = this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
 
 /**
  * Converts [this] value in feet to the corresponding value in miles.
  * This is a utility function used for unit conversion.
  * @return [this] feet value converted to miles
  */
-internal fun Double.toMiles(): Double {
-    return this / FEET_IN_MILE
-}
+internal fun Double.toMiles(): Double = this / FEET_IN_MILE
 
 private const val CENTIMETERS_IN_METER: Double = 100.0
 private const val METERS_IN_KILOMETER: Double = 1000.0

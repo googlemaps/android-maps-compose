@@ -75,12 +75,7 @@ public fun MapEffect(key1: Any?, key2: Any?, block: suspend CoroutineScope.(Goog
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
-public fun MapEffect(
-    key1: Any?,
-    key2: Any?,
-    key3: Any?,
-    block: suspend CoroutineScope.(GoogleMap) -> Unit
-) {
+public fun MapEffect(key1: Any?, key2: Any?, key3: Any?, block: suspend CoroutineScope.(GoogleMap) -> Unit) {
     val map = (currentComposer.applier as MapApplier).map
     LaunchedEffect(key1 = key1, key2 = key2, key3 = key3) {
         block(map)
@@ -100,10 +95,7 @@ public fun MapEffect(
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
-public fun MapEffect(
-    vararg keys: Any?,
-    block: suspend CoroutineScope.(GoogleMap) -> Unit
-) {
+public fun MapEffect(vararg keys: Any?, block: suspend CoroutineScope.(GoogleMap) -> Unit) {
     val map = (currentComposer.applier as MapApplier).map
     LaunchedEffect(keys = keys) {
         block(map)

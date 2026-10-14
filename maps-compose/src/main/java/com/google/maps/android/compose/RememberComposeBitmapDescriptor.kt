@@ -28,16 +28,13 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.core.graphics.applyCanvas
+import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import androidx.core.graphics.createBitmap
 
 @MapsComposeExperimentalApi
 @Composable
-public fun rememberComposeBitmapDescriptor(
-    vararg keys: Any,
-    content: @Composable () -> Unit,
-): BitmapDescriptor {
+public fun rememberComposeBitmapDescriptor(vararg keys: Any, content: @Composable () -> Unit): BitmapDescriptor {
     val parent = LocalView.current as ViewGroup
     val compositionContext = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
@@ -86,7 +83,7 @@ private fun renderComposableToBitmapDescriptor(
         if (composeView.measuredWidth == 0 || composeView.measuredHeight == 0) {
             throw IllegalStateException(
                 "The ComposeView was measured to have a width or height of zero. " +
-                    "Make sure that the content has a non-zero size."
+                    "Make sure that the content has a non-zero size.",
             )
         }
 

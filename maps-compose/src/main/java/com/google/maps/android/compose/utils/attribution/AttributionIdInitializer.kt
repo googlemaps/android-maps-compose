@@ -31,12 +31,12 @@ import com.google.maps.android.compose.utils.meta.AttributionId
 internal class AttributionIdInitializer : Initializer<Unit> {
     override fun create(context: Context) {
         MapsApiSettings.addInternalUsageAttributionId(
-            /* context = */ context,
-            /* internalUsageAttributionId = */ AttributionId.VALUE
+            /* context = */
+            context,
+            /* internalUsageAttributionId = */
+            AttributionId.VALUE,
         )
     }
 
-    override fun dependencies(): List<Class<out Initializer<*>>> {
-        return emptyList()
-    }
+    override fun dependencies(): List<Class<out Initializer<*>>> = emptyList()
 }

@@ -82,7 +82,7 @@ internal class MapApplier(
                 nodeMatchPredicate = { it.circle == circle },
                 marker = circle,
                 nodeInputCallback = { onCircleClick },
-                inputHandlerCallback = { onCircleClick }
+                inputHandlerCallback = { onCircleClick },
             )
         }
         map.setOnGroundOverlayClickListener { groundOverlay ->
@@ -90,7 +90,7 @@ internal class MapApplier(
                 nodeMatchPredicate = { it.groundOverlay == groundOverlay },
                 nodeInputCallback = { onGroundOverlayClick },
                 marker = groundOverlay,
-                inputHandlerCallback = { onGroundOverlayClick }
+                inputHandlerCallback = { onGroundOverlayClick },
             )
         }
         map.setOnPolygonClickListener { polygon ->
@@ -98,7 +98,7 @@ internal class MapApplier(
                 nodeMatchPredicate = { it.polygon == polygon },
                 nodeInputCallback = { onPolygonClick },
                 marker = polygon,
-                inputHandlerCallback = { onPolygonClick }
+                inputHandlerCallback = { onPolygonClick },
             )
         }
         map.setOnPolylineClickListener { polyline ->
@@ -106,7 +106,7 @@ internal class MapApplier(
                 nodeMatchPredicate = { it.polyline == polyline },
                 nodeInputCallback = { onPolylineClick },
                 marker = polyline,
-                inputHandlerCallback = { onPolylineClick }
+                inputHandlerCallback = { onPolylineClick },
             )
         }
 
@@ -116,7 +116,7 @@ internal class MapApplier(
                 nodeMatchPredicate = { it.marker == marker },
                 marker = marker,
                 nodeInputCallback = { onMarkerClick },
-                inputHandlerCallback = { onMarkerClick }
+                inputHandlerCallback = { onMarkerClick },
             )
         }
         map.setOnInfoWindowClickListener { marker ->
@@ -124,7 +124,7 @@ internal class MapApplier(
                 nodeMatchPredicate = { it.marker == marker },
                 marker = marker,
                 nodeInputCallback = { onInfoWindowClick },
-                inputHandlerCallback = { onInfoWindowClick }
+                inputHandlerCallback = { onInfoWindowClick },
             )
         }
         map.setOnInfoWindowCloseListener { marker ->
@@ -132,7 +132,7 @@ internal class MapApplier(
                 nodeMatchPredicate = { it.marker == marker },
                 marker = marker,
                 nodeInputCallback = { onInfoWindowClose },
-                inputHandlerCallback = { onInfoWindowClose }
+                inputHandlerCallback = { onInfoWindowClose },
             )
         }
         map.setOnInfoWindowLongClickListener { marker ->
@@ -140,7 +140,7 @@ internal class MapApplier(
                 nodeMatchPredicate = { it.marker == marker },
                 marker = marker,
                 nodeInputCallback = { onInfoWindowLongClick },
-                inputHandlerCallback = { onInfoWindowLongClick }
+                inputHandlerCallback = { onInfoWindowLongClick },
             )
         }
         map.setOnMarkerDragListener(object : GoogleMap.OnMarkerDragListener {
@@ -165,7 +165,7 @@ internal class MapApplier(
                             markerState.dragState = DragState.START
                         }
                     },
-                    inputHandlerCallback = { onMarkerDragStart }
+                    inputHandlerCallback = { onMarkerDragStart },
                 )
             }
 
@@ -185,7 +185,7 @@ internal class MapApplier(
                         }
                     },
                     marker = marker,
-                    inputHandlerCallback = { onMarkerDrag }
+                    inputHandlerCallback = { onMarkerDrag },
                 )
             }
 
@@ -207,7 +207,7 @@ internal class MapApplier(
                             markerState.dragState = DragState.END
                         }
                     },
-                    inputHandlerCallback = { onMarkerDragEnd }
+                    inputHandlerCallback = { onMarkerDragEnd },
                 )
             }
         })
@@ -216,9 +216,9 @@ internal class MapApplier(
                 mapView,
                 markerNodeFinder = { marker ->
                     decorations.firstOrNull { it is MarkerNode && it.marker == marker }
-                            as MarkerNode?
-                }
-            )
+                        as MarkerNode?
+                },
+            ),
         )
     }
 }
@@ -231,7 +231,7 @@ internal class MapApplier(
 private inline fun <reified NodeT : MapNode, I, O> Iterable<MapNode>.findInputCallback(
     nodeMatchPredicate: (NodeT) -> Boolean,
     nodeInputCallback: NodeT.() -> ((I) -> O)?,
-    marker : I,
+    marker: I,
     inputHandlerCallback: InputHandlerNode.() -> ((I) -> O)?,
 ): Boolean {
     var callback: ((I) -> O)?

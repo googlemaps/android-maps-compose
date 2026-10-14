@@ -57,9 +57,7 @@ class MarkerDragEventsActivity : ComponentActivity() {
 }
 
 @Composable
-private fun GoogleMapWithMarker(
-    modifier: Modifier = Modifier,
-) {
+private fun GoogleMapWithMarker(modifier: Modifier = Modifier) {
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
     GoogleMap(
@@ -69,7 +67,7 @@ private fun GoogleMapWithMarker(
         DraggableMarker(
             onDragStart = { Log.i(TAG, "onDragStart") },
             onDragEnd = { Log.i(TAG, "onDragEnd") },
-            onDrag = { position -> Log.i(TAG, "onDrag: $position") }
+            onDrag = { position -> Log.i(TAG, "onDrag: $position") },
         )
     }
 }
@@ -82,16 +80,12 @@ private fun GoogleMapWithMarker(
  * @param onDragEnd called when marker dragging ends
  */
 @Composable
-private fun DraggableMarker(
-    onDragStart: () -> Unit = {},
-    onDrag: (LatLng) -> Unit = {},
-    onDragEnd: () -> Unit = {}
-) {
+private fun DraggableMarker(onDragStart: () -> Unit = {}, onDrag: (LatLng) -> Unit = {}, onDragEnd: () -> Unit = {}) {
     val markerState = rememberUpdatedMarkerState(position = singapore)
 
     Marker(
         state = markerState,
-        draggable = true
+        draggable = true,
     )
 
     LaunchedEffect(Unit) {
