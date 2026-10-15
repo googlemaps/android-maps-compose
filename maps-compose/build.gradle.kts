@@ -56,6 +56,12 @@ android {
             enableAndroidTestCoverage = true
         }
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 kotlin {
@@ -92,6 +98,14 @@ dependencies {
     api(libs.maps.utils.core)
 
     testImplementation(libs.test.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.maps.robolectric.shadows)
+    testImplementation(libs.mockk)
+    testImplementation(libs.androidx.test.compose.ui)
+    testImplementation(libs.androidx.activity.compose)
+    testImplementation(libs.androidx.test.core)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.espresso)
