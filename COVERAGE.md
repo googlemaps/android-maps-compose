@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `4322266` (#1035), recorded 2026-10-14T20:27:49Z.
+Measured at `cdf8b7f` (#1044), recorded 2026-10-15T16:25:46Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-15 | `cdf8b7f` | #1044 | 0.45% | 0.00 | n/a | n/a | chore(deps): bump the gradle-minor-and-patch group with 7 updates |
 | 2026-10-14 | `4322266` | #1035 | 0.45% | +0.03 | 47.43% | +0.12 | feat(clustering): propagate contentDescription to marker options for accessibility |
 | 2026-10-14 | `0bc6ecd` | #1040 | 0.42% | +0.01 | 47.31% | +0.22 | build: add Spotless with ktlint formatting checks |
 | 2026-10-09 | `85a56aa` | #1034 | 0.41% | 0.00 | 47.09% | +37.25 | ci: skip the coverage comment on pull requests from forks |
