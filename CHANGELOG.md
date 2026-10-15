@@ -1,5 +1,12 @@
 # Changelog
 
+## [9.1.0](https://github.com/googlemaps/android-maps-compose/compare/v9.0.1...v9.1.0) (2026-10-15)
+
+
+### Features
+
+* **clustering:** propagate contentDescription to marker options for accessibility ([#1035](https://github.com/googlemaps/android-maps-compose/issues/1035)) ([4322266](https://github.com/googlemaps/android-maps-compose/commit/432226652e20c48f490f56ec0f64ec6fcd0dd2f1))
+
 ## [9.0.1](https://github.com/googlemaps/android-maps-compose/compare/v9.0.0...v9.0.1) (2026-10-08)
 
 
