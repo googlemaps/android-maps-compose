@@ -51,6 +51,7 @@ import com.google.android.gms.maps.Projection
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.sphericalDistance
 import kotlinx.coroutines.delay
+import java.text.NumberFormat
 
 internal fun calculateDistance(projection: Projection, width: Dp, density: Density): Int {
     val widthInPixels = with(density) {
@@ -180,39 +181,43 @@ public fun ScaleBar(
             // Here, we determine the appropriate units (meters/kilometers and feet/miles)
             // based on the calculated distance in meters.
 
-            var metricUnits = "m"
-            var metricDistance = horizontalLineWidthMeters
-            if (horizontalLineWidthMeters > METERS_IN_KILOMETER) {
-                // Switch from meters to kilometers as unit
-                metricUnits = "km"
-                metricDistance /= METERS_IN_KILOMETER.toInt()
-            }
-
-            var imperialUnits = "ft"
-            var imperialDistance = horizontalLineWidthMeters.toDouble().toFeet()
-            if (imperialDistance > FEET_IN_MILE) {
-                // Switch from ft to miles as unit
-                imperialUnits = "mi"
-                imperialDistance = imperialDistance.toMiles()
-            }
-
             // We display the calculated distances in two Text composables, one for imperial
             // and one for metric units.
             ScaleText(
                 modifier = Modifier.align(End),
                 textColor = textColor,
                 shadowColor = shadowColor,
-                text = "${imperialDistance.toInt()} $imperialUnits",
+                text = formatImperialDistance(horizontalLineWidthMeters),
             )
             ScaleText(
                 modifier = Modifier.align(End),
                 textColor = textColor,
                 shadowColor = shadowColor,
-                text = "$metricDistance $metricUnits",
+                text = formatMetricDistance(horizontalLineWidthMeters),
             )
         }
     }
 }
+
+internal fun formatMetricDistance(meters: Int): String = if (meters >= METERS_IN_KILOMETER) {
+    "${formatScaleDistance(meters / METERS_IN_KILOMETER)} km"
+} else {
+    "$meters m"
+}
+
+internal fun formatImperialDistance(meters: Int): String {
+    val feet = meters.toDouble().toFeet()
+    return if (feet >= FEET_IN_MILE) {
+        "${formatScaleDistance(feet.toMiles())} mi"
+    } else {
+        "${feet.toInt()} ft"
+    }
+}
+
+private fun formatScaleDistance(distance: Double): String = NumberFormat.getNumberInstance().apply {
+    maximumFractionDigits = 2
+    isGroupingUsed = false
+}.format(distance)
 
 /**
  * An animated scale bar that appears when the zoom level of the map changes, and then disappears
