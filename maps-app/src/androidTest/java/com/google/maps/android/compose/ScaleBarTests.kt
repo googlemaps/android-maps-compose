@@ -29,6 +29,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
+import java.text.NumberFormat
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -75,7 +76,20 @@ class ScaleBarTests {
 
     @Test
     fun testScaleBarInitialState() {
-        val initialZoom = 15f
+        assertScaleBarLabels(initialZoom = 15f)
+    }
+
+    @Test
+    fun testScaleBarFractionalKilometers() {
+        assertScaleBarLabels(initialZoom = 12f)
+    }
+
+    @Test
+    fun testScaleBarFractionalMiles() {
+        assertScaleBarLabels(initialZoom = 10f)
+    }
+
+    private fun assertScaleBarLabels(initialZoom: Float) {
         val initialPosition = LatLng(37.7749, -122.4194) // San Francisco
         initScaleBar(initialZoom, initialPosition)
 
@@ -96,25 +110,39 @@ class ScaleBarTests {
                 }
 
                 val upperLeftLatLng = proj.fromScreenLocation(Point(0, 0))
-                val upperRightLatLng = proj.fromScreenLocation(Point(0, widthInPixels))
+                val upperRightLatLng = proj.fromScreenLocation(Point(widthInPixels, 0))
                 val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
                 val horizontalLineWidthMeters = (canvasWidthMeters * 8 / 9).toInt()
 
                 var metricUnits = "m"
-                var metricDistance = horizontalLineWidthMeters
-                if (horizontalLineWidthMeters > METERS_IN_KILOMETER) {
+                var metricDistance = horizontalLineWidthMeters.toDouble()
+                if (horizontalLineWidthMeters >= METERS_IN_KILOMETER) {
                     metricUnits = "km"
-                    metricDistance /= METERS_IN_KILOMETER.toInt()
+                    metricDistance /= METERS_IN_KILOMETER
                 }
 
                 var imperialUnits = "ft"
                 var imperialDistance = horizontalLineWidthMeters.toDouble().toFeet()
-                if (imperialDistance > FEET_IN_MILE) {
+                if (imperialDistance >= FEET_IN_MILE) {
                     imperialUnits = "mi"
                     imperialDistance = imperialDistance.toMiles()
                 }
-                imperialText = "${imperialDistance.toInt()} $imperialUnits"
-                metricText = "$metricDistance $metricUnits"
+                val numberFormat = NumberFormat.getNumberInstance().apply {
+                    maximumFractionDigits = 2
+                    isGroupingUsed = false
+                }
+                val imperialValue = if (imperialUnits == "ft") {
+                    imperialDistance.toInt().toString()
+                } else {
+                    numberFormat.format(imperialDistance)
+                }
+                val metricValue = if (metricUnits == "m") {
+                    metricDistance.toInt().toString()
+                } else {
+                    numberFormat.format(metricDistance)
+                }
+                imperialText = "$imperialValue $imperialUnits"
+                metricText = "$metricValue $metricUnits"
             } ?: fail("Projection should not be null")
         }
 
