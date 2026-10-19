@@ -18,6 +18,7 @@ package com.google.maps.android.compose
 
 import android.content.ComponentCallbacks2
 import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composition
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -172,7 +174,7 @@ public class MapApplierCleanupTest {
         val tagData = MapTagData(
             componentCallbacks = mockk<ComponentCallbacks2>(relaxed = true),
             lifecycleObserver = MapLifecycleEventObserver(mapView),
-            onAttachStateListener = {},
+            detachLifecycleObserver = {},
             onAttachStateChangeListener = mockk<View.OnAttachStateChangeListener>(relaxed = true),
             isLiteMode = false,
         )
@@ -238,7 +240,7 @@ public class MapApplierCleanupTest {
         val tagData = MapTagData(
             componentCallbacks = componentCallbacks,
             lifecycleObserver = lifecycleObserver,
-            onAttachStateListener = { attachCleanupCalled = true },
+            detachLifecycleObserver = { attachCleanupCalled = true },
             onAttachStateChangeListener = attachListener,
             isLiteMode = false,
         )
@@ -281,7 +283,7 @@ public class MapApplierCleanupTest {
         val tagData = MapTagData(
             componentCallbacks = mockk<ComponentCallbacks2>(relaxed = true),
             lifecycleObserver = lifecycleObserver,
-            onAttachStateListener = {},
+            detachLifecycleObserver = {},
             onAttachStateChangeListener = mockk<View.OnAttachStateChangeListener>(relaxed = true),
             isLiteMode = false,
         )
@@ -321,7 +323,7 @@ public class MapApplierCleanupTest {
                 val tagData = MapTagData(
                     componentCallbacks = mockk<ComponentCallbacks2>(relaxed = true),
                     lifecycleObserver = MapLifecycleEventObserver(mapView),
-                    onAttachStateListener = {},
+                    detachLifecycleObserver = {},
                     onAttachStateChangeListener = mockk<View.OnAttachStateChangeListener>(relaxed = true),
                     isLiteMode = false,
                 )
@@ -365,4 +367,36 @@ public class MapApplierCleanupTest {
                 Dispatchers.resetMain()
             }
         }
+
+    @Test
+    public fun `MapAttachStateChangeListener logs error and throws when ViewTreeLifecycleOwner is null`() {
+        mockkStatic(Log::class)
+        mockkStatic("androidx.lifecycle.ViewTreeLifecycleOwner")
+        try {
+            every { Log.e(any(), any()) } returns 0
+            val mapView = mockk<MapView>(relaxed = true)
+            every { mapView.findViewTreeLifecycleOwner() } returns null
+
+            val listener = MapAttachStateChangeListener(MapLifecycleEventObserver(mapView))
+
+            var thrown: IllegalStateException? = null
+            try {
+                listener.onViewAttachedToWindow(mapView)
+            } catch (e: IllegalStateException) {
+                thrown = e
+            }
+
+            assertThat(thrown).isNotNull()
+            assertThat(thrown!!.message).contains("ViewTreeLifecycleOwner not found for MapView")
+            verify {
+                Log.e(
+                    "GoogleMap",
+                    match { it.contains("ViewTreeLifecycleOwner not found for MapView") },
+                )
+            }
+        } finally {
+            unmockkStatic("androidx.lifecycle.ViewTreeLifecycleOwner")
+            unmockkStatic(Log::class)
+        }
+    }
 }

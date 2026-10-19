@@ -19,6 +19,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.focusable
@@ -216,30 +217,12 @@ public fun GoogleMap(
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
 
                 // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
-                val onAttachStateListener = object : View.OnAttachStateChangeListener {
-                    private var lifecycle: Lifecycle? = null
-
-                    override fun onViewAttachedToWindow(mapView: View) {
-                        lifecycle = mapView.findViewTreeLifecycleOwner()?.lifecycle?.also {
-                            it.addObserver(lifecycleObserver)
-                        }
-                    }
-
-                    override fun onViewDetachedFromWindow(v: View) {
-                        cleanup()
-                    }
-
-                    fun cleanup() {
-                        lifecycle?.removeObserver(lifecycleObserver)
-                        lifecycle = null
-                        lifecycleObserver.moveToBaseState()
-                    }
-                }
+                val onAttachStateListener = MapAttachStateChangeListener(lifecycleObserver)
 
                 mapView.tag = MapTagData(
                     componentCallbacks = componentCallbacks,
                     lifecycleObserver = lifecycleObserver,
-                    onAttachStateListener = onAttachStateListener::cleanup,
+                    detachLifecycleObserver = onAttachStateListener::cleanup,
                     onAttachStateChangeListener = onAttachStateListener,
                     isLiteMode = isLiteMode,
                 )
@@ -365,11 +348,13 @@ internal class MapUpdaterState(
     var mapColorScheme by mutableStateOf(mapColorScheme)
 }
 
+private const val TAG = "GoogleMap"
+
 /** Used to store things in the tag which must be retrievable across recompositions */
 internal class MapTagData(
     val componentCallbacks: ComponentCallbacks2,
     val lifecycleObserver: MapLifecycleEventObserver,
-    val onAttachStateListener: () -> Unit,
+    val detachLifecycleObserver: () -> Unit,
     val onAttachStateChangeListener: View.OnAttachStateChangeListener,
     val isLiteMode: Boolean,
 ) {
@@ -381,6 +366,34 @@ internal class MapTagData(
         subcompositionJob = null
         subcomposition?.dispose()
         subcomposition = null
+    }
+}
+
+internal class MapAttachStateChangeListener(private val lifecycleObserver: MapLifecycleEventObserver) :
+    View.OnAttachStateChangeListener {
+    private var lifecycle: Lifecycle? = null
+
+    override fun onViewAttachedToWindow(mapView: View) {
+        val viewTreeLifecycleOwner = mapView.findViewTreeLifecycleOwner()
+        if (viewTreeLifecycleOwner == null) {
+            val message =
+                "ViewTreeLifecycleOwner not found for MapView; cannot observe lifecycle events."
+            Log.e(TAG, message)
+            error(message)
+        }
+        lifecycle = viewTreeLifecycleOwner.lifecycle.also {
+            it.addObserver(lifecycleObserver)
+        }
+    }
+
+    override fun onViewDetachedFromWindow(v: View) {
+        cleanup()
+    }
+
+    fun cleanup() {
+        lifecycle?.removeObserver(lifecycleObserver)
+        lifecycle = null
+        lifecycleObserver.moveToBaseState()
     }
 }
 
@@ -397,7 +410,7 @@ internal fun MapView.onRelease() {
     if (tagData != null) {
         context.unregisterComponentCallbacks(tagData.componentCallbacks)
         removeOnAttachStateChangeListener(tagData.onAttachStateChangeListener)
-        tagData.onAttachStateListener()
+        tagData.detachLifecycleObserver()
         tagData.lifecycleObserver.moveToDestroyedState()
     }
     setViewTreeLifecycleOwner(null)

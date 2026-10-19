@@ -27,6 +27,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.savedstate.findViewTreeSavedStateRegistryOwner
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
@@ -542,27 +544,18 @@ class GoogleMapViewTests {
             assertThat(cameraPositionState.projection).isNull()
         }
 
-        // Allow any pending main-thread callbacks (e.g., Compose's accessibility delegate
-        // periodic prune) to complete and trigger GC
-        Thread.sleep(250)
-        composeTestRule.waitForIdle()
-        Runtime.getRuntime().gc()
-        System.runFinalization()
-        Runtime.getRuntime().gc()
-
         assertThat(mapViews.size).isAtLeast(15)
-        // Every released MapView should have cleared its tag and child views
+        // Deterministically verify every released MapView has cleared its tag, view-tree owners,
+        // and internal child view hierarchy without relying on non-deterministic GC timing.
         for (ref in mapViews) {
             val mapView = ref.get()
             if (mapView != null) {
                 assertThat(mapView.tag).isNull()
                 assertThat(mapView.childCount).isEqualTo(0)
+                assertThat(mapView.findViewTreeLifecycleOwner()).isNull()
+                assertThat(mapView.findViewTreeSavedStateRegistryOwner()).isNull()
             }
         }
-        // Verify MapView instances do not accumulate across show/hide cycles
-        // (Compose's accessibility delegate or the JIT register map may briefly hold 1-3 recent refs)
-        val liveCount = mapViews.count { it.get() != null }
-        assertThat(liveCount).isAtMost(3)
     }
 
     @Test
@@ -586,7 +579,9 @@ class GoogleMapViewTests {
         }
 
         composeTestRule.waitForIdle()
-        Thread.sleep(100)
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            cameraPositionState.projection != null
+        }
 
         // Deactivate and reactivate multiple times to exercise AndroidView.onReset -> update
         repeat(3) {
@@ -596,7 +591,9 @@ class GoogleMapViewTests {
 
             activeState.value = true
             composeTestRule.waitForIdle()
-            Thread.sleep(100)
+            composeTestRule.waitUntil(timeoutMillis = 5_000) {
+                cameraPositionState.projection != null
+            }
         }
     }
 

@@ -14,6 +14,7 @@
 
 package com.google.maps.android.compose
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.AbstractApplier
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -77,6 +78,7 @@ internal class MapApplier(
         decorations.remove(index, count)
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     internal fun attachClickListeners() {
         map.setOnCircleClickListener { circle ->
             decorations.findInputCallback<CircleNode, Circle, Unit>(
@@ -223,6 +225,7 @@ internal class MapApplier(
         )
     }
 
+    @SuppressLint("PotentialBehaviorOverride")
     internal fun detachClickListeners() {
         map.setOnCircleClickListener(null)
         map.setOnGroundOverlayClickListener(null)
