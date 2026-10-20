@@ -38,15 +38,15 @@ Measured at `a5b018c` (#1046), recorded 2026-10-20T15:28:47Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `cdf8b7f` (#1044), recorded 2026-10-15T16:25:49Z.
+Measured at `a5b018c` (#1046), recorded 2026-10-20T15:28:50Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 22/2,328 | 0.95% | `░░░░░░░░░░░░░░░░░░░░` | 0/402 | 0.00% |
-| `maps-compose` | 501/2,116 | 23.68% | `█████░░░░░░░░░░░░░░░` | 105/1,366 | 7.69% |
-| `maps-compose-utils` | 0/602 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/346 | 0.00% |
-| `maps-compose-widgets` | 10/149 | 6.71% | `█░░░░░░░░░░░░░░░░░░░` | 0/48 | 0.00% |
-| **TOTAL** | 533/5,195 | 10.26% | `██░░░░░░░░░░░░░░░░░░` | 105/2,162 | 4.86% |
+| `maps-app` | 504/2,328 | 21.65% | `████░░░░░░░░░░░░░░░░` | 80/402 | 19.90% |
+| `maps-compose` | 1,490/2,116 | 70.42% | `██████████████░░░░░░` | 556/1,370 | 40.58% |
+| `maps-compose-utils` | 364/602 | 60.47% | `████████████░░░░░░░░` | 108/346 | 31.21% |
+| `maps-compose-widgets` | 112/149 | 75.17% | `███████████████░░░░░` | 15/48 | 31.25% |
+| **TOTAL** | 2,470/5,195 | 47.55% | `██████████░░░░░░░░░░` | 759/2,166 | 35.04% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-20 | `a5b018c` | #1046 | 3.35% | +2.90 | n/a | n/a | fix: AdvancedMarker pinConfig, pending camera moves and Street View source |
+| 2026-10-20 | `a5b018c` | #1046 | 3.35% | +2.90 | 47.55% | +37.29 | fix: AdvancedMarker pinConfig, pending camera moves and Street View source |
 | 2026-10-15 | `cdf8b7f` | #1044 | 0.45% | 0.00 | 10.26% | -37.17 | chore(deps): bump the gradle-minor-and-patch group with 7 updates |
 | 2026-10-14 | `4322266` | #1035 | 0.45% | +0.03 | 47.43% | +0.12 | feat(clustering): propagate contentDescription to marker options for accessibility |
 | 2026-10-14 | `0bc6ecd` | #1040 | 0.42% | +0.01 | 47.31% | +0.22 | build: add Spotless with ktlint formatting checks |

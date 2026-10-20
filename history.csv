@@ -182,3 +182,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-20T15:28:47Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",unit,maps-compose-utils,12,554,2.17,4,424,0.94,76,6727,1.13
 2026-10-20T15:28:47Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
 2026-10-20T15:28:47Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",unit,TOTAL,89,2654,3.35,33,2300,1.43,753,33401,2.25
+2026-10-20T15:28:50Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",instrumentation,maps-app,504,2328,21.65,80,402,19.9,4818,19528,24.67
+2026-10-20T15:28:50Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",instrumentation,maps-compose,1490,2116,70.42,556,1370,40.58,10317,16283,63.36
+2026-10-20T15:28:50Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",instrumentation,maps-compose-utils,364,602,60.47,108,346,31.21,2741,4891,56.04
+2026-10-20T15:28:50Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
+2026-10-20T15:28:50Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",instrumentation,TOTAL,2470,5195,47.55,759,2166,35.04,18526,41591,44.54
