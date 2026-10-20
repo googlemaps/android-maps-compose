@@ -541,7 +541,9 @@ class GoogleMapViewTests {
             Thread.sleep(50)
             showMapState.value = false
             composeTestRule.waitForIdle()
-            assertThat(cameraPositionState.projection).isNull()
+            composeTestRule.runOnUiThread {
+                assertThat(cameraPositionState.projection).isNull()
+            }
         }
 
         assertThat(mapViews.size).isAtLeast(15)
@@ -580,19 +582,21 @@ class GoogleMapViewTests {
 
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(timeoutMillis = 5_000) {
-            cameraPositionState.projection != null
+            composeTestRule.runOnUiThread { cameraPositionState.projection != null }
         }
 
         // Deactivate and reactivate multiple times to exercise AndroidView.onReset -> update
         repeat(3) {
             activeState.value = false
             composeTestRule.waitForIdle()
-            assertThat(cameraPositionState.projection).isNull()
+            composeTestRule.runOnUiThread {
+                assertThat(cameraPositionState.projection).isNull()
+            }
 
             activeState.value = true
             composeTestRule.waitForIdle()
             composeTestRule.waitUntil(timeoutMillis = 5_000) {
-                cameraPositionState.projection != null
+                composeTestRule.runOnUiThread { cameraPositionState.projection != null }
             }
         }
     }
