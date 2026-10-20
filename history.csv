@@ -178,3 +178,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-15T16:25:49Z,cdf8b7f,1044,chore(deps): bump the gradle-minor-and-patch group with 7 updates,instrumentation,maps-compose-utils,0,602,0.0,0,346,0.0,0,4891,0.0
 2026-10-15T16:25:49Z,cdf8b7f,1044,chore(deps): bump the gradle-minor-and-patch group with 7 updates,instrumentation,maps-compose-widgets,10,149,6.71,0,48,0.0,59,889,6.64
 2026-10-15T16:25:49Z,cdf8b7f,1044,chore(deps): bump the gradle-minor-and-patch group with 7 updates,instrumentation,TOTAL,533,5195,10.26,105,2162,4.86,3584,41548,8.63
+2026-10-20T15:28:47Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",unit,maps-compose,77,1954,3.94,29,1808,1.6,677,25186,2.69
+2026-10-20T15:28:47Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",unit,maps-compose-utils,12,554,2.17,4,424,0.94,76,6727,1.13
+2026-10-20T15:28:47Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
+2026-10-20T15:28:47Z,a5b018c,1046,"fix: AdvancedMarker pinConfig, pending camera moves and Street View source",unit,TOTAL,89,2654,3.35,33,2300,1.43,753,33401,2.25
