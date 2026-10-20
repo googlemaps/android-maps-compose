@@ -90,6 +90,7 @@ public class StreetViewCameraPositionState private constructor() {
         when {
             radius != null && source != null -> panorama?.setPosition(position, radius, source)
             radius != null -> panorama?.setPosition(position, radius)
+            source != null -> panorama?.setPosition(position, source)
             else -> panorama?.setPosition(position)
         }
     }
