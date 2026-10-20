@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReusableContentHost
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
@@ -26,6 +27,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.savedstate.findViewTreeSavedStateRegistryOwner
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
@@ -39,6 +42,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.lang.ref.WeakReference
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -499,6 +503,102 @@ class GoogleMapViewTests {
         composeTestRule.onNodeWithTag("toggleMapVisibility")
             .performClick()
             .performClick()
+    }
+
+    @Test
+    fun testShowingHidingMapRepeatedlyReleasesMapViews() {
+        // Regression test for https://github.com/googlemaps/android-maps-compose/issues/581
+        val showMapState = mutableStateOf(true)
+        val mapViews = mutableListOf<WeakReference<MapView>>()
+        lateinit var markerState: MarkerState
+
+        composeTestRule.setContent {
+            markerState = rememberUpdatedMarkerState(position = startingPosition)
+            if (showMapState.value) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    mapViewFactory = { context, options ->
+                        MapView(context, options).also {
+                            mapViews.add(WeakReference(it))
+                        }
+                    },
+                ) {
+                    MarkerInfoWindowContent(
+                        state = markerState,
+                        title = "Test",
+                    ) {
+                        Text("Test Info")
+                    }
+                }
+            }
+        }
+
+        // Toggle visibility repeatedly (including rapid cycles before and after map initialization)
+        repeat(15) {
+            showMapState.value = true
+            composeTestRule.waitForIdle()
+            Thread.sleep(50)
+            showMapState.value = false
+            composeTestRule.waitForIdle()
+            composeTestRule.runOnUiThread {
+                assertThat(cameraPositionState.projection).isNull()
+            }
+        }
+
+        assertThat(mapViews.size).isAtLeast(15)
+        // Deterministically verify every released MapView has cleared its tag, view-tree owners,
+        // and internal child view hierarchy without relying on non-deterministic GC timing.
+        for (ref in mapViews) {
+            val mapView = ref.get()
+            if (mapView != null) {
+                assertThat(mapView.tag).isNull()
+                assertThat(mapView.childCount).isEqualTo(0)
+                assertThat(mapView.findViewTreeLifecycleOwner()).isNull()
+                assertThat(mapView.findViewTreeSavedStateRegistryOwner()).isNull()
+            }
+        }
+    }
+
+    @Test
+    fun testReusableContentHostResetAndReuse() {
+        val activeState = mutableStateOf(true)
+        lateinit var markerState: MarkerState
+
+        composeTestRule.setContent {
+            markerState = rememberUpdatedMarkerState(position = startingPosition)
+            ReusableContentHost(active = activeState.value) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                ) {
+                    Marker(
+                        state = markerState,
+                        title = "Reusable Marker",
+                    )
+                }
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread { cameraPositionState.projection != null }
+        }
+
+        // Deactivate and reactivate multiple times to exercise AndroidView.onReset -> update
+        repeat(3) {
+            activeState.value = false
+            composeTestRule.waitForIdle()
+            composeTestRule.runOnUiThread {
+                assertThat(cameraPositionState.projection).isNull()
+            }
+
+            activeState.value = true
+            composeTestRule.waitForIdle()
+            composeTestRule.waitUntil(timeoutMillis = 5_000) {
+                composeTestRule.runOnUiThread { cameraPositionState.projection != null }
+            }
+        }
     }
 
     @Test
