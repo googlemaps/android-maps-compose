@@ -191,3 +191,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-20T22:32:42Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,unit,maps-compose-utils,12,554,2.17,4,424,0.94,76,6727,1.13
 2026-10-20T22:32:42Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
 2026-10-20T22:32:42Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,unit,TOTAL,311,2706,11.49,69,2322,2.97,2307,33573,6.87
+2026-10-20T22:32:46Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,instrumentation,maps-app,505,2328,21.69,80,402,19.9,4821,19528,24.69
+2026-10-20T22:32:46Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,instrumentation,maps-compose,1552,2178,71.26,569,1392,40.88,10513,16469,63.84
+2026-10-20T22:32:46Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,instrumentation,maps-compose-utils,364,602,60.47,108,346,31.21,2741,4891,56.04
+2026-10-20T22:32:46Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
+2026-10-20T22:32:46Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,instrumentation,TOTAL,2533,5257,48.18,772,2188,35.28,18725,41777,44.82
