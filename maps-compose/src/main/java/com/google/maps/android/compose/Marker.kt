@@ -1030,10 +1030,8 @@ private fun AdvancedMarkerImpl(
 
             if (iconView != null) {
                 advancedMarkerOptions.iconView(iconView)
-            } else if (pinConfig != null) {
-                advancedMarkerOptions.icon(BitmapDescriptorFactory.fromPinConfig(pinConfig))
-            } else if (icon != null) {
-                advancedMarkerOptions.icon(icon)
+            } else {
+                advancedMarkerIcon(pinConfig, icon)?.let { advancedMarkerOptions.icon(it) }
             }
             advancedMarkerOptions.contentDescription(contentDescription)
             advancedMarkerOptions.alpha(alpha)
@@ -1090,20 +1088,16 @@ private fun AdvancedMarkerImpl(
                     this.marker.showInfoWindow()
                 }
             }
+            // Both blocks resolve the icon with the same precedence as the factory, so that
+            // a null icon never overwrites a non-null pinConfig.
             update(pinConfig) {
-                if (icon == null && iconView == null) {
-                    this.marker.setIcon(
-                        pinConfig?.let { it1 ->
-                            BitmapDescriptorFactory.fromPinConfig(
-                                it1,
-                            )
-                        },
-                    )
+                if (iconView == null) {
+                    this.marker.setIcon(advancedMarkerIcon(it, icon))
                 }
             }
             update(icon) {
                 if (iconView == null) {
-                    this.marker.setIcon(it)
+                    this.marker.setIcon(advancedMarkerIcon(pinConfig, it))
                 }
             }
 
@@ -1112,3 +1106,13 @@ private fun AdvancedMarkerImpl(
         },
     )
 }
+
+/**
+ * Resolves the icon of an advanced marker that has no icon view: [pinConfig] takes precedence
+ * over [icon].
+ */
+internal fun advancedMarkerIcon(
+    pinConfig: PinConfig?,
+    icon: BitmapDescriptor?,
+    fromPinConfig: (PinConfig) -> BitmapDescriptor = BitmapDescriptorFactory::fromPinConfig,
+): BitmapDescriptor? = pinConfig?.let(fromPinConfig) ?: icon

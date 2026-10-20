@@ -144,6 +144,10 @@ public class CameraPositionState private constructor(
             synchronized(lock) {
                 val map = map
                 if (map == null) {
+                    // An explicit position overrides any pending move or animation.
+                    movementOwner = null
+                    onMapChanged?.onCancelLocked()
+                    onMapChanged = null
                     rawPosition = value
                 } else {
                     map.moveCamera(CameraUpdateFactory.newCameraPosition(value))
