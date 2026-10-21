@@ -26,7 +26,7 @@ import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileProvider
 import com.google.maps.android.addTileOverlay
 
-private class TileOverlayNode(
+internal class TileOverlayNode(
     var tileOverlay: TileOverlay,
     var tileOverlayState: TileOverlayState,
     var onTileOverlayClick: (TileOverlay) -> Unit,
@@ -35,6 +35,11 @@ private class TileOverlayNode(
         tileOverlayState.tileOverlay = tileOverlay
     }
     override fun onRemoved() {
+        tileOverlayState.tileOverlay = null
+        tileOverlay.remove()
+    }
+    override fun onCleared() {
+        tileOverlayState.tileOverlay = null
         tileOverlay.remove()
     }
 }

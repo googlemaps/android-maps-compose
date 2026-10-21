@@ -79,11 +79,20 @@ internal class MapPropertiesNode(
     }
 
     override fun onRemoved() {
-        cameraPositionState.setMap(null)
+        clearMapReferences()
     }
 
     override fun onCleared() {
+        clearMapReferences()
+    }
+
+    private fun clearMapReferences() {
         cameraPositionState.setMap(null)
+        map.setOnCameraIdleListener(null)
+        map.setOnCameraMoveCanceledListener(null)
+        map.setOnCameraMoveStartedListener(null)
+        map.setOnCameraMoveListener(null)
+        map.setLocationSource(null)
     }
 }
 
