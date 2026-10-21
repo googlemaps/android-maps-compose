@@ -14,12 +14,12 @@
 
 package com.google.maps.android.compose
 
-import android.content.ComponentCallbacks
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.focusable
@@ -60,6 +60,7 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -168,7 +169,6 @@ public fun GoogleMap(
 
     val parentComposition = rememberCompositionContext()
     val currentContent by rememberUpdatedState(content)
-    var subcompositionJob by remember { mutableStateOf<Job?>(null) }
     val parentCompositionScope = rememberCoroutineScope()
 
     AndroidView(
@@ -216,48 +216,37 @@ public fun GoogleMap(
 
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
 
+                // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
+                val onAttachStateListener = MapAttachStateChangeListener(lifecycleObserver)
+
                 mapView.tag = MapTagData(
-                    componentCallbacks,
-                    lifecycleObserver,
+                    componentCallbacks = componentCallbacks,
+                    lifecycleObserver = lifecycleObserver,
+                    detachLifecycleObserver = onAttachStateListener::cleanup,
+                    onAttachStateChangeListener = onAttachStateListener,
                     isLiteMode = isLiteMode,
                 )
-
-                // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
-                val onAttachStateListener = object : View.OnAttachStateChangeListener {
-                    private var lifecycle: Lifecycle? = null
-
-                    override fun onViewAttachedToWindow(mapView: View) {
-                        lifecycle = mapView.findViewTreeLifecycleOwner()!!.lifecycle.also {
-                            it.addObserver(lifecycleObserver)
-                        }
-                    }
-
-                    override fun onViewDetachedFromWindow(v: View) {
-                        lifecycle?.removeObserver(lifecycleObserver)
-                        lifecycle = null
-                        lifecycleObserver.moveToBaseState()
-                    }
-                }
 
                 mapView.addOnAttachStateChangeListener(onAttachStateListener)
             }
         },
-        onReset = { /* View is detached. */ },
+        onReset = { mapView ->
+            mapView.onReset()
+        },
         onRelease = { mapView ->
-            val (componentCallbacks, lifecycleObserver) = mapView.tagData
-            mapView.context.unregisterComponentCallbacks(componentCallbacks)
-            lifecycleObserver.moveToDestroyedState()
-            mapView.tag = null
+            mapView.onRelease()
         },
         update = { mapView ->
             mapView.applyFocusability(focusable)
             mapView.setViewTreeLifecycleOwner(lifecycleOwner)
             mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
-            if (subcompositionJob == null) {
-                subcompositionJob = parentCompositionScope.launchSubcomposition(
+            val tagData = mapView.tagDataOrNull
+            if (tagData != null && tagData.subcompositionJob == null) {
+                tagData.subcompositionJob = parentCompositionScope.launchSubcomposition(
                     mapUpdaterState,
                     parentComposition,
                     mapView,
+                    tagData,
                     mapClickListeners,
                     currentContent,
                 )
@@ -287,10 +276,11 @@ private fun MapView.applyFocusability(focusable: Boolean) {
  * Create and apply the [content] compositions to the map +
  * dispose the [Composition] when the parent composable is disposed.
  * */
-private fun CoroutineScope.launchSubcomposition(
+internal fun CoroutineScope.launchSubcomposition(
     mapUpdaterState: MapUpdaterState,
     parentComposition: CompositionContext,
     mapView: MapView,
+    tagData: MapTagData,
     mapClickListeners: MapClickListeners,
     content:
     @Composable @GoogleMapComposable
@@ -298,19 +288,23 @@ private fun CoroutineScope.launchSubcomposition(
 ): Job {
     // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
     return launch(
-        context = Dispatchers.Main,
+        context = Dispatchers.Main.immediate,
         start = CoroutineStart.UNDISPATCHED,
     ) {
         val map = mapView.awaitMap()
+        if (!isActive || mapView.tagDataOrNull !== tagData) {
+            return@launch
+        }
         val composition = Composition(
             applier = MapApplier(
                 map,
                 mapView,
                 mapClickListeners,
-                isLiteMode = mapView.tagData.isLiteMode,
+                isLiteMode = tagData.isLiteMode,
             ),
             parent = parentComposition,
         )
+        tagData.subcomposition = composition
 
         try {
             composition.setContent {
@@ -325,6 +319,9 @@ private fun CoroutineScope.launchSubcomposition(
             }
             awaitCancellation()
         } finally {
+            if (tagData.subcomposition === composition) {
+                tagData.subcomposition = null
+            }
             composition.dispose()
         }
     }
@@ -351,15 +348,76 @@ internal class MapUpdaterState(
     var mapColorScheme by mutableStateOf(mapColorScheme)
 }
 
-/** Used to store things in the tag which must be retrievable across recompositions */
-private data class MapTagData(
-    val componentCallbacks: ComponentCallbacks,
-    val lifecycleObserver: MapLifecycleEventObserver,
-    val isLiteMode: Boolean,
-)
+private const val TAG = "GoogleMap"
 
-private val MapView.tagData: MapTagData
-    get() = tag as MapTagData
+/** Used to store things in the tag which must be retrievable across recompositions */
+internal class MapTagData(
+    val componentCallbacks: ComponentCallbacks2,
+    val lifecycleObserver: MapLifecycleEventObserver,
+    val detachLifecycleObserver: () -> Unit,
+    val onAttachStateChangeListener: View.OnAttachStateChangeListener,
+    val isLiteMode: Boolean,
+) {
+    var subcompositionJob: Job? = null
+    var subcomposition: Composition? = null
+
+    fun disposeSubcomposition() {
+        subcompositionJob?.cancel()
+        subcompositionJob = null
+        subcomposition?.dispose()
+        subcomposition = null
+    }
+}
+
+internal class MapAttachStateChangeListener(private val lifecycleObserver: MapLifecycleEventObserver) :
+    View.OnAttachStateChangeListener {
+    private var lifecycle: Lifecycle? = null
+
+    override fun onViewAttachedToWindow(mapView: View) {
+        val viewTreeLifecycleOwner = mapView.findViewTreeLifecycleOwner()
+        if (viewTreeLifecycleOwner == null) {
+            val message =
+                "ViewTreeLifecycleOwner not found for MapView; cannot observe lifecycle events."
+            Log.e(TAG, message)
+            error(message)
+        }
+        lifecycle = viewTreeLifecycleOwner.lifecycle.also {
+            it.addObserver(lifecycleObserver)
+        }
+    }
+
+    override fun onViewDetachedFromWindow(v: View) {
+        cleanup()
+    }
+
+    fun cleanup() {
+        lifecycle?.removeObserver(lifecycleObserver)
+        lifecycle = null
+        lifecycleObserver.moveToBaseState()
+    }
+}
+
+internal val MapView.tagDataOrNull: MapTagData?
+    get() = tag as? MapTagData
+
+internal fun MapView.onReset() {
+    tagDataOrNull?.disposeSubcomposition()
+}
+
+internal fun MapView.onRelease() {
+    val tagData = tagDataOrNull
+    tagData?.disposeSubcomposition()
+    if (tagData != null) {
+        context.unregisterComponentCallbacks(tagData.componentCallbacks)
+        removeOnAttachStateChangeListener(tagData.onAttachStateChangeListener)
+        tagData.detachLifecycleObserver()
+        tagData.lifecycleObserver.moveToDestroyedState()
+    }
+    setViewTreeLifecycleOwner(null)
+    setViewTreeSavedStateRegistryOwner(null)
+    removeAllViews()
+    tag = null
+}
 
 public typealias GoogleMapFactory = @Composable () -> Unit
 
@@ -398,7 +456,7 @@ public fun googleMapFactory(
     }
 }
 
-private class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
+internal class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
     private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
