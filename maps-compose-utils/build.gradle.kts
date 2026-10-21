@@ -50,6 +50,10 @@ android {
             enableAndroidTestCoverage = true
         }
     }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 kotlin {
@@ -94,5 +98,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.utils)
 
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
     testImplementation(libs.test.junit)
 }
