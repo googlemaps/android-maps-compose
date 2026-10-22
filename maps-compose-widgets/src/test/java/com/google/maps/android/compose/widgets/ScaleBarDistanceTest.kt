@@ -14,25 +14,10 @@
 
 package com.google.maps.android.compose.widgets
 
-import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
-import java.util.Locale
 
 internal class ScaleBarDistanceTest {
-    private val originalLocale = Locale.getDefault()
-
-    @Before
-    fun setUp() {
-        Locale.setDefault(Locale.US)
-    }
-
-    @After
-    fun tearDown() {
-        Locale.setDefault(originalLocale)
-    }
-
     @Test
     fun metricDistancePreservesFractionalKilometers() {
         assertEquals("1.9 km", formatMetricDistance(1900))
@@ -61,9 +46,19 @@ internal class ScaleBarDistanceTest {
     }
 
     @Test
-    fun fractionalDistancesUseLocaleDecimalSeparator() {
-        Locale.setDefault(Locale.GERMANY)
-        assertEquals("1,9 km", formatMetricDistance(1900))
-        assertEquals("1,24 mi", formatImperialDistance(2000))
+    fun largeDistancesRoundToWholeUnits() {
+        assertEquals("10 km", formatMetricDistance(10_400))
+        assertEquals("12 km", formatMetricDistance(11_600))
+        assertEquals("10 mi", formatImperialDistance(16_100))
+        assertEquals("3457 km", formatMetricDistance(3_456_780))
+    }
+
+    @Test
+    fun fractionalDistancesTrimZerosAndRoundAtBoundaries() {
+        assertEquals("1.05 km", formatMetricDistance(1050))
+        assertEquals("10 km", formatMetricDistance(9999))
+        assertEquals("9.99 km", formatMetricDistance(9990))
+        assertEquals("3 ft", formatImperialDistance(1))
+        assertEquals("7 ft", formatImperialDistance(2))
     }
 }

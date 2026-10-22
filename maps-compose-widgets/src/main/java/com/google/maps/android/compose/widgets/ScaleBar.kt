@@ -51,7 +51,7 @@ import com.google.android.gms.maps.Projection
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.sphericalDistance
 import kotlinx.coroutines.delay
-import java.text.NumberFormat
+import kotlin.math.roundToInt
 
 internal fun calculateDistance(projection: Projection, width: Dp, density: Density): Int {
     val widthInPixels = with(density) {
@@ -178,9 +178,6 @@ public fun ScaleBar(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceAround,
         ) {
-            // Here, we determine the appropriate units (meters/kilometers and feet/miles)
-            // based on the calculated distance in meters.
-
             // We display the calculated distances in two Text composables, one for imperial
             // and one for metric units.
             ScaleText(
@@ -210,14 +207,23 @@ internal fun formatImperialDistance(meters: Int): String {
     return if (feet >= FEET_IN_MILE) {
         "${formatScaleDistance(feet.toMiles())} mi"
     } else {
-        "${feet.toInt()} ft"
+        "${feet.roundToInt()} ft"
     }
 }
 
-private fun formatScaleDistance(distance: Double): String = NumberFormat.getNumberInstance().apply {
-    maximumFractionDigits = 2
-    isGroupingUsed = false
-}.format(distance)
+private fun formatScaleDistance(distance: Double): String {
+    if (distance >= 10.0) {
+        return distance.roundToInt().toString()
+    }
+    val scaled = (distance * 100.0).roundToInt()
+    val whole = scaled / 100
+    val remainder = scaled % 100
+    return when {
+        remainder == 0 -> "$whole"
+        remainder % 10 == 0 -> "$whole.${remainder / 10}"
+        else -> "$whole.${remainder.toString().padStart(2, '0')}"
+    }
+}
 
 /**
  * An animated scale bar that appears when the zoom level of the map changes, and then disappears
