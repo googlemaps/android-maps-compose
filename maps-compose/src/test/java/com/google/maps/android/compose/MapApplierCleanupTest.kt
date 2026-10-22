@@ -33,11 +33,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.StreetViewPanoramaView
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.common.truth.Truth.assertThat
+import com.google.maps.android.compose.streetview.componentCallbacks2
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -398,5 +400,41 @@ public class MapApplierCleanupTest {
             unmockkStatic("androidx.lifecycle.ViewTreeLifecycleOwner")
             unmockkStatic(Log::class)
         }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    public fun `MapView componentCallbacks2 only calls onLowMemory for UI_HIDDEN and higher`() {
+        val mapView = mockk<MapView>(relaxed = true)
+        val callbacks = mapView.componentCallbacks2()
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE)
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
+        verify(exactly = 0) { mapView.onLowMemory() }
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
+        verify(exactly = 1) { mapView.onLowMemory() }
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND)
+        verify(exactly = 2) { mapView.onLowMemory() }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    public fun `StreetViewPanoramaView componentCallbacks2 only calls onLowMemory for UI_HIDDEN and higher`() {
+        val streetView = mockk<StreetViewPanoramaView>(relaxed = true)
+        val callbacks = streetView.componentCallbacks2()
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE)
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
+        verify(exactly = 0) { streetView.onLowMemory() }
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
+        verify(exactly = 1) { streetView.onLowMemory() }
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND)
+        verify(exactly = 2) { streetView.onLowMemory() }
     }
 }

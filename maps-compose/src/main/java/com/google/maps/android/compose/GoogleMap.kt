@@ -197,21 +197,7 @@ public fun GoogleMap(
                 mapView.setViewTreeLifecycleOwner(lifecycleOwner)
                 mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
 
-                val componentCallbacks = object : ComponentCallbacks2 {
-                    override fun onConfigurationChanged(newConfig: Configuration) {}
-
-                    @Deprecated(
-                        "Deprecated in Java",
-                        ReplaceWith("onTrimMemory(level)"),
-                    )
-                    override fun onLowMemory() {
-                        mapView.onLowMemory()
-                    }
-
-                    override fun onTrimMemory(level: Int) {
-                        mapView.onLowMemory()
-                    }
-                }
+                val componentCallbacks = mapView.componentCallbacks2()
                 context.registerComponentCallbacks(componentCallbacks)
 
                 val lifecycleObserver = MapLifecycleEventObserver(mapView)
@@ -394,6 +380,24 @@ internal class MapAttachStateChangeListener(private val lifecycleObserver: MapLi
         lifecycle?.removeObserver(lifecycleObserver)
         lifecycle = null
         lifecycleObserver.moveToBaseState()
+    }
+}
+
+internal fun MapView.componentCallbacks2(): ComponentCallbacks2 = object : ComponentCallbacks2 {
+    override fun onConfigurationChanged(newConfig: Configuration) {}
+
+    @Deprecated(
+        "Deprecated in Java",
+        ReplaceWith("onTrimMemory(level)"),
+    )
+    override fun onLowMemory() {
+        this@componentCallbacks2.onLowMemory()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            this@componentCallbacks2.onLowMemory()
+        }
     }
 }
 
