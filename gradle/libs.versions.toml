@@ -32,7 +32,7 @@ materialIconsExtendedAndroid = "1.7.8"
 mapsecrets = "2.0.1"
 mapsutils = "6.0.0"
 # Multiplatform modules from the android-maps-utils KMP branch, published as snapshots.
-mapsutilsKmp = "6.1.0-SNAPSHOT"
+mapsutilsKmp = "6.2.0-SNAPSHOT"
 composeMultiplatform = "1.12.1"
 
 # Testing
