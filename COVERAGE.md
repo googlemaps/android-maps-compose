@@ -38,15 +38,15 @@ Measured at `366fe16` (#1052), recorded 2026-10-23T15:30:01Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `61f8b5b` (#1037), recorded 2026-10-23T13:42:26Z.
+Measured at `366fe16` (#1052), recorded 2026-10-23T15:30:07Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 217/2,388 | 9.09% | `██░░░░░░░░░░░░░░░░░░` | 21/422 | 4.98% |
-| `maps-compose` | 1,117/2,178 | 51.29% | `██████████░░░░░░░░░░` | 399/1,392 | 28.66% |
-| `maps-compose-utils` | 254/759 | 33.47% | `███████░░░░░░░░░░░░░` | 87/470 | 18.51% |
-| `maps-compose-widgets` | 10/149 | 6.71% | `█░░░░░░░░░░░░░░░░░░░` | 0/48 | 0.00% |
-| **TOTAL** | 1,598/5,474 | 29.19% | `██████░░░░░░░░░░░░░░` | 507/2,332 | 21.74% |
+| `maps-app` | 504/2,388 | 21.11% | `████░░░░░░░░░░░░░░░░` | 80/422 | 18.96% |
+| `maps-compose` | 1,554/2,178 | 71.35% | `██████████████░░░░░░` | 569/1,392 | 40.88% |
+| `maps-compose-utils` | 413/759 | 54.41% | `███████████░░░░░░░░░` | 142/470 | 30.21% |
+| `maps-compose-widgets` | 112/149 | 75.17% | `███████████████░░░░░` | 15/48 | 31.25% |
+| **TOTAL** | 2,583/5,474 | 47.19% | `█████████░░░░░░░░░░░` | 806/2,332 | 34.56% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-23 | `366fe16` | #1052 | 12.14% | 0.00 | n/a | n/a | ci: add workflow to publish -SNAPSHOT builds to Maven Central |
+| 2026-10-23 | `366fe16` | #1052 | 12.14% | 0.00 | 47.19% | +18.00 | ci: add workflow to publish -SNAPSHOT builds to Maven Central |
 | 2026-10-23 | `61f8b5b` | #1037 | 12.14% | +0.65 | 29.19% | +14.52 | feat(clustering): add incremental item diffing |
 | 2026-10-23 | `b3fb4a3` | #1050 | 11.49% | 0.00 | 14.67% | -33.51 | chore(deps): bump the gradle-minor-and-patch group with 2 updates |
 | 2026-10-20 | `229ad8e` | #1039 | 11.49% | +8.14 | 48.18% | +0.63 | fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map |
