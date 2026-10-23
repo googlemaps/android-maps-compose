@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `b3fb4a3` (#1050), recorded 2026-10-23T13:05:13Z.
+Measured at `61f8b5b` (#1037), recorded 2026-10-23T13:42:23Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-compose` | 299/2,006 | 14.91% | `███░░░░░░░░░░░░░░░░░` | 65/1,830 | 3.55% |
-| `maps-compose-utils` | 12/554 | 2.17% | `░░░░░░░░░░░░░░░░░░░░` | 4/424 | 0.94% |
+| `maps-compose-utils` | 38/624 | 6.09% | `█░░░░░░░░░░░░░░░░░░░` | 21/470 | 4.47% |
 | `maps-compose-widgets` | 0/146 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/68 | 0.00% |
-| **TOTAL** | 311/2,706 | 11.49% | `██░░░░░░░░░░░░░░░░░░` | 69/2,322 | 2.97% |
+| **TOTAL** | 337/2,776 | 12.14% | `██░░░░░░░░░░░░░░░░░░` | 86/2,368 | 3.63% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-23 | `61f8b5b` | #1037 | 12.14% | +0.65 | n/a | n/a | feat(clustering): add incremental item diffing |
 | 2026-10-23 | `b3fb4a3` | #1050 | 11.49% | 0.00 | 14.67% | -33.51 | chore(deps): bump the gradle-minor-and-patch group with 2 updates |
 | 2026-10-20 | `229ad8e` | #1039 | 11.49% | +8.14 | 48.18% | +0.63 | fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map |
 | 2026-10-20 | `a5b018c` | #1046 | 3.35% | +2.90 | 47.55% | +37.29 | fix: AdvancedMarker pinConfig, pending camera moves and Street View source |
