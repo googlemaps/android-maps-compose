@@ -100,7 +100,7 @@ class GoogleMapFocusTraversalTests {
                     Modifier
                         .testTag("Item1")
                         .size(48.dp)
-                        .focusable()
+                        .focusable(),
                 )
                 GoogleMap(
                     modifier = Modifier
@@ -112,7 +112,7 @@ class GoogleMapFocusTraversalTests {
                     Modifier
                         .testTag("Item2")
                         .size(48.dp)
-                        .focusable()
+                        .focusable(),
                 )
             }
         }

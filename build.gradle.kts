@@ -35,6 +35,27 @@ plugins {
     alias(libs.plugins.versions)
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.spotless)
+}
+
+spotless {
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/build/**")
+        ktlint().editorConfigOverride(
+            mapOf(
+                "indent_size" to "4",
+                "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
+                "max_line_length" to "120",
+                // Keep existing names such as `timeout2` and `private val TAG` (no renames in a formatting-only change).
+                "ktlint_standard_property-naming" to "disabled",
+                // Keep existing file names such as `MapsInLazyColumnTest.kt` (class is `MapsInLazyColumnTests`).
+                "ktlint_standard_filename" to "disabled",
+            ),
+        )
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 val projectArtifactId by extra { project: Project ->

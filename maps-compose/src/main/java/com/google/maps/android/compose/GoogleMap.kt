@@ -14,12 +14,12 @@
 
 package com.google.maps.android.compose
 
-import android.content.ComponentCallbacks
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.focusable
@@ -54,13 +54,13 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapColorScheme
 import com.google.android.gms.maps.model.PointOfInterest
-
 import com.google.maps.android.awaitMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -114,7 +114,9 @@ public fun GoogleMap(
     contentPadding: PaddingValues = DefaultMapContentPadding,
     mapColorScheme: ComposeMapColorScheme? = ComposeMapColorScheme.FOLLOW_SYSTEM,
     mapViewFactory: (Context, GoogleMapOptions) -> MapView = ::MapView,
-    content: @Composable @GoogleMapComposable () -> Unit = {},
+    content:
+    @Composable @GoogleMapComposable
+    () -> Unit = {},
 ) {
     // When in preview, early return a Box with the received modifier preserving layout
     if (LocalInspectionMode.current) {
@@ -143,125 +145,114 @@ public fun GoogleMap(
         it.onPOIClick = onPOIClick
     }
 
-        val mapUpdaterState = remember {
-            MapUpdaterState(
-                mergeDescendants,
-                contentDescription,
-                cameraPositionState,
-                contentPadding,
-                locationSource,
-                properties,
-                uiSettings,
-                mapColorScheme?.value,
-            )
-        }.also {
-            it.mergeDescendants = mergeDescendants
-            it.contentDescription = contentDescription
-            it.cameraPositionState = cameraPositionState
-            it.contentPadding = contentPadding
-            it.locationSource = locationSource
-            it.mapProperties = properties
-            it.mapUiSettings = uiSettings
-            it.mapColorScheme = mapColorScheme?.value
-        }
+    val mapUpdaterState = remember {
+        MapUpdaterState(
+            mergeDescendants,
+            contentDescription,
+            cameraPositionState,
+            contentPadding,
+            locationSource,
+            properties,
+            uiSettings,
+            mapColorScheme?.value,
+        )
+    }.also {
+        it.mergeDescendants = mergeDescendants
+        it.contentDescription = contentDescription
+        it.cameraPositionState = cameraPositionState
+        it.contentPadding = contentPadding
+        it.locationSource = locationSource
+        it.mapProperties = properties
+        it.mapUiSettings = uiSettings
+        it.mapColorScheme = mapColorScheme?.value
+    }
 
-        val parentComposition = rememberCompositionContext()
-        val currentContent by rememberUpdatedState(content)
-        var subcompositionJob by remember { mutableStateOf<Job?>(null) }
-        val parentCompositionScope = rememberCoroutineScope()
+    val parentComposition = rememberCompositionContext()
+    val currentContent by rememberUpdatedState(content)
+    val parentCompositionScope = rememberCoroutineScope()
 
-        AndroidView(
-            // Make the AndroidView wrapper focusable in Compose so the Compose focus
-            // system can target it during tab traversal, unless the caller opted the map
-            // out of focus traversal entirely.
-            modifier = if (focusable) modifier.focusable() else modifier,
-            factory = { context ->
-                val baseOptions = googleMapOptionsFactory()
-                val isLiteMode = baseOptions.liteMode == true
-                // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
-                // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
-                // apply it to GoogleMapOptions so MapView is created with it.
-                // Lite mode does not support color schemes, and older Play services throw
-                // UnsupportedOperationException for it, so it is never applied there (#1028).
-                val applyColorScheme =
-                    mapColorScheme != null && baseOptions.mapColorScheme == 0 && !isLiteMode
-                val options = if (applyColorScheme) {
-                    baseOptions.mapColorScheme(mapColorScheme.value)
-                } else {
-                    baseOptions
-                }
-                cameraPositionState.isLiteMode = isLiteMode
-                mapViewFactory(context, options).also { mapView ->
-                    mapView.applyFocusability(focusable)
-                    mapView.setViewTreeLifecycleOwner(lifecycleOwner)
-                    mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
-
-                    val componentCallbacks = object : ComponentCallbacks2 {
-                        override fun onConfigurationChanged(newConfig: Configuration) {}
-
-                        @Deprecated(
-                            "Deprecated in Java",
-                            ReplaceWith("onTrimMemory(level)")
-                        )
-                        override fun onLowMemory() {
-                            mapView.onLowMemory()
-                        }
-
-                        override fun onTrimMemory(level: Int) {
-                            mapView.onLowMemory()
-                        }
-                    }
-                    context.registerComponentCallbacks(componentCallbacks)
-
-                    val lifecycleObserver = MapLifecycleEventObserver(mapView)
-
-                    mapView.tag = MapTagData(
-                        componentCallbacks,
-                        lifecycleObserver,
-                        isLiteMode = isLiteMode,
-                    )
-
-                    // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
-                    val onAttachStateListener = object : View.OnAttachStateChangeListener {
-                        private var lifecycle: Lifecycle? = null
-
-                        override fun onViewAttachedToWindow(mapView: View) {
-                            lifecycle = mapView.findViewTreeLifecycleOwner()!!.lifecycle.also {
-                                it.addObserver(lifecycleObserver)
-                            }
-                        }
-
-                        override fun onViewDetachedFromWindow(v: View) {
-                            lifecycle?.removeObserver(lifecycleObserver)
-                            lifecycle = null
-                            lifecycleObserver.moveToBaseState()
-                        }
-                    }
-
-                    mapView.addOnAttachStateChangeListener(onAttachStateListener)
-                }
-            },
-            onReset = { /* View is detached. */ },
-            onRelease = { mapView ->
-                val (componentCallbacks, lifecycleObserver) = mapView.tagData
-                mapView.context.unregisterComponentCallbacks(componentCallbacks)
-                lifecycleObserver.moveToDestroyedState()
-                mapView.tag = null
-            },
-            update = { mapView ->
+    AndroidView(
+        // Make the AndroidView wrapper focusable in Compose so the Compose focus
+        // system can target it during tab traversal, unless the caller opted the map
+        // out of focus traversal entirely.
+        modifier = if (focusable) modifier.focusable() else modifier,
+        factory = { context ->
+            val baseOptions = googleMapOptionsFactory()
+            val isLiteMode = baseOptions.liteMode == true
+            // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
+            // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
+            // apply it to GoogleMapOptions so MapView is created with it.
+            // Lite mode does not support color schemes, and older Play services throw
+            // UnsupportedOperationException for it, so it is never applied there (#1028).
+            val applyColorScheme =
+                mapColorScheme != null && baseOptions.mapColorScheme == 0 && !isLiteMode
+            val options = if (applyColorScheme) {
+                baseOptions.mapColorScheme(mapColorScheme.value)
+            } else {
+                baseOptions
+            }
+            cameraPositionState.isLiteMode = isLiteMode
+            mapViewFactory(context, options).also { mapView ->
                 mapView.applyFocusability(focusable)
                 mapView.setViewTreeLifecycleOwner(lifecycleOwner)
                 mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
-                if (subcompositionJob == null) {
-                    subcompositionJob = parentCompositionScope.launchSubcomposition(
-                        mapUpdaterState,
-                        parentComposition,
-                        mapView,
-                        mapClickListeners,
-                        currentContent,
+
+                val componentCallbacks = object : ComponentCallbacks2 {
+                    override fun onConfigurationChanged(newConfig: Configuration) {}
+
+                    @Deprecated(
+                        "Deprecated in Java",
+                        ReplaceWith("onTrimMemory(level)"),
                     )
+                    override fun onLowMemory() {
+                        mapView.onLowMemory()
+                    }
+
+                    override fun onTrimMemory(level: Int) {
+                        mapView.onLowMemory()
+                    }
                 }
-            })
+                context.registerComponentCallbacks(componentCallbacks)
+
+                val lifecycleObserver = MapLifecycleEventObserver(mapView)
+
+                // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
+                val onAttachStateListener = MapAttachStateChangeListener(lifecycleObserver)
+
+                mapView.tag = MapTagData(
+                    componentCallbacks = componentCallbacks,
+                    lifecycleObserver = lifecycleObserver,
+                    detachLifecycleObserver = onAttachStateListener::cleanup,
+                    onAttachStateChangeListener = onAttachStateListener,
+                    isLiteMode = isLiteMode,
+                )
+
+                mapView.addOnAttachStateChangeListener(onAttachStateListener)
+            }
+        },
+        onReset = { mapView ->
+            mapView.onReset()
+        },
+        onRelease = { mapView ->
+            mapView.onRelease()
+        },
+        update = { mapView ->
+            mapView.applyFocusability(focusable)
+            mapView.setViewTreeLifecycleOwner(lifecycleOwner)
+            mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
+            val tagData = mapView.tagDataOrNull
+            if (tagData != null && tagData.subcompositionJob == null) {
+                tagData.subcompositionJob = parentCompositionScope.launchSubcomposition(
+                    mapUpdaterState,
+                    parentComposition,
+                    mapView,
+                    tagData,
+                    mapClickListeners,
+                    currentContent,
+                )
+            }
+        },
+    )
 }
 
 /**
@@ -285,28 +276,35 @@ private fun MapView.applyFocusability(focusable: Boolean) {
  * Create and apply the [content] compositions to the map +
  * dispose the [Composition] when the parent composable is disposed.
  * */
-private fun CoroutineScope.launchSubcomposition(
+internal fun CoroutineScope.launchSubcomposition(
     mapUpdaterState: MapUpdaterState,
     parentComposition: CompositionContext,
     mapView: MapView,
+    tagData: MapTagData,
     mapClickListeners: MapClickListeners,
-    content: @Composable @GoogleMapComposable () -> Unit,
+    content:
+    @Composable @GoogleMapComposable
+    () -> Unit,
 ): Job {
     // Use [CoroutineStart.UNDISPATCHED] to kick off GoogleMap loading immediately
     return launch(
-        context = Dispatchers.Main,
-        start = CoroutineStart.UNDISPATCHED
+        context = Dispatchers.Main.immediate,
+        start = CoroutineStart.UNDISPATCHED,
     ) {
         val map = mapView.awaitMap()
+        if (!isActive || mapView.tagDataOrNull !== tagData) {
+            return@launch
+        }
         val composition = Composition(
             applier = MapApplier(
                 map,
                 mapView,
                 mapClickListeners,
-                isLiteMode = mapView.tagData.isLiteMode,
+                isLiteMode = tagData.isLiteMode,
             ),
-            parent = parentComposition
+            parent = parentComposition,
         )
+        tagData.subcomposition = composition
 
         try {
             composition.setContent {
@@ -316,11 +314,14 @@ private fun CoroutineScope.launchSubcomposition(
 
                 CompositionLocalProvider(
                     LocalCameraPositionState provides mapUpdaterState.cameraPositionState,
-                    content
+                    content,
                 )
             }
             awaitCancellation()
         } finally {
+            if (tagData.subcomposition === composition) {
+                tagData.subcomposition = null
+            }
             composition.dispose()
         }
     }
@@ -347,15 +348,76 @@ internal class MapUpdaterState(
     var mapColorScheme by mutableStateOf(mapColorScheme)
 }
 
-/** Used to store things in the tag which must be retrievable across recompositions */
-private data class MapTagData(
-    val componentCallbacks: ComponentCallbacks,
-    val lifecycleObserver: MapLifecycleEventObserver,
-    val isLiteMode: Boolean,
-)
+private const val TAG = "GoogleMap"
 
-private val MapView.tagData: MapTagData
-    get() = tag as MapTagData
+/** Used to store things in the tag which must be retrievable across recompositions */
+internal class MapTagData(
+    val componentCallbacks: ComponentCallbacks2,
+    val lifecycleObserver: MapLifecycleEventObserver,
+    val detachLifecycleObserver: () -> Unit,
+    val onAttachStateChangeListener: View.OnAttachStateChangeListener,
+    val isLiteMode: Boolean,
+) {
+    var subcompositionJob: Job? = null
+    var subcomposition: Composition? = null
+
+    fun disposeSubcomposition() {
+        subcompositionJob?.cancel()
+        subcompositionJob = null
+        subcomposition?.dispose()
+        subcomposition = null
+    }
+}
+
+internal class MapAttachStateChangeListener(private val lifecycleObserver: MapLifecycleEventObserver) :
+    View.OnAttachStateChangeListener {
+    private var lifecycle: Lifecycle? = null
+
+    override fun onViewAttachedToWindow(mapView: View) {
+        val viewTreeLifecycleOwner = mapView.findViewTreeLifecycleOwner()
+        if (viewTreeLifecycleOwner == null) {
+            val message =
+                "ViewTreeLifecycleOwner not found for MapView; cannot observe lifecycle events."
+            Log.e(TAG, message)
+            error(message)
+        }
+        lifecycle = viewTreeLifecycleOwner.lifecycle.also {
+            it.addObserver(lifecycleObserver)
+        }
+    }
+
+    override fun onViewDetachedFromWindow(v: View) {
+        cleanup()
+    }
+
+    fun cleanup() {
+        lifecycle?.removeObserver(lifecycleObserver)
+        lifecycle = null
+        lifecycleObserver.moveToBaseState()
+    }
+}
+
+internal val MapView.tagDataOrNull: MapTagData?
+    get() = tag as? MapTagData
+
+internal fun MapView.onReset() {
+    tagDataOrNull?.disposeSubcomposition()
+}
+
+internal fun MapView.onRelease() {
+    val tagData = tagDataOrNull
+    tagData?.disposeSubcomposition()
+    if (tagData != null) {
+        context.unregisterComponentCallbacks(tagData.componentCallbacks)
+        removeOnAttachStateChangeListener(tagData.onAttachStateChangeListener)
+        tagData.detachLifecycleObserver()
+        tagData.lifecycleObserver.moveToDestroyedState()
+    }
+    setViewTreeLifecycleOwner(null)
+    setViewTreeSavedStateRegistryOwner(null)
+    removeAllViews()
+    tag = null
+}
 
 public typealias GoogleMapFactory = @Composable () -> Unit
 
@@ -373,36 +435,35 @@ public fun googleMapFactory(
     modifier: Modifier = Modifier,
     cameraPositionState: CameraPositionState = rememberCameraPositionState(),
     onMapLoaded: () -> Unit = {},
-    content: @Composable () -> Unit = {}
-): GoogleMapFactory {
-    return {
-        val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
-        val mapProperties by remember {
-            mutableStateOf(MapProperties(mapType = MapType.NORMAL))
-        }
+    content: @Composable () -> Unit = {},
+): GoogleMapFactory = {
+    val uiSettings by remember { mutableStateOf(MapUiSettings(compassEnabled = false)) }
+    val mapProperties by remember {
+        mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+    }
 
-        val mapVisible by remember { mutableStateOf(true) }
+    val mapVisible by remember { mutableStateOf(true) }
 
-        if (mapVisible) {
-            GoogleMap(
-                modifier = modifier,
-                cameraPositionState = cameraPositionState,
-                properties = mapProperties,
-                uiSettings = uiSettings,
-                onMapLoaded = onMapLoaded,
-                content = content
-            )
-        }
+    if (mapVisible) {
+        GoogleMap(
+            modifier = modifier,
+            cameraPositionState = cameraPositionState,
+            properties = mapProperties,
+            uiSettings = uiSettings,
+            onMapLoaded = onMapLoaded,
+            content = content,
+        )
     }
 }
 
-private class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
+internal class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
     private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             // [mapView.onDestroy] is only invoked from AndroidView->onRelease.
             Lifecycle.Event.ON_DESTROY -> moveToBaseState()
+
             else -> moveToLifecycleState(event.targetState)
         }
     }
@@ -468,5 +529,5 @@ private class MapLifecycleEventObserver(private val mapView: MapView) : Lifecycl
 public enum class ComposeMapColorScheme(public val value: Int) {
     LIGHT(MapColorScheme.LIGHT),
     DARK(MapColorScheme.DARK),
-    FOLLOW_SYSTEM(MapColorScheme.FOLLOW_SYSTEM);
+    FOLLOW_SYSTEM(MapColorScheme.FOLLOW_SYSTEM),
 }

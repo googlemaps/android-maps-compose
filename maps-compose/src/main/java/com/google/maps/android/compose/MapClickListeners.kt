@@ -75,7 +75,7 @@ internal class MapClickListeners {
 internal class MapClickListenerNode<L : Any>(
     private val map: GoogleMap,
     private val setter: GoogleMap.(L?) -> Unit,
-    private val listener: L
+    private val listener: L,
 ) : MapNode {
     override fun onAttached() = setListener(listener)
     override fun onRemoved() = setListener(null)
@@ -96,12 +96,11 @@ internal fun MapClickListenerUpdater() {
                 callback,
                 GoogleMap::setOnIndoorStateChangeListener,
                 object : OnIndoorStateChangeListener {
-                    override fun onIndoorBuildingFocused() =
-                        callback().onIndoorBuildingFocused()
+                    override fun onIndoorBuildingFocused() = callback().onIndoorBuildingFocused()
 
                     override fun onIndoorLevelActivated(building: IndoorBuilding) =
                         callback().onIndoorLevelActivated(building)
-                }
+                },
             )
         }
 
@@ -109,7 +108,7 @@ internal fun MapClickListenerUpdater() {
             MapClickListenerComposeNode(
                 callback,
                 GoogleMap::setOnMapClickListener,
-                OnMapClickListener { callback()?.invoke(it) }
+                OnMapClickListener { callback()?.invoke(it) },
             )
         }
 
@@ -117,7 +116,7 @@ internal fun MapClickListenerUpdater() {
             MapClickListenerComposeNode(
                 callback,
                 GoogleMap::setOnMapLongClickListener,
-                OnMapLongClickListener { callback()?.invoke(it) }
+                OnMapLongClickListener { callback()?.invoke(it) },
             )
         }
 
@@ -125,7 +124,7 @@ internal fun MapClickListenerUpdater() {
             MapClickListenerComposeNode(
                 callback,
                 GoogleMap::setOnMapLoadedCallback,
-                OnMapLoadedCallback { callback()?.invoke() }
+                OnMapLoadedCallback { callback()?.invoke() },
             )
         }
 
@@ -133,7 +132,7 @@ internal fun MapClickListenerUpdater() {
             MapClickListenerComposeNode(
                 callback,
                 GoogleMap::setOnMyLocationButtonClickListener,
-                OnMyLocationButtonClickListener { callback()?.invoke() ?: false }
+                OnMyLocationButtonClickListener { callback()?.invoke() ?: false },
             )
         }
 
@@ -141,7 +140,7 @@ internal fun MapClickListenerUpdater() {
             MapClickListenerComposeNode(
                 callback,
                 GoogleMap::setOnMyLocationClickListener,
-                OnMyLocationClickListener { callback()?.invoke(it) }
+                OnMyLocationClickListener { callback()?.invoke(it) },
             )
         }
 
@@ -149,7 +148,7 @@ internal fun MapClickListenerUpdater() {
             MapClickListenerComposeNode(
                 callback,
                 GoogleMap::setOnPoiClickListener,
-                OnPoiClickListener { callback()?.invoke(it) }
+                OnPoiClickListener { callback()?.invoke(it) },
             )
         }
     }
@@ -170,11 +169,7 @@ internal fun MapClickListenerUpdater() {
  */
 @Composable
 @NonRestartableComposable
-private fun <L : Any> MapClickListenerComposeNode(
-    callback: () -> Any?,
-    setter: GoogleMap.(L?) -> Unit,
-    listener: L
-) {
+private fun <L : Any> MapClickListenerComposeNode(callback: () -> Any?, setter: GoogleMap.(L?) -> Unit, listener: L) {
     val mapApplier = currentComposer.applier as MapApplier
 
     MapClickListenerComposeNode(callback) { MapClickListenerNode(mapApplier.map, setter, listener) }
@@ -182,10 +177,7 @@ private fun <L : Any> MapClickListenerComposeNode(
 
 @Composable
 @GoogleMapComposable
-private fun MapClickListenerComposeNode(
-    callback: () -> Any?,
-    factory: () -> MapClickListenerNode<*>
-) {
+private fun MapClickListenerComposeNode(callback: () -> Any?, factory: () -> MapClickListenerNode<*>) {
     // Setting a GoogleMap listener may have side effects, so we unset it as needed.
     // However, the listener is reset only when the corresponding callback lambda
     // toggles between null and non-null. This is to avoid potential performance problems

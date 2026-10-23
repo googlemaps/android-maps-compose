@@ -65,29 +65,26 @@ import kotlin.reflect.KClass
  * @param title The title of the activity group.
  * @param activities The list of activities belonging to this group.
  */
-sealed class ActivityGroup(
-    @StringRes val title: Int,
-    val activities: List<Activity>
-) {
+sealed class ActivityGroup(@StringRes val title: Int, val activities: List<Activity>) {
     object MapTypes : ActivityGroup(
         R.string.map_types_title,
         listOf(
             Activity(
                 R.string.basic_map_activity,
                 R.string.basic_map_activity_description,
-                BasicMapActivity::class
+                BasicMapActivity::class,
             ),
             Activity(
                 R.string.lite_mode_activity,
                 R.string.lite_mode_activity_description,
-                LiteModeActivity::class
+                LiteModeActivity::class,
             ),
             Activity(
                 R.string.street_view_activity,
                 R.string.street_view_activity_description,
-                StreetViewActivity::class
+                StreetViewActivity::class,
             ),
-        )
+        ),
     )
 
     object MapFeatures : ActivityGroup(
@@ -96,39 +93,39 @@ sealed class ActivityGroup(
             Activity(
                 R.string.location_tracking_activity,
                 R.string.location_tracking_activity_description,
-                LocationTrackingActivity::class
+                LocationTrackingActivity::class,
             ),
             Activity(
                 R.string.scale_bar_activity,
                 R.string.scale_bar_activity_description,
-                ScaleBarActivity::class
+                ScaleBarActivity::class,
             ),
             Activity(
                 R.string.custom_controls_activity,
                 R.string.custom_controls_activity_description,
-                CustomControlsActivity::class
+                CustomControlsActivity::class,
             ),
             Activity(
                 R.string.accessibility_activity,
                 R.string.accessibility_activity_description,
-                AccessibilityActivity::class
+                AccessibilityActivity::class,
             ),
             Activity(
                 R.string.tile_overlay_activity,
                 R.string.tile_overlay_activity_description,
-                TileOverlayActivity::class
+                TileOverlayActivity::class,
             ),
             Activity(
                 R.string.wms_tile_overlay_activity,
                 R.string.wms_tile_overlay_activity_description,
-                WmsTileOverlayActivity::class
+                WmsTileOverlayActivity::class,
             ),
             Activity(
                 R.string.ground_overlay_activity,
                 R.string.ground_overlay_activity_description,
-                GroundOverlayActivity::class
+                GroundOverlayActivity::class,
             ),
-        )
+        ),
     )
 
     object Markers : ActivityGroup(
@@ -137,44 +134,44 @@ sealed class ActivityGroup(
             Activity(
                 R.string.advanced_markers_activity,
                 R.string.advanced_markers_activity_description,
-                AdvancedMarkersActivity::class
+                AdvancedMarkersActivity::class,
             ),
             Activity(
                 R.string.marker_clustering_activity,
                 R.string.marker_clustering_activity_description,
-                MarkerClusteringActivity::class
+                MarkerClusteringActivity::class,
             ),
             Activity(
                 R.string.marker_clustering_rotation_activity,
                 R.string.marker_clustering_rotation_activity_description,
-                MarkerClusteringRotationActivity::class
+                MarkerClusteringRotationActivity::class,
             ),
             Activity(
                 R.string.marker_drag_events_activity,
                 R.string.marker_drag_events_activity_description,
-                MarkerDragEventsActivity::class
+                MarkerDragEventsActivity::class,
             ),
             Activity(
                 R.string.markers_collection_activity,
                 R.string.markers_collection_activity_description,
-                MarkersCollectionActivity::class
+                MarkersCollectionActivity::class,
             ),
             Activity(
                 R.string.syncing_draggable_marker_with_data_model_activity,
                 R.string.syncing_draggable_marker_with_data_model_activity_description,
-                SyncingDraggableMarkerWithDataModelActivity::class
+                SyncingDraggableMarkerWithDataModelActivity::class,
             ),
             Activity(
                 R.string.updating_no_drag_marker_with_data_model_activity,
                 R.string.updating_no_drag_marker_with_data_model_activity_description,
-                UpdatingNoDragMarkerWithDataModelActivity::class
+                UpdatingNoDragMarkerWithDataModelActivity::class,
             ),
             Activity(
                 R.string.draggable_markers_collection_with_polygon_activity,
                 R.string.draggable_markers_collection_with_polygon_activity_description,
-                DraggableMarkersCollectionWithPolygonActivity::class
+                DraggableMarkersCollectionWithPolygonActivity::class,
             ),
-        )
+        ),
     )
 
     object UIIntegration : ActivityGroup(
@@ -183,19 +180,19 @@ sealed class ActivityGroup(
             Activity(
                 R.string.map_in_column_activity,
                 R.string.map_in_column_activity_description,
-                MapInColumnActivity::class
+                MapInColumnActivity::class,
             ),
             Activity(
                 R.string.maps_in_lazy_column_activity,
                 R.string.maps_in_lazy_column_activity_description,
-                MapsInLazyColumnActivity::class
+                MapsInLazyColumnActivity::class,
             ),
             Activity(
                 R.string.fragment_demo_activity,
                 R.string.fragment_demo_activity_description,
-                FragmentDemoActivity::class
+                FragmentDemoActivity::class,
             ),
-        )
+        ),
     )
 
     object Performance : ActivityGroup(
@@ -204,9 +201,9 @@ sealed class ActivityGroup(
             Activity(
                 R.string.recomposition_activity,
                 R.string.recomposition_activity_description,
-                RecompositionActivity::class
+                RecompositionActivity::class,
             ),
-        )
+        ),
     )
 }
 
@@ -221,7 +218,7 @@ sealed class ActivityGroup(
 data class Activity(
     @StringRes val title: Int,
     @StringRes val description: Int,
-    val kClass: KClass<out ComponentActivity>
+    val kClass: KClass<out ComponentActivity>,
 )
 
 /**
@@ -255,9 +252,7 @@ internal fun demoTestTag(activity: Activity): String = "demo:${activity.kClass.j
  *                        allows the navigation logic to be decoupled from the UI.
  */
 @Composable
-fun DemoList(
-    onActivityClick: (KClass<out ComponentActivity>) -> Unit
-) {
+fun DemoList(onActivityClick: (KClass<out ComponentActivity>) -> Unit) {
     // Tracks the currently expanded group to ensure only one is open at a time,
     // creating a clean, accordion-style user interface.
     var expandedGroup by remember { mutableStateOf<ActivityGroup?>(null) }
@@ -274,7 +269,7 @@ fun DemoList(
                 // Animate the visibility of the activities within the group.
                 AnimatedVisibility(visible = isExpanded) {
                     Column(
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
                     ) {
                         // Create a card for each activity in the group.
                         group.activities.forEach { activity ->
@@ -288,16 +283,13 @@ fun DemoList(
 }
 
 @Composable
-private fun DemoActivityItem(
-    onActivityClick: (KClass<out ComponentActivity>) -> Unit,
-    activity: Activity
-) {
+private fun DemoActivityItem(onActivityClick: (KClass<out ComponentActivity>) -> Unit, activity: Activity) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .testTag(demoTestTag(activity))
-            .clickable { onActivityClick(activity.kClass) }
+            .clickable { onActivityClick(activity.kClass) },
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = stringResource(activity.title), fontWeight = FontWeight.Bold)
@@ -307,11 +299,7 @@ private fun DemoActivityItem(
 }
 
 @Composable
-private fun GroupHeaderItem(
-    group: ActivityGroup,
-    isExpanded: Boolean,
-    onGroupClicked: () -> Unit = {}
-) {
+private fun GroupHeaderItem(group: ActivityGroup, isExpanded: Boolean, onGroupClicked: () -> Unit = {}) {
     Card(
         // Highlight the card when it's expanded.
         colors = if (isExpanded) {
@@ -325,16 +313,16 @@ private fun GroupHeaderItem(
             .testTag(groupTestTag(group))
             .clickable {
                 onGroupClicked()
-            }
+            },
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(group.title),
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
             // Show an up or down arrow to indicate the expanded/collapsed state.
             Icon(
@@ -343,7 +331,7 @@ private fun GroupHeaderItem(
                 } else {
                     Icons.Default.KeyboardArrowDown
                 },
-                contentDescription = null
+                contentDescription = null,
             )
         }
     }

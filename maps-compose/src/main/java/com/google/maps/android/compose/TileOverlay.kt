@@ -26,15 +26,20 @@ import com.google.android.gms.maps.model.TileOverlay
 import com.google.android.gms.maps.model.TileProvider
 import com.google.maps.android.addTileOverlay
 
-private class TileOverlayNode(
+internal class TileOverlayNode(
     var tileOverlay: TileOverlay,
     var tileOverlayState: TileOverlayState,
-    var onTileOverlayClick: (TileOverlay) -> Unit
+    var onTileOverlayClick: (TileOverlay) -> Unit,
 ) : MapNode {
     override fun onAttached() {
         tileOverlayState.tileOverlay = tileOverlay
     }
     override fun onRemoved() {
+        tileOverlayState.tileOverlay = null
+        tileOverlay.remove()
+    }
+    override fun onCleared() {
+        tileOverlayState.tileOverlay = null
         tileOverlay.remove()
     }
 }
@@ -114,7 +119,7 @@ public fun TileOverlay(
             update(transparency) { this.tileOverlay.transparency = it }
             update(visible) { this.tileOverlay.isVisible = it }
             update(zIndex) { this.tileOverlay.zIndex = it }
-        }
+        },
     )
 }
 
@@ -151,6 +156,4 @@ public class TileOverlayState private constructor() {
 }
 
 @Composable
-public fun rememberTileOverlayState(): TileOverlayState {
-    return remember { TileOverlayState() }
-}
+public fun rememberTileOverlayState(): TileOverlayState = remember { TileOverlayState() }

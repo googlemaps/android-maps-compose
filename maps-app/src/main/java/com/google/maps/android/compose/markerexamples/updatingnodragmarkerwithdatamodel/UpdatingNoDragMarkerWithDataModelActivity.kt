@@ -101,10 +101,7 @@ class UpdatingNoDragMarkerWithDataModelActivity : ComponentActivity() {
 }
 
 @Composable
-private fun GoogleMapWithSimpleMarker(
-    locationData: LocationData,
-    modifier: Modifier = Modifier,
-) {
+private fun GoogleMapWithSimpleMarker(locationData: LocationData, modifier: Modifier = Modifier) {
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
     GoogleMap(
@@ -122,14 +119,11 @@ private fun GoogleMapWithSimpleMarker(
  * and can update Marker [position] via recomposition.
  */
 @Composable
-fun Marker(
-    position: LatLng,
-    onClick: () -> Boolean = { false },
-) {
+fun Marker(position: LatLng, onClick: () -> Boolean = { false }) {
     val markerState = rememberUpdatedMarkerState(position = position)
 
     Marker(
         state = markerState,
-        onClick = { onClick() }
+        onClick = { onClick() },
     )
 }

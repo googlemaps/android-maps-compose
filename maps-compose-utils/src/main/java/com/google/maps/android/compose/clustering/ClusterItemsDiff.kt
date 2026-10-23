@@ -16,11 +16,7 @@
 
 package com.google.maps.android.compose.clustering
 
-internal data class ClusterItemsDiff<T>(
-    val added: List<T>,
-    val removed: List<T>,
-    val updated: List<Pair<T, T>>,
-) {
+internal data class ClusterItemsDiff<T>(val added: List<T>, val removed: List<T>, val updated: List<Pair<T, T>>) {
     val hasChanges: Boolean
         get() = added.isNotEmpty() || removed.isNotEmpty() || updated.isNotEmpty()
 }
@@ -41,10 +37,7 @@ internal fun <T : Any> clusterItemsByKey(
     return keyedItems
 }
 
-internal fun <T, K> diffClusterItems(
-    previousItems: Map<K, T>,
-    currentItems: Map<K, T>,
-): ClusterItemsDiff<T> {
+internal fun <T, K> diffClusterItems(previousItems: Map<K, T>, currentItems: Map<K, T>): ClusterItemsDiff<T> {
     val added = mutableListOf<T>()
     val removed = mutableListOf<T>()
     val updated = mutableListOf<Pair<T, T>>()

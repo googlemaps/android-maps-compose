@@ -70,7 +70,7 @@ public class MapUiSettings(
         scrollGesturesEnabledDuringRotateOrZoom,
         tiltGesturesEnabled,
         zoomControlsEnabled,
-        zoomGesturesEnabled
+        zoomGesturesEnabled,
     )
 
     public fun copy(
@@ -83,7 +83,7 @@ public class MapUiSettings(
         scrollGesturesEnabledDuringRotateOrZoom: Boolean = this.scrollGesturesEnabledDuringRotateOrZoom,
         tiltGesturesEnabled: Boolean = this.tiltGesturesEnabled,
         zoomControlsEnabled: Boolean = this.zoomControlsEnabled,
-        zoomGesturesEnabled: Boolean = this.zoomGesturesEnabled
+        zoomGesturesEnabled: Boolean = this.zoomGesturesEnabled,
     ): MapUiSettings = MapUiSettings(
         compassEnabled = compassEnabled,
         indoorLevelPickerEnabled = indoorLevelPickerEnabled,
@@ -94,6 +94,6 @@ public class MapUiSettings(
         scrollGesturesEnabledDuringRotateOrZoom = scrollGesturesEnabledDuringRotateOrZoom,
         tiltGesturesEnabled = tiltGesturesEnabled,
         zoomControlsEnabled = zoomControlsEnabled,
-        zoomGesturesEnabled = zoomGesturesEnabled
+        zoomGesturesEnabled = zoomGesturesEnabled,
     )
 }

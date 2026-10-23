@@ -77,8 +77,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
 import com.google.maps.android.compose.singapore
 import com.google.maps.android.compose.singapore2
-import kotlin.random.Random
 import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 private val TAG = MarkerClusteringActivity::class.simpleName
 
@@ -106,7 +106,7 @@ fun GoogleMapClustering() {
     }
     Box(
         modifier = Modifier.fillMaxSize()
-            .systemBarsPadding()
+            .systemBarsPadding(),
     ) {
         GoogleMapClustering(items = items)
     }
@@ -141,12 +141,16 @@ fun GoogleMapClustering(items: List<MyItem>) {
 }
 
 @Composable
-private fun ClusteringMap(content: @Composable @GoogleMapComposable () -> Unit) {
+private fun ClusteringMap(
+    content:
+    @Composable @GoogleMapComposable
+    () -> Unit,
+) {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = rememberCameraPositionState {
             position = CameraPosition.fromLatLngZoom(singapore2, 6f)
-        }
+        },
     ) {
         content()
         MarkerInfoWindow(
@@ -154,7 +158,7 @@ private fun ClusteringMap(content: @Composable @GoogleMapComposable () -> Unit) 
             onClick = {
                 Log.d(TAG, "Non-cluster marker clicked! $it")
                 true
-            }
+            },
         )
     }
 }
@@ -164,19 +168,21 @@ private fun ClusteringMap(content: @Composable @GoogleMapComposable () -> Unit) 
 private fun KeyedDiffClustering(modifier: Modifier = Modifier) {
     val keyedItems = remember {
         mutableStateListOf<MyItem>().apply {
-            addAll(List(5_000) { index ->
-                val row = index / 100
-                val column = index % 100
-                MyItem(
-                    position = LatLng(
-                        singapore2.latitude + (row - 25) * 0.001f,
-                        singapore2.longitude + (column - 50) * 0.001f,
-                    ),
-                    title = "item-$index",
-                    snippet = "Frequently updated keyed cluster item",
-                    zIndex = 0f,
-                )
-            })
+            addAll(
+                List(5_000) { index ->
+                    val row = index / 100
+                    val column = index % 100
+                    MyItem(
+                        position = LatLng(
+                            singapore2.latitude + (row - 25) * 0.001f,
+                            singapore2.longitude + (column - 50) * 0.001f,
+                        ),
+                        title = "item-$index",
+                        snippet = "Frequently updated keyed cluster item",
+                        zIndex = 0f,
+                    )
+                },
+            )
         }
     }
     var updateCount by remember { mutableIntStateOf(0) }
@@ -195,7 +201,7 @@ private fun KeyedDiffClustering(modifier: Modifier = Modifier) {
                     position = LatLng(
                         item.position.latitude + direction * 0.0002,
                         item.position.longitude + direction * 0.0002,
-                    )
+                    ),
                 )
             }
             lastUpdatedItemIndex = (nextItemIndex - 1) % keyedItems.size
@@ -221,7 +227,7 @@ private fun KeyedDiffClustering(modifier: Modifier = Modifier) {
                 Text("Keyed diff demo: 5,000 items; 100 updates / 500 ms")
                 Text(
                     "Update $updateCount · ${managerItems.size} items · " +
-                        "item $lastUpdatedItemIndex at ${lastUpdatedItem?.position}"
+                        "item $lastUpdatedItemIndex at ${lastUpdatedItem?.position}",
                 )
             }
         }
@@ -246,7 +252,7 @@ private fun DefaultClustering(items: List<MyItem>) {
             Log.d(TAG, "Cluster item info window clicked! $it")
         },
         // Optional: Custom rendering for non-clustered items
-        clusterItemContent = null
+        clusterItemContent = null,
     )
 }
 
@@ -283,7 +289,7 @@ private fun CustomUiClustering(items: List<MyItem>) {
             if (isSelected) {
                 ClusteringMarkerProperties(
                     anchor = Offset(0.5f, 0.5f),
-                    zIndex = 1.0f
+                    zIndex = 1.0f,
                 )
             }
             CircleContent(
@@ -313,8 +319,8 @@ fun CustomRendererClustering(items: List<MyItem>) {
     clusterManager?.setAlgorithm(
         NonHierarchicalViewBasedAlgorithm(
             screenWidth.value.toInt(),
-            screenHeight.value.toInt()
-        )
+            screenHeight.value.toInt(),
+        ),
     )
     val renderer = rememberClusterRenderer(
         clusterContent = { cluster ->
@@ -360,7 +366,6 @@ fun CustomRendererClustering(items: List<MyItem>) {
             clusterManager = clusterManager,
         )
     }
-
 }
 
 @OptIn(MapsComposeExperimentalApi::class)
@@ -374,46 +379,39 @@ private fun DecorationsClustering(items: List<MyItem>) {
                 radius = 10000.0,
                 fillColor = Color.Blue.copy(alpha = 0.2f),
                 strokeColor = Color.Blue,
-                strokeWidth = 2f
+                strokeWidth = 2f,
             )
-        }
+        },
     )
 }
 
 @Composable
-private fun CircleContent(
-    color: Color,
-    text: String,
-    modifier: Modifier = Modifier,
-) {
+private fun CircleContent(color: Color, text: String, modifier: Modifier = Modifier) {
     Surface(
         modifier,
         shape = CircleShape,
         color = color,
         contentColor = Color.White,
-        border = BorderStroke(1.dp, Color.White)
+        border = BorderStroke(1.dp, Color.White),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Black,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }
 }
 
 @Composable
-private fun ClusteringTypeControls(
-    onClusteringTypeClick: (ClusteringType) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun ClusteringTypeControls(onClusteringTypeClick: (ClusteringType) -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier
             .fillMaxWidth()
             .horizontalScroll(state = ScrollState(0)),
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.Start,
     ) {
         ClusteringType.entries.forEach {
             MapButton(
@@ -424,7 +422,7 @@ private fun ClusteringTypeControls(
                     ClusteringType.Decorations -> "Decorations"
                     ClusteringType.KeyedDiff -> "Keyed diff (5k)"
                 },
-                onClick = { onClusteringTypeClick(it) }
+                onClick = { onClusteringTypeClick(it) },
             )
         }
     }
@@ -436,9 +434,9 @@ private fun MapButton(text: String, onClick: () -> Unit, modifier: Modifier = Mo
         modifier = modifier.padding(4.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.onPrimary,
-            contentColor = MaterialTheme.colorScheme.primary
+            contentColor = MaterialTheme.colorScheme.primary,
         ),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Text(text = text, style = MaterialTheme.typography.bodyLarge)
     }

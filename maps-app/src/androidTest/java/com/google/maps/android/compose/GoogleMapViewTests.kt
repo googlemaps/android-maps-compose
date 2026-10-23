@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReusableContentHost
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertIsDisplayed
@@ -26,6 +27,8 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.savedstate.findViewTreeSavedStateRegistryOwner
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
@@ -39,6 +42,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.lang.ref.WeakReference
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -58,7 +62,6 @@ class GoogleMapViewTests {
 
         val appContext: Context = InstrumentationRegistry.getInstrumentation().targetContext
 
-
         composeTestRule.setContent {
             GoogleMapView(
                 modifier = Modifier.fillMaxSize(),
@@ -66,7 +69,7 @@ class GoogleMapViewTests {
                 onMapLoaded = {
                     countDownLatch.countDown()
                 },
-                mapColorScheme = mapColorScheme
+                mapColorScheme = mapColorScheme,
             ) {
                 content.invoke()
             }
@@ -80,8 +83,8 @@ class GoogleMapViewTests {
         cameraPositionState = CameraPositionState(
             position = CameraPosition.fromLatLngZoom(
                 startingPosition,
-                startingZoom
-            )
+                startingZoom,
+            ),
         )
     }
 
@@ -99,7 +102,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
@@ -114,7 +117,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
@@ -129,7 +132,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.FOLLOW_SYSTEM)
@@ -144,7 +147,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.DARK)
@@ -162,7 +165,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         // When googleMapOptionsFactory explicitly sets a color scheme (e.g. DARK), it should not be overwritten by mapColorScheme
@@ -179,7 +182,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
@@ -200,7 +203,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
@@ -217,7 +220,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
@@ -237,7 +240,7 @@ class GoogleMapViewTests {
                 mapViewFactory = { context, options ->
                     capturedOptions = options
                     MapView(context, options)
-                }
+                },
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
@@ -253,7 +256,9 @@ class GoogleMapViewTests {
                 cameraPositionState.isMoving
             }
             assertThat(cameraPositionState.isMoving).isTrue()
-            assertThat(cameraPositionState.cameraMoveStartedReason).isEqualTo(CameraMoveStartedReason.DEVELOPER_ANIMATION)
+            assertThat(
+                cameraPositionState.cameraMoveStartedReason,
+            ).isEqualTo(CameraMoveStartedReason.DEVELOPER_ANIMATION)
         }
     }
 
@@ -356,7 +361,7 @@ class GoogleMapViewTests {
             val projection = cameraPositionState.projection
             assertThat(projection).isNotNull()
             assertThat(
-                projection!!.visibleRegion.latLngBounds.contains(startingPosition)
+                projection!!.visibleRegion.latLngBounds.contains(startingPosition),
             ).isTrue()
         }
     }
@@ -369,7 +374,7 @@ class GoogleMapViewTests {
             assertThat(projection).isNotNull()
             val latLng = LatLng(23.4, 25.6)
             assertThat(
-                projection!!.visibleRegion.latLngBounds.contains(latLng)
+                projection!!.visibleRegion.latLngBounds.contains(latLng),
             ).isFalse()
         }
     }
@@ -395,10 +400,10 @@ class GoogleMapViewTests {
         initMap {
             val markerState = rememberUpdatedMarkerState()
             Marker(
-                state = markerState
+                state = markerState,
             )
             Marker(
-                state = markerState
+                state = markerState,
             )
         }
     }
@@ -501,9 +506,105 @@ class GoogleMapViewTests {
     }
 
     @Test
+    fun testShowingHidingMapRepeatedlyReleasesMapViews() {
+        // Regression test for https://github.com/googlemaps/android-maps-compose/issues/581
+        val showMapState = mutableStateOf(true)
+        val mapViews = mutableListOf<WeakReference<MapView>>()
+        lateinit var markerState: MarkerState
+
+        composeTestRule.setContent {
+            markerState = rememberUpdatedMarkerState(position = startingPosition)
+            if (showMapState.value) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    mapViewFactory = { context, options ->
+                        MapView(context, options).also {
+                            mapViews.add(WeakReference(it))
+                        }
+                    },
+                ) {
+                    MarkerInfoWindowContent(
+                        state = markerState,
+                        title = "Test",
+                    ) {
+                        Text("Test Info")
+                    }
+                }
+            }
+        }
+
+        // Toggle visibility repeatedly (including rapid cycles before and after map initialization)
+        repeat(15) {
+            showMapState.value = true
+            composeTestRule.waitForIdle()
+            Thread.sleep(50)
+            showMapState.value = false
+            composeTestRule.waitForIdle()
+            composeTestRule.runOnUiThread {
+                assertThat(cameraPositionState.projection).isNull()
+            }
+        }
+
+        assertThat(mapViews.size).isAtLeast(15)
+        // Deterministically verify every released MapView has cleared its tag, view-tree owners,
+        // and internal child view hierarchy without relying on non-deterministic GC timing.
+        for (ref in mapViews) {
+            val mapView = ref.get()
+            if (mapView != null) {
+                assertThat(mapView.tag).isNull()
+                assertThat(mapView.childCount).isEqualTo(0)
+                assertThat(mapView.findViewTreeLifecycleOwner()).isNull()
+                assertThat(mapView.findViewTreeSavedStateRegistryOwner()).isNull()
+            }
+        }
+    }
+
+    @Test
+    fun testReusableContentHostResetAndReuse() {
+        val activeState = mutableStateOf(true)
+        lateinit var markerState: MarkerState
+
+        composeTestRule.setContent {
+            markerState = rememberUpdatedMarkerState(position = startingPosition)
+            ReusableContentHost(active = activeState.value) {
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                ) {
+                    Marker(
+                        state = markerState,
+                        title = "Reusable Marker",
+                    )
+                }
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread { cameraPositionState.projection != null }
+        }
+
+        // Deactivate and reactivate multiple times to exercise AndroidView.onReset -> update
+        repeat(3) {
+            activeState.value = false
+            composeTestRule.waitForIdle()
+            composeTestRule.runOnUiThread {
+                assertThat(cameraPositionState.projection).isNull()
+            }
+
+            activeState.value = true
+            composeTestRule.waitForIdle()
+            composeTestRule.waitUntil(timeoutMillis = 5_000) {
+                composeTestRule.runOnUiThread { cameraPositionState.projection != null }
+            }
+        }
+    }
+
+    @Test
     fun testRememberUpdatedMarkerStateBeUpdate() {
-        val testPoint0 = LatLng(0.0,0.0)
-        val testPoint1 = LatLng(37.6281576,-122.4264549)
+        val testPoint0 = LatLng(0.0, 0.0)
+        val testPoint1 = LatLng(37.6281576, -122.4264549)
         val testPoint2 = LatLng(37.500012, 127.0364185)
 
         val positionState = mutableStateOf(testPoint0)
@@ -524,11 +625,7 @@ class GoogleMapViewTests {
         assertThat(markerState.position).isEqualTo(testPoint2)
     }
 
-    private fun zoom(
-        shouldAnimate: Boolean,
-        zoomIn: Boolean,
-        assertionBlock: () -> Unit
-    ) {
+    private fun zoom(shouldAnimate: Boolean, zoomIn: Boolean, assertionBlock: () -> Unit) {
         if (!shouldAnimate) {
             composeTestRule.onNodeWithTag("cameraAnimations")
                 .assertIsDisplayed()

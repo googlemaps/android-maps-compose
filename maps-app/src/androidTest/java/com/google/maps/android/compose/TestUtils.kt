@@ -45,7 +45,6 @@ fun LatLng.assertEquals(other: LatLng) {
     assertEquals(longitude, other.longitude, assertRoundingError)
 }
 
-
 fun ComposeMapColorScheme.assertEquals(other: ComposeMapColorScheme) {
     assertEquals(other, this)
 }

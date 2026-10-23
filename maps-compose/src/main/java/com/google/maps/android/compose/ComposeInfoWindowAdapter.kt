@@ -39,7 +39,7 @@ import com.google.android.gms.maps.model.Marker
  */
 internal class ComposeInfoWindowAdapter(
     private val mapView: MapView,
-    private val markerNodeFinder: (Marker) -> MarkerNode?
+    private val markerNodeFinder: (Marker) -> MarkerNode?,
 ) : GoogleMap.InfoWindowAdapter {
 
     override fun getInfoContents(marker: Marker): View? {
@@ -54,10 +54,7 @@ internal class ComposeInfoWindowAdapter(
         return renderToImageView(markerNode) { infoWindow(marker) }
     }
 
-    private fun renderToImageView(
-        markerNode: MarkerNode,
-        content: @Composable () -> Unit,
-    ): View? {
+    private fun renderToImageView(markerNode: MarkerNode, content: @Composable () -> Unit): View? {
         val bitmap = mapView.renderComposableToBitmap(markerNode.compositionContext, content)
             ?: return null
         return ImageView(mapView.context).apply {
@@ -66,5 +63,4 @@ internal class ComposeInfoWindowAdapter(
             setImageBitmap(bitmap)
         }
     }
-
 }

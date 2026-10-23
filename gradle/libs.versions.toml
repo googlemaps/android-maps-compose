@@ -11,9 +11,10 @@ agp = "9.4.1"
 dependencyAnalysis = "3.19.2"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.37.0"
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 kotlinxCoroutines = "1.11.0"
-versions = "0.64.0"
+spotless = "8.10.4"
+versions = "0.66.0"
 
 # Android
 activitycompose = "1.13.0"
@@ -99,4 +100,5 @@ dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.r
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

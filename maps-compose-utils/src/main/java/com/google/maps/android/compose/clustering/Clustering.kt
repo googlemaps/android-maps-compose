@@ -25,12 +25,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.geometry.Offset
@@ -61,13 +61,16 @@ public class ClusteringMarkerProperties {
         internal set
     public var rotation: Float? by mutableStateOf(null)
         internal set
+    public var contentDescription: String? by mutableStateOf(null)
+        internal set
 }
 
 /**
  * [CompositionLocal] used to provide [ClusteringMarkerProperties] to the content of a cluster or
  * cluster item.
  */
-public val LocalClusteringMarkerProperties: androidx.compose.runtime.ProvidableCompositionLocal<ClusteringMarkerProperties> =
+public val LocalClusteringMarkerProperties:
+    androidx.compose.runtime.ProvidableCompositionLocal<ClusteringMarkerProperties> =
     staticCompositionLocalOf { ClusteringMarkerProperties() }
 
 /**
@@ -79,19 +82,42 @@ public val LocalClusteringMarkerProperties: androidx.compose.runtime.ProvidableC
  * will be used.
  * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point.
  * If null, the default rotation specified in [Clustering] will be used.
+ * @param contentDescription the content description for accessibility purposes. If null, the title
+ * of the [ClusterItem] will be used as a fallback for cluster items.
  */
 @Composable
 public fun ClusteringMarkerProperties(
     anchor: Offset? = null,
     zIndex: Float? = null,
     rotation: Float? = null,
+    contentDescription: String? = null,
 ) {
     val properties = LocalClusteringMarkerProperties.current
     SideEffect {
         properties.anchor = anchor
         properties.zIndex = zIndex
         properties.rotation = rotation
+        properties.contentDescription = contentDescription
     }
+}
+
+/**
+ * Helper function to specify properties for the marker representing a cluster or cluster item.
+ *
+ * Retained for binary compatibility with binaries compiled against earlier versions.
+ */
+@Deprecated(
+    message = "Retained for binary compatibility.",
+    level = DeprecationLevel.HIDDEN,
+)
+@Composable
+public fun ClusteringMarkerProperties(anchor: Offset? = null, zIndex: Float? = null, rotation: Float? = null) {
+    ClusteringMarkerProperties(
+        anchor = anchor,
+        zIndex = zIndex,
+        rotation = rotation,
+        contentDescription = null,
+    )
 }
 
 /**
@@ -122,7 +148,8 @@ public fun ClusteringMarkerProperties(
 @GoogleMapComposable
 @MapsComposeExperimentalApi
 @Deprecated(
-    message = "If clusterRenderer is specified, clusterContent and clusterItemContent are not used; use a function that takes ClusterManager as an argument instead.",
+    message = "If clusterRenderer is specified, clusterContent and clusterItemContent are not used; " +
+        "use a function that takes ClusterManager as an argument instead.",
     replaceWith = ReplaceWith(
         expression = """
             val clusterManager = rememberClusterManager<T>()
@@ -167,7 +194,9 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentRotation: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
     key: ((T) -> Any)? = null,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ) {
     val clusterManager = rememberClusterManager(
         clusterContent,
@@ -178,7 +207,7 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentZIndex,
         clusterContentRotation,
         clusterItemContentRotation,
-        clusterRenderer
+        clusterRenderer,
     ) ?: return
 
     SideEffect {
@@ -237,7 +266,9 @@ public fun <T : ClusterItem> Clustering(
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
     key: ((T) -> Any)? = null,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ) {
     Clustering(
         items = items,
@@ -302,7 +333,9 @@ public fun <T : ClusterItem> Clustering(
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
     key: ((T) -> Any)? = null,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ) {
     val clusterManager = rememberClusterManager<T>()
@@ -315,7 +348,7 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentZIndex,
         clusterContentRotation,
         clusterItemContentRotation,
-        clusterManager
+        clusterManager,
     )
 
     SideEffect {
@@ -362,7 +395,9 @@ public fun <T : ClusterItem> Clustering(
     items: Collection<T>,
     clusterManager: ClusterManager<T>,
     key: ((T) -> Any)? = null,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ) {
     Clustering(
         items = items,
@@ -394,7 +429,9 @@ public fun <T : ClusterItem> Clustering(
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ): Unit = Clustering(
     items = items,
     onClusterClick = onClusterClick,
@@ -433,7 +470,9 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentZIndex: Float = 0.0f,
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ): Unit = Clustering(
     items = items,
     onClusterClick = onClusterClick,
@@ -471,7 +510,9 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentZIndex: Float = 0.0f,
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ): Unit = Clustering(
     items = items,
@@ -500,7 +541,9 @@ public fun <T : ClusterItem> Clustering(
 public fun <T : ClusterItem> Clustering(
     items: Collection<T>,
     clusterManager: ClusterManager<T>,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ): Unit = Clustering(
     items = items,
     clusterManager = clusterManager,
@@ -514,7 +557,9 @@ public fun <T : ClusterItem> Clustering(
 internal fun <T : ClusterItem> Clustering(
     items: Collection<T>,
     clusterManager: ClusterManager<T>,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
     renderer: ClusterRenderer<T>? = null,
     key: ((T) -> Any)? = null,
 ) {
@@ -580,6 +625,7 @@ internal fun <T : ClusterItem> Clustering(
     }
 
     val actualRenderer = renderer ?: clusterManager.renderer
+
     @Suppress("UNCHECKED_CAST")
     val unclusteredItems by (actualRenderer as? ClusterRendererItemState<T>)?.unclusteredItems
         ?: remember { mutableStateOf(emptySet()) }
@@ -588,13 +634,10 @@ internal fun <T : ClusterItem> Clustering(
     }
 }
 
-
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
-public fun <T : ClusterItem> rememberClusterRenderer(
-    clusterManager: ClusterManager<T>?,
-): ClusterRenderer<T>? {
+public fun <T : ClusterItem> rememberClusterRenderer(clusterManager: ClusterManager<T>?): ClusterRenderer<T>? {
     val context = LocalContext.current
     val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
 
@@ -751,9 +794,7 @@ private fun <T : ClusterItem> rememberClusterManager(
  * This is heavily coupled to implementation details of [MarkerManager].
  */
 @Composable
-private fun ResetMapListeners(
-    clusterManager: ClusterManager<*>,
-) {
+private fun ResetMapListeners(clusterManager: ClusterManager<*>) {
     val reattach = rememberReattachClickListenersHandle()
     LaunchedEffect(clusterManager, reattach) {
         Handler(Looper.getMainLooper()).post {
@@ -765,8 +806,9 @@ private fun ResetMapListeners(
 private class ReportingDefaultClusterRenderer<T : ClusterItem>(
     context: Context,
     map: GoogleMap,
-    clusterManager: ClusterManager<T>
-) : DefaultClusterRenderer<T>(context, map, clusterManager), ClusterRendererItemState<T> {
+    clusterManager: ClusterManager<T>,
+) : DefaultClusterRenderer<T>(context, map, clusterManager),
+    ClusterRendererItemState<T> {
 
     override val unclusteredItems = mutableStateOf(emptySet<T>())
 

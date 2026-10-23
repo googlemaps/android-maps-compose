@@ -22,9 +22,8 @@ import com.google.maps.android.compose.MapNode
 
 private object StreetViewPanoramaNodeRoot : MapNode
 
-internal class StreetViewPanoramaApplier(
-    val streetViewPanorama: StreetViewPanorama
-) : AbstractApplier<MapNode>(StreetViewPanoramaNodeRoot) {
+internal class StreetViewPanoramaApplier(val streetViewPanorama: StreetViewPanorama) :
+    AbstractApplier<MapNode>(StreetViewPanoramaNodeRoot) {
     override fun onClear() { }
 
     override fun insertBottomUp(index: Int, instance: MapNode) {

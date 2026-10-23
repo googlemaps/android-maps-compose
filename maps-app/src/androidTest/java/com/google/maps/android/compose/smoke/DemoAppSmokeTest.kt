@@ -61,10 +61,7 @@ import java.util.concurrent.TimeUnit
  * overlay is drawn belongs in the focused tests next to this one; the value here is breadth.
  */
 @RunWith(Parameterized::class)
-class DemoAppSmokeTest(
-    private val demoName: String,
-    private val demoActivity: Class<ComponentActivity>,
-) {
+class DemoAppSmokeTest(private val demoName: String, private val demoActivity: Class<ComponentActivity>) {
 
     companion object {
         /**
@@ -89,16 +86,15 @@ class DemoAppSmokeTest(
 
         @JvmStatic
         @Parameterized.Parameters(name = "{0}")
-        fun demos(): List<Array<Any>> =
-            allActivityGroups
-                .flatMap { group -> group.activities }
-                .map { activity ->
-                    @Suppress("UNCHECKED_CAST")
-                    arrayOf(
-                        activity.kClass.simpleName ?: activity.kClass.java.name,
-                        activity.kClass.java as Class<ComponentActivity>,
-                    )
-                }
+        fun demos(): List<Array<Any>> = allActivityGroups
+            .flatMap { group -> group.activities }
+            .map { activity ->
+                @Suppress("UNCHECKED_CAST")
+                arrayOf(
+                    activity.kClass.simpleName ?: activity.kClass.java.name,
+                    activity.kClass.java as Class<ComponentActivity>,
+                )
+            }
     }
 
     /**

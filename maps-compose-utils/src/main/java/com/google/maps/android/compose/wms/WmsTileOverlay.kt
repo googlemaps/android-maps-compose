@@ -46,13 +46,13 @@ public fun WmsTileOverlay(
     zIndex: Float = 0f,
     onClick: (TileOverlay) -> Unit = {},
     tileWidth: Int = 256,
-    tileHeight: Int = 256
+    tileHeight: Int = 256,
 ) {
     val tileProvider = remember(urlFormatter, tileWidth, tileHeight) {
         WmsUrlTileProvider(
             width = tileWidth,
             height = tileHeight,
-            urlFormatter = urlFormatter
+            urlFormatter = urlFormatter,
         )
     }
     TileOverlay(
@@ -62,6 +62,6 @@ public fun WmsTileOverlay(
         transparency = transparency,
         visible = visible,
         zIndex = zIndex,
-        onClick = onClick
+        onClick = onClick,
     )
 }

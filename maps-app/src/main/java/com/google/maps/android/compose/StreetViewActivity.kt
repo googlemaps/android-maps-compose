@@ -43,12 +43,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.MapsExperimentalFeature
 import com.google.maps.android.Status
+import com.google.maps.android.StreetViewUtils.Companion.fetchStreetViewData
 import com.google.maps.android.compose.streetview.StreetView
 import com.google.maps.android.compose.streetview.rememberStreetViewCameraPositionState
-import com.google.maps.android.MapsExperimentalFeature
 import kotlinx.coroutines.launch
-import com.google.maps.android.StreetViewUtils.Companion.fetchStreetViewData
 
 class StreetViewActivity : ComponentActivity() {
 
@@ -107,13 +107,13 @@ class StreetViewActivity : ComponentActivity() {
                         },
                         onLongClick = {
                             Log.d(TAG, "Street view long clicked")
-                        }
+                        },
                     )
                     Column(
                         Modifier
                             .fillMaxWidth()
                             .background(Color.White)
-                            .padding(8.dp)
+                            .padding(8.dp),
                     ) {
                         StreetViewSwitch(title = "Panning", checked = isPanningEnabled) {
                             isPanningEnabled = it
@@ -129,7 +129,6 @@ class StreetViewActivity : ComponentActivity() {
         }
     }
 }
-
 
 @Composable
 fun StreetViewSwitch(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
