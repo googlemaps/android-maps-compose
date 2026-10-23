@@ -196,3 +196,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-20T22:32:46Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,instrumentation,maps-compose-utils,364,602,60.47,108,346,31.21,2741,4891,56.04
 2026-10-20T22:32:46Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
 2026-10-20T22:32:46Z,229ad8e,1039,fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map,instrumentation,TOTAL,2533,5257,48.18,772,2188,35.28,18725,41777,44.82
+2026-10-23T13:05:13Z,b3fb4a3,1050,chore(deps): bump the gradle-minor-and-patch group with 2 updates,unit,maps-compose,299,2006,14.91,65,1830,3.55,2231,25358,8.8
+2026-10-23T13:05:13Z,b3fb4a3,1050,chore(deps): bump the gradle-minor-and-patch group with 2 updates,unit,maps-compose-utils,12,554,2.17,4,424,0.94,76,6727,1.13
+2026-10-23T13:05:13Z,b3fb4a3,1050,chore(deps): bump the gradle-minor-and-patch group with 2 updates,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
+2026-10-23T13:05:13Z,b3fb4a3,1050,chore(deps): bump the gradle-minor-and-patch group with 2 updates,unit,TOTAL,311,2706,11.49,69,2322,2.97,2307,33573,6.87
