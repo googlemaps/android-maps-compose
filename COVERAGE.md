@@ -38,15 +38,15 @@ Measured at `61f8b5b` (#1037), recorded 2026-10-23T13:42:23Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `b3fb4a3` (#1050), recorded 2026-10-23T13:05:16Z.
+Measured at `61f8b5b` (#1037), recorded 2026-10-23T13:42:26Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 22/2,328 | 0.95% | `░░░░░░░░░░░░░░░░░░░░` | 0/402 | 0.00% |
-| `maps-compose` | 739/2,178 | 33.93% | `███████░░░░░░░░░░░░░` | 210/1,392 | 15.09% |
-| `maps-compose-utils` | 0/602 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/346 | 0.00% |
+| `maps-app` | 217/2,388 | 9.09% | `██░░░░░░░░░░░░░░░░░░` | 21/422 | 4.98% |
+| `maps-compose` | 1,117/2,178 | 51.29% | `██████████░░░░░░░░░░` | 399/1,392 | 28.66% |
+| `maps-compose-utils` | 254/759 | 33.47% | `███████░░░░░░░░░░░░░` | 87/470 | 18.51% |
 | `maps-compose-widgets` | 10/149 | 6.71% | `█░░░░░░░░░░░░░░░░░░░` | 0/48 | 0.00% |
-| **TOTAL** | 771/5,257 | 14.67% | `███░░░░░░░░░░░░░░░░░` | 210/2,188 | 9.60% |
+| **TOTAL** | 1,598/5,474 | 29.19% | `██████░░░░░░░░░░░░░░` | 507/2,332 | 21.74% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-23 | `61f8b5b` | #1037 | 12.14% | +0.65 | n/a | n/a | feat(clustering): add incremental item diffing |
+| 2026-10-23 | `61f8b5b` | #1037 | 12.14% | +0.65 | 29.19% | +14.52 | feat(clustering): add incremental item diffing |
 | 2026-10-23 | `b3fb4a3` | #1050 | 11.49% | 0.00 | 14.67% | -33.51 | chore(deps): bump the gradle-minor-and-patch group with 2 updates |
 | 2026-10-20 | `229ad8e` | #1039 | 11.49% | +8.14 | 48.18% | +0.63 | fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map |
 | 2026-10-20 | `a5b018c` | #1046 | 3.35% | +2.90 | 47.55% | +37.29 | fix: AdvancedMarker pinConfig, pending camera moves and Street View source |
