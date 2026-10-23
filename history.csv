@@ -214,3 +214,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-23T13:42:26Z,61f8b5b,1037,feat(clustering): add incremental item diffing,instrumentation,maps-compose-utils,254,759,33.47,87,470,18.51,1979,6054,32.69
 2026-10-23T13:42:26Z,61f8b5b,1037,feat(clustering): add incremental item diffing,instrumentation,maps-compose-widgets,10,149,6.71,0,48,0.0,59,889,6.64
 2026-10-23T13:42:26Z,61f8b5b,1037,feat(clustering): add incremental item diffing,instrumentation,TOTAL,1598,5474,29.19,507,2332,21.74,11761,43699,26.91
+2026-10-23T15:30:01Z,366fe16,1052,ci: add workflow to publish -SNAPSHOT builds to Maven Central,unit,maps-compose,299,2006,14.91,65,1830,3.55,2231,25358,8.8
+2026-10-23T15:30:01Z,366fe16,1052,ci: add workflow to publish -SNAPSHOT builds to Maven Central,unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
+2026-10-23T15:30:01Z,366fe16,1052,ci: add workflow to publish -SNAPSHOT builds to Maven Central,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
+2026-10-23T15:30:01Z,366fe16,1052,ci: add workflow to publish -SNAPSHOT builds to Maven Central,unit,TOTAL,337,2776,12.14,86,2368,3.63,2449,34357,7.13
