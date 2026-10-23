@@ -1,5 +1,22 @@
 # Changelog
 
+## [9.1.0](https://github.com/googlemaps/android-maps-compose/compare/v9.0.1...v9.1.0) (2026-10-23)
+
+
+### Features
+
+* **clustering:** add incremental item diffing ([#1037](https://github.com/googlemaps/android-maps-compose/issues/1037)) ([61f8b5b](https://github.com/googlemaps/android-maps-compose/commit/61f8b5bdcbf955531f6e57c0fcb8b2d47d1d1d24))
+* **clustering:** propagate contentDescription to marker options for accessibility ([#1035](https://github.com/googlemaps/android-maps-compose/issues/1035)) ([4322266](https://github.com/googlemaps/android-maps-compose/commit/432226652e20c48f490f56ec0f64ec6fcd0dd2f1))
+
+
+### Bug Fixes
+
+* **camera:** setting position while unbound cancels a pending move or animation ([a5b018c](https://github.com/googlemaps/android-maps-compose/commit/a5b018c8b05fb5cb03a479dd7f5a56118732e413))
+* check trim memory level in onTrimMemory() implementations ([#1051](https://github.com/googlemaps/android-maps-compose/issues/1051)) ([65a4d89](https://github.com/googlemaps/android-maps-compose/commit/65a4d89e454a7ee09d9fdef8eba18772b80065d7))
+* **markers:** keep the pinConfig icon on AdvancedMarker when icon is null ([a5b018c](https://github.com/googlemaps/android-maps-compose/commit/a5b018c8b05fb5cb03a479dd7f5a56118732e413))
+* release GoogleMap listeners and dispose subcomposition when showing/hiding map ([#1039](https://github.com/googlemaps/android-maps-compose/issues/1039)) ([229ad8e](https://github.com/googlemaps/android-maps-compose/commit/229ad8e5cd6b87a568da1cb7ff873d04f1f3a615))
+* **streetview:** forward source in setPosition when radius is null ([a5b018c](https://github.com/googlemaps/android-maps-compose/commit/a5b018c8b05fb5cb03a479dd7f5a56118732e413))
+
 ## [9.0.1](https://github.com/googlemaps/android-maps-compose/compare/v9.0.0...v9.0.1) (2026-10-08)
 
 
