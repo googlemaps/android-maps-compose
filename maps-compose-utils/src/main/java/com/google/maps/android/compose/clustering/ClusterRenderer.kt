@@ -43,6 +43,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
@@ -56,6 +57,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 internal interface ClusterRendererItemState<T : ClusterItem> {
     val unclusteredItems: State<Set<T>>
@@ -80,10 +83,12 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
     private val clusterItemContentZIndexState: State<Float>,
     private val clusterContentRotationState: State<Float>,
     private val clusterItemContentRotationState: State<Float>,
+    executor: Executor = Executors.newSingleThreadExecutor(),
 ) : DefaultClusterRenderer<T>(
     context,
     map,
     clusterManager,
+    executor,
 ),
     ClusterRendererItemState<T> {
 
@@ -127,22 +132,26 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                 keysToViews.forEach { (key, viewInfo) ->
                     when (key) {
                         is ViewKey.Cluster -> {
-                            getMarker(key.cluster)?.apply {
-                                val props = viewInfo.view.properties
-                                val anchor = props.anchor ?: clusterContentAnchorState.value
-                                setAnchor(anchor.x, anchor.y)
-                                zIndex = props.zIndex ?: clusterContentZIndexState.value
-                                rotation = props.rotation ?: clusterContentRotationState.value
+                            getMarker(key.cluster)?.let { marker ->
+                                applyClusterMarkerProperties(
+                                    marker = marker,
+                                    properties = viewInfo.view.properties,
+                                    defaultAnchor = clusterContentAnchorState.value,
+                                    defaultZIndex = clusterContentZIndexState.value,
+                                    defaultRotation = clusterContentRotationState.value,
+                                )
                             }
                         }
 
                         is ViewKey.Item -> {
-                            getMarker(key.item)?.apply {
-                                val props = viewInfo.view.properties
-                                val anchor = props.anchor ?: clusterItemContentAnchorState.value
-                                setAnchor(anchor.x, anchor.y)
-                                zIndex = props.zIndex ?: clusterItemContentZIndexState.value
-                                rotation = props.rotation ?: clusterItemContentRotationState.value
+                            getMarker(key.item)?.let { marker ->
+                                applyClusterMarkerProperties(
+                                    marker = marker,
+                                    properties = viewInfo.view.properties,
+                                    defaultAnchor = clusterItemContentAnchorState.value,
+                                    defaultZIndex = clusterItemContentZIndexState.value,
+                                    defaultRotation = clusterItemContentRotationState.value,
+                                )
                             }
                         }
                     }
@@ -266,22 +275,28 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             .collectLatest {
                 when (key) {
                     is ViewKey.Cluster -> {
-                        getMarker(key.cluster)?.apply {
-                            setIcon(renderViewToBitmapDescriptor(view))
-                            val anchor = view.properties.anchor ?: clusterContentAnchorState.value
-                            setAnchor(anchor.x, anchor.y)
-                            zIndex = view.properties.zIndex ?: clusterContentZIndexState.value
-                            rotation = view.properties.rotation ?: clusterContentRotationState.value
+                        getMarker(key.cluster)?.let { marker ->
+                            marker.setIcon(renderViewToBitmapDescriptor(view))
+                            applyClusterMarkerProperties(
+                                marker = marker,
+                                properties = view.properties,
+                                defaultAnchor = clusterContentAnchorState.value,
+                                defaultZIndex = clusterContentZIndexState.value,
+                                defaultRotation = clusterContentRotationState.value,
+                            )
                         }
                     }
 
                     is ViewKey.Item -> {
-                        getMarker(key.item)?.apply {
-                            setIcon(renderViewToBitmapDescriptor(view))
-                            val anchor = view.properties.anchor ?: clusterItemContentAnchorState.value
-                            setAnchor(anchor.x, anchor.y)
-                            zIndex = view.properties.zIndex ?: clusterItemContentZIndexState.value
-                            rotation = view.properties.rotation ?: clusterItemContentRotationState.value
+                        getMarker(key.item)?.let { marker ->
+                            applyClusterItemMarkerProperties(
+                                marker = marker,
+                                icon = renderViewToBitmapDescriptor(view),
+                                properties = view.properties,
+                                defaultAnchor = clusterItemContentAnchorState.value,
+                                defaultZIndex = clusterItemContentZIndexState.value,
+                                defaultRotation = clusterItemContentRotationState.value,
+                            )
                         }
                     }
                 }
@@ -341,6 +356,37 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
 
         if (!contentDesc.isNullOrEmpty()) {
             markerOptions.contentDescription(contentDesc)
+        }
+    }
+
+    override fun onClusterUpdated(cluster: Cluster<T>, marker: Marker) {
+        super.onClusterUpdated(cluster, marker)
+        if (!scope.isActive) return
+        if (clusterContentState.value != null) {
+            val viewInfo = keysToViews[ViewKey.Cluster(cluster)]
+            applyClusterMarkerProperties(
+                marker = marker,
+                properties = viewInfo?.view?.properties,
+                defaultAnchor = clusterContentAnchorState.value,
+                defaultZIndex = clusterContentZIndexState.value,
+                defaultRotation = clusterContentRotationState.value,
+            )
+        }
+    }
+
+    override fun onClusterItemUpdated(item: T, marker: Marker) {
+        super.onClusterItemUpdated(item, marker)
+        if (!scope.isActive) return
+        if (clusterItemContentState.value != null) {
+            val viewInfo = keysToViews[ViewKey.Item(item)] ?: createAndAddView(ViewKey.Item(item))
+            applyClusterItemMarkerProperties(
+                marker = marker,
+                icon = renderViewToBitmapDescriptor(viewInfo.view),
+                properties = viewInfo.view.properties,
+                defaultAnchor = clusterItemContentAnchorState.value,
+                defaultZIndex = clusterItemContentZIndexState.value,
+                defaultRotation = clusterItemContentRotationState.value,
+            )
         }
     }
 
@@ -431,3 +477,34 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
  */
 internal fun <T : ClusterItem> resolveItemContentDescription(item: T, customContentDescription: String?): String? =
     customContentDescription ?: item.title
+
+internal fun applyClusterMarkerProperties(
+    marker: Marker,
+    properties: ClusteringMarkerProperties?,
+    defaultAnchor: Offset,
+    defaultZIndex: Float,
+    defaultRotation: Float,
+) {
+    val anchor = properties?.anchor ?: defaultAnchor
+    marker.setAnchor(anchor.x, anchor.y)
+    marker.zIndex = properties?.zIndex ?: defaultZIndex
+    marker.rotation = properties?.rotation ?: defaultRotation
+}
+
+internal fun applyClusterItemMarkerProperties(
+    marker: Marker,
+    icon: BitmapDescriptor,
+    properties: ClusteringMarkerProperties,
+    defaultAnchor: Offset,
+    defaultZIndex: Float,
+    defaultRotation: Float,
+) {
+    marker.setIcon(icon)
+    applyClusterMarkerProperties(
+        marker = marker,
+        properties = properties,
+        defaultAnchor = defaultAnchor,
+        defaultZIndex = defaultZIndex,
+        defaultRotation = defaultRotation,
+    )
+}

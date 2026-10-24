@@ -48,8 +48,12 @@ import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.currentCameraPositionState
 import com.google.maps.android.compose.rememberComposeUiViewRenderer
 import com.google.maps.android.compose.rememberReattachClickListenersHandle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Properties for a marker in [Clustering].
@@ -617,7 +621,7 @@ internal fun <T : ClusterItem> Clustering(
                 previousUsedExplicitKey = usesExplicitKey
             }
     }
-    DisposableEffect(itemsState) {
+    DisposableEffect(clusterManager) {
         onDispose {
             clusterManager.clearItems()
             clusterManager.cluster()
@@ -634,21 +638,55 @@ internal fun <T : ClusterItem> Clustering(
     }
 }
 
+/**
+ * Default Renderer for drawing Cluster and ClusterItem markers.
+ *
+ * @param clusterManager the [ClusterManager] that manages the clusters
+ * @param executor an optional [Executor] used by [DefaultClusterRenderer] to process view
+ * modifications off the main thread. Tests can pass a direct executor to make rendering
+ * deterministic.
+ */
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
-public fun <T : ClusterItem> rememberClusterRenderer(clusterManager: ClusterManager<T>?): ClusterRenderer<T>? {
+public fun <T : ClusterItem> rememberClusterRenderer(
+    clusterManager: ClusterManager<T>?,
+    executor: Executor? = null,
+): ClusterRenderer<T>? {
     val context = LocalContext.current
     val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
 
     clusterManager ?: return null
-    MapEffect(context) { map ->
-        val renderer = ReportingDefaultClusterRenderer(context, map, clusterManager)
+    MapEffect(context, executor) { map ->
+        val renderer = ReportingDefaultClusterRenderer(
+            context = context,
+            map = map,
+            clusterManager = clusterManager,
+            executor = executor ?: Executors.newSingleThreadExecutor(),
+        )
         clusterRendererState.value = renderer
     }
 
     return clusterRendererState.value
 }
+
+/**
+ * Default Renderer for drawing Cluster and ClusterItem markers.
+ *
+ * Retained for binary compatibility with binaries compiled against earlier versions.
+ */
+@Deprecated(
+    message = "Retained for binary compatibility.",
+    level = DeprecationLevel.HIDDEN,
+)
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> rememberClusterRenderer(clusterManager: ClusterManager<T>?): ClusterRenderer<T>? =
+    rememberClusterRenderer(
+        clusterManager = clusterManager,
+        executor = null,
+    )
 
 /**
  * Default Renderer for drawing Composable.
@@ -661,6 +699,10 @@ public fun <T : ClusterItem> rememberClusterRenderer(clusterManager: ClusterMana
  * @param clusterItemContentZIndex the z-index of the non-clustered item
  * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
  * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
+ * @param clusterManager the [ClusterManager] that manages the clusters
+ * @param executor an optional [Executor] used by [DefaultClusterRenderer] to process view
+ * modifications off the main thread. Tests can pass a direct executor to make rendering
+ * deterministic.
  */
 @Composable
 @GoogleMapComposable
@@ -675,6 +717,7 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
     clusterManager: ClusterManager<T>?,
+    executor: Executor? = null,
 ): ClusterRenderer<T>? {
     val clusterContentState = rememberUpdatedState(clusterContent)
     val clusterItemContentState = rememberUpdatedState(clusterItemContent)
@@ -689,7 +732,7 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
 
     clusterManager ?: return null
-    MapEffect(context) { map ->
+    MapEffect(context, executor) { map ->
         val renderer = ComposeUiClusterRenderer(
             context,
             scope = this,
@@ -704,6 +747,7 @@ public fun <T : ClusterItem> rememberClusterRenderer(
             clusterItemContentZIndexState,
             clusterContentRotationState,
             clusterItemContentRotationState,
+            executor = executor ?: Executors.newSingleThreadExecutor(),
         )
         clusterRendererState.value = renderer
         awaitCancellation()
@@ -711,17 +755,80 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     return clusterRendererState.value
 }
 
+/**
+ * Default Renderer for drawing Composable.
+ *
+ * Retained for binary compatibility with binaries compiled against earlier versions.
+ */
+@Deprecated(
+    message = "Retained for binary compatibility.",
+    level = DeprecationLevel.HIDDEN,
+)
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
-public fun <T : ClusterItem> rememberClusterManager(): ClusterManager<T>? {
+public fun <T : ClusterItem> rememberClusterRenderer(
+    clusterContent: @Composable ((Cluster<T>) -> Unit)?,
+    clusterItemContent: @Composable ((T) -> Unit)?,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
+    clusterManager: ClusterManager<T>?,
+): ClusterRenderer<T>? = rememberClusterRenderer(
+    clusterContent = clusterContent,
+    clusterItemContent = clusterItemContent,
+    clusterContentAnchor = clusterContentAnchor,
+    clusterItemContentAnchor = clusterItemContentAnchor,
+    clusterContentZIndex = clusterContentZIndex,
+    clusterItemContentZIndex = clusterItemContentZIndex,
+    clusterContentRotation = clusterContentRotation,
+    clusterItemContentRotation = clusterItemContentRotation,
+    clusterManager = clusterManager,
+    executor = null,
+)
+
+/**
+ * Remembers a [ClusterManager] configured with the given coroutine contexts.
+ *
+ * @param mainContext the coroutine context used to deliver clusters to the renderer. It must
+ * dispatch on the main thread.
+ * @param backgroundContext the coroutine context used to compute clusters off the main thread.
+ * Tests can pass a test dispatcher for both contexts to make clustering deterministic.
+ */
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> rememberClusterManager(
+    mainContext: CoroutineContext = Dispatchers.Main,
+    backgroundContext: CoroutineContext = Dispatchers.Default,
+): ClusterManager<T>? {
     val context = LocalContext.current
     val clusterManagerState: MutableState<ClusterManager<T>?> = remember { mutableStateOf(null) }
-    MapEffect(context) { map ->
-        clusterManagerState.value = ClusterManager<T>(context, map)
+    MapEffect(context, mainContext, backgroundContext) { map ->
+        clusterManagerState.value = ClusterManager<T>(context, map, mainContext, backgroundContext)
     }
     return clusterManagerState.value
 }
+
+/**
+ * Remembers a [ClusterManager].
+ *
+ * Retained for binary compatibility with binaries compiled against earlier versions.
+ */
+@Deprecated(
+    message = "Retained for binary compatibility.",
+    level = DeprecationLevel.HIDDEN,
+)
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> rememberClusterManager(): ClusterManager<T>? = rememberClusterManager(
+    mainContext = Dispatchers.Main,
+    backgroundContext = Dispatchers.Default,
+)
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
@@ -803,11 +910,12 @@ private fun ResetMapListeners(clusterManager: ClusterManager<*>) {
     }
 }
 
-private class ReportingDefaultClusterRenderer<T : ClusterItem>(
+internal class ReportingDefaultClusterRenderer<T : ClusterItem>(
     context: Context,
     map: GoogleMap,
     clusterManager: ClusterManager<T>,
-) : DefaultClusterRenderer<T>(context, map, clusterManager),
+    executor: Executor = Executors.newSingleThreadExecutor(),
+) : DefaultClusterRenderer<T>(context, map, clusterManager, executor),
     ClusterRendererItemState<T> {
 
     override val unclusteredItems = mutableStateOf(emptySet<T>())
