@@ -31,6 +31,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 // These constants are used for converting between metric and imperial units
 // to ensure the scale bar displays distances correctly in both systems.
@@ -75,7 +76,20 @@ class ScaleBarTests {
 
     @Test
     fun testScaleBarInitialState() {
-        val initialZoom = 15f
+        assertScaleBarLabels(initialZoom = 15f)
+    }
+
+    @Test
+    fun testScaleBarFractionalKilometers() {
+        assertScaleBarLabels(initialZoom = 12f)
+    }
+
+    @Test
+    fun testScaleBarFractionalMiles() {
+        assertScaleBarLabels(initialZoom = 10f)
+    }
+
+    private fun assertScaleBarLabels(initialZoom: Float) {
         val initialPosition = LatLng(37.7749, -122.4194) // San Francisco
         initScaleBar(initialZoom, initialPosition)
 
@@ -96,25 +110,21 @@ class ScaleBarTests {
                 }
 
                 val upperLeftLatLng = proj.fromScreenLocation(Point(0, 0))
-                val upperRightLatLng = proj.fromScreenLocation(Point(0, widthInPixels))
+                val upperRightLatLng = proj.fromScreenLocation(Point(widthInPixels, 0))
                 val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
                 val horizontalLineWidthMeters = (canvasWidthMeters * 8 / 9).toInt()
 
-                var metricUnits = "m"
-                var metricDistance = horizontalLineWidthMeters
-                if (horizontalLineWidthMeters > METERS_IN_KILOMETER) {
-                    metricUnits = "km"
-                    metricDistance /= METERS_IN_KILOMETER.toInt()
+                metricText = if (horizontalLineWidthMeters >= METERS_IN_KILOMETER) {
+                    "${formatTestDistance(horizontalLineWidthMeters / METERS_IN_KILOMETER)} km"
+                } else {
+                    "$horizontalLineWidthMeters m"
                 }
-
-                var imperialUnits = "ft"
-                var imperialDistance = horizontalLineWidthMeters.toDouble().toFeet()
-                if (imperialDistance > FEET_IN_MILE) {
-                    imperialUnits = "mi"
-                    imperialDistance = imperialDistance.toMiles()
+                val feet = horizontalLineWidthMeters.toDouble().toFeet()
+                imperialText = if (feet >= FEET_IN_MILE) {
+                    "${formatTestDistance(feet.toMiles())} mi"
+                } else {
+                    "${feet.roundToInt()} ft"
                 }
-                imperialText = "${imperialDistance.toInt()} $imperialUnits"
-                metricText = "$metricDistance $metricUnits"
             } ?: fail("Projection should not be null")
         }
 
@@ -130,3 +140,15 @@ class ScaleBarTests {
 internal fun Double.toFeet(): Double = this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
 
 internal fun Double.toMiles(): Double = this / FEET_IN_MILE
+
+private fun formatTestDistance(distance: Double): String {
+    if (distance >= 10.0) return distance.roundToInt().toString()
+    val scaled = (distance * 100.0).roundToInt()
+    val whole = scaled / 100
+    val remainder = scaled % 100
+    return when {
+        remainder == 0 -> "$whole"
+        remainder % 10 == 0 -> "$whole.${remainder / 10}"
+        else -> "$whole.${remainder.toString().padStart(2, '0')}"
+    }
+}
