@@ -38,15 +38,15 @@ Measured at `dd7507b` (#1053), recorded 2026-10-26T16:50:32Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `366fe16` (#1052), recorded 2026-10-23T15:30:07Z.
+Measured at `dd7507b` (#1053), recorded 2026-10-26T16:50:37Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-app` | 504/2,388 | 21.11% | `████░░░░░░░░░░░░░░░░` | 80/422 | 18.96% |
-| `maps-compose` | 1,554/2,178 | 71.35% | `██████████████░░░░░░` | 569/1,392 | 40.88% |
+| `maps-compose` | 1,556/2,182 | 71.31% | `██████████████░░░░░░` | 570/1,396 | 40.83% |
 | `maps-compose-utils` | 413/759 | 54.41% | `███████████░░░░░░░░░` | 142/470 | 30.21% |
 | `maps-compose-widgets` | 112/149 | 75.17% | `███████████████░░░░░` | 15/48 | 31.25% |
-| **TOTAL** | 2,583/5,474 | 47.19% | `█████████░░░░░░░░░░░` | 806/2,332 | 34.56% |
+| **TOTAL** | 2,585/5,478 | 47.19% | `█████████░░░░░░░░░░░` | 807/2,336 | 34.55% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-26 | `dd7507b` | #1053 | 12.41% | 0.00 | n/a | n/a | ci: run instrumentation tests on Ubuntu with KVM and skip redundant runs |
+| 2026-10-26 | `dd7507b` | #1053 | 12.41% | 0.00 | 47.19% | n/a | ci: run instrumentation tests on Ubuntu with KVM and skip redundant runs |
 | 2026-10-23 | `65a4d89` | #1051 | 12.41% | +0.27 | n/a | n/a | fix: check trim memory level in onTrimMemory() implementations |
 | 2026-10-23 | `366fe16` | #1052 | 12.14% | 0.00 | 47.19% | +18.00 | ci: add workflow to publish -SNAPSHOT builds to Maven Central |
 | 2026-10-23 | `61f8b5b` | #1037 | 12.14% | +0.65 | 29.19% | +14.52 | feat(clustering): add incremental item diffing |
