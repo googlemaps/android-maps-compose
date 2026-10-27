@@ -489,6 +489,8 @@ internal class MapLifecycleEventObserver(private val mapView: MapView) : Lifecyc
     }
 
     private fun moveToLifecycleState(targetState: Lifecycle.State) {
+        // upFrom(DESTROYED) is null. Returning inside moveUp() would spin the loop below.
+        if (currentLifecycleState == Lifecycle.State.DESTROYED) return
         while (currentLifecycleState != targetState) {
             when {
                 currentLifecycleState < targetState -> moveUp()
