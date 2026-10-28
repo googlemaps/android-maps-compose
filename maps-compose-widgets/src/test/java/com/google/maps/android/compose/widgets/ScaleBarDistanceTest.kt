@@ -21,13 +21,13 @@ internal class ScaleBarDistanceTest {
     @Test
     fun metricDistancePreservesFractionalKilometers() {
         assertEquals("1.9 km", formatMetricDistance(1900))
-        assertEquals("1.01 km", formatMetricDistance(1010))
+        assertEquals("1 km", formatMetricDistance(1010))
     }
 
     @Test
     fun imperialDistancePreservesFractionalMiles() {
-        assertEquals("1.24 mi", formatImperialDistance(2000))
-        assertEquals("1.99 mi", formatImperialDistance(3200))
+        assertEquals("1.2 mi", formatImperialDistance(2000))
+        assertEquals("2 mi", formatImperialDistance(3200))
     }
 
     @Test
@@ -55,9 +55,12 @@ internal class ScaleBarDistanceTest {
 
     @Test
     fun fractionalDistancesTrimZerosAndRoundAtBoundaries() {
-        assertEquals("1.05 km", formatMetricDistance(1050))
+        assertEquals("1 km", formatMetricDistance(1049))
+        assertEquals("1.1 km", formatMetricDistance(1050))
+        assertEquals("9.9 km", formatMetricDistance(9949))
+        assertEquals("10 km", formatMetricDistance(9950))
         assertEquals("10 km", formatMetricDistance(9999))
-        assertEquals("9.99 km", formatMetricDistance(9990))
+        assertEquals("10 km", formatMetricDistance(9990))
         assertEquals("3 ft", formatImperialDistance(1))
         assertEquals("7 ft", formatImperialDistance(2))
     }

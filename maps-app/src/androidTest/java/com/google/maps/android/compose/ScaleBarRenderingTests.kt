@@ -81,7 +81,7 @@ class ScaleBarRenderingTests {
                 }
             }
         }
-        composeTestRule.onNodeWithText(if (large) "1977 km" else "1.98 km").assertIsDisplayed()
-        composeTestRule.onNodeWithText(if (large) "1228 mi" else "1.23 mi").assertIsDisplayed()
+        composeTestRule.onNodeWithText(if (large) "1977 km" else "2 km").assertIsDisplayed()
+        composeTestRule.onNodeWithText(if (large) "1228 mi" else "1.2 mi").assertIsDisplayed()
     }
 }

@@ -215,14 +215,8 @@ private fun formatScaleDistance(distance: Double): String {
     if (distance >= 10.0) {
         return distance.roundToInt().toString()
     }
-    val scaled = (distance * 100.0).roundToInt()
-    val whole = scaled / 100
-    val remainder = scaled % 100
-    return when {
-        remainder == 0 -> "$whole"
-        remainder % 10 == 0 -> "$whole.${remainder / 10}"
-        else -> "$whole.${remainder.toString().padStart(2, '0')}"
-    }
+    val scaled = (distance * 10.0).roundToInt()
+    return if (scaled % 10 == 0) "${scaled / 10}" else "${scaled / 10}.${scaled % 10}"
 }
 
 /**
