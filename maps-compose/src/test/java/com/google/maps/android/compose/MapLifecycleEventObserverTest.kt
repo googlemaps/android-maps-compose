@@ -29,11 +29,15 @@ public class MapLifecycleEventObserverTest {
     public fun `moveToDestroyedState still walks the MapView down to onDestroy`() {
         val mapView = mockk<MapView>(relaxed = true)
         val observer = MapLifecycleEventObserver(mapView)
-        setLifecycleState(observer, Lifecycle.State.RESUMED)
+        val owner = mockk<LifecycleOwner>(relaxed = true)
 
+        observer.onStateChanged(owner, Lifecycle.Event.ON_RESUME)
         observer.moveToDestroyedState()
 
         verifyOrder {
+            mapView.onCreate(any())
+            mapView.onStart()
+            mapView.onResume()
             mapView.onPause()
             mapView.onStop()
             mapView.onDestroy()
@@ -45,24 +49,20 @@ public class MapLifecycleEventObserverTest {
         val mapView = mockk<MapView>(relaxed = true)
         val observer = MapLifecycleEventObserver(mapView)
         val owner = mockk<LifecycleOwner>(relaxed = true)
-        setLifecycleState(observer, Lifecycle.State.DESTROYED)
+
+        observer.onStateChanged(owner, Lifecycle.Event.ON_RESUME)
+        observer.moveToDestroyedState()
 
         observer.onStateChanged(owner, Lifecycle.Event.ON_STOP)
         observer.onStateChanged(owner, Lifecycle.Event.ON_RESUME)
         observer.onStateChanged(owner, Lifecycle.Event.ON_DESTROY)
         observer.moveToDestroyedState()
 
-        verify(exactly = 0) { mapView.onCreate(any()) }
-        verify(exactly = 0) { mapView.onStart() }
-        verify(exactly = 0) { mapView.onResume() }
-        verify(exactly = 0) { mapView.onPause() }
-        verify(exactly = 0) { mapView.onStop() }
-        verify(exactly = 0) { mapView.onDestroy() }
-    }
-
-    private fun setLifecycleState(observer: MapLifecycleEventObserver, state: Lifecycle.State) {
-        val field = MapLifecycleEventObserver::class.java.getDeclaredField("currentLifecycleState")
-        field.isAccessible = true
-        field.set(observer, state)
+        verify(exactly = 1) { mapView.onCreate(any()) }
+        verify(exactly = 1) { mapView.onStart() }
+        verify(exactly = 1) { mapView.onResume() }
+        verify(exactly = 1) { mapView.onPause() }
+        verify(exactly = 1) { mapView.onStop() }
+        verify(exactly = 1) { mapView.onDestroy() }
     }
 }
