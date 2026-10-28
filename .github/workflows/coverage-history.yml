@@ -119,7 +119,7 @@ jobs:
           .github/scripts/push_coverage_history.sh 'chore: record unit coverage'
 
       # The emulator already ran on the pull request, so its artifact is reused
-      # instead of booting another macOS runner. It is usually still running at
+      # instead of booting another emulator. It is usually still running at
       # merge time, so wait for it rather than recording the commit as having
       # no instrumentation data at all.
       - name: Wait for the pull request's emulator run
