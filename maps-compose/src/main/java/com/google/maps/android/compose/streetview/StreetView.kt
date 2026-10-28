@@ -191,7 +191,7 @@ private fun StreetViewPanoramaView.lifecycleObserver(
     previousState.value = event
 }
 
-private fun StreetViewPanoramaView.componentCallbacks2(): ComponentCallbacks2 = object : ComponentCallbacks2 {
+internal fun StreetViewPanoramaView.componentCallbacks2(): ComponentCallbacks2 = object : ComponentCallbacks2 {
     override fun onConfigurationChanged(config: Configuration) {}
 
     @Deprecated("Deprecated in Java", ReplaceWith("onTrimMemory(level)"))
@@ -200,6 +200,8 @@ private fun StreetViewPanoramaView.componentCallbacks2(): ComponentCallbacks2 = 
     }
 
     override fun onTrimMemory(level: Int) {
-        this@componentCallbacks2.onLowMemory()
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            this@componentCallbacks2.onLowMemory()
+        }
     }
 }
