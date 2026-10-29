@@ -17,11 +17,8 @@
 package com.google.maps.android.compose.data
 
 import android.graphics.Bitmap
-import android.os.Handler
-import android.os.Looper
 import androidx.annotation.RawRes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import com.google.maps.android.collections.GroundOverlayManager
 import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.collections.PolygonManager
@@ -45,6 +43,7 @@ import com.google.maps.android.data.renderer.model.DataLayer
 import com.google.maps.android.data.renderer.model.DataScene
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.withContext
 
 /**
@@ -74,7 +73,6 @@ public fun DataScene(
     groundOverlayManager: GroundOverlayManager? = null,
 ) {
     val reattach = rememberReattachClickListenersHandle()
-    var renderer by remember { mutableStateOf<MapViewRenderer?>(null) }
 
     MapEffect(
         iconProvider,
@@ -82,35 +80,32 @@ public fun DataScene(
         polygonManager,
         polylineManager,
         groundOverlayManager,
+        scene,
+        useAdvancedMarkers,
     ) { map ->
-        val newRenderer = MapViewRenderer(
+        val renderer = MapViewRenderer(
             map = map,
             iconProvider = iconProvider,
             markerManager = markerManager,
             polygonManager = polygonManager,
             polylineManager = polylineManager,
             groundOverlayManager = groundOverlayManager,
-        )
-        renderer = newRenderer
+        ).apply {
+            this.useAdvancedMarkers = useAdvancedMarkers
+        }
+        renderSceneWithCachedImages(renderer, scene)
         if (
             markerManager != null ||
             polygonManager != null ||
             polylineManager != null ||
             groundOverlayManager != null
         ) {
-            Handler(Looper.getMainLooper()).post {
-                reattach()
-            }
+            reattach()
         }
-    }
-
-    val currentRenderer = renderer ?: return
-
-    DisposableEffect(currentRenderer, scene, useAdvancedMarkers) {
-        currentRenderer.useAdvancedMarkers = useAdvancedMarkers
-        renderSceneWithCachedImages(currentRenderer, scene)
-        onDispose {
-            currentRenderer.clear()
+        try {
+            awaitCancellation()
+        } finally {
+            renderer.clear()
         }
     }
 }
@@ -163,6 +158,7 @@ public fun DataLayer(
  * @param polygonManager an optional [PolygonManager] to manage rendered polygons.
  * @param polylineManager an optional [PolylineManager] to manage rendered polylines.
  * @param groundOverlayManager an optional [GroundOverlayManager] to manage rendered ground overlays.
+ * @param onError an optional callback invoked with any [Throwable] encountered during loading or parsing.
  * @param onLayerLoaded an optional callback invoked with the parsed [DataLayer] (or `null` if
  * parsing failed).
  */
@@ -178,16 +174,28 @@ public fun DataLayer(
     polygonManager: PolygonManager? = null,
     polylineManager: PolylineManager? = null,
     groundOverlayManager: GroundOverlayManager? = null,
+    onError: ((Throwable) -> Unit)? = null,
     onLayerLoaded: (DataLayer?) -> Unit = {},
 ) {
     val context = LocalContext.current
     val onLayerLoadedState by rememberUpdatedState(onLayerLoaded)
-    var loadedLayer by remember(assetName) { mutableStateOf<DataLayer?>(null) }
+    val onErrorState by rememberUpdatedState(onError)
+    var loadedLayer by remember { mutableStateOf<DataLayer?>(null) }
 
     LaunchedEffect(context, assetName, ioDispatcher) {
-        val layer = DataLayerLoader(context, ioDispatcher).loadAsset(assetName)
-        loadedLayer = layer
-        onLayerLoadedState(layer)
+        val result = runCatching {
+            DataLayerLoader(context, ioDispatcher).loadAsset(assetName)
+        }
+        val layer = result.getOrNull()
+        if (layer != null) {
+            loadedLayer = layer
+            onLayerLoadedState(layer)
+        } else {
+            val error = result.exceptionOrNull()
+                ?: IllegalStateException("Failed to load DataLayer from asset: $assetName")
+            onErrorState?.invoke(error)
+            onLayerLoadedState(null)
+        }
     }
 
     loadedLayer?.let { layer ->
@@ -217,6 +225,7 @@ public fun DataLayer(
  * @param polygonManager an optional [PolygonManager] to manage rendered polygons.
  * @param polylineManager an optional [PolylineManager] to manage rendered polylines.
  * @param groundOverlayManager an optional [GroundOverlayManager] to manage rendered ground overlays.
+ * @param onError an optional callback invoked with any [Throwable] encountered during loading or parsing.
  * @param onLayerLoaded an optional callback invoked with the parsed [DataLayer] (or `null` if
  * parsing failed).
  */
@@ -233,22 +242,33 @@ public fun DataLayer(
     polygonManager: PolygonManager? = null,
     polylineManager: PolylineManager? = null,
     groundOverlayManager: GroundOverlayManager? = null,
+    onError: ((Throwable) -> Unit)? = null,
     onLayerLoaded: (DataLayer?) -> Unit = {},
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val onLayerLoadedState by rememberUpdatedState(onLayerLoaded)
-    var loadedLayer by remember(rawResourceId, fileName) { mutableStateOf<DataLayer?>(null) }
+    val onErrorState by rememberUpdatedState(onError)
+    var loadedLayer by remember { mutableStateOf<DataLayer?>(null) }
 
-    LaunchedEffect(context, rawResourceId, fileName, ioDispatcher) {
-        val layer = withContext(ioDispatcher) {
+    LaunchedEffect(context, resources, rawResourceId, fileName, ioDispatcher) {
+        val result = withContext(ioDispatcher) {
             runCatching {
-                context.resources.openRawResource(rawResourceId).use { stream ->
+                resources.openRawResource(rawResourceId).use { stream ->
                     DataLayerLoader(context, ioDispatcher).loadInputStream(stream, fileName)
                 }
-            }.getOrNull()
+            }
         }
-        loadedLayer = layer
-        onLayerLoadedState(layer)
+        val layer = result.getOrNull()
+        if (layer != null) {
+            loadedLayer = layer
+            onLayerLoadedState(layer)
+        } else {
+            val error = result.exceptionOrNull()
+                ?: IllegalStateException("Failed to load DataLayer from raw resource: $rawResourceId")
+            onErrorState?.invoke(error)
+            onLayerLoadedState(null)
+        }
     }
 
     loadedLayer?.let { layer ->

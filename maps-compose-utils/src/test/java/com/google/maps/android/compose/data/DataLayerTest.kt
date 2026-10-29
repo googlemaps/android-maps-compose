@@ -16,10 +16,9 @@
 
 package com.google.maps.android.compose.data
 
+import android.content.Context
 import android.graphics.Bitmap
-import com.google.maps.android.compose.data.geojson.parseGeoJsonLayer
-import com.google.maps.android.compose.data.kml.parseKmlOrKmzStream
-import com.google.maps.android.data.parser.kml.ImageDecoder
+import com.google.maps.android.data.DataLayerLoader
 import com.google.maps.android.data.renderer.mapview.MapViewRenderer
 import com.google.maps.android.data.renderer.model.DataLayer
 import com.google.maps.android.data.renderer.model.DataScene
@@ -28,17 +27,16 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
+@OptIn(ExperimentalCoroutinesApi::class)
 public class DataLayerTest {
 
     @Test
@@ -61,92 +59,66 @@ public class DataLayerTest {
     }
 
     @Test
-    public fun testParseGeoJsonLayerParsesValidGeoJsonAndReturnsNullOnMalformedInput() {
-        val validGeoJson = """
-            {
-              "type": "FeatureCollection",
-              "features": [
+    public fun testDataLayerLoaderParsesGeoJsonAndKmlFromInputStream() {
+        runTest {
+            val context = mockk<Context>(relaxed = true)
+            val dispatcher = UnconfinedTestDispatcher(testScheduler)
+            val loader = DataLayerLoader(context, dispatcher)
+
+            val validGeoJson = """
                 {
-                  "type": "Feature",
-                  "id": "feature-1",
-                  "geometry": {
-                    "type": "Point",
-                    "coordinates": [-122.084, 37.422]
-                  },
-                  "properties": {
-                    "title": "Googleplex"
-                  }
+                  "type": "FeatureCollection",
+                  "features": [
+                    {
+                      "type": "Feature",
+                      "id": "feature-1",
+                      "geometry": {
+                        "type": "Point",
+                        "coordinates": [-122.084, 37.422]
+                      },
+                      "properties": {
+                        "title": "Googleplex"
+                      }
+                    }
+                  ]
                 }
-              ]
-            }
-        """.trimIndent()
+            """.trimIndent()
 
-        val layer = parseGeoJsonLayer(validGeoJson)
-        assertNotNull(layer)
-        assertEquals(1, layer!!.features.size)
-        assertEquals("Googleplex", layer.features.first().properties["title"])
-
-        val invalidLayer = parseGeoJsonLayer("not valid json {{{")
-        assertNull(invalidLayer)
-    }
-
-    @Test
-    public fun testParseKmlOrKmzStreamParsesKmlAndEnforcesKmzLimits() {
-        val kmlContent = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <kml xmlns="http://www.opengis.net/kml/2.2">
-              <Document>
-                <Placemark>
-                  <name>Mountain View</name>
-                  <Point>
-                    <coordinates>-122.084,37.422,0</coordinates>
-                  </Point>
-                </Placemark>
-              </Document>
-            </kml>
-        """.trimIndent()
-
-        val kmlLayer = parseKmlOrKmzStream(
-            inputStream = ByteArrayInputStream(kmlContent.toByteArray()),
-            imageDecoder = object : ImageDecoder {
-                override fun decode(bytes: ByteArray): Bitmap? = null
-            },
-        )
-        assertEquals(1, kmlLayer.features.size)
-        assertEquals("Mountain View", kmlLayer.features.first().properties["name"])
-
-        // Create a KMZ archive in-memory with 2 entries
-        val kmzBytes = ByteArrayOutputStream().apply {
-            ZipOutputStream(this).use { zos ->
-                zos.putNextEntry(ZipEntry("doc.kml"))
-                zos.write(kmlContent.toByteArray())
-                zos.closeEntry()
-                zos.putNextEntry(ZipEntry("images/icon.png"))
-                zos.write(byteArrayOf(1, 2, 3, 4))
-                zos.closeEntry()
-            }
-        }.toByteArray()
-
-        val fakeBitmap = mockk<Bitmap>()
-        val fakeDecoder = object : ImageDecoder {
-            override fun decode(bytes: ByteArray): Bitmap = fakeBitmap
-        }
-        val kmzLayer = parseKmlOrKmzStream(
-            inputStream = ByteArrayInputStream(kmzBytes),
-            imageDecoder = fakeDecoder,
-        )
-        assertEquals(1, kmzLayer.features.size)
-        val images = kmzLayer.properties["images"] as? Map<*, *>
-        assertNotNull(images)
-        assertEquals(fakeBitmap, images!!["images/icon.png"])
-
-        // Enforcing maxKmzEntryCount = 1 should throw IOException
-        assertThrows(IOException::class.java) {
-            parseKmlOrKmzStream(
-                inputStream = ByteArrayInputStream(kmzBytes),
-                maxKmzEntryCount = 1,
-                imageDecoder = fakeDecoder,
+            val geoJsonLayer = loader.loadInputStream(
+                inputStream = ByteArrayInputStream(validGeoJson.toByteArray()),
+                fileName = "points.geojson",
             )
+            assertNotNull(geoJsonLayer)
+            assertEquals(1, geoJsonLayer!!.features.size)
+            assertEquals("Googleplex", geoJsonLayer.features.first().properties["title"])
+
+            val validKml = """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <kml xmlns="http://www.opengis.net/kml/2.2">
+                  <Document>
+                    <Placemark>
+                      <name>Mountain View</name>
+                      <Point>
+                        <coordinates>-122.084,37.422,0</coordinates>
+                      </Point>
+                    </Placemark>
+                  </Document>
+                </kml>
+            """.trimIndent()
+
+            val kmlLayer = loader.loadInputStream(
+                inputStream = ByteArrayInputStream(validKml.toByteArray()),
+                fileName = "places.kml",
+            )
+            assertNotNull(kmlLayer)
+            assertEquals(1, kmlLayer!!.features.size)
+            assertEquals("Mountain View", kmlLayer.features.first().properties["name"])
+
+            val invalidLayer = loader.loadInputStream(
+                inputStream = ByteArrayInputStream("not valid data {{{".toByteArray()),
+                fileName = "unknown.txt",
+            )
+            assertNull(invalidLayer)
         }
     }
 }

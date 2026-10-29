@@ -41,6 +41,18 @@ public final class com/google/maps/android/compose/clustering/ComposableSingleto
 	public final fun getLambda$773099471$maps_compose_utils ()Lkotlin/jvm/functions/Function3;
 }
 
+public final class com/google/maps/android/compose/data/DataLayerKt {
+	public static final fun DataLayer (ILjava/lang/String;Lcom/google/maps/android/data/renderer/IconProvider;ZLkotlinx/coroutines/CoroutineDispatcher;Lcom/google/maps/android/collections/MarkerManager;Lcom/google/maps/android/collections/PolygonManager;Lcom/google/maps/android/collections/PolylineManager;Lcom/google/maps/android/collections/GroundOverlayManager;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;III)V
+	public static final fun DataLayer (Lcom/google/maps/android/data/renderer/model/DataLayer;Lcom/google/maps/android/data/renderer/IconProvider;ZLcom/google/maps/android/collections/MarkerManager;Lcom/google/maps/android/collections/PolygonManager;Lcom/google/maps/android/collections/PolylineManager;Lcom/google/maps/android/collections/GroundOverlayManager;Landroidx/compose/runtime/Composer;II)V
+	public static final fun DataLayer (Ljava/lang/String;Lcom/google/maps/android/data/renderer/IconProvider;ZLkotlinx/coroutines/CoroutineDispatcher;Lcom/google/maps/android/collections/MarkerManager;Lcom/google/maps/android/collections/PolygonManager;Lcom/google/maps/android/collections/PolylineManager;Lcom/google/maps/android/collections/GroundOverlayManager;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)V
+	public static final fun DataScene (Lcom/google/maps/android/data/renderer/model/DataScene;Lcom/google/maps/android/data/renderer/IconProvider;ZLcom/google/maps/android/collections/MarkerManager;Lcom/google/maps/android/collections/PolygonManager;Lcom/google/maps/android/collections/PolylineManager;Lcom/google/maps/android/collections/GroundOverlayManager;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/google/maps/android/compose/heatmaps/HeatmapTileOverlayKt {
+	public static final fun HeatmapTileOverlay (Ljava/util/Collection;Lcom/google/maps/android/compose/TileOverlayState;ILcom/google/maps/android/heatmaps/Gradient;DDZFZFLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;III)V
+	public static final fun WeightedHeatmapTileOverlay (Ljava/util/Collection;Lcom/google/maps/android/compose/TileOverlayState;ILcom/google/maps/android/heatmaps/Gradient;DDZFZFLkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;III)V
+}
+
 public final class com/google/maps/android/compose/wms/WmsTileOverlayKt {
 	public static final fun WmsTileOverlay (Lkotlin/jvm/functions/Function5;Lcom/google/maps/android/compose/TileOverlayState;ZFZFLkotlin/jvm/functions/Function1;IILandroidx/compose/runtime/Composer;II)V
 }
