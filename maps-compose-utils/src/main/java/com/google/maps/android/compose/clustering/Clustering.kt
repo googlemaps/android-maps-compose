@@ -577,7 +577,7 @@ internal fun <T : ClusterItem> Clustering(
         onMarkerDragStart = clusterManager.markerManager::onMarkerDragStart,
     )
     val cameraPositionState = currentCameraPositionState
-    LaunchedEffect(cameraPositionState) {
+    LaunchedEffect(cameraPositionState, clusterManager) {
         snapshotFlow { cameraPositionState.isMoving }
             .collect { isMoving ->
                 if (!isMoving) {
@@ -643,8 +643,9 @@ internal fun <T : ClusterItem> Clustering(
  *
  * @param clusterManager the [ClusterManager] that manages the clusters
  * @param executor an optional [Executor] used by [DefaultClusterRenderer] to process view
- * modifications off the main thread. Tests can pass a direct executor to make rendering
- * deterministic.
+ * modifications off the main thread. Must be remembered across recompositions (e.g. with [remember])
+ * to avoid recreating the renderer on every recomposition. Tests can pass a direct executor to make
+ * rendering deterministic.
  */
 @Composable
 @GoogleMapComposable
@@ -657,13 +658,21 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
 
     clusterManager ?: return null
-    MapEffect(context, executor) { map ->
-        val renderer = ReportingDefaultClusterRenderer(
-            context = context,
-            map = map,
-            clusterManager = clusterManager,
-            executor = executor ?: Executors.newSingleThreadExecutor(),
-        )
+    MapEffect(context, clusterManager, executor) { map ->
+        val renderer = if (executor != null) {
+            ReportingDefaultClusterRenderer(
+                context = context,
+                map = map,
+                clusterManager = clusterManager,
+                executor = executor,
+            )
+        } else {
+            ReportingDefaultClusterRenderer(
+                context = context,
+                map = map,
+                clusterManager = clusterManager,
+            )
+        }
         clusterRendererState.value = renderer
     }
 
@@ -701,8 +710,9 @@ public fun <T : ClusterItem> rememberClusterRenderer(clusterManager: ClusterMana
  * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
  * @param clusterManager the [ClusterManager] that manages the clusters
  * @param executor an optional [Executor] used by [DefaultClusterRenderer] to process view
- * modifications off the main thread. Tests can pass a direct executor to make rendering
- * deterministic.
+ * modifications off the main thread. Must be remembered across recompositions (e.g. with [remember])
+ * to avoid recreating the renderer on every recomposition. Tests can pass a direct executor to make
+ * rendering deterministic.
  */
 @Composable
 @GoogleMapComposable
@@ -732,23 +742,41 @@ public fun <T : ClusterItem> rememberClusterRenderer(
     val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
 
     clusterManager ?: return null
-    MapEffect(context, executor) { map ->
-        val renderer = ComposeUiClusterRenderer(
-            context,
-            scope = this,
-            map,
-            clusterManager,
-            viewRendererState,
-            clusterContentState,
-            clusterItemContentState,
-            clusterContentAnchorState,
-            clusterItemContentAnchorState,
-            clusterContentZIndexState,
-            clusterItemContentZIndexState,
-            clusterContentRotationState,
-            clusterItemContentRotationState,
-            executor = executor ?: Executors.newSingleThreadExecutor(),
-        )
+    MapEffect(context, clusterManager, executor) { map ->
+        val renderer = if (executor != null) {
+            ComposeUiClusterRenderer(
+                context = context,
+                scope = this,
+                map = map,
+                clusterManager = clusterManager,
+                viewRendererState = viewRendererState,
+                clusterContentState = clusterContentState,
+                clusterItemContentState = clusterItemContentState,
+                clusterContentAnchorState = clusterContentAnchorState,
+                clusterItemContentAnchorState = clusterItemContentAnchorState,
+                clusterContentZIndexState = clusterContentZIndexState,
+                clusterItemContentZIndexState = clusterItemContentZIndexState,
+                clusterContentRotationState = clusterContentRotationState,
+                clusterItemContentRotationState = clusterItemContentRotationState,
+                executor = executor,
+            )
+        } else {
+            ComposeUiClusterRenderer(
+                context = context,
+                scope = this,
+                map = map,
+                clusterManager = clusterManager,
+                viewRendererState = viewRendererState,
+                clusterContentState = clusterContentState,
+                clusterItemContentState = clusterItemContentState,
+                clusterContentAnchorState = clusterContentAnchorState,
+                clusterItemContentAnchorState = clusterItemContentAnchorState,
+                clusterContentZIndexState = clusterContentZIndexState,
+                clusterItemContentZIndexState = clusterItemContentZIndexState,
+                clusterContentRotationState = clusterContentRotationState,
+                clusterItemContentRotationState = clusterItemContentRotationState,
+            )
+        }
         clusterRendererState.value = renderer
         awaitCancellation()
     }
@@ -794,9 +822,12 @@ public fun <T : ClusterItem> rememberClusterRenderer(
  * Remembers a [ClusterManager] configured with the given coroutine contexts.
  *
  * @param mainContext the coroutine context used to deliver clusters to the renderer. It must
- * dispatch on the main thread.
+ * dispatch on the main thread. Custom contexts (e.g. `Dispatchers.Main + job`) must be remembered
+ * across recompositions (e.g. with [remember]) to avoid recreating the manager on every recomposition.
  * @param backgroundContext the coroutine context used to compute clusters off the main thread.
- * Tests can pass a test dispatcher for both contexts to make clustering deterministic.
+ * Custom contexts (e.g. `Dispatchers.Default + job`) must be remembered across recompositions (e.g.
+ * with [remember]) to avoid recreating the manager on every recomposition. Tests can pass a test
+ * dispatcher for both contexts to make clustering deterministic.
  */
 @Composable
 @GoogleMapComposable
@@ -910,15 +941,24 @@ private fun ResetMapListeners(clusterManager: ClusterManager<*>) {
     }
 }
 
-internal class ReportingDefaultClusterRenderer<T : ClusterItem>(
-    context: Context,
-    map: GoogleMap,
-    clusterManager: ClusterManager<T>,
-    executor: Executor = Executors.newSingleThreadExecutor(),
-) : DefaultClusterRenderer<T>(context, map, clusterManager, executor),
+internal class ReportingDefaultClusterRenderer<T : ClusterItem> :
+    DefaultClusterRenderer<T>,
     ClusterRendererItemState<T> {
 
     override val unclusteredItems = mutableStateOf(emptySet<T>())
+
+    constructor(
+        context: Context,
+        map: GoogleMap,
+        clusterManager: ClusterManager<T>,
+    ) : super(context, map, clusterManager)
+
+    constructor(
+        context: Context,
+        map: GoogleMap,
+        clusterManager: ClusterManager<T>,
+        executor: Executor,
+    ) : super(context, map, clusterManager, executor)
 
     override fun onClustersChanged(clusters: Set<Cluster<T>>) {
         super.onClustersChanged(clusters)

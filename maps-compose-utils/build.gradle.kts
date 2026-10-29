@@ -51,6 +51,9 @@ android {
     }
 
     testOptions {
+        // Required to instantiate DefaultClusterRenderer in unit tests: its inner ViewModifier
+        // subclasses android.os.Handler(Looper.getMainLooper()), and JVM bytecode rules prevent
+        // MockK from skipping the superclass Handler.<init> call in android.jar.
         unitTests.isReturnDefaultValues = true
     }
 }
