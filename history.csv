@@ -236,3 +236,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-26T16:50:37Z,dd7507b,1053,ci: run instrumentation tests on Ubuntu with KVM and skip redundant runs,instrumentation,maps-compose-utils,413,759,54.41,142,470,30.21,3072,6054,50.74
 2026-10-26T16:50:37Z,dd7507b,1053,ci: run instrumentation tests on Ubuntu with KVM and skip redundant runs,instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
 2026-10-26T16:50:37Z,dd7507b,1053,ci: run instrumentation tests on Ubuntu with KVM and skip redundant runs,instrumentation,TOTAL,2585,5478,47.19,807,2336,34.55,19071,43708,43.63
+2026-10-29T00:22:00Z,3f9353b,1043,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,unit,maps-compose,307,2009,15.28,69,1834,3.76,2257,25366,8.9
+2026-10-29T00:22:00Z,3f9353b,1043,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
+2026-10-29T00:22:00Z,3f9353b,1043,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
+2026-10-29T00:22:00Z,3f9353b,1043,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,unit,TOTAL,345,2779,12.41,90,2372,3.79,2475,34365,7.2

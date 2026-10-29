@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `dd7507b` (#1053), recorded 2026-10-26T16:50:32Z.
+Measured at `3f9353b` (#1043), recorded 2026-10-29T00:22:00Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-29 | `3f9353b` | #1043 | 12.41% | 0.00 | n/a | n/a | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |
 | 2026-10-26 | `dd7507b` | #1053 | 12.41% | 0.00 | 47.19% | n/a | ci: run instrumentation tests on Ubuntu with KVM and skip redundant runs |
 | 2026-10-23 | `65a4d89` | #1051 | 12.41% | +0.27 | n/a | n/a | fix: check trim memory level in onTrimMemory() implementations |
 | 2026-10-23 | `366fe16` | #1052 | 12.14% | 0.00 | 47.19% | +18.00 | ci: add workflow to publish -SNAPSHOT builds to Maven Central |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-09-22 | `b0d6420` | #1009 | 0.42% | 0.00 | 20.83% | n/a | feat(ci): publish an instrumented coverage badge |
 | 2026-09-18 | `0eae049` | #996 | 0.42% | 0.00 | n/a | n/a | chore(deps): bump github/codeql-action/upload-sarif |
 | 2026-09-17 | `2405308` | #1006 | 0.42% | 0.00 | 20.87% | 0.00 | ci: move coverage history off main and wait for the emulator run |
-| 2026-09-15 | `a24cc53` | #1000 | 0.42% | 0.00 | 20.87% | n/a | ci: record unit and instrumentation test coverage history |
