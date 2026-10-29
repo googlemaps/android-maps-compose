@@ -17,14 +17,12 @@
 package com.google.maps.android.compose.heatmaps
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
 import com.google.maps.android.compose.GoogleMapComposable
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.TileOverlayState
 import com.google.maps.android.compose.rememberTileOverlayState
@@ -54,6 +52,7 @@ import com.google.maps.android.heatmaps.WeightedLatLng
  */
 @Composable
 @GoogleMapComposable
+@MapsComposeExperimentalApi
 public fun HeatmapTileOverlay(
     data: Collection<LatLng>,
     state: TileOverlayState = rememberTileOverlayState(),
@@ -107,6 +106,7 @@ public fun HeatmapTileOverlay(
  */
 @Composable
 @GoogleMapComposable
+@MapsComposeExperimentalApi
 @JvmName("WeightedHeatmapTileOverlay")
 public fun HeatmapTileOverlay(
     weightedData: Collection<WeightedLatLng>,
@@ -123,21 +123,60 @@ public fun HeatmapTileOverlay(
 ) {
     if (weightedData.isEmpty()) return
 
-    var holder by remember { mutableStateOf<HeatmapProviderHolder?>(null) }
-    val currentHolder = updateHeatmapProviderHolder(
-        existing = holder,
-        weightedData = weightedData,
-        radius = radius,
-        gradient = gradient,
-        opacity = opacity,
-        maxIntensity = maxIntensity,
-    )
-    if (holder !== currentHolder) {
-        holder = currentHolder
+    val provider = remember {
+        HeatmapTileProvider.Builder()
+            .weightedData(weightedData)
+            .radius(radius)
+            .gradient(gradient)
+            .opacity(opacity)
+            .maxIntensity(maxIntensity)
+            .build()
+    }
+
+    val currentParams = remember {
+        HeatmapParams(
+            radius = radius,
+            opacity = opacity,
+            maxIntensity = maxIntensity,
+            gradient = gradient,
+            weightedData = weightedData,
+        )
+    }
+
+    SideEffect {
+        var changed = false
+        if (currentParams.radius != radius) {
+            provider.setRadius(radius)
+            currentParams.radius = radius
+            changed = true
+        }
+        if (currentParams.opacity != opacity) {
+            provider.setOpacity(opacity)
+            currentParams.opacity = opacity
+            changed = true
+        }
+        if (currentParams.maxIntensity != maxIntensity) {
+            provider.setMaxIntensity(maxIntensity)
+            currentParams.maxIntensity = maxIntensity
+            changed = true
+        }
+        if (!gradientsEqual(currentParams.gradient, gradient)) {
+            provider.setGradient(gradient)
+            currentParams.gradient = gradient
+            changed = true
+        }
+        if (currentParams.weightedData != weightedData) {
+            provider.updateData(weightedData)
+            currentParams.weightedData = weightedData
+            changed = true
+        }
+        if (changed) {
+            runCatching { state.clearTileCache() }
+        }
     }
 
     TileOverlay(
-        tileProvider = currentHolder.provider,
+        tileProvider = provider,
         state = state,
         fadeIn = fadeIn,
         transparency = transparency,
@@ -145,79 +184,20 @@ public fun HeatmapTileOverlay(
         zIndex = zIndex,
         onClick = onClick,
     )
-
-    LaunchedEffect(currentHolder.version) {
-        if (currentHolder.version > 0) {
-            runCatching { state.clearTileCache() }
-        }
-    }
 }
 
-internal class HeatmapProviderHolder(
-    val provider: HeatmapTileProvider,
-    var weightedData: Collection<WeightedLatLng>,
+private class HeatmapParams(
     var radius: Int,
-    var gradient: Gradient,
     var opacity: Double,
     var maxIntensity: Double,
-    var version: Int = 0,
+    var gradient: Gradient,
+    var weightedData: Collection<WeightedLatLng>,
 )
 
-internal fun updateHeatmapProviderHolder(
-    existing: HeatmapProviderHolder?,
-    weightedData: Collection<WeightedLatLng>,
-    radius: Int,
-    gradient: Gradient,
-    opacity: Double,
-    maxIntensity: Double,
-): HeatmapProviderHolder {
-    if (existing == null) {
-        val provider = HeatmapTileProvider.Builder()
-            .weightedData(weightedData)
-            .radius(radius)
-            .gradient(gradient)
-            .opacity(opacity)
-            .maxIntensity(maxIntensity)
-            .build()
-        return HeatmapProviderHolder(
-            provider = provider,
-            weightedData = weightedData,
-            radius = radius,
-            gradient = gradient,
-            opacity = opacity,
-            maxIntensity = maxIntensity,
-            version = 0,
-        )
-    }
-
-    var changed = false
-    if (existing.weightedData != weightedData) {
-        existing.provider.updateData(weightedData)
-        existing.weightedData = weightedData
-        changed = true
-    }
-    if (existing.radius != radius) {
-        existing.provider.setRadius(radius)
-        existing.radius = radius
-        changed = true
-    }
-    if (existing.gradient != gradient) {
-        existing.provider.setGradient(gradient)
-        existing.gradient = gradient
-        changed = true
-    }
-    if (existing.opacity != opacity) {
-        existing.provider.setOpacity(opacity)
-        existing.opacity = opacity
-        changed = true
-    }
-    if (existing.maxIntensity != maxIntensity) {
-        existing.provider.setMaxIntensity(maxIntensity)
-        existing.maxIntensity = maxIntensity
-        changed = true
-    }
-    if (changed) {
-        existing.version++
-    }
-    return existing
+internal fun gradientsEqual(g1: Gradient?, g2: Gradient?): Boolean {
+    if (g1 === g2) return true
+    if (g1 == null || g2 == null) return false
+    return g1.colorMapSize == g2.colorMapSize &&
+        g1.colors.contentEquals(g2.colors) &&
+        g1.startPoints.contentEquals(g2.startPoints)
 }
