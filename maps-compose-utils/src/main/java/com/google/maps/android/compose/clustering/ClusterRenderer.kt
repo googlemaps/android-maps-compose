@@ -58,7 +58,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
-import java.util.concurrent.Executors
 
 internal interface ClusterRendererItemState<T : ClusterItem> {
     val unclusteredItems: State<Set<T>>
@@ -69,28 +68,80 @@ internal interface ClusterRendererItemState<T : ClusterItem> {
  * [clusterContentState] renders clusters, and [clusterItemContentState] renders non-clustered
  * items.
  */
-internal class ComposeUiClusterRenderer<T : ClusterItem>(
-    private val context: Context,
-    private val scope: CoroutineScope,
-    map: GoogleMap,
-    clusterManager: ClusterManager<T>,
-    private val viewRendererState: State<ComposeUiViewRenderer>,
-    private val clusterContentState: State<@Composable ((Cluster<T>) -> Unit)?>,
-    private val clusterItemContentState: State<@Composable ((T) -> Unit)?>,
-    private val clusterContentAnchorState: State<Offset>,
-    private val clusterItemContentAnchorState: State<Offset>,
-    private val clusterContentZIndexState: State<Float>,
-    private val clusterItemContentZIndexState: State<Float>,
-    private val clusterContentRotationState: State<Float>,
-    private val clusterItemContentRotationState: State<Float>,
-    executor: Executor = Executors.newSingleThreadExecutor(),
-) : DefaultClusterRenderer<T>(
-    context,
-    map,
-    clusterManager,
-    executor,
-),
+internal class ComposeUiClusterRenderer<T : ClusterItem> :
+    DefaultClusterRenderer<T>,
     ClusterRendererItemState<T> {
+
+    private val context: Context
+    private val scope: CoroutineScope
+    private val viewRendererState: State<ComposeUiViewRenderer>
+    private val clusterContentState: State<@Composable ((Cluster<T>) -> Unit)?>
+    private val clusterItemContentState: State<@Composable ((T) -> Unit)?>
+    private val clusterContentAnchorState: State<Offset>
+    private val clusterItemContentAnchorState: State<Offset>
+    private val clusterContentZIndexState: State<Float>
+    private val clusterItemContentZIndexState: State<Float>
+    private val clusterContentRotationState: State<Float>
+    private val clusterItemContentRotationState: State<Float>
+
+    constructor(
+        context: Context,
+        scope: CoroutineScope,
+        map: GoogleMap,
+        clusterManager: ClusterManager<T>,
+        viewRendererState: State<ComposeUiViewRenderer>,
+        clusterContentState: State<@Composable ((Cluster<T>) -> Unit)?>,
+        clusterItemContentState: State<@Composable ((T) -> Unit)?>,
+        clusterContentAnchorState: State<Offset>,
+        clusterItemContentAnchorState: State<Offset>,
+        clusterContentZIndexState: State<Float>,
+        clusterItemContentZIndexState: State<Float>,
+        clusterContentRotationState: State<Float>,
+        clusterItemContentRotationState: State<Float>,
+    ) : super(context, map, clusterManager) {
+        this.context = context
+        this.scope = scope
+        this.viewRendererState = viewRendererState
+        this.clusterContentState = clusterContentState
+        this.clusterItemContentState = clusterItemContentState
+        this.clusterContentAnchorState = clusterContentAnchorState
+        this.clusterItemContentAnchorState = clusterItemContentAnchorState
+        this.clusterContentZIndexState = clusterContentZIndexState
+        this.clusterItemContentZIndexState = clusterItemContentZIndexState
+        this.clusterContentRotationState = clusterContentRotationState
+        this.clusterItemContentRotationState = clusterItemContentRotationState
+        startObservingProperties()
+    }
+
+    constructor(
+        context: Context,
+        scope: CoroutineScope,
+        map: GoogleMap,
+        clusterManager: ClusterManager<T>,
+        viewRendererState: State<ComposeUiViewRenderer>,
+        clusterContentState: State<@Composable ((Cluster<T>) -> Unit)?>,
+        clusterItemContentState: State<@Composable ((T) -> Unit)?>,
+        clusterContentAnchorState: State<Offset>,
+        clusterItemContentAnchorState: State<Offset>,
+        clusterContentZIndexState: State<Float>,
+        clusterItemContentZIndexState: State<Float>,
+        clusterContentRotationState: State<Float>,
+        clusterItemContentRotationState: State<Float>,
+        executor: Executor,
+    ) : super(context, map, clusterManager, executor) {
+        this.context = context
+        this.scope = scope
+        this.viewRendererState = viewRendererState
+        this.clusterContentState = clusterContentState
+        this.clusterItemContentState = clusterItemContentState
+        this.clusterContentAnchorState = clusterContentAnchorState
+        this.clusterItemContentAnchorState = clusterItemContentAnchorState
+        this.clusterContentZIndexState = clusterContentZIndexState
+        this.clusterItemContentZIndexState = clusterItemContentZIndexState
+        this.clusterContentRotationState = clusterContentRotationState
+        this.clusterItemContentRotationState = clusterItemContentRotationState
+        startObservingProperties()
+    }
 
     override val unclusteredItems = mutableStateOf(emptySet<T>())
 
@@ -114,7 +165,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         }
     }
 
-    init {
+    private fun startObservingProperties() {
         // Observe top-level Clustering property state updates across rotation, anchor, and zIndex.
         // When these states update from a parent recomposition, actively push the updated values
         // to any existing Marker objects currently on the map.
@@ -336,7 +387,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         }
     }
 
-    override fun onBeforeClusterItemRendered(item: T, markerOptions: MarkerOptions) {
+    public override fun onBeforeClusterItemRendered(item: T, markerOptions: MarkerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions)
         if (!scope.isActive) return
 
@@ -359,7 +410,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         }
     }
 
-    override fun onClusterUpdated(cluster: Cluster<T>, marker: Marker) {
+    public override fun onClusterUpdated(cluster: Cluster<T>, marker: Marker) {
         super.onClusterUpdated(cluster, marker)
         if (!scope.isActive) return
         if (clusterContentState.value != null) {
@@ -374,14 +425,15 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
         }
     }
 
-    override fun onClusterItemUpdated(item: T, marker: Marker) {
+    public override fun onClusterItemUpdated(item: T, marker: Marker) {
         super.onClusterItemUpdated(item, marker)
         if (!scope.isActive) return
         if (clusterItemContentState.value != null) {
-            val viewInfo = keysToViews[ViewKey.Item(item)] ?: createAndAddView(ViewKey.Item(item))
+            val existingViewInfo = keysToViews[ViewKey.Item(item)]
+            val viewInfo = existingViewInfo ?: createAndAddView(ViewKey.Item(item))
             applyClusterItemMarkerProperties(
                 marker = marker,
-                icon = renderViewToBitmapDescriptor(viewInfo.view),
+                icon = if (existingViewInfo == null) renderViewToBitmapDescriptor(viewInfo.view) else null,
                 properties = viewInfo.view.properties,
                 defaultAnchor = clusterItemContentAnchorState.value,
                 defaultZIndex = clusterItemContentZIndexState.value,
@@ -493,13 +545,15 @@ internal fun applyClusterMarkerProperties(
 
 internal fun applyClusterItemMarkerProperties(
     marker: Marker,
-    icon: BitmapDescriptor,
+    icon: BitmapDescriptor? = null,
     properties: ClusteringMarkerProperties,
     defaultAnchor: Offset,
     defaultZIndex: Float,
     defaultRotation: Float,
 ) {
-    marker.setIcon(icon)
+    if (icon != null) {
+        marker.setIcon(icon)
+    }
     applyClusterMarkerProperties(
         marker = marker,
         properties = properties,
