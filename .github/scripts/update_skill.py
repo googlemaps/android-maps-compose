@@ -47,7 +47,7 @@ def get_gemini_response(api_key, prompt):
 def main():
     api_key = os.getenv("GEMINI_API_KEY")
     diff_file = os.getenv("DIFF_FILE", "release_diff.patch")
-    skill_file = os.getenv("SKILL_FILE", ".gemini/skills/android-maps-compose/SKILL.md")
+    skill_file = os.getenv("SKILL_FILE", ".agents/skills/android-maps-compose/SKILL.md")
 
     if not api_key:
         print("GEMINI_API_KEY not found", file=sys.stderr)
