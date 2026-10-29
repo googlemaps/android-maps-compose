@@ -49,10 +49,6 @@ android {
             enableAndroidTestCoverage = true
         }
     }
-
-    testOptions {
-        unitTests.isReturnDefaultValues = true
-    }
 }
 
 kotlin {
@@ -90,5 +86,6 @@ dependencies {
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
     testImplementation(libs.test.junit)
 }
