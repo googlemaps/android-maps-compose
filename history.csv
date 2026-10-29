@@ -249,3 +249,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-29T19:46:22Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
 2026-10-29T19:46:22Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
 2026-10-29T19:46:22Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",unit,TOTAL,345,2779,12.41,90,2372,3.79,2475,34365,7.2
+2026-10-29T19:46:26Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",instrumentation,maps-app,499,2388,20.9,79,422,18.72,4779,20287,23.56
+2026-10-29T19:46:26Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",instrumentation,maps-compose,1556,2182,71.31,568,1396,40.69,10529,16478,63.9
+2026-10-29T19:46:26Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",instrumentation,maps-compose-utils,413,759,54.41,142,470,30.21,3072,6054,50.74
+2026-10-29T19:46:26Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
+2026-10-29T19:46:26Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",instrumentation,TOTAL,2580,5478,47.1,804,2336,34.42,19030,43708,43.54
