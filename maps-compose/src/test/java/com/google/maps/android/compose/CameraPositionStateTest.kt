@@ -37,6 +37,20 @@ public class CameraPositionStateTest {
     }
 
     @Test
+    public fun testBindingMapAppliesInitialCameraPosition() {
+        val state = CameraPositionState(position = explicitPosition)
+        val calls = mutableListOf<FakeCall>()
+
+        state.setMap(fakeGoogleMap(calls))
+
+        assertEquals(
+            listOf(moveCameraTo(explicitPosition)),
+            calls.filter { it.method == "moveCamera" },
+        )
+        assertEquals(explicitPosition, state.position)
+    }
+
+    @Test
     public fun testSettingPositionWhileUnboundOverridesPendingMove() {
         val state = CameraPositionState()
         state.move(CameraUpdateFactory.zoomTo(3f))
