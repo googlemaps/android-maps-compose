@@ -77,7 +77,8 @@ import kotlinx.coroutines.launch
  * @param contentDescription the content description for the map used by accessibility services to
  * describe the map. If none is specified, the default is "Google Map".
  * @param googleMapOptionsFactory the block for creating the [GoogleMapOptions] provided when the
- * map is created
+ * map is created. Its camera is overridden by [cameraPositionState]'s position; configure the
+ * initial camera through [cameraPositionState].
  * @param properties the properties for the map
  * @param locationSource the [LocationSource] to be used to provide location data
  * @param uiSettings the [MapUiSettings] to be used for UI-specific settings on the map
@@ -178,6 +179,9 @@ public fun GoogleMap(
         modifier = if (focusable) modifier.focusable() else modifier,
         factory = { context ->
             val baseOptions = googleMapOptionsFactory()
+            // Match the camera applied by CameraPositionState.setMap when the map attaches,
+            // avoiding a startup jump from a different options camera.
+            baseOptions.camera(cameraPositionState.position)
             val isLiteMode = baseOptions.liteMode == true
             // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
             // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
