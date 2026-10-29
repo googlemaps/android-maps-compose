@@ -98,3 +98,11 @@ tasks.register<Exec>("installAndLaunch") {
     dependsOn(":maps-app:installDebug")
     commandLine("adb", "shell", "am", "start", "-n", "com.google.maps.android.compose/.demo.MainActivity")
 }
+
+spotless {
+    kotlin {
+        target("snippets/**/*.kt")
+        targetExclude("**/build/**/*.kt")
+        ktfmt("0.46").googleStyle()
+    }
+}
