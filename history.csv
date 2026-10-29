@@ -245,3 +245,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-29T00:22:04Z,3f9353b,1043,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,instrumentation,maps-compose-utils,413,759,54.41,142,470,30.21,3072,6054,50.74
 2026-10-29T00:22:04Z,3f9353b,1043,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
 2026-10-29T00:22:04Z,3f9353b,1043,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,instrumentation,TOTAL,2579,5478,47.08,805,2336,34.46,19028,43708,43.53
+2026-10-29T19:46:22Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",unit,maps-compose,307,2009,15.28,69,1834,3.76,2257,25366,8.9
+2026-10-29T19:46:22Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
+2026-10-29T19:46:22Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",unit,maps-compose-widgets,0,146,0.0,0,68,0.0,0,1488,0.0
+2026-10-29T19:46:22Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",unit,TOTAL,345,2779,12.41,90,2372,3.79,2475,34365,7.2
