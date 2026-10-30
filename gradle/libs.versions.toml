@@ -7,7 +7,7 @@ androidCompileSdk = "37"
 androidMinSdk = "23"
 androidTargetSdk = "37"
 
-agp = "9.4.1"
+agp = "9.5.0"
 dependencyAnalysis = "3.19.2"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.37.0"
@@ -30,7 +30,7 @@ materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
-mapsutils = "6.0.0"
+mapsutils = "6.1.0"
 
 # Testing
 androidCore = "1.7.0"
