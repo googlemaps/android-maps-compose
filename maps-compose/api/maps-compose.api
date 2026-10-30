@@ -1,3 +1,26 @@
+public abstract interface class com/google/maps/android/compose/AbstractMapViewDelegate {
+	public abstract fun awaitMap (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getMapView ()Landroid/view/View;
+	public abstract fun onCreate (Landroid/os/Bundle;)V
+	public abstract fun onDestroy ()V
+	public abstract fun onLowMemory ()V
+	public abstract fun onPause ()V
+	public abstract fun onResume ()V
+	public abstract fun onStart ()V
+	public abstract fun onStop ()V
+	public fun renderComposableToBitmap (Landroidx/compose/runtime/CompositionContext;Lkotlin/jvm/functions/Function2;)Landroid/graphics/Bitmap;
+	public fun renderComposeViewOnce (Landroidx/compose/ui/platform/AbstractComposeView;Landroidx/compose/runtime/CompositionContext;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun renderComposeViewOnce$default (Lcom/google/maps/android/compose/AbstractMapViewDelegate;Landroidx/compose/ui/platform/AbstractComposeView;Landroidx/compose/runtime/CompositionContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public fun startRenderingComposeView (Landroidx/compose/ui/platform/AbstractComposeView;Landroidx/compose/runtime/CompositionContext;)Lcom/google/maps/android/compose/ComposeUiViewRenderer$RenderHandle;
+}
+
+public final class com/google/maps/android/compose/AbstractMapViewDelegate$DefaultImpls {
+	public static fun renderComposableToBitmap (Lcom/google/maps/android/compose/AbstractMapViewDelegate;Landroidx/compose/runtime/CompositionContext;Lkotlin/jvm/functions/Function2;)Landroid/graphics/Bitmap;
+	public static fun renderComposeViewOnce (Lcom/google/maps/android/compose/AbstractMapViewDelegate;Landroidx/compose/ui/platform/AbstractComposeView;Landroidx/compose/runtime/CompositionContext;Lkotlin/jvm/functions/Function1;)V
+	public static synthetic fun renderComposeViewOnce$default (Lcom/google/maps/android/compose/AbstractMapViewDelegate;Landroidx/compose/ui/platform/AbstractComposeView;Landroidx/compose/runtime/CompositionContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static fun startRenderingComposeView (Lcom/google/maps/android/compose/AbstractMapViewDelegate;Landroidx/compose/ui/platform/AbstractComposeView;Landroidx/compose/runtime/CompositionContext;)Lcom/google/maps/android/compose/ComposeUiViewRenderer$RenderHandle;
+}
+
 public final class com/google/maps/android/compose/CameraMoveStartedReason : java/lang/Enum {
 	public static final field API_ANIMATION Lcom/google/maps/android/compose/CameraMoveStartedReason;
 	public static final field Companion Lcom/google/maps/android/compose/CameraMoveStartedReason$Companion;
@@ -51,7 +74,7 @@ public final class com/google/maps/android/compose/ComposableSingletons$GoogleMa
 	public static final field INSTANCE Lcom/google/maps/android/compose/ComposableSingletons$GoogleMapKt;
 	public fun <init> ()V
 	public final fun getLambda$-400333435$maps_compose ()Lkotlin/jvm/functions/Function2;
-	public final fun getLambda$2113725804$maps_compose ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$156304926$maps_compose ()Lkotlin/jvm/functions/Function2;
 }
 
 public final class com/google/maps/android/compose/ComposeMapColorScheme : java/lang/Enum {
@@ -98,7 +121,7 @@ public abstract interface annotation class com/google/maps/android/compose/Googl
 }
 
 public final class com/google/maps/android/compose/GoogleMapKt {
-	public static final fun GoogleMap (Landroidx/compose/ui/Modifier;ZZLcom/google/maps/android/compose/CameraPositionState;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Lcom/google/maps/android/compose/MapProperties;Lcom/google/android/gms/maps/LocationSource;Lcom/google/maps/android/compose/MapUiSettings;Lcom/google/maps/android/compose/IndoorStateChangeListener;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/foundation/layout/PaddingValues;Lcom/google/maps/android/compose/ComposeMapColorScheme;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;III)V
+	public static final fun GoogleMap (Landroidx/compose/ui/Modifier;ZZLcom/google/maps/android/compose/CameraPositionState;Ljava/lang/String;Lkotlin/jvm/functions/Function0;Lcom/google/maps/android/compose/MapProperties;Lcom/google/android/gms/maps/LocationSource;Lcom/google/maps/android/compose/MapUiSettings;Lcom/google/maps/android/compose/IndoorStateChangeListener;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/foundation/layout/PaddingValues;Lcom/google/maps/android/compose/ComposeMapColorScheme;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;IIII)V
 	public static final fun googleMapFactory (Landroidx/compose/ui/Modifier;Lcom/google/maps/android/compose/CameraPositionState;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)Lkotlin/jvm/functions/Function2;
 }
 
@@ -219,6 +242,24 @@ public final class com/google/maps/android/compose/MapUiSettingsKt {
 
 public final class com/google/maps/android/compose/MapUpdaterKt {
 	public static final fun getDefaultMapContentPadding ()Landroidx/compose/foundation/layout/PaddingValues;
+}
+
+public final class com/google/maps/android/compose/MapViewDelegate : com/google/maps/android/compose/AbstractMapViewDelegate {
+	public static final field $stable I
+	public fun <init> (Lcom/google/android/gms/maps/MapView;)V
+	public fun awaitMap (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public synthetic fun getMapView ()Landroid/view/View;
+	public fun getMapView ()Lcom/google/android/gms/maps/MapView;
+	public fun onCreate (Landroid/os/Bundle;)V
+	public fun onDestroy ()V
+	public fun onLowMemory ()V
+	public fun onPause ()V
+	public fun onResume ()V
+	public fun onStart ()V
+	public fun onStop ()V
+	public fun renderComposableToBitmap (Landroidx/compose/runtime/CompositionContext;Lkotlin/jvm/functions/Function2;)Landroid/graphics/Bitmap;
+	public fun renderComposeViewOnce (Landroidx/compose/ui/platform/AbstractComposeView;Landroidx/compose/runtime/CompositionContext;Lkotlin/jvm/functions/Function1;)V
+	public fun startRenderingComposeView (Landroidx/compose/ui/platform/AbstractComposeView;Landroidx/compose/runtime/CompositionContext;)Lcom/google/maps/android/compose/ComposeUiViewRenderer$RenderHandle;
 }
 
 public abstract interface annotation class com/google/maps/android/compose/MapsComposeExperimentalApi : java/lang/annotation/Annotation {

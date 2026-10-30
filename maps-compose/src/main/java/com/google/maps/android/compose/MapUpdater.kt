@@ -109,7 +109,7 @@ public val DefaultMapContentPadding: PaddingValues = PaddingValues()
 @Composable
 internal inline fun MapUpdater(mapUpdaterState: MapUpdaterState) = with(mapUpdaterState) {
     val map = (currentComposer.applier as MapApplier).map
-    val mapView = (currentComposer.applier as MapApplier).mapView
+    val mapView = (currentComposer.applier as MapApplier).mapViewDelegate.mapView
     val isLiteMode = (currentComposer.applier as MapApplier).isLiteMode
     if (mergeDescendants) {
         mapView.importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
