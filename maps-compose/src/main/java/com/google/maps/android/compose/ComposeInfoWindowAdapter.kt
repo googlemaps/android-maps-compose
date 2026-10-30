@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.compose.runtime.Composable
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Marker
 
 /**
@@ -34,11 +33,11 @@ import com.google.android.gms.maps.model.Marker
  *
  * [ComposeView][androidx.compose.ui.platform.ComposeView] content is therefore
  * rendered into a plain [android.graphics.Bitmap] up front (while briefly attached
- * to [mapView] to drive composition), and that bitmap is wrapped in a fresh,
+ * to [mapViewDelegate] to drive composition), and that bitmap is wrapped in a fresh,
  * parent-less [ImageView] for the Maps SDK to use.
  */
 internal class ComposeInfoWindowAdapter(
-    private val mapView: MapView,
+    private val mapViewDelegate: AbstractMapViewDelegate<*>,
     private val markerNodeFinder: (Marker) -> MarkerNode?,
 ) : GoogleMap.InfoWindowAdapter {
 
@@ -55,9 +54,10 @@ internal class ComposeInfoWindowAdapter(
     }
 
     private fun renderToImageView(markerNode: MarkerNode, content: @Composable () -> Unit): View? {
-        val bitmap = mapView.renderComposableToBitmap(markerNode.compositionContext, content)
-            ?: return null
-        return ImageView(mapView.context).apply {
+        val bitmap =
+            mapViewDelegate.renderComposableToBitmap(markerNode.compositionContext, content)
+                ?: return null
+        return ImageView(mapViewDelegate.mapView.context).apply {
             layoutParams = ViewGroup.LayoutParams(bitmap.width, bitmap.height)
             scaleType = ImageView.ScaleType.FIT_XY
             setImageBitmap(bitmap)
