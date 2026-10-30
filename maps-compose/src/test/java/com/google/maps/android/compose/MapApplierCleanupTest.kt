@@ -437,4 +437,45 @@ public class MapApplierCleanupTest {
         callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND)
         verify(exactly = 2) { streetView.onLowMemory() }
     }
+
+    @Test
+    public fun `MapLifecycleEventObserver forwards all lifecycle events to custom AbstractMapViewDelegate`() {
+        val customDelegate = mockk<AbstractMapViewDelegate<View>>(relaxed = true)
+        val observer = MapLifecycleEventObserver(customDelegate)
+        val owner = object : LifecycleOwner {
+            val registry = LifecycleRegistry.createUnsafe(this)
+            override val lifecycle: Lifecycle get() = registry
+        }
+
+        observer.onStateChanged(owner, Lifecycle.Event.ON_CREATE)
+        observer.onStateChanged(owner, Lifecycle.Event.ON_START)
+        observer.onStateChanged(owner, Lifecycle.Event.ON_RESUME)
+        observer.moveToBaseState()
+        observer.moveToDestroyedState()
+
+        verifyOrder {
+            customDelegate.onCreate(any())
+            customDelegate.onStart()
+            customDelegate.onResume()
+            customDelegate.onPause()
+            customDelegate.onStop()
+            customDelegate.onDestroy()
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    public fun `AbstractMapViewDelegate componentCallbacks2 forwards onLowMemory and UI_HIDDEN trimMemory`() {
+        val customDelegate = mockk<AbstractMapViewDelegate<View>>(relaxed = true)
+        val callbacks = customDelegate.componentCallbacks2()
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)
+        verify(exactly = 0) { customDelegate.onLowMemory() }
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
+        verify(exactly = 1) { customDelegate.onLowMemory() }
+
+        callbacks.onLowMemory()
+        verify(exactly = 2) { customDelegate.onLowMemory() }
+    }
 }

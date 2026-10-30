@@ -33,6 +33,7 @@ materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
+mapsRobolectric = "1.2.0-rc01"
 mapsutils = "6.0.0"
 navigation = "8.0.0"
 places = "6.0.2"
@@ -86,6 +87,7 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3", 
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 # Google Maps Platform
+maps-robolectric-shadows = { module = "com.google.android.maps.robolectric:shadows", version.ref = "mapsRobolectric" }
 maps-utils-core = { module = "com.google.maps.android:android-maps-utils-core", version.ref = "mapsutils" }
 maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "mapsutils" }
 maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "mapsecrets" }
