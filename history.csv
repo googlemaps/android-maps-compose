@@ -254,3 +254,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-29T19:46:26Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",instrumentation,maps-compose-utils,413,759,54.41,142,470,30.21,3072,6054,50.74
 2026-10-29T19:46:26Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",instrumentation,maps-compose-widgets,112,149,75.17,15,48,31.25,650,889,73.12
 2026-10-29T19:46:26Z,db20d0d,1056,"chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check",instrumentation,TOTAL,2580,5478,47.1,804,2336,34.42,19030,43708,43.54
+2026-10-30T19:35:21Z,a53f06e,1045,fix(widgets): preserve fractional scale bar distances,unit,maps-compose,307,2009,15.28,69,1834,3.76,2257,25366,8.9
+2026-10-30T19:35:21Z,a53f06e,1045,fix(widgets): preserve fractional scale bar distances,unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
+2026-10-30T19:35:21Z,a53f06e,1045,fix(widgets): preserve fractional scale bar distances,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
+2026-10-30T19:35:21Z,a53f06e,1045,fix(widgets): preserve fractional scale bar distances,unit,TOTAL,361,2780,12.99,98,2376,4.12,2557,34389,7.44

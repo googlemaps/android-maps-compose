@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `db20d0d` (#1056), recorded 2026-10-29T19:46:22Z.
+Measured at `a53f06e` (#1045), recorded 2026-10-30T19:35:21Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-compose` | 307/2,009 | 15.28% | `███░░░░░░░░░░░░░░░░░` | 69/1,834 | 3.76% |
 | `maps-compose-utils` | 38/624 | 6.09% | `█░░░░░░░░░░░░░░░░░░░` | 21/470 | 4.47% |
-| `maps-compose-widgets` | 0/146 | 0.00% | `░░░░░░░░░░░░░░░░░░░░` | 0/68 | 0.00% |
-| **TOTAL** | 345/2,779 | 12.41% | `██░░░░░░░░░░░░░░░░░░` | 90/2,372 | 3.79% |
+| `maps-compose-widgets` | 16/147 | 10.88% | `██░░░░░░░░░░░░░░░░░░` | 8/72 | 11.11% |
+| **TOTAL** | 361/2,780 | 12.99% | `███░░░░░░░░░░░░░░░░░` | 98/2,376 | 4.12% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-30 | `a53f06e` | #1045 | 12.99% | +0.58 | n/a | n/a | fix(widgets): preserve fractional scale bar distances |
 | 2026-10-29 | `db20d0d` | #1056 | 12.41% | 0.00 | 47.10% | +0.02 | chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check |
 | 2026-10-29 | `3f9353b` | #1043 | 12.41% | 0.00 | 47.08% | -0.11 | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |
 | 2026-10-26 | `dd7507b` | #1053 | 12.41% | 0.00 | 47.19% | n/a | ci: run instrumentation tests on Ubuntu with KVM and skip redundant runs |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-09-28 | `977ab46` | #1016 | 0.42% | 0.00 | 20.87% | +0.04 | test: skip map instrumentation tests when no Maps API key is available |
 | 2026-09-23 | `74aa729` | #1008 | 0.42% | 0.00 | 20.83% | 0.00 | ci: group dependabot minor and patch updates |
 | 2026-09-22 | `b0d6420` | #1009 | 0.42% | 0.00 | 20.83% | n/a | feat(ci): publish an instrumented coverage badge |
-| 2026-09-18 | `0eae049` | #996 | 0.42% | 0.00 | n/a | n/a | chore(deps): bump github/codeql-action/upload-sarif |
