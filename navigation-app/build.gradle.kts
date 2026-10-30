@@ -113,6 +113,17 @@ dependencies {
 
     implementation(libs.play.services.location)
 
+    testImplementation(libs.androidx.core)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.junit.ktx)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.test.compose.ui)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.maps.robolectric.shadows)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.truth)
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
