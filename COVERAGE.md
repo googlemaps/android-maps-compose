@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `a53f06e` (#1045), recorded 2026-10-30T19:35:21Z.
+Measured at `8c0e72c` (#1057), recorded 2026-10-30T22:33:20Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-10-30 | `8c0e72c` | #1057 | 12.99% | 0.00 | n/a | n/a | fix(ci): read the Update Skill Gemini model from GEMINI_MODEL |
 | 2026-10-30 | `a53f06e` | #1045 | 12.99% | +0.58 | 31.04% | -16.06 | fix(widgets): preserve fractional scale bar distances |
 | 2026-10-29 | `db20d0d` | #1056 | 12.41% | 0.00 | 47.10% | +0.02 | chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check |
 | 2026-10-29 | `3f9353b` | #1043 | 12.41% | 0.00 | 47.08% | -0.11 | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-01 | `109b74a` | #1020 | 0.42% | 0.00 | 20.87% | 0.00 | test: wait for clustered markers instead of map load in clustering tests |
 | 2026-09-28 | `977ab46` | #1016 | 0.42% | 0.00 | 20.87% | +0.04 | test: skip map instrumentation tests when no Maps API key is available |
 | 2026-09-23 | `74aa729` | #1008 | 0.42% | 0.00 | 20.83% | 0.00 | ci: group dependabot minor and patch updates |
-| 2026-09-22 | `b0d6420` | #1009 | 0.42% | 0.00 | 20.83% | n/a | feat(ci): publish an instrumented coverage badge |
