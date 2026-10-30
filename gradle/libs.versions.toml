@@ -78,6 +78,7 @@ maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secr
 
 # Testing
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-test-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidCore" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitktx" }

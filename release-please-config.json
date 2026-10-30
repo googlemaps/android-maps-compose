@@ -6,7 +6,7 @@
                 "build.gradle.kts",
                 "README.md",
                 "llm-integration-prompt.md",
-                ".gemini/skills/android-maps-compose/SKILL.md"
+                ".agents/skills/android-maps-compose/SKILL.md"
             ]
         }
     }
