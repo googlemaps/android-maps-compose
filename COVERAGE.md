@@ -38,15 +38,15 @@ Measured at `8c0e72c` (#1057), recorded 2026-10-30T22:33:20Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `a53f06e` (#1045), recorded 2026-10-30T19:35:25Z.
+Measured at `8c0e72c` (#1057), recorded 2026-10-30T22:33:24Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 217/2,388 | 9.09% | `██░░░░░░░░░░░░░░░░░░` | 21/422 | 4.98% |
-| `maps-compose` | 1,119/2,182 | 51.28% | `██████████░░░░░░░░░░` | 399/1,396 | 28.58% |
-| `maps-compose-utils` | 254/759 | 33.47% | `███████░░░░░░░░░░░░░` | 87/470 | 18.51% |
-| `maps-compose-widgets` | 111/151 | 73.51% | `███████████████░░░░░` | 14/52 | 26.92% |
-| **TOTAL** | 1,701/5,480 | 31.04% | `██████░░░░░░░░░░░░░░` | 521/2,340 | 22.26% |
+| `maps-app` | 504/2,388 | 21.11% | `████░░░░░░░░░░░░░░░░` | 80/422 | 18.96% |
+| `maps-compose` | 1,556/2,182 | 71.31% | `██████████████░░░░░░` | 570/1,396 | 40.83% |
+| `maps-compose-utils` | 413/759 | 54.41% | `███████████░░░░░░░░░` | 142/470 | 30.21% |
+| `maps-compose-widgets` | 118/151 | 78.15% | `████████████████░░░░` | 24/52 | 46.15% |
+| **TOTAL** | 2,591/5,480 | 47.28% | `█████████░░░░░░░░░░░` | 816/2,340 | 34.87% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-10-30 | `8c0e72c` | #1057 | 12.99% | 0.00 | n/a | n/a | fix(ci): read the Update Skill Gemini model from GEMINI_MODEL |
+| 2026-10-30 | `8c0e72c` | #1057 | 12.99% | 0.00 | 47.28% | +16.24 | fix(ci): read the Update Skill Gemini model from GEMINI_MODEL |
 | 2026-10-30 | `a53f06e` | #1045 | 12.99% | +0.58 | 31.04% | -16.06 | fix(widgets): preserve fractional scale bar distances |
 | 2026-10-29 | `db20d0d` | #1056 | 12.41% | 0.00 | 47.10% | +0.02 | chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check |
 | 2026-10-29 | `3f9353b` | #1043 | 12.41% | 0.00 | 47.08% | -0.11 | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |

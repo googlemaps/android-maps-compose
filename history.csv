@@ -267,3 +267,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-10-30T22:33:20Z,8c0e72c,1057,fix(ci): read the Update Skill Gemini model from GEMINI_MODEL,unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
 2026-10-30T22:33:20Z,8c0e72c,1057,fix(ci): read the Update Skill Gemini model from GEMINI_MODEL,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
 2026-10-30T22:33:20Z,8c0e72c,1057,fix(ci): read the Update Skill Gemini model from GEMINI_MODEL,unit,TOTAL,361,2780,12.99,98,2376,4.12,2557,34389,7.44
+2026-10-30T22:33:24Z,8c0e72c,1057,fix(ci): read the Update Skill Gemini model from GEMINI_MODEL,instrumentation,maps-app,504,2388,21.11,80,422,18.96,4818,20287,23.75
+2026-10-30T22:33:24Z,8c0e72c,1057,fix(ci): read the Update Skill Gemini model from GEMINI_MODEL,instrumentation,maps-compose,1556,2182,71.31,570,1396,40.83,10531,16478,63.91
+2026-10-30T22:33:24Z,8c0e72c,1057,fix(ci): read the Update Skill Gemini model from GEMINI_MODEL,instrumentation,maps-compose-utils,413,759,54.41,142,470,30.21,3072,6054,50.74
+2026-10-30T22:33:24Z,8c0e72c,1057,fix(ci): read the Update Skill Gemini model from GEMINI_MODEL,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
+2026-10-30T22:33:24Z,8c0e72c,1057,fix(ci): read the Update Skill Gemini model from GEMINI_MODEL,instrumentation,TOTAL,2591,5480,47.28,816,2340,34.87,19109,43736,43.69
