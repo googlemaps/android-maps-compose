@@ -49,6 +49,13 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Resource-enabled host tests do not receive the Secrets plugin's variant placeholders.
+        // The plugin overrides this fallback for app variants when a real key is configured.
+        manifestPlaceholders["MAPS_API_KEY"] = "YOUR_API_KEY"
+    }
+
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
     }
 
     compileOptions {
@@ -101,6 +108,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended.android)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.test.compose.ui.manifest)
     debugImplementation(libs.leakcanary.android)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -117,6 +125,7 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.compose.ui)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
