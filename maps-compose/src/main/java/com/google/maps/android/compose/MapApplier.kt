@@ -15,9 +15,9 @@
 package com.google.maps.android.compose
 
 import android.annotation.SuppressLint
+import android.view.ViewGroup
 import androidx.compose.runtime.AbstractApplier
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Circle
 import com.google.android.gms.maps.model.GroundOverlay
 import com.google.android.gms.maps.model.Marker
@@ -39,7 +39,7 @@ private object MapNodeRoot : MapNode
 // for that particular listener; yet MapClickListeners never actually changes.
 internal class MapApplier(
     val map: GoogleMap,
-    internal val mapView: MapView,
+    internal val mapView: ViewGroup,
     val mapClickListeners: MapClickListeners,
     /** Whether [mapView] was created in Lite mode, which does not support color schemes. */
     internal val isLiteMode: Boolean,

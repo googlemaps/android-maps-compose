@@ -85,6 +85,21 @@ public final class com/google/maps/android/compose/DefaultIndoorStateChangeListe
 	public fun onIndoorLevelActivated (Lcom/google/android/gms/maps/model/IndoorBuilding;)V
 }
 
+public final class com/google/maps/android/compose/DefaultMapViewDelegate : com/google/maps/android/compose/MapViewDelegate {
+	public static final field $stable I
+	public fun <init> (Lcom/google/android/gms/maps/MapView;)V
+	public fun awaitMap (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public synthetic fun getMapView ()Landroid/view/ViewGroup;
+	public fun getMapView ()Lcom/google/android/gms/maps/MapView;
+	public fun onCreate (Landroid/os/Bundle;)V
+	public fun onDestroy ()V
+	public fun onLowMemory ()V
+	public fun onPause ()V
+	public fun onResume ()V
+	public fun onStart ()V
+	public fun onStop ()V
+}
+
 public final class com/google/maps/android/compose/DragState : java/lang/Enum {
 	public static final field DRAG Lcom/google/maps/android/compose/DragState;
 	public static final field END Lcom/google/maps/android/compose/DragState;
@@ -219,6 +234,18 @@ public final class com/google/maps/android/compose/MapUiSettingsKt {
 
 public final class com/google/maps/android/compose/MapUpdaterKt {
 	public static final fun getDefaultMapContentPadding ()Landroidx/compose/foundation/layout/PaddingValues;
+}
+
+public abstract interface class com/google/maps/android/compose/MapViewDelegate {
+	public abstract fun awaitMap (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getMapView ()Landroid/view/ViewGroup;
+	public abstract fun onCreate (Landroid/os/Bundle;)V
+	public abstract fun onDestroy ()V
+	public abstract fun onLowMemory ()V
+	public abstract fun onPause ()V
+	public abstract fun onResume ()V
+	public abstract fun onStart ()V
+	public abstract fun onStop ()V
 }
 
 public abstract interface annotation class com/google/maps/android/compose/MapsComposeExperimentalApi : java/lang/annotation/Annotation {
