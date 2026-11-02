@@ -21,6 +21,8 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.screenshot)
+    // Builds the release variants that :baselineprofile runs to generate the libraries' profiles.
+    id("androidx.baselineprofile")
     jacoco
 }
 
@@ -35,6 +37,23 @@ android {
         }
         getByName("release") {
             enableAndroidTestCoverage = true
+        }
+        // Used by :baselineprofile to generate the libraries' Baseline Profiles and to benchmark them.
+        // The androidx.baselineprofile plugin does not add these on this AGP version, so they are
+        // declared here, matching what it would create: release, not minified, not instrumented
+        // for coverage, profileable and signed with the debug key.
+        listOf("nonMinifiedRelease", "benchmarkRelease").forEach { name ->
+            create(name) {
+                initWith(getByName("release"))
+                matchingFallbacks += "release"
+                isMinifyEnabled = false
+                isShrinkResources = false
+                isDebuggable = false
+                isProfileable = true
+                enableAndroidTestCoverage = false
+                enableUnitTestCoverage = false
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
     }
 
