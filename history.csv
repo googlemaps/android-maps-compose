@@ -276,3 +276,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-02T17:25:21Z,174f0fd,1060,chore: add maintainer as code owner of workflow files,unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
 2026-11-02T17:25:21Z,174f0fd,1060,chore: add maintainer as code owner of workflow files,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
 2026-11-02T17:25:21Z,174f0fd,1060,chore: add maintainer as code owner of workflow files,unit,TOTAL,361,2780,12.99,98,2376,4.12,2557,34389,7.44
+2026-11-03T18:26:19Z,53c9725,1067,build: check the public API of the library modules,unit,maps-compose,307,2009,15.28,69,1834,3.76,2257,25366,8.9
+2026-11-03T18:26:19Z,53c9725,1067,build: check the public API of the library modules,unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
+2026-11-03T18:26:19Z,53c9725,1067,build: check the public API of the library modules,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
+2026-11-03T18:26:19Z,53c9725,1067,build: check the public API of the library modules,unit,TOTAL,361,2780,12.99,98,2376,4.12,2557,34389,7.44
