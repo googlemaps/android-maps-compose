@@ -85,14 +85,19 @@ CSV_FIELDS = [
 # The instrumentation list is restricted on purpose. createDebugCoverageReport
 # emits a report for every module with enableAndroidTestCoverage, including
 # maps-compose and maps-compose-utils, which have no androidTest sources at
-# all. Those reports list every class at 0%, which reads as "untested" when the
-# code is in fact exercised by maps-app's tests and simply attributed there.
-# Recording them would drag the instrumentation total from 20.83% to 10.08% and
-# say something false about the libraries, so only the modules that actually
-# own instrumentation tests are tracked.
+# all. Those reports list every class at 0% even though maps-app's tests
+# exercise the code. The library modules are instead reported by
+# :maps-app:createLibraryCoverageReports from the coverage data of every
+# emulator run, and instrumentation-test.yml stages those reports in place of
+# the 0% ones. Any other module reported by the emulator run is not tracked.
 MODULE_ALLOWLIST = {
     "unit": None,
-    "instrumentation": ("maps-app", "maps-compose-widgets"),
+    "instrumentation": (
+        "maps-app",
+        "maps-compose",
+        "maps-compose-utils",
+        "maps-compose-widgets",
+    ),
 }
 
 DEFAULT_CSV = "coverage/history.csv"
@@ -437,12 +442,12 @@ def cmd_render(args: argparse.Namespace) -> None:
         rows,
         "instrumentation",
         "Instrumentation tests",
-        "Emulator tests run by `./gradlew createDebugCoverageReport`, covering "
-        "the modules that own androidTest sources. `maps-app` is the demo app "
-        "rather than a published library, but it is where most of the test "
-        "suite lives. `maps-compose` and `maps-compose-utils` are not listed: "
-        "they have no instrumentation tests of their own, and their code is "
-        "exercised through `maps-app`.",
+        "Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` "
+        "is the demo app rather than a published library, but it is where most "
+        "of the test suite lives. The library rows come from "
+        "`:maps-app:createLibraryCoverageReports`, which reports each library "
+        "module from the coverage data of every emulator test run, so they "
+        "include the library code exercised through `maps-app`.",
     )
 
     # Trend: one line per recorded commit, newest first, with the change in

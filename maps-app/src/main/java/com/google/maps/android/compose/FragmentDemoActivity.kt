@@ -16,7 +16,6 @@
 
 package com.google.maps.android.compose
 
-
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.widget.ViewPager2
@@ -34,6 +33,5 @@ class FragmentDemoActivity : FragmentActivity() {
 
         pagerAdapter = MapFragmentPagerAdapter(this)
         viewPager.adapter = pagerAdapter
-
     }
 }

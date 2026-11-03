@@ -23,10 +23,7 @@ import com.google.common.truth.Truth.assertAbout
 /**
  * A [Subject] for asserting facts about [LatLng] objects.
  */
-class LatLngSubject(
-    failureMetadata: FailureMetadata,
-    private val actual: LatLng?
-) : Subject(failureMetadata, actual) {
+class LatLngSubject(failureMetadata: FailureMetadata, private val actual: LatLng?) : Subject(failureMetadata, actual) {
 
     /**
      * Asserts that the subject is equal to the given [expected] value, with a given [tolerance].
@@ -45,12 +42,8 @@ class LatLngSubject(
         /**
          * A factory for creating [LatLngSubject] instances.
          */
-        fun assertThat(actual: LatLng?): LatLngSubject {
-            return assertAbout(latLngs()).that(actual)
-        }
+        fun assertThat(actual: LatLng?): LatLngSubject = assertAbout(latLngs()).that(actual)
 
-        private fun latLngs(): (failureMetadata: FailureMetadata, actual: LatLng?) -> LatLngSubject {
-            return ::LatLngSubject
-        }
+        private fun latLngs(): (failureMetadata: FailureMetadata, actual: LatLng?) -> LatLngSubject = ::LatLngSubject
     }
 }

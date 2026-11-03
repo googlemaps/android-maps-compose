@@ -28,10 +28,7 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.StyleSpan
 import com.google.maps.android.addPolyline
 
-internal class PolylineNode(
-    val polyline: Polyline,
-    var onPolylineClick: (Polyline) -> Unit
-) : MapNode {
+internal class PolylineNode(val polyline: Polyline, var onPolylineClick: (Polyline) -> Unit) : MapNode {
     override fun onRemoved() {
         polyline.remove()
     }
@@ -69,7 +66,7 @@ public fun Polyline(
     visible: Boolean = true,
     width: Float = 10f,
     zIndex: Float = 0f,
-    onClick: (Polyline) -> Unit = {}
+    onClick: (Polyline) -> Unit = {},
 ) {
     PolylineImpl(
         points = points,
@@ -211,6 +208,6 @@ private fun PolylineImpl(
             update(visible) { this.polyline.isVisible = it }
             update(width) { this.polyline.width = it }
             update(zIndex) { this.polyline.zIndex = it }
-        }
+        },
     )
 }

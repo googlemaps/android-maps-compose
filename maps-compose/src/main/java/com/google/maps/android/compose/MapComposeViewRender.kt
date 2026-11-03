@@ -128,7 +128,6 @@ internal fun MapView.startRenderingComposeView(
         override fun dispose() {
             containerView.removeView(view)
         }
-
     }
 }
 
@@ -136,12 +135,10 @@ internal fun MapView.startRenderingComposeView(
  * Retrieves the [NoDrawContainerView] from this [MapView], or adds one if there isn't already one.
  * @see NoDrawContainerView
  */
-private fun MapView.ensureContainerView(): NoDrawContainerView {
-    return findViewById(R.id.maps_compose_nodraw_container_view)
-        ?: NoDrawContainerView(context)
-            .apply { id = R.id.maps_compose_nodraw_container_view }
-            .also(::addView)
-}
+private fun MapView.ensureContainerView(): NoDrawContainerView = findViewById(R.id.maps_compose_nodraw_container_view)
+    ?: NoDrawContainerView(context)
+        .apply { id = R.id.maps_compose_nodraw_container_view }
+        .also(::addView)
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Composable
@@ -152,10 +149,7 @@ public fun rememberComposeUiViewRenderer(): ComposeUiViewRenderer {
     return remember(compositionContext) {
         object : ComposeUiViewRenderer {
 
-            override fun renderViewOnce(
-                view: AbstractComposeView,
-                onAddedToWindow: (() -> Unit)?
-            ) {
+            override fun renderViewOnce(view: AbstractComposeView, onAddedToWindow: (() -> Unit)?) {
                 mapView.renderComposeViewOnce(
                     view = view,
                     onAddedToWindow = onAddedToWindow?.let { { it() } },
@@ -163,15 +157,11 @@ public fun rememberComposeUiViewRenderer(): ComposeUiViewRenderer {
                 )
             }
 
-            override fun startRenderingView(
-                view: AbstractComposeView
-            ): ComposeUiViewRenderer.RenderHandle {
-                return mapView.startRenderingComposeView(
+            override fun startRenderingView(view: AbstractComposeView): ComposeUiViewRenderer.RenderHandle =
+                mapView.startRenderingComposeView(
                     view = view,
                     parentContext = compositionContext,
                 )
-            }
-
         }
     }
 }
@@ -185,21 +175,15 @@ public interface ComposeUiViewRenderer {
      * Its composition will start. [onAddedToWindow] is called in place, and then [view] is removed
      * from the window before returning.
      */
-    public fun renderViewOnce(
-        view: AbstractComposeView,
-        onAddedToWindow: (() -> Unit)?
-    )
+    public fun renderViewOnce(view: AbstractComposeView, onAddedToWindow: (() -> Unit)?)
 
-    public fun startRenderingView(
-        view: AbstractComposeView
-    ): RenderHandle
+    public fun startRenderingView(view: AbstractComposeView): RenderHandle
 
     public interface RenderHandle : Closeable {
         public fun dispose()
 
         override fun close(): Unit = dispose()
     }
-
 }
 
 /**
@@ -214,5 +198,4 @@ private class NoDrawContainerView(context: Context) : ViewGroup(context) {
 
     override fun dispatchDraw(canvas: Canvas) {
     }
-
 }

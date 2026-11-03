@@ -29,7 +29,6 @@ import com.google.maps.android.compose.theme.MapsComposeSampleTheme
 import com.google.maps.android.compose.widgets.DisappearingScaleBar
 import com.google.maps.android.compose.widgets.ScaleBar
 
-
 @PreviewTest
 @Preview(showBackground = true)
 @Composable
@@ -40,15 +39,15 @@ fun PreviewScaleBar() {
                 LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
                 12f,
                 0f,
-                0f
-            )
+                0f,
+            ),
         )
     }
 
     MapsComposeSampleTheme {
         ScaleBar(
             modifier = Modifier.padding(end = 4.dp),
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
         )
     }
 }
@@ -63,15 +62,15 @@ fun PreviewDisappearingScaleBar() {
                 LatLng(48.137154, 11.576124), // Example coordinates: Munich, Germany
                 12f,
                 0f,
-                0f
-            )
+                0f,
+            ),
         )
     }
 
     MapsComposeSampleTheme {
         DisappearingScaleBar(
             modifier = Modifier.padding(end = 4.dp),
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
         )
     }
 }

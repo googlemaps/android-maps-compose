@@ -19,17 +19,18 @@ package com.google.maps.android.compose.clustering
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.UiComposable
 import androidx.compose.ui.geometry.Offset
@@ -60,13 +61,16 @@ public class ClusteringMarkerProperties {
         internal set
     public var rotation: Float? by mutableStateOf(null)
         internal set
+    public var contentDescription: String? by mutableStateOf(null)
+        internal set
 }
 
 /**
  * [CompositionLocal] used to provide [ClusteringMarkerProperties] to the content of a cluster or
  * cluster item.
  */
-public val LocalClusteringMarkerProperties: androidx.compose.runtime.ProvidableCompositionLocal<ClusteringMarkerProperties> =
+public val LocalClusteringMarkerProperties:
+    androidx.compose.runtime.ProvidableCompositionLocal<ClusteringMarkerProperties> =
     staticCompositionLocalOf { ClusteringMarkerProperties() }
 
 /**
@@ -78,19 +82,42 @@ public val LocalClusteringMarkerProperties: androidx.compose.runtime.ProvidableC
  * will be used.
  * @param rotation the rotation of the marker in degrees clockwise about the marker's anchor point.
  * If null, the default rotation specified in [Clustering] will be used.
+ * @param contentDescription the content description for accessibility purposes. If null, the title
+ * of the [ClusterItem] will be used as a fallback for cluster items.
  */
 @Composable
 public fun ClusteringMarkerProperties(
     anchor: Offset? = null,
     zIndex: Float? = null,
     rotation: Float? = null,
+    contentDescription: String? = null,
 ) {
     val properties = LocalClusteringMarkerProperties.current
     SideEffect {
         properties.anchor = anchor
         properties.zIndex = zIndex
         properties.rotation = rotation
+        properties.contentDescription = contentDescription
     }
+}
+
+/**
+ * Helper function to specify properties for the marker representing a cluster or cluster item.
+ *
+ * Retained for binary compatibility with binaries compiled against earlier versions.
+ */
+@Deprecated(
+    message = "Retained for binary compatibility.",
+    level = DeprecationLevel.HIDDEN,
+)
+@Composable
+public fun ClusteringMarkerProperties(anchor: Offset? = null, zIndex: Float? = null, rotation: Float? = null) {
+    ClusteringMarkerProperties(
+        anchor = anchor,
+        zIndex = zIndex,
+        rotation = rotation,
+        contentDescription = null,
+    )
 }
 
 /**
@@ -112,12 +139,17 @@ public fun ClusteringMarkerProperties(
  * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
  * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
  * @param clusterRenderer an optional ClusterRenderer that can be used to specify the algorithm used by the rendering.
+ * @param key an optional stable, unique key for each item. When supplied, items with the same key
+ * are treated as updates when their values differ. Duplicate keys in a collection produce a warning
+ * and only the last item for each key is kept. Without a key, items are identified by their
+ * `equals` and `hashCode` implementations.
  */
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
 @Deprecated(
-    message = "If clusterRenderer is specified, clusterContent and clusterItemContent are not used; use a function that takes ClusterManager as an argument instead.",
+    message = "If clusterRenderer is specified, clusterContent and clusterItemContent are not used; " +
+        "use a function that takes ClusterManager as an argument instead.",
     replaceWith = ReplaceWith(
         expression = """
             val clusterManager = rememberClusterManager<T>()
@@ -161,7 +193,10 @@ public fun <T : ClusterItem> Clustering(
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
     clusterRenderer: ClusterRenderer<T>? = null,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    key: ((T) -> Any)? = null,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ) {
     val clusterManager = rememberClusterManager(
         clusterContent,
@@ -172,7 +207,7 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentZIndex,
         clusterContentRotation,
         clusterItemContentRotation,
-        clusterRenderer
+        clusterRenderer,
     ) ?: return
 
     SideEffect {
@@ -186,6 +221,7 @@ public fun <T : ClusterItem> Clustering(
         clusterManager = clusterManager,
         clusterItemDecoration = clusterItemDecoration,
         renderer = clusterManager.renderer,
+        key = key,
     )
 }
 
@@ -207,6 +243,10 @@ public fun <T : ClusterItem> Clustering(
  * @param clusterItemContentZIndex the z-index of the non-clustered item
  * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
  * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
+ * @param key an optional stable, unique key for each item. When supplied, items with the same key
+ * are treated as updates when their values differ. Without a key, items are identified by their
+ * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
+ * and only the last item for each key is kept.
  */
 @Composable
 @GoogleMapComposable
@@ -225,7 +265,10 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentZIndex: Float = 0.0f,
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    key: ((T) -> Any)? = null,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ) {
     Clustering(
         items = items,
@@ -243,6 +286,7 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentRotation = clusterItemContentRotation,
         clusterItemDecoration = clusterItemDecoration,
         onClusterManager = null,
+        key = key,
     )
 }
 
@@ -264,6 +308,10 @@ public fun <T : ClusterItem> Clustering(
  * @param clusterItemContentZIndex the z-index of the non-clustered item
  * @param clusterContentRotation the rotation of the cluster in degrees clockwise about the marker's anchor point
  * @param clusterItemContentRotation the rotation of the non-clustered item in degrees clockwise about the marker's anchor point
+ * @param key an optional stable, unique key for each item. When supplied, items with the same key
+ * are treated as updates when their values differ. Without a key, items are identified by their
+ * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
+ * and only the last item for each key is kept.
  * @param onClusterManager an optional lambda invoked with the clusterManager as a param when both
  * the clusterManager and renderer are set up, allowing callers a customization hook.
  */
@@ -284,7 +332,10 @@ public fun <T : ClusterItem> Clustering(
     clusterItemContentZIndex: Float = 0.0f,
     clusterContentRotation: Float = 0.0f,
     clusterItemContentRotation: Float = 0.0f,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    key: ((T) -> Any)? = null,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ) {
     val clusterManager = rememberClusterManager<T>()
@@ -297,7 +348,7 @@ public fun <T : ClusterItem> Clustering(
         clusterItemContentZIndex,
         clusterContentRotation,
         clusterItemContentRotation,
-        clusterManager
+        clusterManager,
     )
 
     SideEffect {
@@ -322,6 +373,7 @@ public fun <T : ClusterItem> Clustering(
             clusterManager = clusterManager,
             clusterItemDecoration = clusterItemDecoration,
             renderer = renderer,
+            key = key,
         )
     }
 }
@@ -331,6 +383,10 @@ public fun <T : ClusterItem> Clustering(
  *
  * @param items all items to show
  * @param clusterManager a [ClusterManager] that can be used to specify the algorithm used by the rendering.
+ * @param key an optional stable, unique key for each item. When supplied, items with the same key
+ * are treated as updates when their values differ. Without a key, items are identified by their
+ * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
+ * and only the last item for each key is kept.
  */
 @Composable
 @GoogleMapComposable
@@ -338,15 +394,162 @@ public fun <T : ClusterItem> Clustering(
 public fun <T : ClusterItem> Clustering(
     items: Collection<T>,
     clusterManager: ClusterManager<T>,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    key: ((T) -> Any)? = null,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
 ) {
     Clustering(
         items = items,
         clusterManager = clusterManager,
         clusterItemDecoration = clusterItemDecoration,
-        renderer = null
+        renderer = null,
+        key = key,
     )
 }
+
+/** Retains the pre-key JVM signature for already compiled callers. */
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+@Suppress("DEPRECATION")
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    onClusterItemInfoWindowClick: (T) -> Unit = { },
+    onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
+    clusterRenderer: ClusterRenderer<T>? = null,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
+): Unit = Clustering(
+    items = items,
+    onClusterClick = onClusterClick,
+    onClusterItemClick = onClusterItemClick,
+    onClusterItemInfoWindowClick = onClusterItemInfoWindowClick,
+    onClusterItemInfoWindowLongClick = onClusterItemInfoWindowLongClick,
+    clusterContent = clusterContent,
+    clusterItemContent = clusterItemContent,
+    clusterContentAnchor = clusterContentAnchor,
+    clusterItemContentAnchor = clusterItemContentAnchor,
+    clusterContentZIndex = clusterContentZIndex,
+    clusterItemContentZIndex = clusterItemContentZIndex,
+    clusterContentRotation = clusterContentRotation,
+    clusterItemContentRotation = clusterItemContentRotation,
+    clusterRenderer = clusterRenderer,
+    key = null,
+    clusterItemDecoration = clusterItemDecoration,
+)
+
+/** Retains the pre-key JVM signature for already compiled callers. */
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    onClusterItemInfoWindowClick: (T) -> Unit = { },
+    onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
+): Unit = Clustering(
+    items = items,
+    onClusterClick = onClusterClick,
+    onClusterItemClick = onClusterItemClick,
+    onClusterItemInfoWindowClick = onClusterItemInfoWindowClick,
+    onClusterItemInfoWindowLongClick = onClusterItemInfoWindowLongClick,
+    clusterContent = clusterContent,
+    clusterItemContent = clusterItemContent,
+    clusterContentAnchor = clusterContentAnchor,
+    clusterItemContentAnchor = clusterItemContentAnchor,
+    clusterContentZIndex = clusterContentZIndex,
+    clusterItemContentZIndex = clusterItemContentZIndex,
+    clusterContentRotation = clusterContentRotation,
+    clusterItemContentRotation = clusterItemContentRotation,
+    key = null,
+    clusterItemDecoration = clusterItemDecoration,
+)
+
+/** Retains the pre-key JVM signature for already compiled callers. */
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    onClusterItemInfoWindowClick: (T) -> Unit = { },
+    onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
+    onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
+): Unit = Clustering(
+    items = items,
+    onClusterClick = onClusterClick,
+    onClusterItemClick = onClusterItemClick,
+    onClusterItemInfoWindowClick = onClusterItemInfoWindowClick,
+    onClusterItemInfoWindowLongClick = onClusterItemInfoWindowLongClick,
+    clusterContent = clusterContent,
+    clusterItemContent = clusterItemContent,
+    clusterContentAnchor = clusterContentAnchor,
+    clusterItemContentAnchor = clusterItemContentAnchor,
+    clusterContentZIndex = clusterContentZIndex,
+    clusterItemContentZIndex = clusterItemContentZIndex,
+    clusterContentRotation = clusterContentRotation,
+    clusterItemContentRotation = clusterItemContentRotation,
+    key = null,
+    clusterItemDecoration = clusterItemDecoration,
+    onClusterManager = onClusterManager,
+)
+
+/** Retains the pre-key JVM signature for already compiled callers. */
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    clusterManager: ClusterManager<T>,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
+): Unit = Clustering(
+    items = items,
+    clusterManager = clusterManager,
+    key = null,
+    clusterItemDecoration = clusterItemDecoration,
+)
 
 @Composable
 @GoogleMapComposable
@@ -354,8 +557,11 @@ public fun <T : ClusterItem> Clustering(
 internal fun <T : ClusterItem> Clustering(
     items: Collection<T>,
     clusterManager: ClusterManager<T>,
-    clusterItemDecoration: @Composable @GoogleMapComposable (T) -> Unit = {},
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
     renderer: ClusterRenderer<T>? = null,
+    key: ((T) -> Any)? = null,
 ) {
     ResetMapListeners(clusterManager)
     InputHandler(
@@ -376,12 +582,39 @@ internal fun <T : ClusterItem> Clustering(
             }
     }
     val itemsState = rememberUpdatedState(items)
-    LaunchedEffect(itemsState) {
-        snapshotFlow { itemsState.value.toList() }
-            .collect { items ->
-                clusterManager.clearItems()
-                clusterManager.addItems(items)
-                clusterManager.cluster()
+    val keyState = rememberUpdatedState(key)
+    LaunchedEffect(clusterManager, itemsState, keyState) {
+        var previousKeyedItems: Map<Any, T>? = null
+        var previousUsedExplicitKey: Boolean? = null
+        snapshotFlow { itemsState.value.toList() to keyState.value }
+            .collect { (items, itemKey) ->
+                val currentKeyedItems = clusterItemsByKey(items, itemKey) { duplicateKey ->
+                    Log.w("Clustering", "Duplicate item key: $duplicateKey. Keeping the last item.")
+                }
+                val previousItems = previousKeyedItems
+                val usesExplicitKey = itemKey != null
+
+                if (previousItems == null || previousUsedExplicitKey != usesExplicitKey) {
+                    // Reset on the first update or when switching identity strategies.
+                    clusterManager.clearItems()
+                    clusterManager.addItems(currentKeyedItems.values)
+                    clusterManager.cluster()
+                } else {
+                    val diff = diffClusterItems(previousItems, currentKeyedItems)
+                    val removedItems = diff.removed + diff.updated.map { (oldItem, _) -> oldItem }
+                    val addedItems = diff.added + diff.updated.map { (_, newItem) -> newItem }
+                    if (removedItems.isNotEmpty()) {
+                        clusterManager.removeItems(removedItems)
+                    }
+                    if (addedItems.isNotEmpty()) {
+                        clusterManager.addItems(addedItems)
+                    }
+                    if (diff.hasChanges) {
+                        clusterManager.cluster()
+                    }
+                }
+                previousKeyedItems = currentKeyedItems
+                previousUsedExplicitKey = usesExplicitKey
             }
     }
     DisposableEffect(itemsState) {
@@ -392,6 +625,7 @@ internal fun <T : ClusterItem> Clustering(
     }
 
     val actualRenderer = renderer ?: clusterManager.renderer
+
     @Suppress("UNCHECKED_CAST")
     val unclusteredItems by (actualRenderer as? ClusterRendererItemState<T>)?.unclusteredItems
         ?: remember { mutableStateOf(emptySet()) }
@@ -400,13 +634,10 @@ internal fun <T : ClusterItem> Clustering(
     }
 }
 
-
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
-public fun <T : ClusterItem> rememberClusterRenderer(
-    clusterManager: ClusterManager<T>?,
-): ClusterRenderer<T>? {
+public fun <T : ClusterItem> rememberClusterRenderer(clusterManager: ClusterManager<T>?): ClusterRenderer<T>? {
     val context = LocalContext.current
     val clusterRendererState: MutableState<ClusterRenderer<T>?> = remember { mutableStateOf(null) }
 
@@ -563,9 +794,7 @@ private fun <T : ClusterItem> rememberClusterManager(
  * This is heavily coupled to implementation details of [MarkerManager].
  */
 @Composable
-private fun ResetMapListeners(
-    clusterManager: ClusterManager<*>,
-) {
+private fun ResetMapListeners(clusterManager: ClusterManager<*>) {
     val reattach = rememberReattachClickListenersHandle()
     LaunchedEffect(clusterManager, reattach) {
         Handler(Looper.getMainLooper()).post {
@@ -577,8 +806,9 @@ private fun ResetMapListeners(
 private class ReportingDefaultClusterRenderer<T : ClusterItem>(
     context: Context,
     map: GoogleMap,
-    clusterManager: ClusterManager<T>
-) : DefaultClusterRenderer<T>(context, map, clusterManager), ClusterRendererItemState<T> {
+    clusterManager: ClusterManager<T>,
+) : DefaultClusterRenderer<T>(context, map, clusterManager),
+    ClusterRendererItemState<T> {
 
     override val unclusteredItems = mutableStateOf(emptySet<T>())
 

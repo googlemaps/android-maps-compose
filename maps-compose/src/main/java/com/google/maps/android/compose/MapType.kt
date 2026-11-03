@@ -25,5 +25,5 @@ public enum class MapType(public val value: Int) {
     NORMAL(com.google.android.gms.maps.GoogleMap.MAP_TYPE_NORMAL),
     SATELLITE(com.google.android.gms.maps.GoogleMap.MAP_TYPE_SATELLITE),
     TERRAIN(com.google.android.gms.maps.GoogleMap.MAP_TYPE_TERRAIN),
-    HYBRID(com.google.android.gms.maps.GoogleMap.MAP_TYPE_HYBRID)
+    HYBRID(com.google.android.gms.maps.GoogleMap.MAP_TYPE_HYBRID),
 }

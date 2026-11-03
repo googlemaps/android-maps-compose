@@ -62,7 +62,7 @@ class RecompositionActivity : ComponentActivity() {
                 MapsComposeSampleTheme {
                     GoogleMapView(
                         modifier = Modifier.matchParentSize(),
-                        cameraPositionState = cameraPositionState
+                        cameraPositionState = cameraPositionState,
                     )
                 }
             }
@@ -91,7 +91,7 @@ class RecompositionActivity : ComponentActivity() {
                 uiSettings = uiSettings,
                 onPOIClick = {
                     Log.d(TAG, "POI clicked: ${it.name}")
-                }
+                },
             ) {
                 val markerClick: (Marker) -> Boolean = remember(cameraPositionState) {
                     { marker ->
@@ -106,7 +106,7 @@ class RecompositionActivity : ComponentActivity() {
                 Marker(
                     state = markerState,
                     title = "Marker in Singapore",
-                    onClick = markerClick
+                    onClick = markerClick,
                 )
 
                 content()
@@ -118,7 +118,7 @@ class RecompositionActivity : ComponentActivity() {
                     animationJob?.cancel()
                     animationJob = coroutineScope.launch {
                         cameraPositionState.animate(
-                            CameraUpdateFactory.newLatLng(newPosition)
+                            CameraUpdateFactory.newLatLng(newPosition),
                         )
                     }
                 }) {

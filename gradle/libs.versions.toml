@@ -7,17 +7,18 @@ androidCompileSdk = "37"
 androidMinSdk = "23"
 androidTargetSdk = "37"
 
-agp = "9.4.0"
-dependencyAnalysis = "3.19.1"
+agp = "9.4.1"
+dependencyAnalysis = "3.19.2"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.37.0"
-kotlin = "2.4.10"
+kotlin = "2.4.21"
 kotlinxCoroutines = "1.11.0"
-versions = "0.61.0"
+spotless = "8.10.4"
+versions = "0.66.0"
 
 # Android
 activitycompose = "1.13.0"
-androidx-core = "1.19.0"
+androidx-core = "1.19.1"
 androidx-startup = "1.2.0"
 compose-bom = "2026.09.00"
 constraintlayout = "2.2.2"
@@ -39,8 +40,8 @@ junit = "4.13.2"
 junitktx = "1.3.0"
 leakcanaryAndroid = "2.14"
 mockk = "1.14.11"
-kover = "0.9.9"
-robolectric = "4.16.1"
+kover = "0.9.11"
+robolectric = "4.17"
 screenshot = "0.0.1-alpha14"
 truth = "1.4.5"
 
@@ -77,6 +78,7 @@ maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secr
 
 # Testing
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-test-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidCore" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitktx" }
@@ -99,4 +101,5 @@ dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.r
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }

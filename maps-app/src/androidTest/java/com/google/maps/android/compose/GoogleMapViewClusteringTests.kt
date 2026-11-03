@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -30,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.common.truth.Truth.assertThat
+import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.compose.clustering.ClusteringMarkerProperties
@@ -50,13 +53,13 @@ class GoogleMapViewClusteringTests {
     @Before
     fun setUp() {
         cameraPositionState = CameraPositionState(
-            position = CameraPosition.fromLatLngZoom(startingPosition, 12f)
+            position = CameraPosition.fromLatLngZoom(startingPosition, 12f),
         )
     }
 
     private fun initMapAndGetMarker(
         clusterManagerHolder: Array<ClusterManager<MyItem>?>,
-        content: @Composable () -> Unit
+        content: @Composable () -> Unit,
     ): Marker {
         assumeValidApiKey()
 
@@ -104,7 +107,7 @@ class GoogleMapViewClusteringTests {
                 },
                 onClusterManager = { cm ->
                     clusterManagerHolder[0] = cm
-                }
+                },
             )
         }
 
@@ -137,7 +140,7 @@ class GoogleMapViewClusteringTests {
                 clusterItemContent = {
                     ClusteringMarkerProperties(
                         rotation = rotationState.floatValue,
-                        anchor = Offset(0.5f, 0.5f)
+                        anchor = Offset(0.5f, 0.5f),
                     )
                     Surface(modifier = Modifier.size(20.dp)) {
                         Text("X")
@@ -145,7 +148,7 @@ class GoogleMapViewClusteringTests {
                 },
                 onClusterManager = { cm ->
                     clusterManagerHolder[0] = cm
-                }
+                },
             )
         }
 
@@ -161,6 +164,132 @@ class GoogleMapViewClusteringTests {
 
         composeTestRule.runOnUiThread {
             assertThat(marker.rotation).isEqualTo(180f)
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testKeyedClusteringAppliesAdditionsRemovalsAndUpdates() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val firstItem = MyItem(startingPosition, "first", "Snippet", 0f)
+        val items = mutableStateOf(listOf(firstItem))
+
+        composeTestRule.setContent {
+            GoogleMapView(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+            ) {
+                Clustering(
+                    items = items.value,
+                    key = MyItem::title,
+                    onClusterManager = { clusterManagerHolder[0] = it },
+                )
+            }
+        }
+
+        val timeoutMillis = TimeUnit.SECONDS.toMillis(MAP_LOAD_TIMEOUT_SECONDS)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                clusterManagerHolder[0]?.algorithm?.items?.size == 1
+            }
+        }
+
+        val updatedPosition = LatLng(2.34, 5.67)
+        val addedItem = MyItem(LatLng(3.45, 6.78), "added", "Snippet", 0f)
+        items.value = listOf(firstItem.copy(position = updatedPosition), addedItem)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                val currentItems = clusterManagerHolder[0]?.algorithm?.items.orEmpty()
+                currentItems.size == 2 &&
+                    currentItems.any { it.title == "first" && it.position == updatedPosition } &&
+                    currentItems.any { it.title == "added" }
+            }
+        }
+
+        items.value = listOf(addedItem)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                val currentItems = clusterManagerHolder[0]?.algorithm?.items.orEmpty()
+                currentItems.size == 1 && currentItems.single().title == "added"
+            }
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testKeyedClusteringLeavesUnchangedItemsAlone() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val initialItem = MyItem(startingPosition, "same", "Snippet", 0f)
+        val items = mutableStateOf(listOf(initialItem))
+
+        composeTestRule.setContent {
+            GoogleMapView(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+            ) {
+                Clustering(
+                    items = items.value,
+                    key = MyItem::title,
+                    onClusterManager = { clusterManagerHolder[0] = it },
+                )
+            }
+        }
+
+        val timeoutMillis = TimeUnit.SECONDS.toMillis(MAP_LOAD_TIMEOUT_SECONDS)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                clusterManagerHolder[0]?.algorithm?.items?.size == 1
+            }
+        }
+        val marker = composeTestRule.runOnUiThread {
+            clusterManagerHolder[0]!!.markerCollection.getMarkers().single()
+        }
+
+        items.value = listOf(initialItem.copy())
+        composeTestRule.waitForIdle()
+
+        composeTestRule.runOnUiThread {
+            assertThat(clusterManagerHolder[0]?.algorithm?.items).containsExactly(initialItem)
+            assertThat(clusterManagerHolder[0]?.markerCollection?.getMarkers()).contains(marker)
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testUnkeyedClusteringStillUpdatesItemsByEquality() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val initialItem = MyItem(startingPosition, "first", "Snippet", 0f)
+        val items = mutableStateOf(listOf(initialItem))
+
+        composeTestRule.setContent {
+            GoogleMapView(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+            ) {
+                Clustering(
+                    items = items.value,
+                    onClusterManager = { clusterManagerHolder[0] = it },
+                )
+            }
+        }
+
+        val timeoutMillis = TimeUnit.SECONDS.toMillis(MAP_LOAD_TIMEOUT_SECONDS)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                clusterManagerHolder[0]?.algorithm?.items?.size == 1
+            }
+        }
+
+        val updatedItem = initialItem.copy(position = LatLng(2.34, 5.67))
+        val addedItem = MyItem(LatLng(3.45, 6.78), "added", "Snippet", 0f)
+        items.value = listOf(updatedItem, addedItem)
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            composeTestRule.runOnUiThread {
+                val currentItems = clusterManagerHolder[0]?.algorithm?.items.orEmpty()
+                currentItems.size == 2 &&
+                    currentItems.any { it.title == "first" && it.position == updatedItem.position } &&
+                    currentItems.any { it.title == "added" }
+            }
         }
     }
 
@@ -190,12 +319,120 @@ class GoogleMapViewClusteringTests {
                 },
                 onClusterManager = { cm ->
                     clusterManagerHolder[0] = cm
-                }
+                },
             )
         }
 
         composeTestRule.runOnUiThread {
             assertThat(marker.isVisible).isTrue()
+        }
+    }
+
+    /**
+     * Inspects non-null String fields on [MarkerOptions] to extract contentDescription
+     * dynamically without hardcoding obfuscated Play services field names.
+     */
+    private fun MarkerOptions.findCustomContentDescription(): String? {
+        for (field in MarkerOptions::class.java.declaredFields) {
+            if (field.type == String::class.java) {
+                field.isAccessible = true
+                val value = field.get(this) as? String
+                if (value != null && value != this.title && value != this.snippet) {
+                    return value
+                }
+            }
+        }
+        return null
+    }
+
+    private fun MarkerOptions.countStringFieldOccurrences(target: String): Int {
+        var count = 0
+        for (field in MarkerOptions::class.java.declaredFields) {
+            if (field.type == String::class.java) {
+                field.isAccessible = true
+                if (field.get(this) == target) {
+                    count++
+                }
+            }
+        }
+        return count
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusteringPropagatesItemTitleToMarkerContentDescription() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val items = listOf(MyItem(startingPosition, "Store Location 42", "Snippet", 0f))
+
+        initMapAndGetMarker(clusterManagerHolder) {
+            Clustering<MyItem>(
+                items = items,
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                },
+            )
+        }
+
+        composeTestRule.runOnUiThread {
+            val cm = clusterManagerHolder[0]!!
+            val renderer = cm.renderer
+            val method = renderer.javaClass.methods.firstOrNull {
+                it.name == "onBeforeClusterItemRendered" && it.parameterTypes.size == 2
+            } ?: renderer.javaClass.getDeclaredMethod(
+                "onBeforeClusterItemRendered",
+                ClusterItem::class.java,
+                MarkerOptions::class.java,
+            ).apply { isAccessible = true }
+
+            val markerOptions = MarkerOptions()
+            method.invoke(renderer, items.first(), markerOptions)
+
+            // When no custom description is supplied, fallback to item.title is populated on MarkerOptions.
+            // Both title and contentDescription fields hold "Store Location 42" (count == 2),
+            // whereas before the fix contentDescription remained null (count == 1).
+            assertThat(markerOptions.countStringFieldOccurrences("Store Location 42")).isEqualTo(2)
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusteringMarkerPropertiesCustomContentDescription() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        // Item title is deliberately distinct from the custom contentDescription
+        val items = listOf(MyItem(startingPosition, "Store Location 42", "Snippet", 0f))
+
+        initMapAndGetMarker(clusterManagerHolder) {
+            Clustering<MyItem>(
+                items = items,
+                clusterItemContent = {
+                    ClusteringMarkerProperties(
+                        contentDescription = "Custom Accessibility Pin Description",
+                    )
+                    Surface(modifier = Modifier.size(20.dp)) {
+                        Text("X")
+                    }
+                },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                },
+            )
+        }
+
+        composeTestRule.runOnUiThread {
+            val cm = clusterManagerHolder[0]!!
+            val renderer = cm.renderer
+            val method = renderer.javaClass.methods.firstOrNull {
+                it.name == "onBeforeClusterItemRendered" && it.parameterTypes.size == 2
+            } ?: renderer.javaClass.getDeclaredMethod(
+                "onBeforeClusterItemRendered",
+                ClusterItem::class.java,
+                MarkerOptions::class.java,
+            ).apply { isAccessible = true }
+
+            val markerOptions = MarkerOptions()
+            method.invoke(renderer, items.first(), markerOptions)
+
+            assertThat(markerOptions.findCustomContentDescription()).isEqualTo("Custom Accessibility Pin Description")
         }
     }
 }

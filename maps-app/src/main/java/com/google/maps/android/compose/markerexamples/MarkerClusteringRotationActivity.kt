@@ -125,13 +125,13 @@ fun GoogleMapClusteringRotation() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
+            .systemBarsPadding(),
     ) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = rememberCameraPositionState {
                 position = CameraPosition.fromLatLngZoom(singapore2, 6f)
-            }
+            },
         ) {
             // Determine rotation angles when using top-level parameters
             val currentClusterRotation = if (rotateClusters && !useMarkerProperties) rotationAngle else 0f
@@ -150,7 +150,7 @@ fun GoogleMapClusteringRotation() {
                     if (rotateClusters && useMarkerProperties) {
                         ClusteringMarkerProperties(
                             rotation = rotationAngle,
-                            anchor = Offset(0.5f, 0.5f)
+                            anchor = Offset(0.5f, 0.5f),
                         )
                     }
                     CircleContent(
@@ -163,7 +163,7 @@ fun GoogleMapClusteringRotation() {
                     if (rotateItems && useMarkerProperties) {
                         ClusteringMarkerProperties(
                             rotation = rotationAngle,
-                            anchor = Offset(0.5f, 0.5f)
+                            anchor = Offset(0.5f, 0.5f),
                         )
                     }
                     CircleContent(
@@ -171,7 +171,7 @@ fun GoogleMapClusteringRotation() {
                         text = "▲",
                         color = Color.Green,
                     )
-                }
+                },
             )
         }
 
@@ -188,7 +188,7 @@ fun GoogleMapClusteringRotation() {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
         )
     }
 }
@@ -197,24 +197,20 @@ fun GoogleMapClusteringRotation() {
  * A reusable circular/symmetrical badge composable used to represent clusters and items on the map.
  */
 @Composable
-private fun CircleContent(
-    color: Color,
-    text: String,
-    modifier: Modifier = Modifier,
-) {
+private fun CircleContent(color: Color, text: String, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
         shape = CircleShape,
         color = color,
         contentColor = Color.White,
-        border = BorderStroke(2.dp, Color.White)
+        border = BorderStroke(2.dp, Color.White),
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
                 text = text,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Black,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
     }
@@ -237,23 +233,23 @@ private fun RotationControlPanel(
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Rotation Angle: ${rotationAngle.toInt()}°",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             Slider(
                 value = rotationAngle,
                 onValueChange = onRotationAngleChange,
-                valueRange = 0f..360f
+                valueRange = 0f..360f,
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = rotateClusters, onCheckedChange = onRotateClustersChange)
@@ -268,7 +264,7 @@ private fun RotationControlPanel(
                 Checkbox(checked = useMarkerProperties, onCheckedChange = onUseMarkerPropertiesChange)
                 Text(
                     text = "Apply via ClusteringMarkerProperties",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
                 )
             }
         }

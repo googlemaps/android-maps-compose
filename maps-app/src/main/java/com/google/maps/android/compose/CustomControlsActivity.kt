@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import kotlinx.coroutines.launch
 
-
 class CustomControlsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,8 +60,8 @@ class CustomControlsActivity : ComponentActivity() {
                 mutableStateOf(
                     MapUiSettings(
                         myLocationButtonEnabled = false,
-                        zoomGesturesEnabled = false
-                    )
+                        zoomGesturesEnabled = false,
+                    ),
                 )
             }
             // Observing and controlling the camera's state can be done with a CameraPositionState
@@ -89,17 +88,17 @@ class CustomControlsActivity : ComponentActivity() {
                             .matchParentSize(),
                         visible = !isMapLoaded,
                         enter = EnterTransition.None,
-                        exit = fadeOut()
+                        exit = fadeOut(),
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .background(MaterialTheme.colors.background)
-                                .wrapContentSize()
+                                .wrapContentSize(),
                         )
                     }
                 }
                 Column(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     MapButton(
                         "This is a custom location button",
@@ -107,23 +106,26 @@ class CustomControlsActivity : ComponentActivity() {
                             Toast.makeText(
                                 this@CustomControlsActivity,
                                 "Click on my location",
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_SHORT,
                             ).show()
-                        })
+                        },
+                    )
                     MapButton(
                         "+",
                         onClick = {
                             coroutineScope.launch {
                                 cameraPositionState.animate(CameraUpdateFactory.zoomIn())
                             }
-                        })
+                        },
+                    )
                     MapButton(
                         "-",
                         onClick = {
                             coroutineScope.launch {
                                 cameraPositionState.animate(CameraUpdateFactory.zoomOut())
                             }
-                        })
+                        },
+                    )
                 }
             }
         }
@@ -135,13 +137,11 @@ class CustomControlsActivity : ComponentActivity() {
             modifier = modifier.padding(4.dp),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.onPrimary,
-                contentColor = MaterialTheme.colors.primary
+                contentColor = MaterialTheme.colors.primary,
             ),
-            onClick = onClick
+            onClick = onClick,
         ) {
             Text(text = text, style = MaterialTheme.typography.body1)
         }
     }
-
-
 }

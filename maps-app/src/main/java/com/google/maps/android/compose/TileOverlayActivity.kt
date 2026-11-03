@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.createBitmap
 import com.google.android.gms.maps.model.Tile
 import com.google.android.gms.maps.model.TileProvider
-import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.delay
+import java.io.ByteArrayOutputStream
 
 /**
  * This activity demonstrates how to use Tile Overlays with Jetpack Compose.

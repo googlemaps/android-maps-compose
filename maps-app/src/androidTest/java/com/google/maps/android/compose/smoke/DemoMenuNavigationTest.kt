@@ -143,7 +143,7 @@ class DemoMenuNavigationTest(
         }
         throw AssertionError(
             "${activityClass.simpleName} was not resumed within ${TIMEOUT_MS}ms, " +
-                "the foreground activity is ${resumedActivity()?.javaClass?.simpleName}"
+                "the foreground activity is ${resumedActivity()?.javaClass?.simpleName}",
         )
     }
 
@@ -163,8 +163,10 @@ class DemoMenuNavigationTest(
             instrumentation.runOnMainSync {
                 when (val surface = findMapSurface(activity.window.decorView)) {
                     is MapView -> surface.getMapAsync { ready.countDown() }
+
                     is StreetViewPanoramaView ->
                         surface.getStreetViewPanoramaAsync { ready.countDown() }
+
                     else -> return@runOnMainSync
                 }
                 requested = true
@@ -202,9 +204,8 @@ class DemoMenuNavigationTest(
 
         @JvmStatic
         @Parameterized.Parameters(name = "{2}")
-        fun demos(): List<Array<Any>> =
-            allActivityGroups.flatMap { group ->
-                group.activities.map { demo -> arrayOf(group, demo, demo.kClass.java.simpleName) }
-            }
+        fun demos(): List<Array<Any>> = allActivityGroups.flatMap { group ->
+            group.activities.map { demo -> arrayOf(group, demo, demo.kClass.java.simpleName) }
+        }
     }
 }

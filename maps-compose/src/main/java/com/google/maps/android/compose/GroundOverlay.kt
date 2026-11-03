@@ -26,10 +26,8 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.addGroundOverlay
 import kotlin.IllegalStateException
 
-internal class GroundOverlayNode(
-    val groundOverlay: GroundOverlay,
-    var onGroundOverlayClick: (GroundOverlay) -> Unit
-) : MapNode {
+internal class GroundOverlayNode(val groundOverlay: GroundOverlay, var onGroundOverlayClick: (GroundOverlay) -> Unit) :
+    MapNode {
     override fun onRemoved() {
         groundOverlay.remove()
     }
@@ -48,17 +46,15 @@ public data class GroundOverlayPosition internal constructor(
     public val height: Float? = null,
 ) {
     public companion object {
-        public fun create(latLngBounds: LatLngBounds) : GroundOverlayPosition {
-            return GroundOverlayPosition(latLngBounds = latLngBounds)
-        }
+        public fun create(latLngBounds: LatLngBounds): GroundOverlayPosition =
+            GroundOverlayPosition(latLngBounds = latLngBounds)
 
-        public fun create(location: LatLng, width: Float, height: Float? = null) : GroundOverlayPosition {
-            return GroundOverlayPosition(
+        public fun create(location: LatLng, width: Float, height: Float? = null): GroundOverlayPosition =
+            GroundOverlayPosition(
                 location = location,
                 width = width,
-                height = height
+                height = height,
             )
-        }
     }
 }
 
@@ -122,7 +118,7 @@ public fun GroundOverlay(
                 // We could recreate the overlay here, but that might be expensive.
                 // For now, we'll document that anchor cannot be changed.
             }
-        }
+        },
     )
 }
 

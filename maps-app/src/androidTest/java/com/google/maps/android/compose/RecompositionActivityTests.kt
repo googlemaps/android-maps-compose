@@ -34,13 +34,13 @@ class RecompositionActivityTests {
         assumeValidApiKey()
         val initialPosition = singapore
         val cameraPositionState = CameraPositionState(
-            position = CameraPosition.fromLatLngZoom(initialPosition, 11f)
+            position = CameraPosition.fromLatLngZoom(initialPosition, 11f),
         )
 
         composeTestRule.setContent {
             RecompositionActivity().GoogleMapView(
                 modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
+                cameraPositionState = cameraPositionState,
             )
         }
 

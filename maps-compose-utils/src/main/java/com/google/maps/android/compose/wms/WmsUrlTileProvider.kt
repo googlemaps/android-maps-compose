@@ -38,8 +38,8 @@ public class WmsUrlTileProvider(
         yMin: Double,
         xMax: Double,
         yMax: Double,
-        zoom: Int
-    ) -> String
+        zoom: Int,
+    ) -> String,
 ) : UrlTileProvider(width, height) {
 
     override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
@@ -74,7 +74,7 @@ public class WmsUrlTileProvider(
     internal fun getBoundingBox(x: Int, y: Int, zoom: Int): DoubleArray {
         // 1. Calculate how many tiles exist in each dimension at this zoom level (2^zoom).
         val tilesPerDimension = 1 shl zoom
-        
+
         // 2. Divide the total world span by the number of tiles to find the metric size of one tile.
         val tileSizeMeters = WORLD_SIZE_METERS / tilesPerDimension.toDouble()
 

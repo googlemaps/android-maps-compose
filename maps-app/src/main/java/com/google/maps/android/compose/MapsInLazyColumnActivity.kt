@@ -76,7 +76,7 @@ private val countries = listOf(
     CountryLocation(
         "Madison Square Garden (has indoor mode)",
         LatLng(40.7504656, -73.9937246),
-        19.33f
+        19.33f,
     ),
     CountryLocation("Bolivia", LatLng(-16.290154, -63.588653), 5f),
     CountryLocation("Ecuador", LatLng(-1.831239, -78.183406), 5f),
@@ -92,15 +92,10 @@ private val countries = listOf(
     CountryLocation("South Africa", LatLng(-30.559482, 22.937506), 5f),
     CountryLocation("Spain", LatLng(40.463667, -3.74922), 5f),
     CountryLocation("Georgia", LatLng(42.315407, 43.356892), 5f),
-    CountryLocation("Burundi", LatLng(-3.373056, 29.918886), 5f)
+    CountryLocation("Burundi", LatLng(-3.373056, 29.918886), 5f),
 )
 
-data class MapListItem(
-    val title: String,
-    val location: LatLng,
-    val zoom: Float,
-    val id: MapItemId
-)
+data class MapListItem(val title: String, val location: LatLng, val zoom: Float, val id: MapItemId)
 
 private val allItems = countries.mapIndexed { index, country ->
     MapListItem(country.name, country.latLng, country.zoom, "MapInLazyColumn#$index")
@@ -127,7 +122,7 @@ class MapsInLazyColumnActivity : ComponentActivity() {
                     Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     TextButton(onClick = { setItemCount(0) }) {
                         Text(text = "Clear")
@@ -159,16 +154,15 @@ class MapsInLazyColumnActivity : ComponentActivity() {
 fun MapsInLazyColumn(
     mapItems: List<MapListItem>,
     lazyListState: LazyListState = rememberLazyListState(),
-    onMapLoaded: () -> Unit
+    onMapLoaded: () -> Unit,
 ) {
-
     var isMapLoaded by remember { mutableStateOf(false) }
 
     val lazyListState = lazyListState
 
     val cameraPositionStates = mapItems.associate { item ->
         item.id to rememberCameraPositionState(
-            init = { position = CameraPosition.fromLatLngZoom(item.location, item.zoom) }
+            init = { position = CameraPosition.fromLatLngZoom(item.location, item.zoom) },
         )
     }
     val visibleItemIds by remember(lazyListState) {
@@ -185,7 +179,7 @@ fun MapsInLazyColumn(
     Box {
         LazyColumn(
             state = lazyListState,
-            userScrollEnabled = !anyMapMoving
+            userScrollEnabled = !anyMapMoving,
         ) {
             items(mapItems, key = { it.id }) { item ->
                 val cameraPositionState = cameraPositionStates[item.id]!!
@@ -194,7 +188,7 @@ fun MapsInLazyColumn(
                     Modifier
                         .fillMaxWidth()
                         .height(300.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     MapCard(item, cameraPositionState, onMapLoaded = {
                         isMapLoaded = true
@@ -208,14 +202,10 @@ fun MapsInLazyColumn(
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
-private fun MapCard(
-    item: MapListItem,
-    cameraPositionState: CameraPositionState,
-    onMapLoaded: () -> Unit,
-) {
+private fun MapCard(item: MapListItem, cameraPositionState: CameraPositionState, onMapLoaded: () -> Unit) {
     Card(
         Modifier.padding(16.dp),
-        elevation = 4.dp
+        elevation = 4.dp,
     ) {
         var mapLoaded by remember { mutableStateOf(false) }
         var buildingFocused: Boolean? by remember { mutableStateOf(null) }
@@ -240,7 +230,7 @@ private fun MapCard(
                 properties = remember {
                     MapProperties(
                         isBuildingEnabled = true,
-                        isIndoorEnabled = true
+                        isIndoorEnabled = true,
                     )
                 },
                 cameraPositionState = cameraPositionState,
@@ -261,7 +251,7 @@ private fun MapCard(
                         activatedIndoorLevelInvocationCount++
                         updateIndoorLevel()
                     }
-                }
+                },
             ) {
                 MapEffect(Unit) { googleMap ->
                     map = googleMap
@@ -273,7 +263,7 @@ private fun MapCard(
             AnimatedVisibility(!mapLoaded, enter = fadeIn(), exit = fadeOut()) {
                 Box(
                     Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
@@ -285,21 +275,21 @@ private fun MapCard(
                     modifier = Modifier.background(Color.White.copy(0.7f)).testTag(text),
                     text = text,
                     fontWeight = fontWeight,
-                    fontSize = 10.sp
+                    fontSize = 10.sp,
                 )
             }
 
             Column(
-                modifier = Modifier.align(Alignment.TopStart)
+                modifier = Modifier.align(Alignment.TopStart),
             ) {
                 TextWithBackground(
                     "Panning this map disables list scroll",
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
 
             Column(
-                modifier = Modifier.align(Alignment.BottomStart)
+                modifier = Modifier.align(Alignment.BottomStart),
             ) {
                 TextWithBackground(item.title, fontWeight = FontWeight.Bold)
                 TextWithBackground("Map loaded: $mapLoaded")

@@ -53,7 +53,6 @@ android {
 
     buildTypes {
         getByName("debug") {
-            enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
         }
     }
@@ -93,6 +92,9 @@ dependencies {
     api(libs.maps.utils.core)
 
     testImplementation(libs.test.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.truth)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.test.espresso)

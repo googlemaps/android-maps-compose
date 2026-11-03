@@ -54,7 +54,6 @@ class MapsInLazyColumnTests {
         MapListItem(id = "10", location = LatLng(0.12, 9.87), zoom = 13f, title = "Item 10"),
     )
 
-
     private lateinit var cameraPositionStates: Map<MapItemId, CameraPositionState>
 
     private fun initMaps() {
@@ -81,7 +80,7 @@ class MapsInLazyColumnTests {
                 lazyListState = lazyListState,
                 onMapLoaded = {
                     countDownLatch.countDown()
-                }
+                },
             )
 
             LaunchedEffect(Unit) {
@@ -95,7 +94,7 @@ class MapsInLazyColumnTests {
     fun setUp() {
         cameraPositionStates = mapItems.associate { item ->
             item.id to CameraPositionState(
-                position = CameraPosition.fromLatLngZoom(item.location, item.zoom)
+                position = CameraPosition.fromLatLngZoom(item.location, item.zoom),
             )
         }
     }
@@ -124,6 +123,6 @@ class MapsInLazyColumnTests {
         initMaps()
         composeTestRule.onRoot().performTouchInput { swipeUp(durationMillis = 1000) }
         composeTestRule.waitForIdle()
-        //We do not need to check anything on the test, just to make sure the scroll down doesnt crash
+        // We do not need to check anything on the test, just to make sure the scroll down doesnt crash
     }
 }

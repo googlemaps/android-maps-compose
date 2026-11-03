@@ -71,7 +71,7 @@ class ScaleBarActivity : ComponentActivity() {
                     cameraPositionState = cameraPositionState,
                     onMapLoaded = {
                         isMapLoaded = true
-                    }
+                    },
                 )
 
                 Box(
@@ -80,16 +80,16 @@ class ScaleBarActivity : ComponentActivity() {
                         .align(Alignment.TopStart)
                         .background(
                             scaleBackground,
-                            shape = MaterialTheme.shapes.medium
+                            shape = MaterialTheme.shapes.medium,
                         )
                         .border(
                             scaleBorderStroke,
-                            shape = MaterialTheme.shapes.medium
+                            shape = MaterialTheme.shapes.medium,
                         ),
                 ) {
                     DisappearingScaleBar(
                         modifier = Modifier.padding(end = 4.dp),
-                        cameraPositionState = cameraPositionState
+                        cameraPositionState = cameraPositionState,
                     )
                 }
 
@@ -103,14 +103,13 @@ class ScaleBarActivity : ComponentActivity() {
                         )
                         .border(
                             scaleBorderStroke,
-                            shape = MaterialTheme.shapes.medium
+                            shape = MaterialTheme.shapes.medium,
                         ),
-                    ) {
+                ) {
                     ScaleBar(
                         modifier = Modifier.padding(end = 4.dp),
-                        cameraPositionState = cameraPositionState
+                        cameraPositionState = cameraPositionState,
                     )
-
                 }
                 if (!isMapLoaded) {
                     AnimatedVisibility(
@@ -118,12 +117,12 @@ class ScaleBarActivity : ComponentActivity() {
                             .matchParentSize(),
                         visible = !isMapLoaded,
                         enter = EnterTransition.None,
-                        exit = fadeOut()
+                        exit = fadeOut(),
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .background(MaterialTheme.colors.background)
-                                .wrapContentSize()
+                                .wrapContentSize(),
                         )
                     }
                 }

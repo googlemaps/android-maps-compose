@@ -30,7 +30,12 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -72,7 +77,7 @@ class LocationTrackingActivity : ComponentActivity() {
     }.shareIn(
         lifecycleScope,
         replay = 0,
-        started = SharingStarted.WhileSubscribed()
+        started = SharingStarted.WhileSubscribed(),
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,7 +104,10 @@ class LocationTrackingActivity : ComponentActivity() {
                     locationSource.onLocationChanged(locationState.value)
 
                     Log.d(TAG, "Updating camera position...")
-                    val cameraPosition = CameraPosition.fromLatLngZoom(LatLng(locationState.value.latitude, locationState.value.longitude), zoom)
+                    val cameraPosition = CameraPosition.fromLatLngZoom(
+                        LatLng(locationState.value.latitude, locationState.value.longitude),
+                        zoom,
+                    )
                     cameraPositionState.animate(CameraUpdateFactory.newCameraPosition(cameraPosition), 1_000)
                 }
             }
@@ -123,9 +131,12 @@ class LocationTrackingActivity : ComponentActivity() {
                     },
                     // This listener overrides the behavior for the location button. It is intended to be used when a
                     // custom behavior is needed.
-                    onMyLocationButtonClick = {  Log.d(TAG,"Overriding the onMyLocationButtonClick with this Log"); true },
+                    onMyLocationButtonClick = {
+                        Log.d(TAG, "Overriding the onMyLocationButtonClick with this Log")
+                        true
+                    },
                     locationSource = locationSource,
-                    properties = mapProperties
+                    properties = mapProperties,
                 )
                 if (!isMapLoaded) {
                     AnimatedVisibility(
@@ -133,12 +144,12 @@ class LocationTrackingActivity : ComponentActivity() {
                             .matchParentSize(),
                         visible = !isMapLoaded,
                         enter = EnterTransition.None,
-                        exit = fadeOut()
+                        exit = fadeOut(),
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .background(MaterialTheme.colors.background)
-                                .wrapContentSize()
+                                .wrapContentSize(),
                         )
                     }
                 }

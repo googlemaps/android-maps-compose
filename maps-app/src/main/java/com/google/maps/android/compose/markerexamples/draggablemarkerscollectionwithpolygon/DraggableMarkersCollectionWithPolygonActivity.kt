@@ -87,7 +87,7 @@ private class DraggableMarkersModel(dataModel: Map<LocationKey, LocationData>) {
         key(locationKey) {
             LocationMarker(
                 markerState,
-                onClick = { deleteLocation(locationKey) }
+                onClick = { deleteLocation(locationKey) },
             )
         }
     }
@@ -143,16 +143,13 @@ class DraggableMarkersCollectionWithPolygonActivity : ComponentActivity() {
  * A GoogleMap with locations represented by markers
  */
 @Composable
-private fun GoogleMapWithLocations(
-    markersModel: DraggableMarkersModel,
-    modifier: Modifier = Modifier
-) {
+private fun GoogleMapWithLocations(markersModel: DraggableMarkersModel, modifier: Modifier = Modifier) {
     val cameraPositionState = rememberCameraPositionState { position = defaultCameraPosition }
 
     GoogleMap(
         modifier = modifier,
         cameraPositionState = cameraPositionState,
-        onMapClick = { position -> markersModel.addLocation(LocationData(position)) }
+        onMapClick = { position -> markersModel.addLocation(LocationData(position)) },
     ) {
         markersModel.Markers()
 
@@ -164,17 +161,14 @@ private fun GoogleMapWithLocations(
  * A draggable GoogleMap Marker representing a location on the map
  */
 @Composable
-private inline fun LocationMarker(
-    markerState: MarkerState,
-    crossinline onClick: () -> Unit
-) = Marker(
+private inline fun LocationMarker(markerState: MarkerState, crossinline onClick: () -> Unit) = Marker(
     state = markerState,
     draggable = true,
     onClick = {
         onClick()
 
         true
-    }
+    },
 )
 
 /**

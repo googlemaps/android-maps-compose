@@ -24,10 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PatternItem
 import com.google.maps.android.addCircle
 
-internal class CircleNode(
-    val circle: Circle,
-    var onCircleClick: (Circle) -> Unit
-) : MapNode {
+internal class CircleNode(val circle: Circle, var onCircleClick: (Circle) -> Unit) : MapNode {
     override fun onRemoved() {
         circle.remove()
     }
@@ -94,6 +91,6 @@ public fun Circle(
             update(tag) { this.circle.tag = it }
             update(visible) { this.circle.isVisible = it }
             update(zIndex) { this.circle.zIndex = it }
-        }
+        },
     )
 }

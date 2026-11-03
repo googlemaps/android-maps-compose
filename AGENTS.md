@@ -45,7 +45,7 @@ cannot be merged from their XML reports:
 | Suite | Produced by | Covers |
 | --- | --- | --- |
 | `unit` | `koverXmlReportDebug` | the three published library modules |
-| `instrumentation` | `createDebugCoverageReport` (emulator) | `maps-app` and `maps-compose-widgets` |
+| `instrumentation` | `createDebugCoverageReport` and `:maps-app:createLibraryCoverageReports` (emulator) | `maps-app`, plus `maps-compose`, `maps-compose-utils` and `maps-compose-widgets` as exercised by all emulator tests |
 
 Instrumentation coverage is not re-measured after merge; the post-merge
 workflow reuses the artifact from the pull request's emulator run, so no extra
@@ -80,6 +80,21 @@ Running `maps-app` requires a Maps API key: put `MAPS_API_KEY=...` in
 `secrets.properties` at the repo root (see `local.defaults.properties` for the
 template). Never hardcode or commit API keys.
 
+## Agent setup
+
+This file is the shared instruction set for every coding agent. `CLAUDE.md`
+and `GEMINI.md` only import it, and Codex and Copilot read it directly, so put
+new guidance here rather than in a tool-specific file.
+
+Skills live in `.agents/skills/`. `.claude/skills` and `.gemini/skills` are
+symlinks to that folder, so edit the files under `.agents/skills/` only.
+`.agents/skills/android-maps-compose/SKILL.md` teaches agents how apps use this
+library: release-please bumps its version lines, and the `Update Skill`
+workflow refreshes its content after each release.
+
+`.gemini/config.yaml` and `.gemini/styleguide.md` configure Gemini Code Assist
+reviews on pull requests, so they stay specific to that tool.
+
 ## Code style
 
 - Adhere to formatting rules defined in `.editorconfig`.
@@ -102,6 +117,33 @@ template). Never hardcode or commit API keys.
 - Use Conventional Commit messages (`feat:`, `fix:`, `docs:`, ...).
   release-please parses them to generate versions and CHANGELOG.md; a wrong
   prefix causes a wrong release bump. Never edit CHANGELOG.md by hand.
+- **Several changes in one PR**: a squash merge keeps only the PR title, so
+  release-please would list one entry. When a PR contains several changes that
+  belong in the changelog separately (for example several bug fixes), add a
+  commit override block at the end of the PR description, one Conventional
+  Commit per line. release-please uses these lines instead of the PR title:
+
+  ```
+  BEGIN_COMMIT_OVERRIDE
+  fix(clustering): describe the first fix
+  fix(widgets): describe the second fix
+  END_COMMIT_OVERRIDE
+  ```
+
+  The PR title still has to be a valid Conventional Commit. Each line counts
+  for the version bump, so a `feat:` or `!` line bumps accordingly.
+- Keep a pull request to what its title says. Once review has started, put
+  new features or unrelated fixes in a separate pull request. If the scope
+  does change, update the type in the title (a `refactor:` that now adds
+  behavior is a `feat:`), since release-please reads it.
+- Answer every review thread before asking for another review: push the
+  change, or reply in the thread with why not. A new commit alone does not
+  tell the reviewer which comments it addresses.
+- Never commit anything that only makes sense on your machine or inside
+  Google: local paths (`file:///`, `/Users/...`, workstation home
+  directories), `go/` links, `b/` bug IDs or API keys. The `Agent leftovers` check fails
+  the pull request on these, and on AI co-author trailers and links to agent
+  chat sessions.
 - Every behavior change needs a unit test in the affected module.
 - All pull requests are to be created as drafts (`gh pr create --draft`) until authorization is explicitly given to mark them ready for review. Always inform the user that the PR was created as a draft.
 - Run the module's tests and `lint` before declaring work done, and report

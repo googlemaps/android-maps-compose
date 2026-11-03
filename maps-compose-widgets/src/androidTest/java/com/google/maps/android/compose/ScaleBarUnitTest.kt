@@ -16,20 +16,18 @@
 
 package com.google.maps.android.compose.widgets
 
-
 import android.graphics.Point
-import io.mockk.every
-import io.mockk.mockk
-import org.junit.Test
-import com.google.common.truth.Truth.assertThat
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.LatLng
+import com.google.common.truth.Truth.assertThat
 import com.google.maps.android.sphericalDistance
+import io.mockk.every
+import io.mockk.mockk
+import org.junit.Test
 import org.junit.runner.RunWith
-
 
 @RunWith(AndroidJUnit4::class)
 public class ScaleBarUnitTest {

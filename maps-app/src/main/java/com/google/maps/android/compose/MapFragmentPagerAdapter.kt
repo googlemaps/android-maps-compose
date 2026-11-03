@@ -29,7 +29,7 @@ class MapFragmentPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStat
             initialZoom = 10f,
             title = "Los Angeles",
             // LA gets the custom content marker
-            markerType = MarkerType.CUSTOM_CONTENT_MARKER
+            markerType = MarkerType.CUSTOM_CONTENT_MARKER,
         ),
         MapConfig( // Second map - New York City
             initialLatLng = LatLng(40.7128, -74.0060),
@@ -37,13 +37,11 @@ class MapFragmentPagerAdapter(fragmentActivity: FragmentActivity) : FragmentStat
             title = "New York City",
             // NYC gets the standard marker
             markerType = MarkerType.STANDARD_MARKER_WITH_SNIPPET,
-            standardMarkerSnippet = "The Big Apple!"
-        )
+            standardMarkerSnippet = "The Big Apple!",
+        ),
     )
 
     override fun getItemCount(): Int = mapConfigs.size
 
-    override fun createFragment(position: Int): Fragment {
-        return GoogleMapComposeFragment.newInstance(mapConfigs[position])
-    }
+    override fun createFragment(position: Int): Fragment = GoogleMapComposeFragment.newInstance(mapConfigs[position])
 }

@@ -77,7 +77,7 @@ public fun InputHandler(
             update(onMarkerDrag) { this.onMarkerDrag = it }
             update(onMarkerDragEnd) { this.onMarkerDragEnd = it }
             update(onMarkerDragStart) { this.onMarkerDragStart = it }
-        }
+        },
     )
 }
 
