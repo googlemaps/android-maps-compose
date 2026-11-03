@@ -76,6 +76,13 @@ and they are covered automatically. To run them with a device or emulator attach
 Add `-Pandroid.testInstrumentationRunnerArguments.requireMapLoaded=true` to also
 wait for map tiles to render, which needs a real key.
 
+On a physical device, keep the screen on for the whole run (for example
+`adb shell svc power stayon usb`, and `adb shell svc power stayon false`
+afterwards). If the screen times out in the middle, a demo can stop resuming and
+the run hangs with an ANR instead of failing (see #1070). The smoke tests also
+log any uncaught exception under the `DemoSmokeTest` tag, so check logcat if a
+run hangs.
+
 Running `maps-app` requires a Maps API key: put `MAPS_API_KEY=...` in
 `secrets.properties` at the repo root (see `local.defaults.properties` for the
 template). Never hardcode or commit API keys.

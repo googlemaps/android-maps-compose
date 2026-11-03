@@ -18,6 +18,7 @@ package com.google.maps.android.compose.smoke
 
 import android.app.Activity
 import android.os.SystemClock
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.test.hasScrollToIndexAction
@@ -77,7 +78,10 @@ class DemoMenuNavigationTest(
     @Before
     fun setUp() {
         defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { _, throwable ->
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            // Log it: if the main thread dies here the app hangs and the test may never reach
+            // assertNoUncaughtExceptions(), so logcat is the only place it would show up.
+            Log.e(TAG, "Uncaught exception on thread ${thread.name}", throwable)
             uncaughtExceptions.add(throwable)
         }
     }
@@ -209,3 +213,5 @@ class DemoMenuNavigationTest(
         }
     }
 }
+
+private const val TAG = "DemoSmokeTest"
