@@ -157,7 +157,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             .flatMap { it.items }
             .toSet()
 
-        val keys = clusters.flatMap { it.computeViewKeys() }
+        val keys = clusters.flatMapTo(mutableSetOf()) { it.computeViewKeys() }
 
         val iterator = keysToViews.iterator()
         while (iterator.hasNext()) {

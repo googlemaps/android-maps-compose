@@ -193,14 +193,9 @@ public class MarkerState private constructor(position: LatLng) {
     message = "Use 'rememberUpdatedMarkerState' instead - It may be confusing to think " +
         "that the state is automatically updated as the position changes, " +
         "so it will be changed or removed.",
-    replaceWith = ReplaceWith(
-        expression = """
-            val markerState = rememberSaveable(key = key, saver = MarkerState.Saver) {
-                MarkerState(position)
-            }
-        """,
-    ),
+    replaceWith = ReplaceWith("rememberUpdatedMarkerState(position)"),
 )
+@Suppress("DEPRECATION")
 public fun rememberMarkerState(key: String? = null, position: LatLng = LatLng(0.0, 0.0)): MarkerState =
     rememberSaveable(key = key, saver = MarkerState.Saver) {
         MarkerState(position)
