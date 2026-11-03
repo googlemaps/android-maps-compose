@@ -14,7 +14,7 @@
 
 # Opens every demo in maps-app on an emulator, directly and through the menu, and checks that it
 # starts, its map loads, and it survives a zoom and a configuration change. The tests live in
-# maps-app/src/androidTest/.../compose/smoke and are excluded from the instrumentation workflow.
+# maps-app/src/androidTest/.../compose/demo/smoke and are excluded from the instrumentation workflow.
 name: Demo smoke test
 
 on:
@@ -86,7 +86,7 @@ jobs:
         disable-animations: true
         script: >-
           ./gradlew :maps-app:connectedDebugAndroidTest --stacktrace
-          -Pandroid.testInstrumentationRunnerArguments.package=com.google.maps.android.compose.smoke
+          -Pandroid.testInstrumentationRunnerArguments.package=com.google.maps.android.compose.demo.smoke
           -Pandroid.testInstrumentationRunnerArguments.requireMapLoaded=true
 
     - name: Upload test reports
