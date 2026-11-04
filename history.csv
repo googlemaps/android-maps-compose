@@ -294,3 +294,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-04T07:33:17Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,instrumentation,maps-compose-utils,413,759,54.41,142,470,30.21,3072,6054,50.74
 2026-11-04T07:33:17Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
 2026-11-04T07:33:17Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,instrumentation,TOTAL,2587,5481,47.2,813,2340,34.74,19072,43740,43.6
+2026-11-04T18:07:01Z,c5b827d,983,perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation,unit,maps-compose,307,2010,15.27,69,1834,3.76,2257,25370,8.9
+2026-11-04T18:07:01Z,c5b827d,983,perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation,unit,maps-compose-utils,38,621,6.12,21,478,4.39,218,7558,2.88
+2026-11-04T18:07:01Z,c5b827d,983,perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
+2026-11-04T18:07:01Z,c5b827d,983,perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation,unit,TOTAL,361,2778,12.99,98,2384,4.11,2557,34440,7.42

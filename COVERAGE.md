@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `5c44583` (#1073), recorded 2026-11-04T07:33:14Z.
+Measured at `c5b827d` (#983), recorded 2026-11-04T18:07:01Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-compose` | 307/2,010 | 15.27% | `███░░░░░░░░░░░░░░░░░` | 69/1,834 | 3.76% |
-| `maps-compose-utils` | 38/624 | 6.09% | `█░░░░░░░░░░░░░░░░░░░` | 21/470 | 4.47% |
+| `maps-compose-utils` | 38/621 | 6.12% | `█░░░░░░░░░░░░░░░░░░░` | 21/478 | 4.39% |
 | `maps-compose-widgets` | 16/147 | 10.88% | `██░░░░░░░░░░░░░░░░░░` | 8/72 | 11.11% |
-| **TOTAL** | 361/2,781 | 12.98% | `███░░░░░░░░░░░░░░░░░` | 98/2,376 | 4.12% |
+| **TOTAL** | 361/2,778 | 12.99% | `███░░░░░░░░░░░░░░░░░` | 98/2,384 | 4.11% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-04 | `c5b827d` | #983 | 12.99% | +0.01 | n/a | n/a | perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation |
 | 2026-11-04 | `5c44583` | #1073 | 12.98% | -0.01 | 47.20% | -0.08 | feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0 |
 | 2026-11-03 | `53c9725` | #1067 | 12.99% | 0.00 | 47.28% | n/a | build: check the public API of the library modules |
 | 2026-11-02 | `174f0fd` | #1060 | 12.99% | 0.00 | n/a | n/a | chore: add maintainer as code owner of workflow files |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-01 | `0c49e8d` | #1002 | 0.42% | 0.00 | 20.79% | 0.00 | feat!: migrate from android-maps-ktx to android-maps-utils (v9.0.0) |
 | 2026-10-01 | `29a87be` | #1007 | 0.42% | 0.00 | 20.79% | -0.08 | test: add end-to-end smoke tests covering every demo activity |
 | 2026-10-01 | `1bbf27e` | #995 | 0.42% | 0.00 | 20.87% | +0.04 | ci: support GEMINI_MODEL repository variable in triage-issue workflow |
-| 2026-10-01 | `5c38780` | #1019 | 0.42% | 0.00 | 20.83% | -0.04 | ci: merge generated docs PRs from the docs workflow |
