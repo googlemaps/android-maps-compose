@@ -38,15 +38,15 @@ Measured at `c5b827d` (#983), recorded 2026-11-04T18:07:01Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `5c44583` (#1073), recorded 2026-11-04T07:33:17Z.
+Measured at `c5b827d` (#983), recorded 2026-11-04T18:07:05Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 499/2,388 | 20.90% | `████░░░░░░░░░░░░░░░░` | 79/422 | 18.72% |
-| `maps-compose` | 1,557/2,183 | 71.32% | `██████████████░░░░░░` | 568/1,396 | 40.69% |
-| `maps-compose-utils` | 413/759 | 54.41% | `███████████░░░░░░░░░` | 142/470 | 30.21% |
+| `maps-app` | 504/2,388 | 21.11% | `████░░░░░░░░░░░░░░░░` | 80/422 | 18.96% |
+| `maps-compose` | 1,557/2,183 | 71.32% | `██████████████░░░░░░` | 569/1,396 | 40.76% |
+| `maps-compose-utils` | 410/756 | 54.23% | `███████████░░░░░░░░░` | 148/476 | 31.09% |
 | `maps-compose-widgets` | 118/151 | 78.15% | `████████████████░░░░` | 24/52 | 46.15% |
-| **TOTAL** | 2,587/5,481 | 47.20% | `█████████░░░░░░░░░░░` | 813/2,340 | 34.74% |
+| **TOTAL** | 2,589/5,478 | 47.26% | `█████████░░░░░░░░░░░` | 821/2,346 | 35.00% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-04 | `c5b827d` | #983 | 12.99% | +0.01 | n/a | n/a | perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation |
+| 2026-11-04 | `c5b827d` | #983 | 12.99% | +0.01 | 47.26% | +0.06 | perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation |
 | 2026-11-04 | `5c44583` | #1073 | 12.98% | -0.01 | 47.20% | -0.08 | feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0 |
 | 2026-11-03 | `53c9725` | #1067 | 12.99% | 0.00 | 47.28% | n/a | build: check the public API of the library modules |
 | 2026-11-02 | `174f0fd` | #1060 | 12.99% | 0.00 | n/a | n/a | chore: add maintainer as code owner of workflow files |
