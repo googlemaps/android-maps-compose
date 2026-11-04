@@ -91,21 +91,25 @@ public class ScaleBarUnitTest {
         val portraitCenter = Point(540, 1200)
         val landscapeCenter = Point(1200, 540)
 
-        val startLatLng = LatLng(64.9631, -19.5)
-        val endLatLng = LatLng(64.9631, -18.5)
+        val portraitStartLatLng = LatLng(64.9631, -19.5)
+        val portraitEndLatLng = LatLng(64.9631, -18.5)
+        val landscapeStartLatLng = LatLng(64.9631, -19.25)
+        val landscapeEndLatLng = LatLng(64.9631, -18.75)
+
+        every { projection.fromScreenLocation(Point(490, 1200)) } returns portraitStartLatLng
+        every { projection.fromScreenLocation(Point(590, 1200)) } returns portraitEndLatLng
+        every { projection.fromScreenLocation(Point(1150, 540)) } returns landscapeStartLatLng
+        every { projection.fromScreenLocation(Point(1250, 540)) } returns landscapeEndLatLng
 
         every { projection.toScreenLocation(target) } returns portraitCenter
-        every { projection.fromScreenLocation(Point(490, 1200)) } returns startLatLng
-        every { projection.fromScreenLocation(Point(590, 1200)) } returns endLatLng
-
         val portraitResult = calculateDistance(projection, width, density, target)
+        val expectedPortraitResult = (portraitStartLatLng.sphericalDistance(portraitEndLatLng) * 8 / 9).toInt()
+        assertThat(portraitResult).isEqualTo(expectedPortraitResult)
 
         every { projection.toScreenLocation(target) } returns landscapeCenter
-        every { projection.fromScreenLocation(Point(1150, 540)) } returns startLatLng
-        every { projection.fromScreenLocation(Point(1250, 540)) } returns endLatLng
-
         val landscapeResult = calculateDistance(projection, width, density, target)
-
-        assertThat(landscapeResult).isEqualTo(portraitResult)
+        val expectedLandscapeResult = (landscapeStartLatLng.sphericalDistance(landscapeEndLatLng) * 8 / 9).toInt()
+        assertThat(landscapeResult).isEqualTo(expectedLandscapeResult)
+        assertThat(landscapeResult).isNotEqualTo(portraitResult)
     }
 }
