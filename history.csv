@@ -307,3 +307,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-04T18:38:19Z,d8d77e9,1076,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,unit,maps-compose-utils,38,621,6.12,21,478,4.39,218,7558,2.88
 2026-11-04T18:38:19Z,d8d77e9,1076,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
 2026-11-04T18:38:19Z,d8d77e9,1076,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,unit,TOTAL,361,2778,12.99,98,2384,4.11,2557,34440,7.42
+2026-11-04T18:38:23Z,d8d77e9,1076,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,instrumentation,maps-app,217,2388,9.09,21,422,4.98,2041,20287,10.06
+2026-11-04T18:38:23Z,d8d77e9,1076,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,instrumentation,maps-compose,1120,2183,51.31,399,1396,28.58,7689,16482,46.65
+2026-11-04T18:38:23Z,d8d77e9,1076,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,instrumentation,maps-compose-utils,253,756,33.47,90,476,18.91,1983,6093,32.55
+2026-11-04T18:38:23Z,d8d77e9,1076,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,instrumentation,maps-compose-widgets,111,151,73.51,14,52,26.92,633,917,69.03
+2026-11-04T18:38:23Z,d8d77e9,1076,chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates,instrumentation,TOTAL,1701,5478,31.05,524,2346,22.34,12346,43779,28.2
