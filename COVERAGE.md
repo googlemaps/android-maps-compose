@@ -38,15 +38,15 @@ Measured at `5c44583` (#1073), recorded 2026-11-04T07:33:14Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `53c9725` (#1067), recorded 2026-11-03T18:26:37Z.
+Measured at `5c44583` (#1073), recorded 2026-11-04T07:33:17Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 504/2,388 | 21.11% | `████░░░░░░░░░░░░░░░░` | 79/422 | 18.72% |
-| `maps-compose` | 1,556/2,182 | 71.31% | `██████████████░░░░░░` | 570/1,396 | 40.83% |
+| `maps-app` | 499/2,388 | 20.90% | `████░░░░░░░░░░░░░░░░` | 79/422 | 18.72% |
+| `maps-compose` | 1,557/2,183 | 71.32% | `██████████████░░░░░░` | 568/1,396 | 40.69% |
 | `maps-compose-utils` | 413/759 | 54.41% | `███████████░░░░░░░░░` | 142/470 | 30.21% |
 | `maps-compose-widgets` | 118/151 | 78.15% | `████████████████░░░░` | 24/52 | 46.15% |
-| **TOTAL** | 2,591/5,480 | 47.28% | `█████████░░░░░░░░░░░` | 815/2,340 | 34.83% |
+| **TOTAL** | 2,587/5,481 | 47.20% | `█████████░░░░░░░░░░░` | 813/2,340 | 34.74% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-04 | `5c44583` | #1073 | 12.98% | -0.01 | n/a | n/a | feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0 |
+| 2026-11-04 | `5c44583` | #1073 | 12.98% | -0.01 | 47.20% | -0.08 | feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0 |
 | 2026-11-03 | `53c9725` | #1067 | 12.99% | 0.00 | 47.28% | n/a | build: check the public API of the library modules |
 | 2026-11-02 | `174f0fd` | #1060 | 12.99% | 0.00 | n/a | n/a | chore: add maintainer as code owner of workflow files |
 | 2026-10-30 | `8c0e72c` | #1057 | 12.99% | 0.00 | 47.28% | +16.24 | fix(ci): read the Update Skill Gemini model from GEMINI_MODEL |

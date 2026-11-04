@@ -289,3 +289,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-04T07:33:14Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
 2026-11-04T07:33:14Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
 2026-11-04T07:33:14Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,unit,TOTAL,361,2781,12.98,98,2376,4.12,2557,34393,7.43
+2026-11-04T07:33:17Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,instrumentation,maps-app,499,2388,20.9,79,422,18.72,4779,20287,23.56
+2026-11-04T07:33:17Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,instrumentation,maps-compose,1557,2183,71.32,568,1396,40.69,10533,16482,63.91
+2026-11-04T07:33:17Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,instrumentation,maps-compose-utils,413,759,54.41,142,470,30.21,3072,6054,50.74
+2026-11-04T07:33:17Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
+2026-11-04T07:33:17Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,instrumentation,TOTAL,2587,5481,47.2,813,2340,34.74,19072,43740,43.6
