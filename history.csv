@@ -285,3 +285,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-03T18:26:37Z,53c9725,1067,build: check the public API of the library modules,instrumentation,maps-compose-utils,413,759,54.41,142,470,30.21,3072,6054,50.74
 2026-11-03T18:26:37Z,53c9725,1067,build: check the public API of the library modules,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
 2026-11-03T18:26:37Z,53c9725,1067,build: check the public API of the library modules,instrumentation,TOTAL,2591,5480,47.28,815,2340,34.83,19108,43736,43.69
+2026-11-04T07:33:14Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,unit,maps-compose,307,2010,15.27,69,1834,3.76,2257,25370,8.9
+2026-11-04T07:33:14Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,unit,maps-compose-utils,38,624,6.09,21,470,4.47,218,7511,2.9
+2026-11-04T07:33:14Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
+2026-11-04T07:33:14Z,5c44583,1073,feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0,unit,TOTAL,361,2781,12.98,98,2376,4.12,2557,34393,7.43
