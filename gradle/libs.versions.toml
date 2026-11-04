@@ -4,17 +4,18 @@
 [versions]
 # Base
 androidCompileSdk = "37"
-androidMinSdk = "23"
+androidMinSdk = "24"
 androidTargetSdk = "37"
 
-agp = "9.4.1"
-dependencyAnalysis = "3.19.2"
+agp = "9.5.0"
+binaryCompatibilityValidator = "0.18.2"
+dependencyAnalysis = "3.20.1"
 dokka = "2.2.0"
 gradleMavenPublishPlugin = "0.37.0"
 kotlin = "2.4.21"
 kotlinxCoroutines = "1.11.0"
-spotless = "8.10.4"
-versions = "0.66.0"
+spotless = "8.11.0"
+versions = "0.67.0"
 
 # Android
 activitycompose = "1.13.0"
@@ -30,7 +31,7 @@ materialIconsExtendedAndroid = "1.7.8"
 
 # Google Maps Platform
 mapsecrets = "2.0.1"
-mapsutils = "6.0.0"
+mapsutils = "7.0.0"
 # Multiplatform modules from the android-maps-utils KMP branch, published as snapshots.
 mapsutilsKmp = "6.2.0-SNAPSHOT"
 composeMultiplatform = "1.12.1"
@@ -53,6 +54,7 @@ truth = "1.4.5"
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 dokka-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "gradleMavenPublishPlugin" }
+binary-compatibility-validator = { module = "org.jetbrains.kotlinx.binary-compatibility-validator:org.jetbrains.kotlinx.binary-compatibility-validator.gradle.plugin", version.ref = "binaryCompatibilityValidator" }
 kotlin = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -88,6 +90,7 @@ maps-secrets-plugin = { module = "com.google.android.libraries.mapsplatform.secr
 
 # Testing
 androidx-test-compose-ui = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-test-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidCore" }
 androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 androidx-test-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitktx" }
@@ -104,6 +107,7 @@ test-junit = { module = "junit:junit", version.ref = "junit" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 
 [plugins]
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binaryCompatibilityValidator" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }

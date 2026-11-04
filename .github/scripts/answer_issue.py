@@ -80,7 +80,7 @@ def main():
     api_key = os.getenv("GEMINI_API_KEY")
     issue_title = os.getenv("ISSUE_TITLE")
     issue_body = os.getenv("ISSUE_BODY")
-    skill_file = os.getenv("SKILL_FILE", ".gemini/skills/android-maps-compose/SKILL.md")
+    skill_file = os.getenv("SKILL_FILE", ".agents/skills/android-maps-compose/SKILL.md")
     response_file = os.getenv("RESPONSE_FILE", "issue_response.md")
 
     if not api_key:
