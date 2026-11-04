@@ -114,6 +114,29 @@ public val DarkGray: Color = Color(0xFF3a3c3b)
 private val defaultWidth: Dp = 65.dp
 private val defaultHeight: Dp = 50.dp
 
+@Composable
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+public fun ScaleBar(
+    modifier: Modifier = Modifier,
+    width: Dp = defaultWidth,
+    height: Dp = defaultHeight,
+    cameraPositionState: CameraPositionState,
+    textColor: Color = DarkGray,
+    lineColor: Color = DarkGray,
+    shadowColor: Color = Color.White,
+) {
+    ScaleBar(
+        modifier = modifier,
+        width = width,
+        height = height,
+        cameraPositionState = cameraPositionState,
+        textColor = textColor,
+        lineColor = lineColor,
+        shadowColor = shadowColor,
+        measureAtCenter = true,
+    )
+}
+
 /**
  * A scale bar composable that shows the current scale of the map in feet and meters when zoomed in
  * to the map, changing to miles and kilometers, respectively, when zooming out.
@@ -155,10 +178,8 @@ public fun ScaleBar(
         measureAtCenter,
     ) {
         derivedStateOf {
-            // Read both position and isMoving so the scale updates whenever the camera pans,
-            // zooms, rotates, tilts, or finishes an animation/gesture.
+            // Read position so the scale updates whenever the camera pans, zooms, rotates, or tilts.
             val position = cameraPositionState.position
-            cameraPositionState.isMoving
             val target = if (measureAtCenter) position.target else null
             cameraPositionState.projection?.let {
                 calculateDistance(it, width, density, target)
@@ -271,6 +292,35 @@ internal fun formatMetricDistance(meters: Int): String =
 
 internal fun formatImperialDistance(meters: Int): String =
     meters.meters.toDistanceString(scaleBarImperialConverter, NumberFormatSymbols.COMPACT)
+
+@Composable
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+public fun DisappearingScaleBar(
+    modifier: Modifier = Modifier,
+    width: Dp = defaultWidth,
+    height: Dp = defaultHeight,
+    cameraPositionState: CameraPositionState,
+    textColor: Color = DarkGray,
+    lineColor: Color = DarkGray,
+    shadowColor: Color = Color.White,
+    visibilityDurationMillis: Int = 3_000,
+    enterTransition: EnterTransition = fadeIn(),
+    exitTransition: ExitTransition = fadeOut(),
+) {
+    DisappearingScaleBar(
+        modifier = modifier,
+        width = width,
+        height = height,
+        cameraPositionState = cameraPositionState,
+        textColor = textColor,
+        lineColor = lineColor,
+        shadowColor = shadowColor,
+        visibilityDurationMillis = visibilityDurationMillis,
+        enterTransition = enterTransition,
+        exitTransition = exitTransition,
+        measureAtCenter = true,
+    )
+}
 
 /**
  * An animated scale bar that appears when the zoom level of the map changes, and then disappears

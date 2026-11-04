@@ -33,10 +33,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.Checkbox
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -90,8 +90,8 @@ class ScaleBarActivity : ComponentActivity() {
                 }
             }
 
-            val scaleBackground = MaterialTheme.colors.background.copy(alpha = 0.4f)
-            val controlsBackground = MaterialTheme.colors.background.copy(alpha = 0.7f)
+            val scaleBackground = MaterialTheme.colorScheme.background.copy(alpha = 0.4f)
+            val controlsBackground = MaterialTheme.colorScheme.background.copy(alpha = 0.7f)
             val scaleBorderStroke = BorderStroke(width = 1.dp, DarkGray.copy(alpha = 0.2f))
 
             Box(
@@ -177,7 +177,7 @@ class ScaleBarActivity : ComponentActivity() {
                         )
                         Text(
                             text = "Measure at center",
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(end = 4.dp),
                         )
                     }
@@ -191,7 +191,7 @@ class ScaleBarActivity : ComponentActivity() {
                         )
                         Text(
                             text = "Show crosshairs",
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(end = 4.dp),
                         )
                     }
@@ -207,7 +207,7 @@ class ScaleBarActivity : ComponentActivity() {
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
-                                .background(MaterialTheme.colors.background)
+                                .background(MaterialTheme.colorScheme.background)
                                 .wrapContentSize(),
                         )
                     }
@@ -216,6 +216,13 @@ class ScaleBarActivity : ComponentActivity() {
         }
     }
 }
+
+/**
+ * Dedicated host [ComponentActivity] declared with `android:configChanges` in `AndroidManifest.xml`
+ * so instrumentation tests can verify in-place configuration changes without affecting other tests
+ * that rely on the default [ComponentActivity] recreation behavior.
+ */
+class InPlaceRotationTestActivity : ComponentActivity()
 
 /**
  * Draws three sets of crossed reference polylines (at 10%, 50%, and 90% of the viewport height)
@@ -240,7 +247,6 @@ private fun ScaleBarReferencePolylines(cameraPositionState: CameraPositionState,
     val referenceCrosses by remember(cameraPositionState, density, configuration, measureAtCenter) {
         derivedStateOf {
             val position = cameraPositionState.position
-            cameraPositionState.isMoving
             val projection = cameraPositionState.projection ?: return@derivedStateOf emptyList()
             val widthInPixels = with(density) { scaleBarWidth.toPx().toInt() }
             val centerPoint = projection.toScreenLocation(position.target)

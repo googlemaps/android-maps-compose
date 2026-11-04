@@ -16,7 +16,6 @@ package com.google.maps.android.compose.demo
 
 import android.content.pm.ActivityInfo
 import android.graphics.Point
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -54,7 +53,7 @@ private val scaleBarImperialConverter = ImperialUnitsConverter(milesThreshold = 
 class ScaleBarTests {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+    val composeTestRule = createAndroidComposeRule<InPlaceRotationTestActivity>()
 
     private lateinit var cameraPositionState: CameraPositionState
     private lateinit var density: Density
