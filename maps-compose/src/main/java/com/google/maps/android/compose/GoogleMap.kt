@@ -180,12 +180,14 @@ public fun GoogleMap(
             val baseOptions = googleMapOptionsFactory()
             val isLiteMode = baseOptions.liteMode == true
             // If mapColorScheme is passed to GoogleMap() and has not been explicitly set
-            // in googleMapOptionsFactory (where 0 / MapColorScheme.LIGHT is the Java int default),
-            // apply it to GoogleMapOptions so MapView is created with it.
+            // in googleMapOptionsFactory, apply it to GoogleMapOptions so MapView is created
+            // with it. "Not set" means the SDK default: 0 (MapColorScheme.LIGHT) up to
+            // play-services-maps 20.0.0, -1 from 20.1.0 on.
             // Lite mode does not support color schemes, and older Play services throw
             // UnsupportedOperationException for it, so it is never applied there (#1028).
-            val applyColorScheme =
-                mapColorScheme != null && baseOptions.mapColorScheme == 0 && !isLiteMode
+            val applyColorScheme = mapColorScheme != null &&
+                baseOptions.mapColorScheme == GoogleMapOptions().mapColorScheme &&
+                !isLiteMode
             val options = if (applyColorScheme) {
                 baseOptions.mapColorScheme(mapColorScheme.value)
             } else {
