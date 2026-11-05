@@ -38,15 +38,15 @@ Measured at `568822e` (#1063), recorded 2026-11-05T23:40:07Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `804447d` (#1066), recorded 2026-11-05T19:53:32Z.
+Measured at `568822e` (#1063), recorded 2026-11-05T23:40:12Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 498/2,388 | 20.85% | `████░░░░░░░░░░░░░░░░` | 79/422 | 18.72% |
-| `maps-compose` | 1,557/2,183 | 71.32% | `██████████████░░░░░░` | 570/1,396 | 40.83% |
+| `maps-app` | 504/2,388 | 21.11% | `████░░░░░░░░░░░░░░░░` | 80/422 | 18.96% |
+| `maps-compose` | 1,557/2,183 | 71.32% | `██████████████░░░░░░` | 569/1,396 | 40.76% |
 | `maps-compose-utils` | 410/756 | 54.23% | `███████████░░░░░░░░░` | 148/476 | 31.09% |
 | `maps-compose-widgets` | 118/151 | 78.15% | `████████████████░░░░` | 24/52 | 46.15% |
-| **TOTAL** | 2,583/5,478 | 47.15% | `█████████░░░░░░░░░░░` | 821/2,346 | 35.00% |
+| **TOTAL** | 2,589/5,478 | 47.26% | `█████████░░░░░░░░░░░` | 821/2,346 | 35.00% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-05 | `568822e` | #1063 | 12.99% | 0.00 | n/a | n/a | perf: ship Baseline Profiles in maps-compose, maps-compose-utils and maps-compose-widgets |
+| 2026-11-05 | `568822e` | #1063 | 12.99% | 0.00 | 47.26% | +0.11 | perf: ship Baseline Profiles in maps-compose, maps-compose-utils and maps-compose-widgets |
 | 2026-11-05 | `804447d` | #1066 | 12.99% | 0.00 | 47.15% | +16.10 | refactor(demo): move maps-app to its own namespace |
 | 2026-11-04 | `d8d77e9` | #1076 | 12.99% | 0.00 | 31.05% | -16.21 | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |
 | 2026-11-04 | `c5b827d` | #983 | 12.99% | +0.01 | 47.26% | +0.06 | perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation |
