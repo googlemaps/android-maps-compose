@@ -57,12 +57,14 @@ android {
         }
     }
 
-    namespace = "com.google.maps.android.compose"
+    namespace = "com.google.maps.android.compose.demo"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
     useLibrary("org.apache.http.legacy")
 
     defaultConfig {
+        // Kept from before the demo moved to its own namespace, so installs and CI keep working.
+        applicationId = "com.google.maps.android.compose"
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1

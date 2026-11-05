@@ -73,7 +73,7 @@ private val DEMOS = listOf(
 internal fun MacrobenchmarkScope.exploreDemo(demo: String) {
     // startActivityAndWait relies on frame stats that the map's SurfaceView does not always
     // report, so the demos are started with `am start -W`, which waits for the launch instead.
-    device.executeShellCommand("am start -W -n $packageName/.$demo")
+    device.executeShellCommand("am start -W -n $packageName/.demo.$demo")
     // The map loads asynchronously after the first frame, and there is no view to wait for.
     Thread.sleep(MAP_LOAD_DELAY_MS)
 

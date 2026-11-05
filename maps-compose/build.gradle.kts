@@ -84,15 +84,14 @@ composeCompiler {
 
 
 baselineProfile {
-    // The profile is generated from maps-app, which shares the root package. Keep only this
+    // The profile is generated from maps-app, which shares the root package prefix. Keep only this
     // library's classes: exclude the other two libraries and the demo app.
     filter {
         include("com.google.maps.android.compose.**")
         exclude("com.google.maps.android.compose.clustering.**")
         exclude("com.google.maps.android.compose.wms.**")
         exclude("com.google.maps.android.compose.widgets.**")
-        exclude("com.google.maps.android.compose.markerexamples.**")
-        exclude("com.google.maps.android.compose.theme.**")
+        exclude("com.google.maps.android.compose.demo.**")
         exclude("com.google.maps.android.compose.baselineprofile.**")
     }
 }
