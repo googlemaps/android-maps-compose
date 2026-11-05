@@ -1,5 +1,35 @@
 # Changelog
 
+## [10.0.0](https://github.com/googlemaps/android-maps-compose/compare/v9.0.1...v10.0.0) (2026-11-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* the minimum supported Android API level is now 24.
+
+### Features
+
+* **clustering:** add incremental item diffing ([#1037](https://github.com/googlemaps/android-maps-compose/issues/1037)) ([61f8b5b](https://github.com/googlemaps/android-maps-compose/commit/61f8b5bdcbf955531f6e57c0fcb8b2d47d1d1d24))
+* **clustering:** propagate contentDescription to marker options for accessibility ([#1035](https://github.com/googlemaps/android-maps-compose/issues/1035)) ([4322266](https://github.com/googlemaps/android-maps-compose/commit/432226652e20c48f490f56ec0f64ec6fcd0dd2f1))
+* raise minSdk to 24 and update android-maps-utils to 7.0.0 ([#1073](https://github.com/googlemaps/android-maps-compose/issues/1073)) ([5c44583](https://github.com/googlemaps/android-maps-compose/commit/5c445836f9bda88b389f7bad4fff6975171dbe88))
+
+
+### Bug Fixes
+
+* **camera:** setting position while unbound cancels a pending move or animation ([a5b018c](https://github.com/googlemaps/android-maps-compose/commit/a5b018c8b05fb5cb03a479dd7f5a56118732e413))
+* check trim memory level in onTrimMemory() implementations ([#1051](https://github.com/googlemaps/android-maps-compose/issues/1051)) ([65a4d89](https://github.com/googlemaps/android-maps-compose/commit/65a4d89e454a7ee09d9fdef8eba18772b80065d7))
+* **ci:** read the Update Skill Gemini model from GEMINI_MODEL ([#1057](https://github.com/googlemaps/android-maps-compose/issues/1057)) ([8c0e72c](https://github.com/googlemaps/android-maps-compose/commit/8c0e72c0abf26c5b3f0d1f482e33154d8ff15982))
+* **markers:** keep the pinConfig icon on AdvancedMarker when icon is null ([a5b018c](https://github.com/googlemaps/android-maps-compose/commit/a5b018c8b05fb5cb03a479dd7f5a56118732e413))
+* release GoogleMap listeners and dispose subcomposition when showing/hiding map ([#1039](https://github.com/googlemaps/android-maps-compose/issues/1039)) ([229ad8e](https://github.com/googlemaps/android-maps-compose/commit/229ad8e5cd6b87a568da1cb7ff873d04f1f3a615))
+* **streetview:** forward source in setPosition when radius is null ([a5b018c](https://github.com/googlemaps/android-maps-compose/commit/a5b018c8b05fb5cb03a479dd7f5a56118732e413))
+* **widgets:** preserve fractional scale bar distances ([#1045](https://github.com/googlemaps/android-maps-compose/issues/1045)) ([a53f06e](https://github.com/googlemaps/android-maps-compose/commit/a53f06ed3fd937c94acc38d02c2625a2e38dd4a1))
+
+
+### Performance Improvements
+
+* **clustering:** use a Set for cluster view key diffing and suppress rememberSaveable key deprecation ([#983](https://github.com/googlemaps/android-maps-compose/issues/983)) ([c5b827d](https://github.com/googlemaps/android-maps-compose/commit/c5b827d9512e8b5ec18f7761c03b83c13e9e67e7))
+* ship Baseline Profiles in maps-compose, maps-compose-utils and maps-compose-widgets ([#1063](https://github.com/googlemaps/android-maps-compose/issues/1063)) ([568822e](https://github.com/googlemaps/android-maps-compose/commit/568822ece88509b0018f8f3d05988109fcba365b))
+
 ## [9.0.1](https://github.com/googlemaps/android-maps-compose/compare/v9.0.0...v9.0.1) (2026-10-08)
 
 
