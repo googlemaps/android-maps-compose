@@ -16,7 +16,7 @@
 -->
 
 <manifest
-	package="com.google.maps.android.compose"
+	package="com.google.maps.android.compose.demo"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	>
