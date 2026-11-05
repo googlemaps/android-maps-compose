@@ -69,6 +69,7 @@ public inline fun rememberCameraPositionState(
         "com.google.maps.android.compose.rememberCameraPositionState",
     ),
 )
+@Suppress("DEPRECATION")
 @Composable
 public inline fun rememberCameraPositionState(
     key: String? = null,

@@ -124,7 +124,7 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
                     clusterItemContentZIndexState.value,
                 )
             }.collect {
-                keysToViews.forEach { (key, viewInfo) ->
+                for ((key, viewInfo) in keysToViews) {
                     when (key) {
                         is ViewKey.Cluster -> {
                             getMarker(key.cluster)?.apply {
@@ -157,17 +157,17 @@ internal class ComposeUiClusterRenderer<T : ClusterItem>(
             .flatMap { it.items }
             .toSet()
 
-        val keys = clusters.flatMap { it.computeViewKeys() }
+        val keys = clusters.flatMapTo(mutableSetOf()) { it.computeViewKeys() }
 
-        with(keysToViews.iterator()) {
-            forEach { (key, viewInfo) ->
-                if (key !in keys) {
-                    remove()
-                    viewInfo.onRemove()
-                }
+        val iterator = keysToViews.iterator()
+        while (iterator.hasNext()) {
+            val (key, viewInfo) = iterator.next()
+            if (key !in keys) {
+                iterator.remove()
+                viewInfo.onRemove()
             }
         }
-        keys.forEach { key ->
+        for (key in keys) {
             if (key !in keysToViews.keys) {
                 createAndAddView(key)
             }
