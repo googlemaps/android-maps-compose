@@ -17,7 +17,7 @@ This repository contains [Jetpack Compose][jetpack-compose] components for the [
 
 ## Requirements
 
-* Android API level 21+
+* Android API level 24+
 * Kotlin-enabled project
 * Jetpack Compose-enabled project (see [releases](https://github.com/googlemaps/android-maps-compose/releases) for the required version of Jetpack Compose)
 * [Sign up with Google Maps Platform]

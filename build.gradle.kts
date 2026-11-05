@@ -36,6 +36,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.spotless)
+    alias(libs.plugins.binary.compatibility.validator)
 }
 
 spotless {
@@ -56,6 +57,22 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
     }
+}
+
+// The public API of the library modules is checked against the committed api/<module>.api files.
+// The per-module tasks are set up in PublishingConventionPlugin.
+apiValidation {
+    ignoredProjects += listOf("maps-app", "docs")
+}
+
+val apiDump = tasks.register("apiDump") {
+    group = "verification"
+    description = "Dumps public API declarations for all library modules."
+}
+
+val apiCheck = tasks.register("apiCheck") {
+    group = "verification"
+    description = "Checks that public API declarations match the committed .api files."
 }
 
 val projectArtifactId by extra { project: Project ->

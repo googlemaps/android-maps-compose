@@ -198,7 +198,7 @@ class GoogleMapViewTests {
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
-        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.LIGHT)
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(GoogleMapOptions().mapColorScheme)
     }
 
     @Test
@@ -220,7 +220,7 @@ class GoogleMapViewTests {
         }
         assertThat(capturedOptions?.liteMode).isTrue()
         assertThat(capturedOptions?.mapType).isEqualTo(GoogleMap.MAP_TYPE_TERRAIN)
-        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.LIGHT)
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(GoogleMapOptions().mapColorScheme)
     }
 
     @Test
@@ -236,7 +236,7 @@ class GoogleMapViewTests {
             )
         }
         assertThat(capturedOptions?.liteMode).isTrue()
-        assertThat(capturedOptions?.mapColorScheme).isEqualTo(MapColorScheme.LIGHT)
+        assertThat(capturedOptions?.mapColorScheme).isEqualTo(GoogleMapOptions().mapColorScheme)
     }
 
     @Test

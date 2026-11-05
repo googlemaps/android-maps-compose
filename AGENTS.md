@@ -25,6 +25,7 @@ Shared Gradle conventions are in `build-logic/` (included build).
 ./gradlew :maps-compose:testDebugUnitTest        # unit tests for one module
 ./gradlew koverXmlReportDebug                    # all unit tests and coverage reports
 ./gradlew lint                                   # Android Lint across all modules
+./gradlew apiCheck                               # public API matches the committed api/*.api files
 ./gradlew :maps-app:validateDebugScreenshotTest  # validate screenshot tests
 ```
 
@@ -111,6 +112,11 @@ reviews on pull requests, so they stay specific to that tool.
 - Avoid `!!`; use null-safe operators.
 - Public API changes must be additive and backward compatible; deprecate
   before removing.
+- The public API of each library is committed in `<module>/api/<module>.api` and
+  checked by `apiCheck` in CI. After an intentional API change, run
+  `./gradlew apiDump` and commit the updated file, so the change is visible in
+  review. The check compares binary signatures, so also look out for renamed
+  parameters, which break callers using named arguments.
 
 ## Pull requests
 
