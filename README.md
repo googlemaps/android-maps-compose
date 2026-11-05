@@ -499,6 +499,54 @@ Box(Modifier.fillMaxSize()) {
 
 The colors of the text, line, and shadow are also all configurable (e.g., based on `isSystemInDarkTheme()` on a dark map). Similarly, the `DisappearingScaleBar` animations can be configured.
 
+## Kotlin Multiplatform (experimental)
+
+`maps-compose-multiplatform` brings the same `GoogleMap` composable to Compose Multiplatform apps
+that target Android and iOS. On Android it is built on `maps-compose`; on iOS it shows the
+[Google Maps SDK for iOS](https://developers.google.com/maps/documentation/ios-sdk). Its API
+follows `maps-compose`, so code moves between the two with few changes.
+
+It is experimental: the API may change in any release, and it covers a subset of `maps-compose`:
+
+| Supported | Not yet |
+| --- | --- |
+| `GoogleMap` with `CameraPositionState`, `MapProperties` and `MapUiSettings` | Custom marker icons and info window content |
+| Map clicks, long clicks and `onMapLoaded` | Ground and tile overlays, heatmaps |
+| `Marker` (draggable, tappable, tinted pin), `Polyline`, `Polygon` with holes, `Circle` | Street View |
+| `Clustering` that reclusters as the camera zooms | `MapEffect` and direct access to the native map |
+
+```kotlin
+// commonMain
+val sydney = LatLng(-33.8688, 151.2093)
+val cameraPositionState = rememberCameraPositionState {
+    position = cameraPosition(sydney, zoom = 12f)
+}
+GoogleMap(
+    modifier = Modifier.fillMaxSize(),
+    cameraPositionState = cameraPositionState,
+    onMapClick = { println("Tapped $it") },
+) {
+    Marker(state = rememberMarkerState(sydney), title = "Sydney")
+    Circle(center = sydney, radius = 1_000.0, strokeColor = Color.Red)
+    Clustering(items = places)
+}
+```
+
+`LatLng` and `CameraPosition` come from `com.google.maps.android.model`, shared with the multiplatform
+modules of the [Maps SDK for Android Utility Library](https://github.com/googlemaps/android-maps-utils).
+On Android they are the Maps SDK's own classes. Line widths are in density-independent pixels, so
+shapes look the same on both platforms.
+
+On iOS, add the `GoogleMaps` CocoaPod (10.14.0 or later, iOS 16 or later) and provide your API
+key before showing a map:
+
+```swift
+GMSServices.provideAPIKey("YOUR_API_KEY")
+```
+
+The [`iosApp`](iosApp/README.md) and the "Multiplatform demos" entry of the Android sample app run
+the same demos, from [`maps-compose-multiplatform-demo`](maps-compose-multiplatform-demo).
+
 ## Internal usage attribution ID
 
 This library calls the `addInternalUsageAttributionId` method, which helps Google understand which libraries and samples are helpful to developers and is optional. Instructions for opting out of the identifier are provided below.

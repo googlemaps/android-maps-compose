@@ -142,6 +142,7 @@ dependencies {
     implementation(project(":maps-compose"))
     implementation(project(":maps-compose-widgets"))
     implementation(project(":maps-compose-utils"))
+    implementation(project(":maps-compose-multiplatform-demo"))
 }
 
 secrets {
