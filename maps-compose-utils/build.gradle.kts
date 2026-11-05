@@ -54,6 +54,8 @@ android {
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
+        // Keep the library free of compiler warnings, so new deprecations are fixed when they appear.
+        allWarningsAsErrors.set(true)
         freeCompilerArgs.addAll(
             "-Xexplicit-api=strict",
             "-opt-in=kotlin.RequiresOptIn"

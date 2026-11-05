@@ -195,6 +195,9 @@ public class MarkerState private constructor(position: LatLng) {
         "so it will be changed or removed.",
     replaceWith = ReplaceWith("rememberUpdatedMarkerState(position)"),
 )
+// This deprecated overload exists to pass the custom `key` to rememberSaveable, so it keeps doing
+// so until the overload itself is removed. Dropping the key here would silently change behaviour
+// for apps that still call it.
 @Suppress("DEPRECATION")
 public fun rememberMarkerState(key: String? = null, position: LatLng = LatLng(0.0, 0.0)): MarkerState =
     rememberSaveable(key = key, saver = MarkerState.Saver) {
@@ -333,6 +336,8 @@ public fun MarkerComposable(
     @UiComposable @Composable
     () -> Unit,
 ) {
+    // The library can use its own experimental API.
+    @OptIn(MapsComposeExperimentalApi::class)
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
 
     MarkerImpl(
@@ -489,6 +494,8 @@ public fun MarkerInfoWindowComposable(
     @UiComposable @Composable
     () -> Unit,
 ) {
+    // The library can use its own experimental API.
+    @OptIn(MapsComposeExperimentalApi::class)
     val icon = rememberComposeBitmapDescriptor(*keys) { content() }
 
     MarkerImpl(
