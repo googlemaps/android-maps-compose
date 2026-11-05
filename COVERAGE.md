@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `d8d77e9` (#1076), recorded 2026-11-04T18:38:19Z.
+Measured at `804447d` (#1066), recorded 2026-11-05T19:53:28Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-05 | `804447d` | #1066 | 12.99% | 0.00 | n/a | n/a | refactor(demo): move maps-app to its own namespace |
 | 2026-11-04 | `d8d77e9` | #1076 | 12.99% | 0.00 | 31.05% | -16.21 | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |
 | 2026-11-04 | `c5b827d` | #983 | 12.99% | +0.01 | 47.26% | +0.06 | perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation |
 | 2026-11-04 | `5c44583` | #1073 | 12.98% | -0.01 | 47.20% | -0.08 | feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0 |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-01 | `597c8db` | #1023 | 0.42% | 0.00 | 46.97% | +26.18 | test: report instrumentation coverage of the library modules |
 | 2026-10-01 | `61c3cf0` | #1024 | 0.42% | 0.00 | 20.79% | 0.00 | ci: compare unit coverage against the coverage-history branch |
 | 2026-10-01 | `0c49e8d` | #1002 | 0.42% | 0.00 | 20.79% | 0.00 | feat!: migrate from android-maps-ktx to android-maps-utils (v9.0.0) |
-| 2026-10-01 | `29a87be` | #1007 | 0.42% | 0.00 | 20.79% | -0.08 | test: add end-to-end smoke tests covering every demo activity |
