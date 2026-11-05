@@ -84,5 +84,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.utils)
 
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
     testImplementation(libs.test.junit)
 }
