@@ -61,7 +61,7 @@ Note that the library modules currently have almost no unit tests. The bulk of
 the suite is instrumentation tests under `maps-app/src/androidTest`, so the
 `unit` numbers are near zero by nature rather than by regression.
 
-The demo smoke tests in `maps-app/src/androidTest/.../compose/smoke` run in
+The demo smoke tests in `maps-app/src/androidTest/.../compose/demo/smoke` run in
 their own `Demo smoke test` workflow on API 36, and are excluded from the
 instrumentation workflow above, so they do not count towards instrumentation
 coverage. `DemoAppSmokeTest` launches every demo directly, `DemoMenuNavigationTest`
@@ -71,7 +71,7 @@ and they are covered automatically. To run them with a device or emulator attach
 
 ```bash
 ./gradlew :maps-app:connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.package=com.google.maps.android.compose.smoke
+  -Pandroid.testInstrumentationRunnerArguments.package=com.google.maps.android.compose.demo.smoke
 ```
 
 Add `-Pandroid.testInstrumentationRunnerArguments.requireMapLoaded=true` to also
