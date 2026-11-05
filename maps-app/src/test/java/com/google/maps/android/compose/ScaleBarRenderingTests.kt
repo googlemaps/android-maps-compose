@@ -65,11 +65,12 @@ class ScaleBarRenderingTests {
 
     private fun assertFractionalLabels(dark: Boolean, large: Boolean = false) {
         val projection = mockk<Projection>()
+        every { projection.toScreenLocation(any()) } returns Point(100, 100)
         every { projection.fromScreenLocation(any()) } answers {
             // At the equator 0.02 degrees spans about 2,224 m, or 1,976 m for the 8/9-width bar.
-            if (firstArg<Point>().x == 0) LatLng(0.0, 0.0) else LatLng(0.0, if (large) 20.0 else 0.02)
+            if (firstArg<Point>().x <= 100) LatLng(0.0, 0.0) else LatLng(0.0, if (large) 20.0 else 0.02)
         }
-        val camera = mockk<CameraPositionState>()
+        val camera = mockk<CameraPositionState>(relaxed = true)
         every { camera.position } returns CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 12f)
         every { camera.projection } returns projection
         val background = if (dark) Color.Black else Color.White
