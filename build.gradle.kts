@@ -62,7 +62,7 @@ spotless {
 // The public API of the library modules is checked against the committed api/<module>.api files.
 // The per-module tasks are set up in PublishingConventionPlugin.
 apiValidation {
-    ignoredProjects += listOf("maps-app", "docs")
+    ignoredProjects += listOf("maps-app", "navigation-app", "docs")
 }
 
 val apiDump = tasks.register("apiDump") {

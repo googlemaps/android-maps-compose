@@ -31,17 +31,16 @@ import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
-import com.google.android.gms.maps.MapView
 import java.io.Closeable
 
 /**
  * Prepares [view] for a single render by temporarily attaching it as a descendant of this
- * [MapView].
+ * [ViewGroup].
  * This is a trick to enable [ComposeView] to start its composition, as it requires being attached
  * to a window. [onAddedToWindow] is called in place, and then [view] is removed from the window
  * before returning.
  */
-internal fun MapView.renderComposeViewOnce(
+internal fun ViewGroup.renderComposeViewOnce(
     view: AbstractComposeView,
     onAddedToWindow: ((View) -> Unit)? = null,
     parentContext: CompositionContext,
@@ -56,22 +55,22 @@ private val unspecifiedMeasureSpec =
 
 /**
  * Renders [content] into a standalone [Bitmap] by temporarily attaching a [ComposeView] as a
- * descendant of this [MapView], measuring, laying out and drawing it, then detaching it again.
+ * descendant of this [ViewGroup], measuring, laying out and drawing it, then detaching it again.
  *
- * Unlike [startRenderingComposeView], the returned bitmap has no ties back to this [MapView] or
+ * Unlike [startRenderingComposeView], the returned bitmap has no ties back to this [ViewGroup] or
  * its composition once this function returns, so it is safe to hand off to APIs (such as
  * [com.google.android.gms.maps.GoogleMap.InfoWindowAdapter]) that take ownership of the view they
  * receive and re-parent it into their own hierarchy — which would otherwise crash with
  * "The specified child already has a parent" if handed a view still attached elsewhere.
  *
- * Returns `null` if this [MapView] is no longer attached to a window by the time [content] is
+ * Returns `null` if this [ViewGroup] is no longer attached to a window by the time [content] is
  * measured. That happens when the Maps SDK's own async render request (which drives this call)
- * lands after Compose has already unparented the [MapView] (e.g. `LazyColumn` recycling/detach):
+ * lands after Compose has already unparented the map view (e.g. `LazyColumn` recycling/detach):
  * the composition never gets a real layout pass, so it measures to zero size. There's no info
  * window worth rendering for a map that's already being torn down, so this is treated as "nothing
  * to show" rather than an error.
  */
-internal fun MapView.renderComposableToBitmap(
+internal fun ViewGroup.renderComposableToBitmap(
     parentContext: CompositionContext,
     content: @Composable () -> Unit,
 ): Bitmap? {
@@ -110,12 +109,12 @@ internal fun MapView.renderComposableToBitmap(
 }
 
 /**
- * Prepares [view] for a rendering by attaching it as a descendant of this [MapView].
+ * Prepares [view] for a rendering by attaching it as a descendant of this [ViewGroup].
  * This is a trick to enable [ComposeView] to start its composition, as it requires being attached
  * to a window. A [ComposeUiViewRenderer.RenderHandle] is returned, which must be disposed after
- * this view no longer needs to render. Disposing removes [view] from the [MapView].
+ * this view no longer needs to render. Disposing removes [view] from the [ViewGroup].
  */
-internal fun MapView.startRenderingComposeView(
+internal fun ViewGroup.startRenderingComposeView(
     view: AbstractComposeView,
     parentContext: CompositionContext,
 ): ComposeUiViewRenderer.RenderHandle {
@@ -132,10 +131,10 @@ internal fun MapView.startRenderingComposeView(
 }
 
 /**
- * Retrieves the [NoDrawContainerView] from this [MapView], or adds one if there isn't already one.
+ * Retrieves the [NoDrawContainerView] from this [ViewGroup], or adds one if there isn't already one.
  * @see NoDrawContainerView
  */
-private fun MapView.ensureContainerView(): NoDrawContainerView = findViewById(R.id.maps_compose_nodraw_container_view)
+private fun ViewGroup.ensureContainerView(): NoDrawContainerView = findViewById(R.id.maps_compose_nodraw_container_view)
     ?: NoDrawContainerView(context)
         .apply { id = R.id.maps_compose_nodraw_container_view }
         .also(::addView)
@@ -143,7 +142,7 @@ private fun MapView.ensureContainerView(): NoDrawContainerView = findViewById(R.
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 @Composable
 public fun rememberComposeUiViewRenderer(): ComposeUiViewRenderer {
-    val mapView = (currentComposer.applier as MapApplier).mapView
+    val mapView = (currentComposer.applier as MapApplier).mapViewDelegate
     val compositionContext = rememberCompositionContext()
 
     return remember(compositionContext) {
@@ -166,12 +165,12 @@ public fun rememberComposeUiViewRenderer(): ComposeUiViewRenderer {
     }
 }
 
-/** @see MapView.renderComposeViewOnce */
+/** @see ViewGroup.renderComposeViewOnce */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public interface ComposeUiViewRenderer {
 
     /**
-     * Prepares [view] for a single render by temporarily attaching it as a child of the [MapView].
+     * Prepares [view] for a single render by temporarily attaching it as a child of the map view.
      * Its composition will start. [onAddedToWindow] is called in place, and then [view] is removed
      * from the window before returning.
      */
