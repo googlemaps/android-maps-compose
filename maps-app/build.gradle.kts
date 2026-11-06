@@ -60,6 +60,10 @@ android {
     namespace = "com.google.maps.android.compose.demo"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
+    // Needed by the legacy map renderer on devices with older Google Play services.
+    // See the <uses-library> comment in AndroidManifest.xml.
+    useLibrary("org.apache.http.legacy")
+
     defaultConfig {
         // Kept from before the demo moved to its own namespace, so installs and CI keep working.
         applicationId = "com.google.maps.android.compose"
