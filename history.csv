@@ -339,3 +339,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-09T22:39:28Z,6f77a5f,1064,ci: regenerate Baseline Profiles before each release,instrumentation,maps-compose-utils,410,756,54.23,148,476,31.09,3107,6093,50.99
 2026-11-09T22:39:28Z,6f77a5f,1064,ci: regenerate Baseline Profiles before each release,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
 2026-11-09T22:39:28Z,6f77a5f,1064,ci: regenerate Baseline Profiles before each release,instrumentation,TOTAL,2589,5478,47.26,820,2346,34.95,19146,43779,43.73
+2026-11-09T22:53:00Z,84bbbb4,1069,test: use the v2 Compose test rules in the maps-app instrumentation tests,unit,maps-compose,307,2010,15.27,69,1834,3.76,2257,25370,8.9
+2026-11-09T22:53:00Z,84bbbb4,1069,test: use the v2 Compose test rules in the maps-app instrumentation tests,unit,maps-compose-utils,38,621,6.12,21,478,4.39,218,7558,2.88
+2026-11-09T22:53:00Z,84bbbb4,1069,test: use the v2 Compose test rules in the maps-app instrumentation tests,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
+2026-11-09T22:53:00Z,84bbbb4,1069,test: use the v2 Compose test rules in the maps-app instrumentation tests,unit,TOTAL,361,2778,12.99,98,2384,4.11,2557,34440,7.42
