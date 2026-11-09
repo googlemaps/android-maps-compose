@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.compose.compiler)
+    id("androidx.baselineprofile")
     id("org.jetbrains.dokka")
     id("android.maps.compose.PublishingConventionPlugin")
 }
@@ -84,7 +85,41 @@ composeCompiler {
 }
 
 
+baselineProfile {
+    // The profile is generated from maps-app, which shares the root package prefix. Keep only this
+    // library's classes: exclude the other two libraries and the demo app.
+    filter {
+        include("com.google.maps.android.compose.**")
+        exclude("com.google.maps.android.compose.clustering.**")
+        exclude("com.google.maps.android.compose.wms.**")
+        exclude("com.google.maps.android.compose.widgets.**")
+        exclude("com.google.maps.android.compose.demo.**")
+        exclude("com.google.maps.android.compose.baselineprofile.**")
+    }
+}
+
+// maps-app also uses the root package, so the filter above keeps its classes too. After the
+// profile is copied into src, drop every rule whose class this library does not compile. This
+// also covers the demo app's nested classes and lambdas, which the filter cannot match.
+tasks.matching { it.name == "copyBaselineProfileIntoSrc" }.configureEach {
+    dependsOn("compileReleaseKotlin")
+    val classesDir = layout.buildDirectory.dir("intermediates/built_in_kotlinc/release/compileReleaseKotlin/classes")
+    val profile = layout.projectDirectory.file("src/main/generated/baselineProfiles/baseline-prof.txt").asFile
+    doLast {
+        val root = classesDir.get().asFile
+        val kept = profile.readLines().filter { line ->
+            val className = Regex("L([^;]+);").find(line)?.groupValues?.get(1) ?: return@filter true
+            // D8 adds classes that kotlinc never writes: Foo$$ExternalSyntheticLambda0 for lambdas and
+            // Foo$-CC for the default methods of interface Foo.
+            val ownerClass = className.substringBefore("\$\$ExternalSynthetic").removeSuffix("\$-CC")
+            File(root, "$className.class").exists() || File(root, "$ownerClass.class").exists()
+        }
+        profile.writeText(kept.joinToString(separator = "\n", postfix = "\n"))
+    }
+}
+
 dependencies {
+    baselineProfile(project(":baselineprofile"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core)
     implementation(libs.androidx.compose.foundation)

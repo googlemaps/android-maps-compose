@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias (libs.plugins.compose.compiler)
+    id("androidx.baselineprofile")
     id("android.maps.compose.PublishingConventionPlugin")
     id("org.jetbrains.dokka")
 }
@@ -84,7 +85,15 @@ composeCompiler {
     }
 }
 
+baselineProfile {
+    // The profile is generated from maps-app. Keep only this library's classes.
+    filter {
+        include("com.google.maps.android.compose.widgets.**")
+    }
+}
+
 dependencies {
+    baselineProfile(project(":baselineprofile"))
     implementation(project(":maps-compose"))
 
     implementation(platform(libs.androidx.compose.bom))
