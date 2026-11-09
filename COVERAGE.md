@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `568822e` (#1063), recorded 2026-11-05T23:40:07Z.
+Measured at `6f77a5f` (#1064), recorded 2026-11-09T22:39:25Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-09 | `6f77a5f` | #1064 | 12.99% | 0.00 | n/a | n/a | ci: regenerate Baseline Profiles before each release |
 | 2026-11-05 | `568822e` | #1063 | 12.99% | 0.00 | 47.26% | +0.11 | perf: ship Baseline Profiles in maps-compose, maps-compose-utils and maps-compose-widgets |
 | 2026-11-05 | `804447d` | #1066 | 12.99% | 0.00 | 47.15% | +16.10 | refactor(demo): move maps-app to its own namespace |
 | 2026-11-04 | `d8d77e9` | #1076 | 12.99% | 0.00 | 31.05% | -16.21 | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-07 | `43eff64` | #1021 | 0.42% | 0.00 | 46.97% | -0.02 | chore(deps): bump github/codeql-action/upload-sarif |
 | 2026-10-05 | `6597744` | #1022 | 0.42% | 0.00 | 46.99% | +0.02 | chore(deps): bump the gradle-minor-and-patch group across 1 directory with 12 updates |
 | 2026-10-01 | `597c8db` | #1023 | 0.42% | 0.00 | 46.97% | +26.18 | test: report instrumentation coverage of the library modules |
-| 2026-10-01 | `61c3cf0` | #1024 | 0.42% | 0.00 | 20.79% | 0.00 | ci: compare unit coverage against the coverage-history branch |
