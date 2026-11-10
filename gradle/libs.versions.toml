@@ -34,7 +34,7 @@ materialIconsExtendedAndroid = "1.7.8"
 # Google Maps Platform
 mapsecrets = "2.0.1"
 mapsutils = "7.0.0"
-navigation = "8.0.0"
+navigation = "8.1.0"
 places = "6.0.2"
 playServicesLocation = "21.4.0"
 

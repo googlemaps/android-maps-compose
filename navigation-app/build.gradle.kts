@@ -121,6 +121,18 @@ dependencies {
     implementation(libs.navigation)
     implementation(libs.places)
     implementation(libs.play.services.location)
+
+    testImplementation(libs.test.junit)
+    testImplementation(libs.androidx.core)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.junit.ktx)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.test.compose.ui)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.maps.testing.robolectric)
+    testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.truth)
 }
 
 secrets {

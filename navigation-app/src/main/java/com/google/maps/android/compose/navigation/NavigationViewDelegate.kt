@@ -21,8 +21,8 @@ import android.os.Bundle
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.libraries.navigation.NavigationView
 import com.google.maps.android.compose.MapViewDelegate
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class NavigationViewDelegate(override val mapView: NavigationView) : MapViewDelegate<NavigationView> {
     override fun onCreate(savedInstanceState: Bundle?): Unit = mapView.onCreate(savedInstanceState)
@@ -40,8 +40,10 @@ class NavigationViewDelegate(override val mapView: NavigationView) : MapViewDele
     override suspend fun awaitMap(): GoogleMap = mapView.awaitMap()
 }
 
-suspend inline fun NavigationView.awaitMap(): GoogleMap = suspendCoroutine { continuation ->
-    getMapAsync {
-        continuation.resume(it)
+suspend inline fun NavigationView.awaitMap(): GoogleMap = suspendCancellableCoroutine { continuation ->
+    getMapAsync { map ->
+        if (continuation.isActive) {
+            continuation.resume(map)
+        }
     }
 }

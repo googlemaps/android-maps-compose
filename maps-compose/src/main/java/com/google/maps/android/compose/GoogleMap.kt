@@ -92,8 +92,10 @@ import kotlinx.coroutines.launch
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
  * @param mapColorScheme Defines the color scheme for the Map. Defaults to [ComposeMapColorScheme.FOLLOW_SYSTEM].
  * Not applied to Lite mode maps, which do not support color schemes.
- * @param mapViewFactory factory for creating the [MapViewDelegate] hosting the underlying map view
- * (defaults to a [DefaultMapViewDelegate] wrapping a standard [MapView])
+ * @param mapViewFactory factory for creating the [MapView] when [mapViewDelegateFactory] is not
+ * overridden
+ * @param mapViewDelegateFactory factory for creating the [MapViewDelegate] hosting the underlying
+ * map view (defaults to a [DefaultMapViewDelegate] wrapping the [MapView] created by [mapViewFactory])
  * @param content the content of the map
  */
 @Composable
@@ -116,8 +118,9 @@ public fun GoogleMap(
     onPOIClick: ((PointOfInterest) -> Unit)? = null,
     contentPadding: PaddingValues = DefaultMapContentPadding,
     mapColorScheme: ComposeMapColorScheme? = ComposeMapColorScheme.FOLLOW_SYSTEM,
-    mapViewFactory: (Context, GoogleMapOptions) -> MapViewDelegate<*> = { context, options ->
-        DefaultMapViewDelegate(MapView(context, options))
+    mapViewFactory: (Context, GoogleMapOptions) -> MapView = ::MapView,
+    mapViewDelegateFactory: (Context, GoogleMapOptions) -> MapViewDelegate<*> = { context, options ->
+        DefaultMapViewDelegate(mapViewFactory(context, options))
     },
     content:
     @Composable @GoogleMapComposable
@@ -199,7 +202,7 @@ public fun GoogleMap(
                 baseOptions
             }
             cameraPositionState.isLiteMode = isLiteMode
-            val mapViewDelegate = mapViewFactory(context, options)
+            val mapViewDelegate = mapViewDelegateFactory(context, options)
             mapViewDelegate.mapView.also { mapView ->
                 mapView.applyFocusability(focusable)
                 mapView.setViewTreeLifecycleOwner(lifecycleOwner)
@@ -246,6 +249,56 @@ public fun GoogleMap(
                 )
             }
         },
+    )
+}
+
+@Composable
+@Deprecated("For binary compatibility", level = DeprecationLevel.HIDDEN)
+public fun GoogleMap(
+    modifier: Modifier = Modifier,
+    mergeDescendants: Boolean = false,
+    focusable: Boolean = true,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    contentDescription: String? = null,
+    googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
+    properties: MapProperties = DefaultMapProperties,
+    locationSource: LocationSource? = null,
+    uiSettings: MapUiSettings = DefaultMapUiSettings,
+    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
+    onMapClick: ((LatLng) -> Unit)? = null,
+    onMapLongClick: ((LatLng) -> Unit)? = null,
+    onMapLoaded: (() -> Unit)? = null,
+    onMyLocationButtonClick: (() -> Boolean)? = null,
+    onMyLocationClick: ((Location) -> Unit)? = null,
+    onPOIClick: ((PointOfInterest) -> Unit)? = null,
+    contentPadding: PaddingValues = DefaultMapContentPadding,
+    mapColorScheme: ComposeMapColorScheme? = ComposeMapColorScheme.FOLLOW_SYSTEM,
+    mapViewFactory: (Context, GoogleMapOptions) -> MapView = ::MapView,
+    content:
+    @Composable @GoogleMapComposable
+    () -> Unit = {},
+) {
+    GoogleMap(
+        modifier = modifier,
+        mergeDescendants = mergeDescendants,
+        focusable = focusable,
+        cameraPositionState = cameraPositionState,
+        contentDescription = contentDescription,
+        googleMapOptionsFactory = googleMapOptionsFactory,
+        properties = properties,
+        locationSource = locationSource,
+        uiSettings = uiSettings,
+        indoorStateChangeListener = indoorStateChangeListener,
+        onMapClick = onMapClick,
+        onMapLongClick = onMapLongClick,
+        onMapLoaded = onMapLoaded,
+        onMyLocationButtonClick = onMyLocationButtonClick,
+        onMyLocationClick = onMyLocationClick,
+        onPOIClick = onPOIClick,
+        contentPadding = contentPadding,
+        mapColorScheme = mapColorScheme,
+        mapViewFactory = mapViewFactory,
+        content = content,
     )
 }
 

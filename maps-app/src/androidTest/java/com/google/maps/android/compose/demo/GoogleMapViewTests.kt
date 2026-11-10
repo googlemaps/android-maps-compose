@@ -42,7 +42,6 @@ import com.google.maps.android.compose.AdvancedMarkerInfoWindowContent
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.ComposeMapColorScheme
-import com.google.maps.android.compose.DefaultMapViewDelegate
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerComposable
@@ -114,7 +113,7 @@ class GoogleMapViewTests {
             GoogleMap(
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -129,7 +128,7 @@ class GoogleMapViewTests {
                 googleMapOptionsFactory = { GoogleMapOptions().liteMode(false) },
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -144,7 +143,7 @@ class GoogleMapViewTests {
                 mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -159,7 +158,7 @@ class GoogleMapViewTests {
                 mapColorScheme = ComposeMapColorScheme.DARK,
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -177,7 +176,7 @@ class GoogleMapViewTests {
                 mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -194,7 +193,7 @@ class GoogleMapViewTests {
                 mapColorScheme = ComposeMapColorScheme.DARK,
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -215,7 +214,7 @@ class GoogleMapViewTests {
                 mapColorScheme = ComposeMapColorScheme.DARK,
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -232,7 +231,7 @@ class GoogleMapViewTests {
                 googleMapOptionsFactory = { GoogleMapOptions().liteMode(true) },
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -252,7 +251,7 @@ class GoogleMapViewTests {
                 },
                 mapViewFactory = { context, options ->
                     capturedOptions = options
-                    DefaultMapViewDelegate(MapView(context, options))
+                    MapView(context, options)
                 },
             )
         }
@@ -532,11 +531,9 @@ class GoogleMapViewTests {
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState,
                     mapViewFactory = { context, options ->
-                        DefaultMapViewDelegate(
-                            MapView(context, options).also {
-                                mapViews.add(WeakReference(it))
-                            },
-                        )
+                        MapView(context, options).also {
+                            mapViews.add(WeakReference(it))
+                        }
                     },
                 ) {
                     MarkerInfoWindowContent(
