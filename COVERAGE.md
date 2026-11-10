@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `543d393` (#1071), recorded 2026-11-10T16:24:28Z.
+Measured at `889c2dc` (#1047), recorded 2026-11-10T21:12:27Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-compose` | 307/2,010 | 15.27% | `███░░░░░░░░░░░░░░░░░` | 69/1,834 | 3.76% |
-| `maps-compose-utils` | 38/621 | 6.12% | `█░░░░░░░░░░░░░░░░░░░` | 21/478 | 4.39% |
+| `maps-compose-utils` | 184/700 | 26.29% | `█████░░░░░░░░░░░░░░░` | 63/496 | 12.70% |
 | `maps-compose-widgets` | 16/147 | 10.88% | `██░░░░░░░░░░░░░░░░░░` | 8/72 | 11.11% |
-| **TOTAL** | 361/2,778 | 12.99% | `███░░░░░░░░░░░░░░░░░` | 98/2,384 | 4.11% |
+| **TOTAL** | 507/2,857 | 17.75% | `████░░░░░░░░░░░░░░░░` | 140/2,402 | 5.83% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-10 | `889c2dc` | #1047 | 17.75% | +4.76 | n/a | n/a | feat(clustering): expose clustering coroutine contexts and renderer executors |
 | 2026-11-10 | `543d393` | #1071 | 12.99% | 0.00 | 47.12% | -0.11 | test: log uncaught exceptions in the demo smoke tests |
 | 2026-11-09 | `84bbbb4` | #1069 | 12.99% | 0.00 | 47.23% | -0.03 | test: use the v2 Compose test rules in the maps-app instrumentation tests |
 | 2026-11-09 | `6f77a5f` | #1064 | 12.99% | 0.00 | 47.26% | 0.00 | ci: regenerate Baseline Profiles before each release |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-08 | `8af2400` | #1030 | 0.41% | 0.00 | 47.09% | 0.00 | chore(build): remove foojay toolchain resolver |
 | 2026-10-08 | `622d2f4` | #1025 | 0.41% | 0.00 | 47.09% | n/a | docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes |
 | 2026-10-08 | `114aaa5` | #1029 | 0.41% | -0.01 | n/a | n/a | fix(maps-compose): do not apply mapColorScheme to Lite mode maps |
-| 2026-10-07 | `43eff64` | #1021 | 0.42% | 0.00 | 46.97% | -0.02 | chore(deps): bump github/codeql-action/upload-sarif |

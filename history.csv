@@ -357,3 +357,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-10T16:24:32Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,instrumentation,maps-compose-utils,409,756,54.1,148,476,31.09,3104,6093,50.94
 2026-11-10T16:24:32Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
 2026-11-10T16:24:32Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,instrumentation,TOTAL,2581,5478,47.12,820,2346,34.95,19099,43779,43.63
+2026-11-10T21:12:27Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,unit,maps-compose,307,2010,15.27,69,1834,3.76,2257,25370,8.9
+2026-11-10T21:12:27Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
+2026-11-10T21:12:27Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
+2026-11-10T21:12:27Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,unit,TOTAL,507,2857,17.75,140,2402,5.83,3531,34732,10.17
