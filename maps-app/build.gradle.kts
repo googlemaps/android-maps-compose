@@ -148,6 +148,8 @@ dependencies {
     testImplementation(libs.androidx.test.core)
     testImplementation(libs.androidx.test.compose.ui)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.maps.testing.golden)
+    testImplementation(libs.maps.testing.robolectric)
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(libs.test.junit)

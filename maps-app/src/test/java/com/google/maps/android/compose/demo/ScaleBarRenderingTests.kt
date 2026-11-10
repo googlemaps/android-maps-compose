@@ -14,10 +14,10 @@
 
 package com.google.maps.android.compose.demo
 
-import android.graphics.Point
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,13 +25,12 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.widgets.ScaleBar
-import io.mockk.every
-import io.mockk.mockk
+import com.google.maps.android.robolectric.annotation.EnableMapsShadows
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,6 +39,7 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [29, 35])
+@EnableMapsShadows
 class ScaleBarRenderingTests {
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -65,20 +65,23 @@ class ScaleBarRenderingTests {
     }
 
     private fun assertFractionalLabels(dark: Boolean, large: Boolean = false) {
-        val projection = mockk<Projection>()
-        every { projection.toScreenLocation(any()) } returns Point(100, 100)
-        every { projection.fromScreenLocation(any()) } answers {
-            // At the equator 0.02 degrees spans about 2,224 m, or 1,976 m for the 8/9-width bar.
-            if (firstArg<Point>().x <= 100) LatLng(0.0, 0.0) else LatLng(0.0, if (large) 20.0 else 0.02)
-        }
-        val camera = mockk<CameraPositionState>(relaxed = true)
-        every { camera.position } returns CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 12f)
-        every { camera.projection } returns projection
+        // At the equator on a 65 dp bar, zoom 12.15f spans ~0.02° (~1,976 m for the 8/9-width bar)
+        // and zoom 2.1922927f spans 20° (1,976,800 m -> "1977 km" / "1228 mi" for the 8/9-width bar).
+        val camera = CameraPositionState(
+            position = CameraPosition.fromLatLngZoom(
+                LatLng(0.0, 0.0),
+                if (large) 2.1922927f else 12.15f,
+            ),
+        )
         val background = if (dark) Color.Black else Color.White
         val foreground = if (dark) Color.White else Color.Black
         composeTestRule.setContent {
             MaterialTheme {
-                Box(Modifier.background(background).padding(16.dp)) {
+                Box(Modifier.size(200.dp).background(background).padding(16.dp)) {
+                    GoogleMap(
+                        modifier = Modifier.matchParentSize(),
+                        cameraPositionState = camera,
+                    )
                     ScaleBar(
                         cameraPositionState = camera,
                         textColor = foreground,
@@ -88,6 +91,7 @@ class ScaleBarRenderingTests {
                 }
             }
         }
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(if (large) "1977 km" else "2 km").assertIsDisplayed()
         composeTestRule.onNodeWithText(if (large) "1228 mi" else "1.2 mi").assertIsDisplayed()
     }
