@@ -352,3 +352,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-10T16:24:28Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,unit,maps-compose-utils,38,621,6.12,21,478,4.39,218,7558,2.88
 2026-11-10T16:24:28Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
 2026-11-10T16:24:28Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,unit,TOTAL,361,2778,12.99,98,2384,4.11,2557,34440,7.42
+2026-11-10T16:24:32Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,instrumentation,maps-app,497,2388,20.81,79,422,18.72,4773,20287,23.53
+2026-11-10T16:24:32Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,instrumentation,maps-compose,1557,2183,71.32,569,1396,40.76,10534,16482,63.91
+2026-11-10T16:24:32Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,instrumentation,maps-compose-utils,409,756,54.1,148,476,31.09,3104,6093,50.94
+2026-11-10T16:24:32Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
+2026-11-10T16:24:32Z,543d393,1071,test: log uncaught exceptions in the demo smoke tests,instrumentation,TOTAL,2581,5478,47.12,820,2346,34.95,19099,43779,43.63
