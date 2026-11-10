@@ -19,7 +19,6 @@ package com.google.maps.android.compose.navigation.repositories
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
 import com.google.maps.android.compose.navigation.BuildConfig
 
 /**
@@ -29,12 +28,16 @@ import com.google.maps.android.compose.navigation.BuildConfig
  */
 class ApiKeyProvider(private val context: Context) {
     val mapsApiKey: String by lazy {
-        getMapsApiKeyFromManifest()
+        getMapsApiKeyFromManifest().also { key ->
+            if (key.isPlaceholderKey()) {
+                Log.w("ApiKeyProvider", MISSING_KEY_MESSAGE)
+            }
+        }
     }
 
     val placesApiKey: String by lazy {
-        BuildConfig.PLACES_API_KEY.takeIf {
-            it.isNotBlank() && it != "DEFAULT_API_KEY" && it != "YOUR_API_KEY"
+        BuildConfig.PLACES_API_KEY.takeIf { key ->
+            key.isNotBlank() && !key.isPlaceholderKey()
         } ?: mapsApiKey
     }
 
@@ -56,19 +59,10 @@ class ApiKeyProvider(private val context: Context) {
         return mapsApiKey
     }
 
-    init {
-        if (placesApiKey == "DEFAULT_API_KEY" ||
-            placesApiKey == "YOUR_API_KEY" ||
-            mapsApiKey == "DEFAULT_API_KEY" ||
-            mapsApiKey == "YOUR_API_KEY"
-        ) {
-            val message = "One or more API keys have not been set. Please see the README.md file."
-            Log.w("ApiKeyProvider", message)
-            Toast.makeText(
-                context,
-                message,
-                Toast.LENGTH_LONG,
-            ).show()
-        }
+    private fun String.isPlaceholderKey(): Boolean = this == "DEFAULT_API_KEY" || this == "YOUR_API_KEY"
+
+    companion object {
+        private const val MISSING_KEY_MESSAGE =
+            "One or more API keys have not been set. Please see the README.md file."
     }
 }

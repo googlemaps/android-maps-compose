@@ -41,21 +41,22 @@ import com.google.maps.android.compose.navigation.repositories.LocationProvider
 import com.google.maps.android.compose.navigation.repositories.PermissionChecker
 import com.google.maps.android.latLngListEncode
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 const val DEFAULT_SIMULATION_SPEED = 5f
 private const val DEFAULT_SEARCH_BIAS_RADIUS_METERS = 50_000.0
@@ -90,13 +91,14 @@ class NavigationViewModel(
         initialValue = null,
     )
 
-    private val _uiEvent = MutableSharedFlow<UiEvent>()
-    val uiEvent: SharedFlow<UiEvent> = _uiEvent.asSharedFlow()
+    private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
+    val uiEvent: Flow<UiEvent> = _uiEvent.receiveAsFlow()
 
     private val hasLocationPermission = MutableStateFlow(false)
 
     private var navigator: Navigator? = null
     private var routeChangedListener: Navigator.RouteChangedListener? = null
+    private var navigationJob: Job? = null
 
     private val _placesAlongRoute = MutableStateFlow<List<Place>>(emptyList())
     val placesAlongRoute = _placesAlongRoute.asStateFlow()
@@ -134,7 +136,7 @@ class NavigationViewModel(
                     _location.value = location
                 }
             } else {
-                _uiEvent.emit(UiEvent.RequestLocationPermission)
+                _uiEvent.send(UiEvent.RequestLocationPermission)
             }
         }
     }
@@ -201,6 +203,8 @@ class NavigationViewModel(
      * and refreshes [_location] from the device's location provider.
      */
     fun stopNavigation() {
+        navigationJob?.cancel()
+        navigationJob = null
         val localNavigator = navigator
         if (localNavigator != null) {
             localNavigator.stopGuidance()
@@ -247,7 +251,8 @@ class NavigationViewModel(
         _destinationLabel.value = label
         _routeReady.value = false
 
-        viewModelScope.launch {
+        navigationJob?.cancel()
+        navigationJob = viewModelScope.launch {
             val destination = Waypoint.builder()
                 .setLatLng(latLng.latitude, latLng.longitude)
                 .setTitle(label)
@@ -272,7 +277,8 @@ class NavigationViewModel(
         _destinationLabel.value = label
         _routeReady.value = false
 
-        viewModelScope.launch {
+        navigationJob?.cancel()
+        navigationJob = viewModelScope.launch {
             try {
                 val destination = Waypoint.builder().setPlaceIdString(placeId).build()
                 startNavigationToWaypoint(localNavigator, destination, routingOptions)
@@ -294,21 +300,23 @@ class NavigationViewModel(
         try {
             val routeStatusFuture = localNavigator.setDestination(destination, routingOptions)
 
-            suspendCoroutine { continuation ->
+            suspendCancellableCoroutine { continuation ->
+                continuation.invokeOnCancellation {
+                    routeStatusFuture.cancel(true)
+                }
                 val callback =
                     ListenableResultFuture.OnResultListener<Navigator.RouteStatus> { status ->
+                        if (!continuation.isActive) return@OnResultListener
                         fun onFailure(message: String) {
                             continuation.resumeWithException(Exception(message))
                         }
 
                         when (status) {
                             Navigator.RouteStatus.OK -> {
-                                // Simulate vehicle progress along the route for demo/debug builds.
-                                if (BuildConfig.DEBUG) {
-                                    localNavigator.simulator.simulateLocationsAlongExistingRoute(
-                                        SimulationOptions().speedMultiplier(_simulationSpeed.value),
-                                    )
-                                }
+                                // Simulate vehicle progress along the route for demo/sample runs.
+                                localNavigator.simulator.simulateLocationsAlongExistingRoute(
+                                    SimulationOptions().speedMultiplier(_simulationSpeed.value),
+                                )
 
                                 // Start turn-by-turn guidance along the current route.
                                 localNavigator.startGuidance()
@@ -329,9 +337,9 @@ class NavigationViewModel(
                                 "Error starting navigation: Quota check failed",
                             )
 
-                            Navigator.RouteStatus.ROUTE_CANCELED -> onFailure(
-                                "Error starting navigation: Route canceled",
-                            )
+                            Navigator.RouteStatus.ROUTE_CANCELED -> {
+                                continuation.cancel()
+                            }
 
                             Navigator.RouteStatus.LOCATION_DISABLED -> onFailure(
                                 "Error starting navigation: Location disabled",
@@ -361,13 +369,16 @@ class NavigationViewModel(
 
     override fun onNavigatorReady(navigator: Navigator?) {
         val readyNavigator = navigator ?: error("Navigator is null")
+        val isFirstInitialization = this.navigator == null
         this.navigator = readyNavigator
         readyNavigator.setTaskRemovedBehavior(Navigator.TaskRemovedBehavior.QUIT_SERVICE)
-        // Clear any leftover simulated location from a prior run so we start at real GPS.
-        readyNavigator.stopGuidance()
-        readyNavigator.clearDestinations()
-        readyNavigator.simulator.unsetUserLocation()
-        displayMessage("navigator ready")
+        if (isFirstInitialization) {
+            // Clear any leftover simulated location from a prior run so we start at real GPS.
+            readyNavigator.stopGuidance()
+            readyNavigator.clearDestinations()
+            readyNavigator.simulator.unsetUserLocation()
+            displayMessage("navigator ready")
+        }
 
         // Listen for route changes
         routeChangedListener?.let { readyNavigator.removeRouteChangedListener(it) }
@@ -381,6 +392,8 @@ class NavigationViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        navigationJob?.cancel()
+        navigationJob = null
         routeChangedListener?.let { listener ->
             navigator?.removeRouteChangedListener(listener)
         }
@@ -388,6 +401,7 @@ class NavigationViewModel(
         navigator?.stopGuidance()
         navigator?.clearDestinations()
         navigator?.simulator?.unsetUserLocation()
+        navigator = null
     }
 
     /**
@@ -462,7 +476,7 @@ class NavigationViewModel(
     private fun displayMessage(message: String) {
         Log.w("NavigationViewModel", message)
         viewModelScope.launch {
-            _uiEvent.emit(UiEvent.ShowSnackbar(message))
+            _uiEvent.send(UiEvent.ShowSnackbar(message))
         }
     }
 

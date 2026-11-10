@@ -17,6 +17,7 @@
 package com.google.maps.android.compose.navigation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
@@ -45,6 +46,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,11 +54,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -69,9 +71,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.navigation.NavigationView
+import com.google.android.libraries.navigation.OnNavigationUiChangedListener
 import com.google.android.libraries.places.api.model.Place
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
@@ -81,6 +85,10 @@ import com.google.maps.android.compose.rememberUpdatedMarkerState
 import kotlinx.coroutines.delay
 
 internal const val CONTROLS_AUTO_COLLAPSE_DELAY_MS = 4_000L
+internal const val DEFAULT_MAP_ZOOM = 17f
+private val IDLE_CONTROLS_BOTTOM_PADDING = 24.dp
+private val SNACKBAR_VISIBLE_CONTROLS_BOTTOM_PADDING = 84.dp
+private val NAVIGATION_ACTIVE_CONTROLS_BOTTOM_PADDING = 168.dp
 
 @Composable
 fun NavigationScreen(
@@ -92,6 +100,7 @@ fun NavigationScreen(
     modifier: Modifier = Modifier,
     simulationState: SimulationState = SimulationState.IDLE,
     simulationSpeed: Float = DEFAULT_SIMULATION_SPEED,
+    isSnackbarVisible: Boolean = false,
     onSimulationSpeedChanged: (Float) -> Unit = {},
     onPauseSimulation: () -> Unit = {},
     onResumeSimulation: () -> Unit = {},
@@ -103,22 +112,39 @@ fun NavigationScreen(
     var isSearchExpanded by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var searchAlongRouteMode by rememberSaveable { mutableStateOf(false) }
+    var navigationViewInstance by remember { mutableStateOf<NavigationView?>(null) }
+    var isNavigationUiEnabled by remember { mutableStateOf(true) }
+
+    DisposableEffect(navigationViewInstance) {
+        val navView = navigationViewInstance
+        if (navView == null) {
+            return@DisposableEffect onDispose {}
+        }
+        isNavigationUiEnabled = navView.isNavigationUiEnabled
+        val listener = OnNavigationUiChangedListener { enabled ->
+            isNavigationUiEnabled = enabled
+        }
+        navView.addOnNavigationUiChangedListener(listener)
+        onDispose {
+            navView.removeOnNavigationUiChangedListener(listener)
+        }
+    }
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
             deviceLocation ?: defaultLocation,
-            15f,
+            DEFAULT_MAP_ZOOM,
         )
     }
 
-    LaunchedEffect(deviceLocation) {
+    LaunchedEffect(deviceLocation, simulationState) {
         if (simulationState != SimulationState.RUNNING) {
             deviceLocation?.let { location ->
                 cameraPositionState.animate(
                     update = CameraUpdateFactory.newCameraPosition(
                         CameraPosition.fromLatLngZoom(
                             location,
-                            15f,
+                            DEFAULT_MAP_ZOOM,
                         ),
                     ),
                 )
@@ -126,14 +152,38 @@ fun NavigationScreen(
         }
     }
 
+    val isGuidanceActive =
+        routeReady ||
+            simulationState == SimulationState.RUNNING ||
+            simulationState == SimulationState.PAUSED
+    val shouldOffsetForNavigationFab = isNavigationUiEnabled && isGuidanceActive
+    val controlsBottomPadding by animateDpAsState(
+        targetValue = when {
+            shouldOffsetForNavigationFab -> NAVIGATION_ACTIVE_CONTROLS_BOTTOM_PADDING
+            isSnackbarVisible -> SNACKBAR_VISIBLE_CONTROLS_BOTTOM_PADDING
+            else -> IDLE_CONTROLS_BOTTOM_PADDING
+        },
+        label = "controlsBottomPadding",
+    )
+
     Box(modifier = modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
+            googleMapOptionsFactory = {
+                GoogleMapOptions().camera(
+                    CameraPosition.fromLatLngZoom(
+                        deviceLocation ?: defaultLocation,
+                        DEFAULT_MAP_ZOOM,
+                    ),
+                )
+            },
             mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
             onMapLongClick = onMapDestinationSelected,
-            mapViewFactory = { context, options ->
-                NavigationViewDelegate(NavigationView(context, options))
+            mapViewDelegateFactory = { context, options ->
+                val navView = NavigationView(context, options)
+                navigationViewInstance = navView
+                NavigationViewDelegate(navView)
             },
         ) {
             if (deviceLocation != null) {
@@ -200,8 +250,8 @@ fun NavigationScreen(
             onResumeSimulation = onResumeSimulation,
             onStopNavigation = onStopNavigation,
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(horizontal = 12.dp),
+                .align(Alignment.BottomEnd)
+                .padding(end = 20.dp, bottom = controlsBottomPadding),
         )
     }
 }
@@ -288,7 +338,10 @@ private fun FloatingPlaceSearchCard(
                         .heightIn(max = 200.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    items(places) { place ->
+                    items(
+                        items = places,
+                        key = { place -> place.id ?: place.hashCode() },
+                    ) { place ->
                         PlaceItem(
                             place = place,
                             onNavigateClicked = { onPlaceSelected(place) },
@@ -301,10 +354,10 @@ private fun FloatingPlaceSearchCard(
 }
 
 /**
- * Floating control menu positioned along the mid-right edge of the screen so it never obscures
- * the top turn-by-turn guidance banner or the bottom trip progress bar.
+ * Floating control menu positioned as a bottom-right FAB that shifts above the Navigation SDK's
+ * incident reporting FAB and trip progress bar when turn-by-turn navigation UI is active.
  *
- * Automatically collapses into a single compact FAB after [CONTROLS_AUTO_COLLAPSE_DELAY_MS] of
+ * Automatically collapses into a single FAB after [CONTROLS_AUTO_COLLAPSE_DELAY_MS] of
  * inactivity.
  */
 @Composable
@@ -336,7 +389,7 @@ private fun CollapsibleFloatingControls(
             enter = fadeIn(),
             exit = fadeOut(),
         ) {
-            SmallFloatingActionButton(
+            FloatingActionButton(
                 onClick = {
                     interactionTick++
                     expanded = true

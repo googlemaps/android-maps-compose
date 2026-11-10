@@ -33,18 +33,16 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.navigation.NavigationApi
 import com.google.maps.android.compose.navigation.ui.theme.MapsComposeNavigationTheme
 import kotlinx.coroutines.launch
 
-val defaultLocation = LatLng(39.9828503662161, -105.71835147137016)
+val defaultLocation = LatLng(40.014984, -105.270546)
 
 class MainActivity : ComponentActivity() {
     private val myViewModel: NavigationViewModel by viewModels { NavigationViewModel.Factory }
@@ -61,8 +59,7 @@ class MainActivity : ComponentActivity() {
         NavigationApi.getNavigator(this, myViewModel)
 
         setContent {
-            val context = LocalContext.current
-            val snackbarHostState by remember { mutableStateOf(SnackbarHostState()) }
+            val snackbarHostState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
             val locationPermissionsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions(),
@@ -92,7 +89,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            LaunchedEffect(myViewModel, context) {
+            LaunchedEffect(myViewModel) {
                 myViewModel.uiEvent.collect { event ->
                     when (event) {
                         is UiEvent.ShowSnackbar -> onShowSnackbar(event.message)
@@ -118,6 +115,7 @@ class MainActivity : ComponentActivity() {
                         routeReady = routeReady,
                         simulationState = simulationState,
                         simulationSpeed = simulationSpeed,
+                        isSnackbarVisible = snackbarHostState.currentSnackbarData != null,
                         onClearSearchResults = {
                             myViewModel.clearSearchResults()
                         },
