@@ -361,3 +361,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-10T21:12:27Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
 2026-11-10T21:12:27Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
 2026-11-10T21:12:27Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,unit,TOTAL,507,2857,17.75,140,2402,5.83,3531,34732,10.17
+2026-11-10T21:12:31Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,instrumentation,maps-app,498,2388,20.85,79,422,18.72,4776,20291,23.54
+2026-11-10T21:12:31Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,instrumentation,maps-compose,1563,2183,71.6,567,1396,40.62,10603,16482,64.33
+2026-11-10T21:12:31Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,instrumentation,maps-compose-utils,432,866,49.88,167,514,32.49,3227,6536,49.37
+2026-11-10T21:12:31Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
+2026-11-10T21:12:31Z,889c2dc,1047,feat(clustering): expose clustering coroutine contexts and renderer executors,instrumentation,TOTAL,2611,5588,46.73,837,2384,35.11,19294,44226,43.63

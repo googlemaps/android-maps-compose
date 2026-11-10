@@ -38,15 +38,15 @@ Measured at `889c2dc` (#1047), recorded 2026-11-10T21:12:27Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `543d393` (#1071), recorded 2026-11-10T16:24:32Z.
+Measured at `889c2dc` (#1047), recorded 2026-11-10T21:12:31Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 497/2,388 | 20.81% | `████░░░░░░░░░░░░░░░░` | 79/422 | 18.72% |
-| `maps-compose` | 1,557/2,183 | 71.32% | `██████████████░░░░░░` | 569/1,396 | 40.76% |
-| `maps-compose-utils` | 409/756 | 54.10% | `███████████░░░░░░░░░` | 148/476 | 31.09% |
+| `maps-app` | 498/2,388 | 20.85% | `████░░░░░░░░░░░░░░░░` | 79/422 | 18.72% |
+| `maps-compose` | 1,563/2,183 | 71.60% | `██████████████░░░░░░` | 567/1,396 | 40.62% |
+| `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
 | `maps-compose-widgets` | 118/151 | 78.15% | `████████████████░░░░` | 24/52 | 46.15% |
-| **TOTAL** | 2,581/5,478 | 47.12% | `█████████░░░░░░░░░░░` | 820/2,346 | 34.95% |
+| **TOTAL** | 2,611/5,588 | 46.73% | `█████████░░░░░░░░░░░` | 837/2,384 | 35.11% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-10 | `889c2dc` | #1047 | 17.75% | +4.76 | n/a | n/a | feat(clustering): expose clustering coroutine contexts and renderer executors |
+| 2026-11-10 | `889c2dc` | #1047 | 17.75% | +4.76 | 46.73% | -0.39 | feat(clustering): expose clustering coroutine contexts and renderer executors |
 | 2026-11-10 | `543d393` | #1071 | 12.99% | 0.00 | 47.12% | -0.11 | test: log uncaught exceptions in the demo smoke tests |
 | 2026-11-09 | `84bbbb4` | #1069 | 12.99% | 0.00 | 47.23% | -0.03 | test: use the v2 Compose test rules in the maps-app instrumentation tests |
 | 2026-11-09 | `6f77a5f` | #1064 | 12.99% | 0.00 | 47.26% | 0.00 | ci: regenerate Baseline Profiles before each release |
