@@ -38,15 +38,15 @@ Measured at `bc7a4bf` (#1081), recorded 2026-11-10T23:55:49Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `889c2dc` (#1047), recorded 2026-11-10T21:12:31Z.
+Measured at `bc7a4bf` (#1081), recorded 2026-11-11T00:00:54Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
 | `maps-app` | 498/2,388 | 20.85% | `████░░░░░░░░░░░░░░░░` | 79/422 | 18.72% |
-| `maps-compose` | 1,563/2,183 | 71.60% | `██████████████░░░░░░` | 567/1,396 | 40.62% |
+| `maps-compose` | 1,563/2,183 | 71.60% | `██████████████░░░░░░` | 570/1,396 | 40.83% |
 | `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
 | `maps-compose-widgets` | 118/151 | 78.15% | `████████████████░░░░` | 24/52 | 46.15% |
-| **TOTAL** | 2,611/5,588 | 46.73% | `█████████░░░░░░░░░░░` | 837/2,384 | 35.11% |
+| **TOTAL** | 2,611/5,588 | 46.73% | `█████████░░░░░░░░░░░` | 840/2,384 | 35.23% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-10 | `bc7a4bf` | #1081 | 17.75% | 0.00 | n/a | n/a | chore(demo): explain why the demo keeps the Apache HTTP legacy library |
+| 2026-11-10 | `bc7a4bf` | #1081 | 17.75% | 0.00 | 46.73% | 0.00 | chore(demo): explain why the demo keeps the Apache HTTP legacy library |
 | 2026-11-10 | `889c2dc` | #1047 | 17.75% | +4.76 | 46.73% | -0.39 | feat(clustering): expose clustering coroutine contexts and renderer executors |
 | 2026-11-10 | `543d393` | #1071 | 12.99% | 0.00 | 47.12% | -0.11 | test: log uncaught exceptions in the demo smoke tests |
 | 2026-11-09 | `84bbbb4` | #1069 | 12.99% | 0.00 | 47.23% | -0.03 | test: use the v2 Compose test rules in the maps-app instrumentation tests |

@@ -370,3 +370,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-10T23:55:49Z,bc7a4bf,1081,chore(demo): explain why the demo keeps the Apache HTTP legacy library,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
 2026-11-10T23:55:49Z,bc7a4bf,1081,chore(demo): explain why the demo keeps the Apache HTTP legacy library,unit,maps-compose-widgets,16,147,10.88,8,72,11.11,82,1512,5.42
 2026-11-10T23:55:49Z,bc7a4bf,1081,chore(demo): explain why the demo keeps the Apache HTTP legacy library,unit,TOTAL,507,2857,17.75,140,2402,5.83,3531,34732,10.17
+2026-11-11T00:00:54Z,bc7a4bf,1081,chore(demo): explain why the demo keeps the Apache HTTP legacy library,instrumentation,maps-app,498,2388,20.85,79,422,18.72,4776,20291,23.54
+2026-11-11T00:00:54Z,bc7a4bf,1081,chore(demo): explain why the demo keeps the Apache HTTP legacy library,instrumentation,maps-compose,1563,2183,71.6,570,1396,40.83,10618,16482,64.42
+2026-11-11T00:00:54Z,bc7a4bf,1081,chore(demo): explain why the demo keeps the Apache HTTP legacy library,instrumentation,maps-compose-utils,432,866,49.88,167,514,32.49,3227,6536,49.37
+2026-11-11T00:00:54Z,bc7a4bf,1081,chore(demo): explain why the demo keeps the Apache HTTP legacy library,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
+2026-11-11T00:00:54Z,bc7a4bf,1081,chore(demo): explain why the demo keeps the Apache HTTP legacy library,instrumentation,TOTAL,2611,5588,46.73,840,2384,35.23,19309,44226,43.66
