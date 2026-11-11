@@ -10,9 +10,12 @@ public final class com/google/maps/android/compose/clustering/ClusteringKt {
 	public static final fun ClusteringMarkerProperties-MqvHWfI (Landroidx/compose/ui/geometry/Offset;Ljava/lang/Float;Ljava/lang/Float;Ljava/lang/String;Landroidx/compose/runtime/Composer;II)V
 	public static final synthetic fun ClusteringMarkerProperties-ueCybiQ (Landroidx/compose/ui/geometry/Offset;Ljava/lang/Float;Ljava/lang/Float;Landroidx/compose/runtime/Composer;II)V
 	public static final fun getLocalClusteringMarkerProperties ()Landroidx/compose/runtime/ProvidableCompositionLocal;
-	public static final fun rememberClusterManager (Landroidx/compose/runtime/Composer;I)Lcom/google/maps/android/clustering/ClusterManager;
-	public static final fun rememberClusterRenderer (Lcom/google/maps/android/clustering/ClusterManager;Landroidx/compose/runtime/Composer;I)Lcom/google/maps/android/clustering/view/ClusterRenderer;
-	public static final fun rememberClusterRenderer-Cq5_NK8 (Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;JJFFFFLcom/google/maps/android/clustering/ClusterManager;Landroidx/compose/runtime/Composer;II)Lcom/google/maps/android/clustering/view/ClusterRenderer;
+	public static final synthetic fun rememberClusterManager (Landroidx/compose/runtime/Composer;I)Lcom/google/maps/android/clustering/ClusterManager;
+	public static final fun rememberClusterManager (Lkotlin/coroutines/CoroutineContext;Lkotlin/coroutines/CoroutineContext;Landroidx/compose/runtime/Composer;II)Lcom/google/maps/android/clustering/ClusterManager;
+	public static final synthetic fun rememberClusterRenderer (Lcom/google/maps/android/clustering/ClusterManager;Landroidx/compose/runtime/Composer;I)Lcom/google/maps/android/clustering/view/ClusterRenderer;
+	public static final fun rememberClusterRenderer (Lcom/google/maps/android/clustering/ClusterManager;Ljava/util/concurrent/Executor;Landroidx/compose/runtime/Composer;II)Lcom/google/maps/android/clustering/view/ClusterRenderer;
+	public static final synthetic fun rememberClusterRenderer-Cq5_NK8 (Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;JJFFFFLcom/google/maps/android/clustering/ClusterManager;Landroidx/compose/runtime/Composer;II)Lcom/google/maps/android/clustering/view/ClusterRenderer;
+	public static final fun rememberClusterRenderer-VpbBEnE (Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function3;JJFFFFLcom/google/maps/android/clustering/ClusterManager;Ljava/util/concurrent/Executor;Landroidx/compose/runtime/Composer;II)Lcom/google/maps/android/clustering/view/ClusterRenderer;
 }
 
 public final class com/google/maps/android/compose/clustering/ClusteringMarkerProperties {
