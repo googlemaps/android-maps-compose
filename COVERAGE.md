@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `bc7a4bf` (#1081), recorded 2026-11-10T23:55:49Z.
+Measured at `e87f708` (#1068), recorded 2026-11-11T16:53:05Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-compose` | 307/2,010 | 15.27% | `███░░░░░░░░░░░░░░░░░` | 69/1,834 | 3.76% |
+| `maps-compose` | 307/2,010 | 15.27% | `███░░░░░░░░░░░░░░░░░` | 69/1,838 | 3.75% |
 | `maps-compose-utils` | 184/700 | 26.29% | `█████░░░░░░░░░░░░░░░` | 63/496 | 12.70% |
 | `maps-compose-widgets` | 16/147 | 10.88% | `██░░░░░░░░░░░░░░░░░░` | 8/72 | 11.11% |
-| **TOTAL** | 507/2,857 | 17.75% | `████░░░░░░░░░░░░░░░░` | 140/2,402 | 5.83% |
+| **TOTAL** | 507/2,857 | 17.75% | `████░░░░░░░░░░░░░░░░` | 140/2,406 | 5.82% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-11 | `e87f708` | #1068 | 17.75% | 0.00 | n/a | n/a | chore: fix the library compiler warnings and treat warnings as errors |
 | 2026-11-10 | `bc7a4bf` | #1081 | 17.75% | 0.00 | 46.73% | 0.00 | chore(demo): explain why the demo keeps the Apache HTTP legacy library |
 | 2026-11-10 | `889c2dc` | #1047 | 17.75% | +4.76 | 46.73% | -0.39 | feat(clustering): expose clustering coroutine contexts and renderer executors |
 | 2026-11-10 | `543d393` | #1071 | 12.99% | 0.00 | 47.12% | -0.11 | test: log uncaught exceptions in the demo smoke tests |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-09 | `85a56aa` | #1034 | 0.41% | 0.00 | 47.09% | +37.25 | ci: skip the coverage comment on pull requests from forks |
 | 2026-10-08 | `cb74115` | #1031 | 0.41% | 0.00 | 9.84% | -37.25 | chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin |
 | 2026-10-08 | `8af2400` | #1030 | 0.41% | 0.00 | 47.09% | 0.00 | chore(build): remove foojay toolchain resolver |
-| 2026-10-08 | `622d2f4` | #1025 | 0.41% | 0.00 | 47.09% | n/a | docs: explain BEGIN_COMMIT_OVERRIDE for PRs with several changes |
