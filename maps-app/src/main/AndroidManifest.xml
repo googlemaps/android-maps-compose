@@ -26,6 +26,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidMapsCompose">
 
+        <!--
+            Keep this even though the app uses a recent play-services-maps. The map renderer runs
+            inside Google Play services, and on devices with older Play services (and with the
+            legacy renderer) it loads org.apache.http classes through the app's class loader.
+            Without it, the map crashes there with NoClassDefFoundError: org/apache/http/ProtocolVersion.
+            See https://github.com/googlemaps/android-maps-compose/issues/1080.
+        -->
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />

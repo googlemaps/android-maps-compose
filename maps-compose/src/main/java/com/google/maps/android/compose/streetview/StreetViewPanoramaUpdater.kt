@@ -20,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ComposeNode
 import androidx.compose.runtime.currentComposer
 import com.google.android.gms.maps.StreetViewPanorama
+import com.google.android.gms.maps.model.StreetViewPanoramaCamera
+import com.google.android.gms.maps.model.StreetViewPanoramaLocation
 import com.google.maps.android.compose.MapNode
 
 internal class StreetViewPanoramaPropertiesNode(
@@ -39,13 +41,13 @@ internal class StreetViewPanoramaPropertiesNode(
         panorama.setOnStreetViewPanoramaLongClickListener {
             eventListeners.onLongClick(it)
         }
-        // Both Java listener interfaces lack @NonNull, so GMS can deliver null. Guard the
-        // assignments to prevent the Kotlin compiler's implicit null-check from crashing.
-        panorama.setOnStreetViewPanoramaCameraChangeListener {
-            it?.let { cameraPositionState.rawPanoramaCamera = it }
+        // GMS can deliver null to both listeners even though their parameters are declared
+        // non-null, so take them as nullable and guard the assignments.
+        panorama.setOnStreetViewPanoramaCameraChangeListener { camera: StreetViewPanoramaCamera? ->
+            camera?.let { cameraPositionState.rawPanoramaCamera = it }
         }
-        panorama.setOnStreetViewPanoramaChangeListener {
-            it?.let { cameraPositionState.rawLocation = it }
+        panorama.setOnStreetViewPanoramaChangeListener { location: StreetViewPanoramaLocation? ->
+            location?.let { cameraPositionState.rawLocation = it }
         }
     }
 

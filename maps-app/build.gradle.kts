@@ -21,6 +21,8 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.screenshot)
+    // Builds the release variants that :baselineprofile runs to generate the libraries' profiles.
+    id("androidx.baselineprofile")
     jacoco
 }
 
@@ -36,14 +38,35 @@ android {
         getByName("release") {
             enableAndroidTestCoverage = true
         }
+        // Used by :baselineprofile to generate the libraries' Baseline Profiles and to benchmark them.
+        // The androidx.baselineprofile plugin does not add these on this AGP version, so they are
+        // declared here, matching what it would create: release, not minified, not instrumented
+        // for coverage, profileable and signed with the debug key.
+        listOf("nonMinifiedRelease", "benchmarkRelease").forEach { name ->
+            create(name) {
+                initWith(getByName("release"))
+                matchingFallbacks += "release"
+                isMinifyEnabled = false
+                isShrinkResources = false
+                isDebuggable = false
+                isProfileable = true
+                enableAndroidTestCoverage = false
+                enableUnitTestCoverage = false
+                signingConfig = signingConfigs.getByName("debug")
+            }
+        }
     }
 
-    namespace = "com.google.maps.android.compose"
+    namespace = "com.google.maps.android.compose.demo"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
+    // Needed by the legacy map renderer on devices with older Google Play services.
+    // See the <uses-library> comment in AndroidManifest.xml.
     useLibrary("org.apache.http.legacy")
 
     defaultConfig {
+        // Kept from before the demo moved to its own namespace, so installs and CI keep working.
+        applicationId = "com.google.maps.android.compose"
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
