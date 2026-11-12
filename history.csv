@@ -384,3 +384,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-11T16:53:10Z,e87f708,1068,chore: fix the library compiler warnings and treat warnings as errors,instrumentation,maps-compose-utils,432,866,49.88,167,514,32.49,3227,6536,49.37
 2026-11-11T16:53:10Z,e87f708,1068,chore: fix the library compiler warnings and treat warnings as errors,instrumentation,maps-compose-widgets,118,151,78.15,24,52,46.15,688,917,75.03
 2026-11-11T16:53:10Z,e87f708,1068,chore: fix the library compiler warnings and treat warnings as errors,instrumentation,TOTAL,2616,5588,46.81,843,2388,35.3,19347,44226,43.75
+2026-11-12T10:42:11Z,9632183,1072,feat(widgets): use android-maps-utils Units API in ScaleBar,unit,maps-compose,307,2010,15.27,69,1838,3.75,2257,25370,8.9
+2026-11-12T10:42:11Z,9632183,1072,feat(widgets): use android-maps-utils Units API in ScaleBar,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
+2026-11-12T10:42:11Z,9632183,1072,feat(widgets): use android-maps-utils Units API in ScaleBar,unit,maps-compose-widgets,6,155,3.87,0,84,0.0,36,1651,2.18
+2026-11-12T10:42:11Z,9632183,1072,feat(widgets): use android-maps-utils Units API in ScaleBar,unit,TOTAL,497,2865,17.35,132,2418,5.46,3485,34871,9.99
