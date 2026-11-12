@@ -1,6 +1,8 @@
 public final class com/google/maps/android/compose/widgets/ScaleBarKt {
-	public static final fun DisappearingScaleBar-JXI6SxA (Landroidx/compose/ui/Modifier;FFLcom/google/maps/android/compose/CameraPositionState;JJJILandroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;Landroidx/compose/runtime/Composer;II)V
-	public static final fun ScaleBar-7pV8VcA (Landroidx/compose/ui/Modifier;FFLcom/google/maps/android/compose/CameraPositionState;JJJLandroidx/compose/runtime/Composer;II)V
+	public static final fun DisappearingScaleBar-BrNgjN8 (Landroidx/compose/ui/Modifier;FFLcom/google/maps/android/compose/CameraPositionState;JJJILandroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;ZLandroidx/compose/runtime/Composer;III)V
+	public static final synthetic fun DisappearingScaleBar-JXI6SxA (Landroidx/compose/ui/Modifier;FFLcom/google/maps/android/compose/CameraPositionState;JJJILandroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;Landroidx/compose/runtime/Composer;II)V
+	public static final fun ScaleBar-2VBzJY8 (Landroidx/compose/ui/Modifier;FFLcom/google/maps/android/compose/CameraPositionState;JJJZLandroidx/compose/runtime/Composer;II)V
+	public static final synthetic fun ScaleBar-7pV8VcA (Landroidx/compose/ui/Modifier;FFLcom/google/maps/android/compose/CameraPositionState;JJJLandroidx/compose/runtime/Composer;II)V
 	public static final fun getDarkGray ()J
 }
 

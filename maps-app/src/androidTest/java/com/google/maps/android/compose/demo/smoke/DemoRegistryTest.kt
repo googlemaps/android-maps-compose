@@ -20,6 +20,7 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
+import com.google.maps.android.compose.demo.InPlaceRotationTestActivity
 import com.google.maps.android.compose.demo.MainActivity
 import com.google.maps.android.compose.demo.allActivityGroups
 import org.junit.Test
@@ -64,7 +65,10 @@ class DemoRegistryTest {
             .orEmpty()
             .map { it.name }
             .filter { it.startsWith("$demoPackage.") }
-            .toSet() - MainActivity::class.java.name
+            .toSet() - setOf(
+            MainActivity::class.java.name,
+            InPlaceRotationTestActivity::class.java.name,
+        )
 
         val inMenu = demos.map { it.kClass.java.name }.toSet()
 
