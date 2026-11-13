@@ -239,9 +239,12 @@ class GoogleMapViewClusteringTests {
         }
 
         val timeoutMillis = TimeUnit.SECONDS.toMillis(MAP_LOAD_TIMEOUT_SECONDS)
+        // The renderer adds markers asynchronously after the algorithm has the item, so wait for
+        // the marker itself before reading it.
         composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
             composeTestRule.runOnUiThread {
-                clusterManagerHolder[0]?.algorithm?.items?.size == 1
+                val cm = clusterManagerHolder[0]
+                cm != null && cm.algorithm.items.size == 1 && cm.markerCollection.getMarkers().size == 1
             }
         }
         val marker = composeTestRule.runOnUiThread {
