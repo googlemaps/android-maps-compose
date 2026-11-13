@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `9632183` (#1072), recorded 2026-11-12T10:42:11Z.
+Measured at `e7dc514` (#1077), recorded 2026-11-13T21:52:30Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-13 | `e7dc514` | #1077 | 17.35% | 0.00 | n/a | n/a | test: wait for the rendered marker in the keyed clustering test |
 | 2026-11-12 | `9632183` | #1072 | 17.35% | -0.40 | 48.83% | +2.02 | feat(widgets): use android-maps-utils Units API in ScaleBar |
 | 2026-11-11 | `e87f708` | #1068 | 17.75% | 0.00 | 46.81% | +0.08 | chore: fix the library compiler warnings and treat warnings as errors |
 | 2026-11-10 | `bc7a4bf` | #1081 | 17.75% | 0.00 | 46.73% | 0.00 | chore(demo): explain why the demo keeps the Apache HTTP legacy library |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-14 | `4322266` | #1035 | 0.45% | +0.03 | 47.43% | +0.12 | feat(clustering): propagate contentDescription to marker options for accessibility |
 | 2026-10-14 | `0bc6ecd` | #1040 | 0.42% | +0.01 | 47.31% | +0.22 | build: add Spotless with ktlint formatting checks |
 | 2026-10-09 | `85a56aa` | #1034 | 0.41% | 0.00 | 47.09% | +37.25 | ci: skip the coverage comment on pull requests from forks |
-| 2026-10-08 | `cb74115` | #1031 | 0.41% | 0.00 | 9.84% | -37.25 | chore(deps): bump org.jetbrains.kotlinx:kover-gradle-plugin |
