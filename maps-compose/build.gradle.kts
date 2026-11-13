@@ -91,6 +91,8 @@ baselineProfile {
     filter {
         include("com.google.maps.android.compose.**")
         exclude("com.google.maps.android.compose.clustering.**")
+        exclude("com.google.maps.android.compose.data.**")
+        exclude("com.google.maps.android.compose.heatmaps.**")
         exclude("com.google.maps.android.compose.wms.**")
         exclude("com.google.maps.android.compose.widgets.**")
         exclude("com.google.maps.android.compose.demo.**")
