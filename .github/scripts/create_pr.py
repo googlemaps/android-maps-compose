@@ -17,6 +17,29 @@ import json
 import urllib.request
 import sys
 import glob
+import re
+
+# The agent may only touch Kotlin sources in these directories. Everything else
+# (build scripts, Gradle wrapper, workflows, git metadata) stays out of reach,
+# because the workflow compiles the result right after this script runs.
+EDITABLE_SOURCE_DIRS = (
+    "maps-app/src/",
+    "maps-compose/src/",
+    "maps-compose-utils/src/",
+    "maps-compose-widgets/src/",
+)
+
+def validate_source_path(filepath, repo_root):
+    """Returns filepath relative to repo_root, or exits if the agent may not edit it."""
+    if not isinstance(filepath, str):
+        print(f"Refusing non-string path: {filepath!r}", file=sys.stderr)
+        sys.exit(1)
+    resolved = os.path.realpath(os.path.join(repo_root, filepath))
+    relative = os.path.relpath(resolved, repo_root).replace(os.sep, "/")
+    if not relative.endswith(".kt") or not relative.startswith(EDITABLE_SOURCE_DIRS):
+        print(f"Refusing to edit {filepath!r}: only .kt files under {', '.join(EDITABLE_SOURCE_DIRS)} are allowed.", file=sys.stderr)
+        sys.exit(1)
+    return relative
 
 def get_gemini_response(api_key, prompt, json_mode=False):
     model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
@@ -77,6 +100,10 @@ def main():
     if not api_key:
         print("GEMINI_API_KEY not found", file=sys.stderr)
         sys.exit(1)
+
+    if not re.fullmatch(r"\d+", issue_number):
+        print(f"Invalid ISSUE_NUMBER: {issue_number!r}", file=sys.stderr)
+        sys.exit(1)
         
     if not issue_title and not issue_body:
         print("Error: ISSUE_TITLE and ISSUE_BODY are empty.", file=sys.stderr)
@@ -100,6 +127,7 @@ Here is the list of files in the project:
 ```
 
 Identify which files need to be modified or created to solve this issue.
+Only Kotlin (`.kt`) files under {", ".join(EDITABLE_SOURCE_DIRS)} can be modified or created.
 Return a JSON object containing:
 - `files_to_modify`: A list of file paths from the provided project files list that must be changed.
 - `files_to_create`: A list of new file paths that must be created.
@@ -128,6 +156,16 @@ Your response must be valid JSON matching the format:
     files_to_modify = selection_data.get("files_to_modify", [])
     files_to_create = selection_data.get("files_to_create", [])
     explanation = selection_data.get("explanation", "")
+
+    if not isinstance(files_to_modify, list) or not isinstance(files_to_create, list):
+        print("files_to_modify and files_to_create must be lists.", file=sys.stderr)
+        sys.exit(1)
+
+    # Validate every path before writing anything, so a bad entry leaves the tree untouched.
+    repo_root = os.path.realpath(os.getcwd())
+    files_to_modify = [validate_source_path(p, repo_root) for p in files_to_modify]
+    files_to_create = [validate_source_path(p, repo_root) for p in files_to_create]
+    changed_files = []
 
     print(f"Explanation: {explanation}", file=sys.stderr)
     print(f"Modifying: {files_to_modify}", file=sys.stderr)
@@ -173,6 +211,7 @@ Return ONLY the updated file contents. Do not wrap the response in any markdown 
             
             with open(filepath, "w") as f:
                 f.write(updated_content)
+            changed_files.append(filepath)
             print(f"Successfully updated {filepath}", file=sys.stderr)
         else:
             print(f"Failed to generate changes for {filepath}", file=sys.stderr)
@@ -208,6 +247,7 @@ Return ONLY the file contents. Do not wrap the response in any markdown code blo
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, "w") as f:
                 f.write(new_content)
+            changed_files.append(filepath)
             print(f"Successfully created {filepath}", file=sys.stderr)
         else:
             print(f"Failed to generate content for {filepath}", file=sys.stderr)
@@ -241,6 +281,12 @@ Return valid JSON format:
     if metadata_response:
         try:
             metadata_data = json.loads(metadata_response)
+            if not isinstance(metadata_data, dict):
+                raise ValueError("metadata is not a JSON object")
+            # The branch is always derived from the issue number, never chosen by the model,
+            # and the workflow commits only the files validated above.
+            metadata_data["branch_name"] = f"auto-fix/issue-{issue_number}"
+            metadata_data["files"] = changed_files
             # Write metadata to a file for GitHub Actions to read
             with open("pr_metadata.json", "w") as f:
                 json.dump(metadata_data, f, indent=2)
