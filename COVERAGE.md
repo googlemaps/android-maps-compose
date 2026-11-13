@@ -38,15 +38,15 @@ Measured at `e7dc514` (#1077), recorded 2026-11-13T21:52:30Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `9632183` (#1072), recorded 2026-11-12T10:42:17Z.
+Measured at `e7dc514` (#1077), recorded 2026-11-13T21:52:34Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 651/2,487 | 26.18% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
-| `maps-compose` | 1,565/2,183 | 71.69% | `██████████████░░░░░░` | 576/1,400 | 41.14% |
-| `maps-compose-utils` | 428/866 | 49.42% | `██████████░░░░░░░░░░` | 166/514 | 32.30% |
-| `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
-| **TOTAL** | 2,800/5,734 | 48.83% | `██████████░░░░░░░░░░` | 884/2,458 | 35.96% |
+| `maps-app` | 503/2,388 | 21.06% | `████░░░░░░░░░░░░░░░░` | 80/422 | 18.96% |
+| `maps-compose` | 1,563/2,183 | 71.60% | `██████████████░░░░░░` | 571/1,400 | 40.79% |
+| `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
+| `maps-compose-widgets` | 118/151 | 78.15% | `████████████████░░░░` | 24/52 | 46.15% |
+| **TOTAL** | 2,616/5,588 | 46.81% | `█████████░░░░░░░░░░░` | 842/2,388 | 35.26% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-13 | `e7dc514` | #1077 | 17.35% | 0.00 | n/a | n/a | test: wait for the rendered marker in the keyed clustering test |
+| 2026-11-13 | `e7dc514` | #1077 | 17.35% | 0.00 | 46.81% | -2.02 | test: wait for the rendered marker in the keyed clustering test |
 | 2026-11-12 | `9632183` | #1072 | 17.35% | -0.40 | 48.83% | +2.02 | feat(widgets): use android-maps-utils Units API in ScaleBar |
 | 2026-11-11 | `e87f708` | #1068 | 17.75% | 0.00 | 46.81% | +0.08 | chore: fix the library compiler warnings and treat warnings as errors |
 | 2026-11-10 | `bc7a4bf` | #1081 | 17.75% | 0.00 | 46.73% | 0.00 | chore(demo): explain why the demo keeps the Apache HTTP legacy library |
