@@ -45,7 +45,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          token: ${{ secrets.SYNCED_GITHUB_TOKEN_REPO || secrets.GITHUB_TOKEN }}
+          # Keep credentials out of .git/config so the generated code compiled below cannot read them.
+          # Only the push step authenticates.
+          persist-credentials: false
 
       - name: Set up JDK 17
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
@@ -98,13 +100,15 @@ jobs:
           git config --global user.name "googlemaps-bot"
           git config --global user.email "googlemaps-bot@google.com"
           
-          # Create branch and commit
+          # Create branch and commit only the files create_pr.py validated
+          mapfile -t CHANGED_FILES < <(jq -r '.files[]' pr_metadata.json)
           git checkout -b "$BRANCH_NAME"
-          git add .
+          git add -- "${CHANGED_FILES[@]}"
           git commit -m "$COMMIT_MESSAGE"
           
           # Push branch
-          git push origin "$BRANCH_NAME" --force
+          gh auth setup-git
+          git push origin "$BRANCH_NAME"
           
           # Create Pull Request
           gh pr create \
