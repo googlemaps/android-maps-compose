@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `c6ea1f0` (#1087), recorded 2026-11-16T17:21:49Z.
+Measured at `126ea04` (#1085), recorded 2026-11-17T04:53:41Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-17 | `126ea04` | #1085 | 17.35% | 0.00 | n/a | n/a | chore(deps): bump the github-actions-minor-and-patch group with 2 updates |
 | 2026-11-16 | `c6ea1f0` | #1087 | 17.35% | 0.00 | 48.87% | +2.11 | ci: limit auto-fix agent to Kotlin sources and scope its credentials |
 | 2026-11-13 | `1fc2bbb` | #1083 | 17.35% | 0.00 | 46.76% | -0.05 | chore(deps): bump Gradle wrapper to 9.9.1 |
 | 2026-11-13 | `e7dc514` | #1077 | 17.35% | 0.00 | 46.81% | -2.02 | test: wait for the rendered marker in the keyed clustering test |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-20 | `229ad8e` | #1039 | 11.49% | +8.14 | 48.18% | +0.63 | fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map |
 | 2026-10-20 | `a5b018c` | #1046 | 3.35% | +2.90 | 47.55% | +37.29 | fix: AdvancedMarker pinConfig, pending camera moves and Street View source |
 | 2026-10-15 | `cdf8b7f` | #1044 | 0.45% | 0.00 | 10.26% | -37.17 | chore(deps): bump the gradle-minor-and-patch group with 7 updates |
-| 2026-10-14 | `4322266` | #1035 | 0.45% | +0.03 | 47.43% | +0.12 | feat(clustering): propagate contentDescription to marker options for accessibility |

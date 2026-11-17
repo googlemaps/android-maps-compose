@@ -420,3 +420,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-16T17:21:53Z,c6ea1f0,1087,ci: limit auto-fix agent to Kotlin sources and scope its credentials,instrumentation,maps-compose-utils,432,866,49.88,166,514,32.3,3226,6536,49.36
 2026-11-16T17:21:53Z,c6ea1f0,1087,ci: limit auto-fix agent to Kotlin sources and scope its credentials,instrumentation,maps-compose-widgets,156,198,78.79,46,92,50.0,973,1212,80.28
 2026-11-16T17:21:53Z,c6ea1f0,1087,ci: limit auto-fix agent to Kotlin sources and scope its credentials,instrumentation,TOTAL,2802,5734,48.87,882,2458,35.88,20828,45448,45.83
+2026-11-17T04:53:41Z,126ea04,1085,chore(deps): bump the github-actions-minor-and-patch group with 2 updates,unit,maps-compose,307,2010,15.27,69,1838,3.75,2257,25370,8.9
+2026-11-17T04:53:41Z,126ea04,1085,chore(deps): bump the github-actions-minor-and-patch group with 2 updates,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
+2026-11-17T04:53:41Z,126ea04,1085,chore(deps): bump the github-actions-minor-and-patch group with 2 updates,unit,maps-compose-widgets,6,155,3.87,0,84,0.0,36,1651,2.18
+2026-11-17T04:53:41Z,126ea04,1085,chore(deps): bump the github-actions-minor-and-patch group with 2 updates,unit,TOTAL,497,2865,17.35,132,2418,5.46,3485,34871,9.99
