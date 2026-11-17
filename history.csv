@@ -429,3 +429,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-17T04:53:44Z,126ea04,1085,chore(deps): bump the github-actions-minor-and-patch group with 2 updates,instrumentation,maps-compose-utils,432,866,49.88,167,514,32.49,3227,6536,49.37
 2026-11-17T04:53:44Z,126ea04,1085,chore(deps): bump the github-actions-minor-and-patch group with 2 updates,instrumentation,maps-compose-widgets,156,198,78.79,46,92,50.0,973,1212,80.28
 2026-11-17T04:53:44Z,126ea04,1085,chore(deps): bump the github-actions-minor-and-patch group with 2 updates,instrumentation,TOTAL,2810,5734,49.01,886,2458,36.05,20888,45448,45.96
+2026-11-17T21:08:47Z,4fa8784,1088,"ci: harden auto-fix path validation, prompt isolation, and PR token scope",unit,maps-compose,307,2010,15.27,69,1838,3.75,2257,25370,8.9
+2026-11-17T21:08:47Z,4fa8784,1088,"ci: harden auto-fix path validation, prompt isolation, and PR token scope",unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
+2026-11-17T21:08:47Z,4fa8784,1088,"ci: harden auto-fix path validation, prompt isolation, and PR token scope",unit,maps-compose-widgets,6,155,3.87,0,84,0.0,36,1651,2.18
+2026-11-17T21:08:47Z,4fa8784,1088,"ci: harden auto-fix path validation, prompt isolation, and PR token scope",unit,TOTAL,497,2865,17.35,132,2418,5.46,3485,34871,9.99
