@@ -87,7 +87,7 @@ jobs:
         arch: x86_64
         disable-animations: true
         # The demo smoke tests run in their own workflow, see demo-smoke-test.yml.
-        script: ./gradlew createDebugCoverageReport :maps-app:createLibraryCoverageReports --stacktrace -Pandroid.testInstrumentationRunnerArguments.notPackage=com.google.maps.android.compose.smoke
+        script: ./gradlew createDebugCoverageReport :maps-app:createLibraryCoverageReports --stacktrace -Pandroid.testInstrumentationRunnerArguments.notPackage=com.google.maps.android.compose.demo.smoke
 
     # Stage the coverage reports flat, named after their module, and publish
     # them so the post-merge "Record coverage history" workflow can read them

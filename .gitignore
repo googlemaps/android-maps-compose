@@ -23,3 +23,6 @@ secrets.properties
 .vscode/
 .antigravitycli/
 build-logic/**/bin/
+__pycache__/
+*.py[cod]
+

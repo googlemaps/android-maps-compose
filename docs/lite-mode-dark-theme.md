@@ -163,4 +163,4 @@ fun ThemedLiteMapScreen() {
 ## Sample Code
 
 A complete, runnable demonstration of this pattern is available in the sample application:
-* [LiteModeActivity.kt](../maps-app/src/main/java/com/google/maps/android/compose/LiteModeActivity.kt)
+* [LiteModeActivity.kt](../maps-app/src/main/java/com/google/maps/android/compose/demo/LiteModeActivity.kt)

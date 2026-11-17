@@ -22,6 +22,7 @@ buildscript {
     }
     dependencies {
         classpath(libs.android.gradle.plugin)
+        classpath(libs.androidx.baselineprofile.gradle.plugin)
         classpath(libs.maps.secrets.plugin)
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.dokka.plugin)
@@ -34,6 +35,7 @@ plugins {
     alias(libs.plugins.dependency.analysis)
     alias(libs.plugins.versions)
     alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.test) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.spotless)
     alias(libs.plugins.binary.compatibility.validator)
@@ -94,5 +96,5 @@ tasks.register<Exec>("installAndLaunch") {
     description = "Installs and launches the demo app."
     group = "install"
     dependsOn(":maps-app:installDebug")
-    commandLine("adb", "shell", "am", "start", "-n", "com.google.maps.android.compose/.MainActivity")
+    commandLine("adb", "shell", "am", "start", "-n", "com.google.maps.android.compose/.demo.MainActivity")
 }
