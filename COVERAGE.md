@@ -38,15 +38,15 @@ Measured at `8a49231` (#1055), recorded 2026-11-17T22:45:34Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `4fa8784` (#1088), recorded 2026-11-17T21:08:53Z.
+Measured at `8a49231` (#1055), recorded 2026-11-17T22:45:38Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 650/2,487 | 26.14% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
-| `maps-compose` | 1,564/2,183 | 71.64% | `██████████████░░░░░░` | 573/1,400 | 40.93% |
-| `maps-compose-utils` | 428/866 | 49.42% | `██████████░░░░░░░░░░` | 165/514 | 32.10% |
-| `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
-| **TOTAL** | 2,798/5,734 | 48.80% | `██████████░░░░░░░░░░` | 880/2,458 | 35.80% |
+| `maps-app` | 218/2,487 | 8.77% | `██░░░░░░░░░░░░░░░░░░` | 21/452 | 4.65% |
+| `maps-compose` | 1,121/2,184 | 51.33% | `██████████░░░░░░░░░░` | 400/1,402 | 28.53% |
+| `maps-compose-utils` | 259/866 | 29.91% | `██████░░░░░░░░░░░░░░` | 104/514 | 20.23% |
+| `maps-compose-widgets` | 123/198 | 62.12% | `████████████░░░░░░░░` | 21/92 | 22.83% |
+| **TOTAL** | 1,721/5,735 | 30.01% | `██████░░░░░░░░░░░░░░` | 546/2,460 | 22.20% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-17 | `8a49231` | #1055 | 17.38% | +0.03 | n/a | n/a | fix: ignore lifecycle events after a MapView is destroyed |
+| 2026-11-17 | `8a49231` | #1055 | 17.38% | +0.03 | 30.01% | -18.79 | fix: ignore lifecycle events after a MapView is destroyed |
 | 2026-11-17 | `4fa8784` | #1088 | 17.35% | 0.00 | 48.80% | -0.21 | ci: harden auto-fix path validation, prompt isolation, and PR token scope |
 | 2026-11-17 | `126ea04` | #1085 | 17.35% | 0.00 | 49.01% | +0.14 | chore(deps): bump the github-actions-minor-and-patch group with 2 updates |
 | 2026-11-16 | `c6ea1f0` | #1087 | 17.35% | 0.00 | 48.87% | +2.11 | ci: limit auto-fix agent to Kotlin sources and scope its credentials |
