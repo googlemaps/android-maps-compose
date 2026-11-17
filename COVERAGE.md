@@ -38,15 +38,15 @@ Measured at `126ea04` (#1085), recorded 2026-11-17T04:53:41Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `c6ea1f0` (#1087), recorded 2026-11-16T17:21:53Z.
+Measured at `126ea04` (#1085), recorded 2026-11-17T04:53:44Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 650/2,487 | 26.14% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
-| `maps-compose` | 1,564/2,183 | 71.64% | `██████████████░░░░░░` | 574/1,400 | 41.00% |
-| `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 166/514 | 32.30% |
+| `maps-app` | 657/2,487 | 26.42% | `█████░░░░░░░░░░░░░░░` | 97/452 | 21.46% |
+| `maps-compose` | 1,565/2,183 | 71.69% | `██████████████░░░░░░` | 576/1,400 | 41.14% |
+| `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
 | `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
-| **TOTAL** | 2,802/5,734 | 48.87% | `██████████░░░░░░░░░░` | 882/2,458 | 35.88% |
+| **TOTAL** | 2,810/5,734 | 49.01% | `██████████░░░░░░░░░░` | 886/2,458 | 36.05% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-17 | `126ea04` | #1085 | 17.35% | 0.00 | n/a | n/a | chore(deps): bump the github-actions-minor-and-patch group with 2 updates |
+| 2026-11-17 | `126ea04` | #1085 | 17.35% | 0.00 | 49.01% | +0.14 | chore(deps): bump the github-actions-minor-and-patch group with 2 updates |
 | 2026-11-16 | `c6ea1f0` | #1087 | 17.35% | 0.00 | 48.87% | +2.11 | ci: limit auto-fix agent to Kotlin sources and scope its credentials |
 | 2026-11-13 | `1fc2bbb` | #1083 | 17.35% | 0.00 | 46.76% | -0.05 | chore(deps): bump Gradle wrapper to 9.9.1 |
 | 2026-11-13 | `e7dc514` | #1077 | 17.35% | 0.00 | 46.81% | -2.02 | test: wait for the rendered marker in the keyed clustering test |
