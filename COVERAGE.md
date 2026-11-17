@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `4fa8784` (#1088), recorded 2026-11-17T21:08:47Z.
+Measured at `8a49231` (#1055), recorded 2026-11-17T22:45:34Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-compose` | 307/2,010 | 15.27% | `███░░░░░░░░░░░░░░░░░` | 69/1,838 | 3.75% |
+| `maps-compose` | 308/2,011 | 15.32% | `███░░░░░░░░░░░░░░░░░` | 73/1,840 | 3.97% |
 | `maps-compose-utils` | 184/700 | 26.29% | `█████░░░░░░░░░░░░░░░` | 63/496 | 12.70% |
 | `maps-compose-widgets` | 6/155 | 3.87% | `█░░░░░░░░░░░░░░░░░░░` | 0/84 | 0.00% |
-| **TOTAL** | 497/2,865 | 17.35% | `███░░░░░░░░░░░░░░░░░` | 132/2,418 | 5.46% |
+| **TOTAL** | 498/2,866 | 17.38% | `███░░░░░░░░░░░░░░░░░` | 136/2,420 | 5.62% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-17 | `8a49231` | #1055 | 17.38% | +0.03 | n/a | n/a | fix: ignore lifecycle events after a MapView is destroyed |
 | 2026-11-17 | `4fa8784` | #1088 | 17.35% | 0.00 | 48.80% | -0.21 | ci: harden auto-fix path validation, prompt isolation, and PR token scope |
 | 2026-11-17 | `126ea04` | #1085 | 17.35% | 0.00 | 49.01% | +0.14 | chore(deps): bump the github-actions-minor-and-patch group with 2 updates |
 | 2026-11-16 | `c6ea1f0` | #1087 | 17.35% | 0.00 | 48.87% | +2.11 | ci: limit auto-fix agent to Kotlin sources and scope its credentials |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-23 | `61f8b5b` | #1037 | 12.14% | +0.65 | 29.19% | +14.52 | feat(clustering): add incremental item diffing |
 | 2026-10-23 | `b3fb4a3` | #1050 | 11.49% | 0.00 | 14.67% | -33.51 | chore(deps): bump the gradle-minor-and-patch group with 2 updates |
 | 2026-10-20 | `229ad8e` | #1039 | 11.49% | +8.14 | 48.18% | +0.63 | fix: release GoogleMap listeners and dispose subcomposition when showing/hiding map |
-| 2026-10-20 | `a5b018c` | #1046 | 3.35% | +2.90 | 47.55% | +37.29 | fix: AdvancedMarker pinConfig, pending camera moves and Street View source |
