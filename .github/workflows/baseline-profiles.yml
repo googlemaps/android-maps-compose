@@ -172,8 +172,12 @@ jobs:
           cat "$RUNNER_TEMP/summary.md"
         } > "$RUNNER_TEMP/body.md"
 
-        if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
-          gh pr edit "$BRANCH" --body-file "$RUNNER_TEMP/body.md"
+        PR_NUMBER=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+        if [ -n "$PR_NUMBER" ]; then
+          # Update through the REST API: `gh pr edit` also queries fields that need the read:org
+          # scope, which the bot token does not have.
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" \
+            -F "body=@$RUNNER_TEMP/body.md" --silent
         else
           gh pr create --base main --head "$BRANCH" --title "chore: regenerate Baseline Profiles" --body-file "$RUNNER_TEMP/body.md"
         fi
