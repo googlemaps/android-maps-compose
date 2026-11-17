@@ -38,15 +38,15 @@ Measured at `4fa8784` (#1088), recorded 2026-11-17T21:08:47Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `126ea04` (#1085), recorded 2026-11-17T04:53:44Z.
+Measured at `4fa8784` (#1088), recorded 2026-11-17T21:08:53Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 657/2,487 | 26.42% | `█████░░░░░░░░░░░░░░░` | 97/452 | 21.46% |
-| `maps-compose` | 1,565/2,183 | 71.69% | `██████████████░░░░░░` | 576/1,400 | 41.14% |
-| `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
+| `maps-app` | 650/2,487 | 26.14% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
+| `maps-compose` | 1,564/2,183 | 71.64% | `██████████████░░░░░░` | 573/1,400 | 40.93% |
+| `maps-compose-utils` | 428/866 | 49.42% | `██████████░░░░░░░░░░` | 165/514 | 32.10% |
 | `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
-| **TOTAL** | 2,810/5,734 | 49.01% | `██████████░░░░░░░░░░` | 886/2,458 | 36.05% |
+| **TOTAL** | 2,798/5,734 | 48.80% | `██████████░░░░░░░░░░` | 880/2,458 | 35.80% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-17 | `4fa8784` | #1088 | 17.35% | 0.00 | n/a | n/a | ci: harden auto-fix path validation, prompt isolation, and PR token scope |
+| 2026-11-17 | `4fa8784` | #1088 | 17.35% | 0.00 | 48.80% | -0.21 | ci: harden auto-fix path validation, prompt isolation, and PR token scope |
 | 2026-11-17 | `126ea04` | #1085 | 17.35% | 0.00 | 49.01% | +0.14 | chore(deps): bump the github-actions-minor-and-patch group with 2 updates |
 | 2026-11-16 | `c6ea1f0` | #1087 | 17.35% | 0.00 | 48.87% | +2.11 | ci: limit auto-fix agent to Kotlin sources and scope its credentials |
 | 2026-11-13 | `1fc2bbb` | #1083 | 17.35% | 0.00 | 46.76% | -0.05 | chore(deps): bump Gradle wrapper to 9.9.1 |
