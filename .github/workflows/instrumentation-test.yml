@@ -68,7 +68,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+      uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
     - name: Inject Maps API Key
       env:
@@ -87,7 +87,7 @@ jobs:
         arch: x86_64
         disable-animations: true
         # The demo smoke tests run in their own workflow, see demo-smoke-test.yml.
-        script: ./gradlew createDebugCoverageReport :maps-app:createLibraryCoverageReports --stacktrace -Pandroid.testInstrumentationRunnerArguments.notPackage=com.google.maps.android.compose.smoke
+        script: ./gradlew createDebugCoverageReport :maps-app:createLibraryCoverageReports --stacktrace -Pandroid.testInstrumentationRunnerArguments.notPackage=com.google.maps.android.compose.demo.smoke
 
     # Stage the coverage reports flat, named after their module, and publish
     # them so the post-merge "Record coverage history" workflow can read them

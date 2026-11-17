@@ -40,6 +40,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
@@ -48,21 +49,63 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.Projection
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.ImperialUnitsConverter
+import com.google.maps.android.MetricUnitsConverter
+import com.google.maps.android.NumberFormatSymbols
 import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.meters
+import com.google.maps.android.miles
 import com.google.maps.android.sphericalDistance
+import com.google.maps.android.toDistanceString
 import kotlinx.coroutines.delay
-import kotlin.math.roundToInt
 
-internal fun calculateDistance(projection: Projection, width: Dp, density: Density): Int {
+/**
+ * Computes the ground distance (in meters) represented by the horizontal bar of the [ScaleBar].
+ *
+ * Google Maps uses a Web Mercator projection (`EPSG:3857`), which is conformal: at any latitude
+ * `φ`, the map scale stretches isotropically (in both East–West and North–South directions) by a
+ * factor of `sec(φ) = 1 / cos(φ)`. Because of this latitude-dependent distortion—as well as
+ * perspective foreshortening when the camera is tilted—the ground distance per screen pixel can
+ * vary dramatically between the top edge of the screen, the center of the viewport, and the bottom
+ * edge of the screen (especially at low zoom levels or high latitudes).
+ *
+ * When a non-null [target] (typically `cameraPositionState.position.target`) is supplied, this
+ * function projects that geographic target to its screen coordinate `centerPoint` and measures a
+ * horizontal pixel span of [width] centered on `(centerPoint.x, centerPoint.y)`:
+ * - This measures the map scale at the exact focal point the user is looking at.
+ * - Because the span is sampled horizontally in screen space across `centerPoint.y` and converted
+ *   back to geographic coordinates via [Projection.fromScreenLocation], it automatically accounts
+ *   for map bearing rotation, camera tilt, and device orientation changes.
+ *
+ * When [target] is `null` (used when `measureAtCenter = false`), this function falls back to the
+ * legacy behavior of sampling horizontally along the top-left edge of the viewport from
+ * `Point(0, 0)` to `Point(widthInPixels, 0)`.
+ *
+ * Finally, because the drawn horizontal scale line spans `8 / 9` of the canvas width (from
+ * `size.width / 9` to `size.width`), the full canvas ground distance is scaled by `8 / 9`.
+ */
+internal fun calculateDistance(projection: Projection, width: Dp, density: Density, target: LatLng? = null): Int {
     val widthInPixels = with(density) {
         width.toPx().toInt()
     }
 
-    val upperLeftLatLng = projection.fromScreenLocation(Point(0, 0))
-    val upperRightLatLng =
-        projection.fromScreenLocation(Point(widthInPixels, 0))
+    val startPoint: Point
+    val endPoint: Point
+    if (target != null) {
+        val centerPoint = projection.toScreenLocation(target)
+        val halfWidthInPixels = widthInPixels / 2
+        startPoint = Point(centerPoint.x - halfWidthInPixels, centerPoint.y)
+        endPoint = Point(startPoint.x + widthInPixels, centerPoint.y)
+    } else {
+        startPoint = Point(0, 0)
+        endPoint = Point(widthInPixels, 0)
+    }
 
-    val canvasWidthMeters = upperLeftLatLng.sphericalDistance(upperRightLatLng)
+    val startLatLng = projection.fromScreenLocation(startPoint)
+    val endLatLng = projection.fromScreenLocation(endPoint)
+
+    val canvasWidthMeters = startLatLng.sphericalDistance(endLatLng)
 
     return (canvasWidthMeters * 8 / 9).toInt()
 }
@@ -70,6 +113,29 @@ internal fun calculateDistance(projection: Projection, width: Dp, density: Densi
 public val DarkGray: Color = Color(0xFF3a3c3b)
 private val defaultWidth: Dp = 65.dp
 private val defaultHeight: Dp = 50.dp
+
+@Composable
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+public fun ScaleBar(
+    modifier: Modifier = Modifier,
+    width: Dp = defaultWidth,
+    height: Dp = defaultHeight,
+    cameraPositionState: CameraPositionState,
+    textColor: Color = DarkGray,
+    lineColor: Color = DarkGray,
+    shadowColor: Color = Color.White,
+) {
+    ScaleBar(
+        modifier = modifier,
+        width = width,
+        height = height,
+        cameraPositionState = cameraPositionState,
+        textColor = textColor,
+        lineColor = lineColor,
+        shadowColor = shadowColor,
+        measureAtCenter = true,
+    )
+}
 
 /**
  * A scale bar composable that shows the current scale of the map in feet and meters when zoomed in
@@ -82,6 +148,11 @@ private val defaultHeight: Dp = 50.dp
  * @param textColor The color of the text on the scale bar.
  * @param lineColor The color of the lines on the scale bar.
  * @param shadowColor The color of the shadow behind the text and lines.
+ * @param measureAtCenter When `true` (the default), the scale distance is measured across the
+ *   camera target at the center of the map viewport. When `false`, the legacy behavior is used,
+ *   measuring the scale along the top edge of the map from `Point(0, 0)`. Because the Web Mercator
+ *   projection stretches map scale by `1 / cos(latitude)` toward the poles, measuring at the
+ *   center of the viewport more accurately reflects the scale where the camera is focused.
  */
 @Composable
 public fun ScaleBar(
@@ -92,12 +163,26 @@ public fun ScaleBar(
     textColor: Color = DarkGray,
     lineColor: Color = DarkGray,
     shadowColor: Color = Color.White,
+    measureAtCenter: Boolean = true,
 ) {
+    // Observe LocalConfiguration so that device rotation or window resizing (which changes the
+    // viewport dimensions and Projection screen coordinates without necessarily changing
+    // CameraPosition) triggers a recalculation.
+    val configuration = LocalConfiguration.current
     val density = LocalDensity.current
-    val horizontalLineWidthMeters by remember(cameraPositionState.position.zoom) {
+    val horizontalLineWidthMeters by remember(
+        cameraPositionState,
+        width,
+        density,
+        configuration,
+        measureAtCenter,
+    ) {
         derivedStateOf {
+            // Read position so the scale updates whenever the camera pans, zooms, rotates, or tilts.
+            val position = cameraPositionState.position
+            val target = if (measureAtCenter) position.target else null
             cameraPositionState.projection?.let {
-                calculateDistance(it, width, density)
+                calculateDistance(it, width, density, target)
             } ?: 0
         }
     }
@@ -196,27 +281,45 @@ public fun ScaleBar(
     }
 }
 
-internal fun formatMetricDistance(meters: Int): String = if (meters >= METERS_IN_KILOMETER) {
-    "${formatScaleDistance(meters / METERS_IN_KILOMETER)} km"
-} else {
-    "$meters m"
-}
+// Use a 1-mile threshold so the imperial scale bar transitions from feet to miles at 1 mile
+// (5,280 ft), matching the metric transition from meters to kilometers at 1 km (1,000 m), with
+// compact US/invariant number formatting (`NumberFormatSymbols.COMPACT`) so labels fit inside the
+// compact scale bar canvas.
+private val scaleBarImperialConverter = ImperialUnitsConverter(milesThreshold = 1.miles)
 
-internal fun formatImperialDistance(meters: Int): String {
-    val feet = meters.toDouble().toFeet()
-    return if (feet >= FEET_IN_MILE) {
-        "${formatScaleDistance(feet.toMiles())} mi"
-    } else {
-        "${feet.roundToInt()} ft"
-    }
-}
+internal fun formatMetricDistance(meters: Int): String =
+    meters.meters.toDistanceString(MetricUnitsConverter, NumberFormatSymbols.COMPACT)
 
-private fun formatScaleDistance(distance: Double): String {
-    if (distance >= 10.0) {
-        return distance.roundToInt().toString()
-    }
-    val scaled = (distance * 10.0).roundToInt()
-    return if (scaled % 10 == 0) "${scaled / 10}" else "${scaled / 10}.${scaled % 10}"
+internal fun formatImperialDistance(meters: Int): String =
+    meters.meters.toDistanceString(scaleBarImperialConverter, NumberFormatSymbols.COMPACT)
+
+@Composable
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+public fun DisappearingScaleBar(
+    modifier: Modifier = Modifier,
+    width: Dp = defaultWidth,
+    height: Dp = defaultHeight,
+    cameraPositionState: CameraPositionState,
+    textColor: Color = DarkGray,
+    lineColor: Color = DarkGray,
+    shadowColor: Color = Color.White,
+    visibilityDurationMillis: Int = 3_000,
+    enterTransition: EnterTransition = fadeIn(),
+    exitTransition: ExitTransition = fadeOut(),
+) {
+    DisappearingScaleBar(
+        modifier = modifier,
+        width = width,
+        height = height,
+        cameraPositionState = cameraPositionState,
+        textColor = textColor,
+        lineColor = lineColor,
+        shadowColor = shadowColor,
+        visibilityDurationMillis = visibilityDurationMillis,
+        enterTransition = enterTransition,
+        exitTransition = exitTransition,
+        measureAtCenter = true,
+    )
 }
 
 /**
@@ -233,6 +336,9 @@ private fun formatScaleDistance(distance: Double): String {
  * @param visibilityDurationMillis The duration in milliseconds that the scale bar will be visible.
  * @param enterTransition The animation to use when the scale bar appears.
  * @param exitTransition The animation to use when the scale bar disappears.
+ * @param measureAtCenter When `true` (the default), the scale distance is measured across the
+ *   camera target at the center of the map viewport. When `false`, the legacy behavior is used,
+ *   measuring the scale along the top edge of the map from `Point(0, 0)`.
  */
 @Composable
 public fun DisappearingScaleBar(
@@ -246,6 +352,7 @@ public fun DisappearingScaleBar(
     visibilityDurationMillis: Int = 3_000,
     enterTransition: EnterTransition = fadeIn(),
     exitTransition: ExitTransition = fadeOut(),
+    measureAtCenter: Boolean = true,
 ) {
     val visible = remember {
         MutableTransitionState(true)
@@ -277,6 +384,7 @@ public fun DisappearingScaleBar(
             textColor = textColor,
             lineColor = lineColor,
             shadowColor = shadowColor,
+            measureAtCenter = measureAtCenter,
         )
     }
 }
@@ -304,23 +412,3 @@ private fun ScaleText(
         ),
     )
 }
-
-/**
- * Converts [this] value in meters to the corresponding value in feet.
- * This is a utility function used for unit conversion.
- * @return [this] meters value converted to feet
- */
-internal fun Double.toFeet(): Double = this * CENTIMETERS_IN_METER / CENTIMETERS_IN_INCH / INCHES_IN_FOOT
-
-/**
- * Converts [this] value in feet to the corresponding value in miles.
- * This is a utility function used for unit conversion.
- * @return [this] feet value converted to miles
- */
-internal fun Double.toMiles(): Double = this / FEET_IN_MILE
-
-private const val CENTIMETERS_IN_METER: Double = 100.0
-private const val METERS_IN_KILOMETER: Double = 1000.0
-private const val CENTIMETERS_IN_INCH: Double = 2.54
-private const val INCHES_IN_FOOT: Double = 12.0
-private const val FEET_IN_MILE: Double = 5280.0

@@ -54,4 +54,62 @@ public class ScaleBarUnitTest {
 
         assertThat(result).isEqualTo(expectedResult)
     }
+
+    @Test
+    public fun testScaleBarCalculationAtTargetCenter() {
+        val projection = mockk<Projection>(relaxed = true)
+        val density = Density(1f, 1f)
+        val width = 100.dp
+        val target = LatLng(64.9631, -19.0208)
+        val centerPoint = Point(540, 1200)
+
+        val startPoint = Point(490, 1200)
+        val endPoint = Point(590, 1200)
+
+        val startLatLng = LatLng(64.9631, -19.5)
+        val endLatLng = LatLng(64.9631, -18.5)
+
+        every { projection.toScreenLocation(target) } returns centerPoint
+        every { projection.fromScreenLocation(startPoint) } returns startLatLng
+        every { projection.fromScreenLocation(endPoint) } returns endLatLng
+
+        val expectedDistance = startLatLng.sphericalDistance(endLatLng)
+        val expectedResult = (expectedDistance * 8 / 9).toInt()
+
+        val result = calculateDistance(projection, width, density, target)
+
+        assertThat(result).isEqualTo(expectedResult)
+    }
+
+    @Test
+    public fun testScaleBarCalculationAfterDeviceRotationToLandscape() {
+        val projection = mockk<Projection>(relaxed = true)
+        val density = Density(1f, 1f)
+        val width = 100.dp
+        val target = LatLng(64.9631, -19.0208)
+
+        val portraitCenter = Point(540, 1200)
+        val landscapeCenter = Point(1200, 540)
+
+        val portraitStartLatLng = LatLng(64.9631, -19.5)
+        val portraitEndLatLng = LatLng(64.9631, -18.5)
+        val landscapeStartLatLng = LatLng(64.9631, -19.25)
+        val landscapeEndLatLng = LatLng(64.9631, -18.75)
+
+        every { projection.fromScreenLocation(Point(490, 1200)) } returns portraitStartLatLng
+        every { projection.fromScreenLocation(Point(590, 1200)) } returns portraitEndLatLng
+        every { projection.fromScreenLocation(Point(1150, 540)) } returns landscapeStartLatLng
+        every { projection.fromScreenLocation(Point(1250, 540)) } returns landscapeEndLatLng
+
+        every { projection.toScreenLocation(target) } returns portraitCenter
+        val portraitResult = calculateDistance(projection, width, density, target)
+        val expectedPortraitResult = (portraitStartLatLng.sphericalDistance(portraitEndLatLng) * 8 / 9).toInt()
+        assertThat(portraitResult).isEqualTo(expectedPortraitResult)
+
+        every { projection.toScreenLocation(target) } returns landscapeCenter
+        val landscapeResult = calculateDistance(projection, width, density, target)
+        val expectedLandscapeResult = (landscapeStartLatLng.sphericalDistance(landscapeEndLatLng) * 8 / 9).toInt()
+        assertThat(landscapeResult).isEqualTo(expectedLandscapeResult)
+        assertThat(landscapeResult).isNotEqualTo(portraitResult)
+    }
 }

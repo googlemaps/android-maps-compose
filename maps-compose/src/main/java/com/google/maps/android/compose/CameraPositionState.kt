@@ -69,6 +69,10 @@ public inline fun rememberCameraPositionState(
         "com.google.maps.android.compose.rememberCameraPositionState",
     ),
 )
+// This deprecated overload exists to pass the custom `key` to rememberSaveable, so it keeps doing
+// so until the overload itself is removed. Dropping the key here would silently change behaviour
+// for apps that still call it.
+@Suppress("DEPRECATION")
 @Composable
 public inline fun rememberCameraPositionState(
     key: String? = null,
