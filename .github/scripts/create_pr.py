@@ -93,12 +93,14 @@ CLOSING_KEYWORD_PATTERN = re.compile(
 
 
 def sanitize_content(text: str) -> str:
-    """Neutralize delimiter tags so untrusted input cannot break out of <issue_content>."""
+    """Neutralize delimiter tags (any casing or spacing) so untrusted input cannot break out of <issue_content>."""
     if not text:
         return ""
-    return (
-        text.replace("</issue_content>", "&lt;/issue_content&gt;")
-        .replace("<issue_content>", "&lt;issue_content&gt;")
+    return re.sub(
+        r"<\s*/?\s*issue_content\b[^>]*>?",
+        lambda m: m.group(0).replace("<", "&lt;").replace(">", "&gt;"),
+        text,
+        flags=re.IGNORECASE,
     )
 
 
