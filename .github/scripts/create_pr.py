@@ -38,12 +38,22 @@ assumes the LLM may be operating under a prompt-injection payload:
    messages, file counts and HTTP timeouts are bounded to prevent quota
    exhaustion, and generated PR metadata is sanitized to prevent phishing
    links, unauthorized `@mentions`, and cross-issue auto-closing keywords.
+
+4. **Job Isolation (`--verify-applied`)**:
+   The workflow runs this script in a `generate` job that has the Gemini key
+   but no write token, and never compiles the result. The patch is compiled
+   in a separate job that has no secrets. The `publish` job, which holds the
+   write token, applies the patch to the base commit and runs
+   `create_pr.py --verify-applied pr_metadata.json` from that commit. This
+   checks again that only the listed `.kt` files changed and that the PR
+   metadata is sanitized before anything is pushed.
 """
 
 import glob
 import json
 import os
 import re
+import subprocess
 import sys
 import urllib.error
 import urllib.request
@@ -139,14 +149,15 @@ def validate_single_line(value, field_name: str, max_length: int = 200) -> str:
     """Ensures a metadata field is a clean single-line string without leading flags."""
     if not isinstance(value, str):
         raise ValueError(f"{field_name} must be a string")
-    cleaned = " ".join(value.split()).strip()
+    cleaned = " ".join(value.split())
     if not cleaned:
         raise ValueError(f"{field_name} must not be empty")
-    if cleaned.startswith("-"):
-        cleaned = cleaned.lstrip("-").strip()
+    # Strip every leading dash and space (e.g. "- -x"), and trailing space left by
+    # truncation, so the result is stable when validated again in the publish job.
+    cleaned = cleaned.lstrip("- ")
     if not cleaned:
         raise ValueError(f"{field_name} must not consist only of dashes")
-    return cleaned[:max_length]
+    return cleaned[:max_length].rstrip()
 
 
 def sanitize_pr_body(body, issue_number: str) -> str:
@@ -246,6 +257,89 @@ def list_project_files(repo_root):
                 continue
             files.append(rel)
     return files
+
+
+def _fail(message: str):
+    print(message, file=sys.stderr)
+    sys.exit(1)
+
+
+def list_changed_paths(repo_root):
+    """Returns every path that differs from HEAD in the working tree, including untracked files."""
+    output = subprocess.run(
+        ["git", "status", "--porcelain=v1", "-z", "--untracked-files=all", "--no-renames"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+    ).stdout.decode("utf-8", errors="surrogateescape")
+    # Each entry is "XY <path>"; with -z and --no-renames there is exactly one path per entry.
+    return {entry[3:] for entry in output.split("\0") if entry}
+
+
+def verify_applied_patch(metadata_path, repo_root):
+    """Re-validates a patch applied in the publish job using the base commit's trusted rules.
+
+    The patch and its metadata were produced in a separate job from untrusted
+    issue content, so before anything is committed with a write token, check
+    that the tree changes only the files listed in the metadata, that those
+    files pass the same path rules used at generation time, and that the PR
+    metadata is still sanitized.
+    """
+    issue_number = os.getenv("ISSUE_NUMBER", "")
+    if not re.fullmatch(r"\d+", issue_number):
+        _fail(f"Invalid ISSUE_NUMBER: {issue_number!r}")
+
+    try:
+        with open(metadata_path, encoding="utf-8") as f:
+            metadata = json.load(f)
+    except Exception as e:
+        _fail(f"Failed to read {metadata_path}: {e}")
+    if not isinstance(metadata, dict):
+        _fail("pr_metadata.json is not a JSON object")
+
+    if metadata.get("branch_name") != f"auto-fix/issue-{issue_number}":
+        _fail(f"Unexpected branch_name: {metadata.get('branch_name')!r}")
+
+    files = metadata.get("files")
+    if (
+        not isinstance(files, list)
+        or not files
+        or len(files) > MAX_FILES_PER_RUN
+        or len(set(map(str, files))) != len(files)
+    ):
+        _fail(f"Invalid files list in pr_metadata.json: {files!r}")
+
+    validated = [validate_source_path(p, repo_root) for p in files]
+    if validated != files:
+        _fail(f"Non-canonical file paths in pr_metadata.json: {files!r}")
+
+    for relative in validated:
+        full_path = os.path.join(repo_root, relative)
+        if os.path.islink(full_path) or not os.path.isfile(full_path):
+            _fail(f"Refusing non-regular file: {relative!r}")
+        if os.stat(full_path).st_mode & 0o111:
+            _fail(f"Refusing executable file: {relative!r}")
+
+    changed = list_changed_paths(repo_root)
+    if changed != set(validated):
+        _fail(
+            "Patch changes do not match pr_metadata.json files. "
+            f"Unexpected: {sorted(changed - set(validated))!r}, "
+            f"missing: {sorted(set(validated) - changed)!r}"
+        )
+
+    try:
+        for field in ("commit_message", "pr_title"):
+            value = metadata.get(field)
+            if validate_single_line(value, field) != value:
+                raise ValueError(f"{field} is not sanitized")
+        pr_body = metadata.get("pr_body")
+        if sanitize_pr_body(pr_body, issue_number) != pr_body:
+            raise ValueError("pr_body is not sanitized")
+    except ValueError as e:
+        _fail(f"Invalid PR metadata: {e}")
+
+    print(f"Verified applied patch touching {validated}", file=sys.stderr)
 
 
 def main():
@@ -482,4 +576,9 @@ Return a valid JSON object with:
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) == 3 and sys.argv[1] == "--verify-applied":
+        verify_applied_patch(sys.argv[2], os.path.realpath(os.getcwd()))
+    elif len(sys.argv) == 1:
+        main()
+    else:
+        _fail("Usage: create_pr.py [--verify-applied <pr_metadata.json>]")
