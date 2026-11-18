@@ -81,6 +81,8 @@ baselineProfile {
     // The profile is generated from maps-app. Keep only this library's classes.
     filter {
         include("com.google.maps.android.compose.clustering.**")
+        include("com.google.maps.android.compose.data.**")
+        include("com.google.maps.android.compose.heatmaps.**")
         include("com.google.maps.android.compose.wms.**")
     }
 }
