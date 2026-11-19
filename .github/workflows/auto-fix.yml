@@ -169,7 +169,9 @@ jobs:
   publish:
     needs: [generate, compile]
     # Run even if compilation failed so the issue gets a comment, but only if a patch exists.
-    if: always() && needs.generate.result == 'success'
+    # Use !cancelled() rather than always() so a run superseded by a relabel (cancel-in-progress)
+    # does not post a failure comment or remove the label while the new run is in progress.
+    if: ${{ !cancelled() && needs.generate.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
