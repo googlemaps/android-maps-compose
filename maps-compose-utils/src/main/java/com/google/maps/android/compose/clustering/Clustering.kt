@@ -315,6 +315,12 @@ public fun <T : ClusterItem> Clustering(
  * are treated as updates when their values differ. Without a key, items are identified by their
  * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept.
+ * @param onClusterInfoWindowClick an optional lambda invoked when the user clicks the info window
+ * of a cluster. If this value is null, Clustering keeps any listener that other code set on the
+ * cluster manager.
+ * @param onClusterInfoWindowLongClick an optional lambda invoked when the user long-clicks the info
+ * window of a cluster. If this value is null, Clustering keeps any listener that other code set on
+ * the cluster manager.
  * @param onClusterManager an optional lambda invoked with the clusterManager as a param when both
  * the clusterManager and renderer are set up, allowing callers a customization hook.
  */
@@ -339,6 +345,8 @@ public fun <T : ClusterItem> Clustering(
     clusterItemDecoration:
     @Composable @GoogleMapComposable
     (T) -> Unit = {},
+    onClusterInfoWindowClick: ((Cluster<T>) -> Unit)? = null,
+    onClusterInfoWindowLongClick: ((Cluster<T>) -> Unit)? = null,
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ) {
     val clusterManager = rememberClusterManager<T>()
@@ -370,6 +378,14 @@ public fun <T : ClusterItem> Clustering(
         onClusterManager?.invoke(clusterManager)
     }
 
+    if (clusterManager != null) {
+        ClusterInfoWindowClickListeners(
+            clusterManager = clusterManager,
+            onClick = onClusterInfoWindowClick,
+            onLongClick = onClusterInfoWindowLongClick,
+        )
+    }
+
     if (clusterManager != null && renderer != null) {
         Clustering(
             items = items,
@@ -378,6 +394,34 @@ public fun <T : ClusterItem> Clustering(
             renderer = renderer,
             key = key,
         )
+    }
+}
+
+/**
+ * Sets [onClick] and [onLongClick] as the cluster info window listeners of [clusterManager] while
+ * they are in the composition. When a callback leaves the composition, this function clears its
+ * listener. A null callback does not change its listener, so a listener that other code set stays
+ * in place.
+ */
+@Composable
+internal fun <T : ClusterItem> ClusterInfoWindowClickListeners(
+    clusterManager: ClusterManager<T>,
+    onClick: ((Cluster<T>) -> Unit)?,
+    onLongClick: ((Cluster<T>) -> Unit)?,
+) {
+    if (onClick != null) {
+        val currentOnClick by rememberUpdatedState(onClick)
+        DisposableEffect(clusterManager) {
+            clusterManager.setOnClusterInfoWindowClickListener { currentOnClick(it) }
+            onDispose { clusterManager.setOnClusterInfoWindowClickListener(null) }
+        }
+    }
+    if (onLongClick != null) {
+        val currentOnLongClick by rememberUpdatedState(onLongClick)
+        DisposableEffect(clusterManager) {
+            clusterManager.setOnClusterInfoWindowLongClickListener { currentOnLongClick(it) }
+            onDispose { clusterManager.setOnClusterInfoWindowLongClickListener(null) }
+        }
     }
 }
 
@@ -552,6 +596,49 @@ public fun <T : ClusterItem> Clustering(
     clusterManager = clusterManager,
     key = null,
     clusterItemDecoration = clusterItemDecoration,
+)
+
+/** Retains the pre-cluster-info-window JVM signature for already compiled callers. */
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    onClusterItemInfoWindowClick: (T) -> Unit = { },
+    onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
+    key: ((T) -> Any)? = null,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
+    onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
+): Unit = Clustering(
+    items = items,
+    onClusterClick = onClusterClick,
+    onClusterItemClick = onClusterItemClick,
+    onClusterItemInfoWindowClick = onClusterItemInfoWindowClick,
+    onClusterItemInfoWindowLongClick = onClusterItemInfoWindowLongClick,
+    clusterContent = clusterContent,
+    clusterItemContent = clusterItemContent,
+    clusterContentAnchor = clusterContentAnchor,
+    clusterItemContentAnchor = clusterItemContentAnchor,
+    clusterContentZIndex = clusterContentZIndex,
+    clusterItemContentZIndex = clusterItemContentZIndex,
+    clusterContentRotation = clusterContentRotation,
+    clusterItemContentRotation = clusterItemContentRotation,
+    key = key,
+    clusterItemDecoration = clusterItemDecoration,
+    onClusterManager = onClusterManager,
 )
 
 @Composable

@@ -33,8 +33,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.common.truth.Truth.assertThat
+import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.collections.MarkerManager
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.clustering.Clustering
@@ -62,6 +64,7 @@ class GoogleMapViewClusteringTests {
 
     private fun initMapAndGetMarker(
         clusterManagerHolder: Array<ClusterManager<MyItem>?>,
+        markerCollection: (ClusterManager<MyItem>) -> MarkerManager.Collection = { it.markerCollection },
         content: @Composable () -> Unit,
     ): Marker {
         assumeValidApiKey()
@@ -82,13 +85,22 @@ class GoogleMapViewClusteringTests {
         composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
             composeTestRule.runOnUiThread {
                 val cm = clusterManagerHolder[0]
-                cm != null && cm.markerCollection.getMarkers().isNotEmpty()
+                cm != null && markerCollection(cm).getMarkers().isNotEmpty()
             }
         }
 
         return composeTestRule.runOnUiThread {
-            clusterManagerHolder[0]!!.markerCollection.getMarkers().first()
+            markerCollection(checkNotNull(clusterManagerHolder[0])).getMarkers().first()
         }
+    }
+
+    private fun initMapAndGetClusterMarker(
+        clusterManagerHolder: Array<ClusterManager<MyItem>?>,
+        content: @Composable () -> Unit,
+    ): Marker = initMapAndGetMarker(clusterManagerHolder, { it.clusterMarkerCollection }, content)
+
+    private fun itemsThatCluster(): List<MyItem> = List(5) { index ->
+        MyItem(startingPosition, "Item $index", "Snippet", 0f)
     }
 
     @OptIn(MapsComposeExperimentalApi::class)
@@ -440,5 +452,79 @@ class GoogleMapViewClusteringTests {
 
             assertThat(markerOptions.findCustomContentDescription()).isEqualTo("Custom Accessibility Pin Description")
         }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusterInfoWindowClicksReachTheirListeners() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val items = itemsThatCluster()
+        val clickedClusters = mutableListOf<Cluster<MyItem>>()
+        val longClickedClusters = mutableListOf<Cluster<MyItem>>()
+
+        val clusterMarker = initMapAndGetClusterMarker(clusterManagerHolder) {
+            Clustering(
+                items = items,
+                onClusterInfoWindowClick = { clickedClusters += it },
+                onClusterInfoWindowLongClick = { longClickedClusters += it },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                },
+            )
+        }
+
+        // Clustering forwards the map's info window clicks to the MarkerManager, so this call acts as a tap.
+        composeTestRule.runOnUiThread {
+            checkNotNull(clusterManagerHolder[0]).markerManager.onInfoWindowClick(clusterMarker)
+        }
+        assertThat(clickedClusters.single().items).containsExactlyElementsIn(items)
+        assertThat(longClickedClusters).isEmpty()
+
+        composeTestRule.runOnUiThread {
+            checkNotNull(clusterManagerHolder[0]).markerManager.onInfoWindowLongClick(clusterMarker)
+        }
+        assertThat(clickedClusters).hasSize(1)
+        assertThat(longClickedClusters.single().items).containsExactlyElementsIn(items)
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusteringLeavesClusterInfoWindowListenersItWasNotGiven() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val itemsState = mutableStateOf(itemsThatCluster())
+        val clickedClusters = mutableListOf<Cluster<MyItem>>()
+        val longClickedClusters = mutableListOf<Cluster<MyItem>>()
+
+        initMapAndGetClusterMarker(clusterManagerHolder) {
+            Clustering(
+                items = itemsState.value,
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                },
+            )
+        }
+        composeTestRule.runOnUiThread {
+            val clusterManager = checkNotNull(clusterManagerHolder[0])
+            clusterManager.setOnClusterInfoWindowClickListener { clickedClusters += it }
+            clusterManager.setOnClusterInfoWindowLongClickListener { longClickedClusters += it }
+        }
+
+        // A change to the items recomposes Clustering after the test sets the listeners.
+        itemsState.value = itemsThatCluster().map { it.copy(snippet = "Recomposed") }
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread {
+                val currentItems = clusterManagerHolder[0]?.algorithm?.items.orEmpty()
+                currentItems.size == 5 && currentItems.all { it.snippet == "Recomposed" }
+            }
+        }
+
+        composeTestRule.runOnUiThread {
+            val clusterManager = checkNotNull(clusterManagerHolder[0])
+            val clusterMarker = clusterManager.clusterMarkerCollection.getMarkers().first()
+            clusterManager.markerManager.onInfoWindowClick(clusterMarker)
+            clusterManager.markerManager.onInfoWindowLongClick(clusterMarker)
+        }
+        assertThat(clickedClusters).hasSize(1)
+        assertThat(longClickedClusters).hasSize(1)
     }
 }
