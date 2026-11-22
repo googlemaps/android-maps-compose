@@ -430,9 +430,9 @@ The [MarkerClusteringActivity](maps-app/src/main/java/com/google/maps/android/co
 Clustering(
     items = items,
     // Optional: Handle clicks on clusters, cluster items, and cluster item info windows
-    onClusterClick = null,
-    onClusterItemClick = null,
-    onClusterItemInfoWindowClick = null,
+    onClusterClick = { false },
+    onClusterItemClick = { false },
+    onClusterItemInfoWindowClick = { },
     // Optional: Custom rendering for clusters
     clusterContent = null,
     // Optional: Custom rendering for non-clustered items
