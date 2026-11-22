@@ -527,4 +527,208 @@ class GoogleMapViewClusteringTests {
         assertThat(clickedClusters).hasSize(1)
         assertThat(longClickedClusters).hasSize(1)
     }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusterInfoWindowOverridesContentForTheShownCluster() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val items = itemsThatCluster()
+        val windowClusters = mutableListOf<Cluster<MyItem>>()
+        val contentClusters = mutableListOf<Cluster<MyItem>>()
+
+        val clusterMarker = initMapAndGetClusterMarker(clusterManagerHolder) {
+            Clustering(
+                items = items,
+                clusterInfoWindow = { cluster ->
+                    windowClusters += cluster
+                    Text("${cluster.size} items")
+                },
+                clusterInfoWindowContent = { cluster ->
+                    contentClusters += cluster
+                    Text("${cluster.size} items")
+                },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                },
+            )
+        }
+
+        composeTestRule.runOnUiThread { clusterMarker.showInfoWindow() }
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread { windowClusters.isNotEmpty() }
+        }
+
+        composeTestRule.runOnUiThread {
+            assertThat(clusterMarker.isInfoWindowShown).isTrue()
+            assertThat(windowClusters.last().items).containsExactlyElementsIn(items)
+            assertThat(contentClusters).isEmpty()
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusterInfoWindowContentRendersForTheShownCluster() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val items = itemsThatCluster()
+        val contentClusters = mutableListOf<Cluster<MyItem>>()
+
+        val clusterMarker = initMapAndGetClusterMarker(clusterManagerHolder) {
+            Clustering(
+                items = items,
+                clusterInfoWindowContent = { cluster ->
+                    contentClusters += cluster
+                    Text("${cluster.size} items")
+                },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                },
+            )
+        }
+
+        composeTestRule.runOnUiThread { clusterMarker.showInfoWindow() }
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread { contentClusters.isNotEmpty() }
+        }
+
+        composeTestRule.runOnUiThread {
+            assertThat(clusterMarker.isInfoWindowShown).isTrue()
+            assertThat(contentClusters.last().items).containsExactlyElementsIn(items)
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusterItemInfoWindowOverridesContentForTheShownItem() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val item = MyItem(startingPosition, "Item", "Snippet", 0f)
+        val windowItems = mutableListOf<MyItem>()
+        val contentItems = mutableListOf<MyItem>()
+
+        val itemMarker = initMapAndGetMarker(clusterManagerHolder) {
+            Clustering(
+                items = listOf(item),
+                clusterItemInfoWindow = { shownItem ->
+                    windowItems += shownItem
+                    Text(shownItem.title)
+                },
+                clusterItemInfoWindowContent = { shownItem ->
+                    contentItems += shownItem
+                    Text(shownItem.title)
+                },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                },
+            )
+        }
+
+        composeTestRule.runOnUiThread { itemMarker.showInfoWindow() }
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread { windowItems.isNotEmpty() }
+        }
+
+        composeTestRule.runOnUiThread {
+            assertThat(itemMarker.isInfoWindowShown).isTrue()
+            assertThat(windowItems.last()).isEqualTo(item)
+            assertThat(contentItems).isEmpty()
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testClusterItemInfoWindowContentRendersForTheShownItem() {
+        val clusterManagerHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val item = MyItem(startingPosition, "Item", "Snippet", 0f)
+        val contentItems = mutableListOf<MyItem>()
+
+        val itemMarker = initMapAndGetMarker(clusterManagerHolder) {
+            Clustering(
+                items = listOf(item),
+                clusterItemInfoWindowContent = { shownItem ->
+                    contentItems += shownItem
+                    Text(shownItem.title)
+                },
+                onClusterManager = { cm ->
+                    clusterManagerHolder[0] = cm
+                },
+            )
+        }
+
+        composeTestRule.runOnUiThread { itemMarker.showInfoWindow() }
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread { contentItems.isNotEmpty() }
+        }
+
+        composeTestRule.runOnUiThread {
+            assertThat(itemMarker.isInfoWindowShown).isTrue()
+            assertThat(contentItems.last()).isEqualTo(item)
+        }
+    }
+
+    @OptIn(MapsComposeExperimentalApi::class)
+    @Test
+    fun testEachClusteringRendersInfoWindowsForItsOwnMarkers() {
+        val clusteredHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val singleHolder = arrayOfNulls<ClusterManager<MyItem>>(1)
+        val singleItem = MyItem(LatLng(1.231, 4.561), "Single", "Snippet", 0f)
+        val clusteredWindows = mutableListOf<String>()
+        val singleWindows = mutableListOf<String>()
+
+        val singleItemMarker = initMapAndGetMarker(singleHolder) {
+            Clustering(
+                items = itemsThatCluster(),
+                clusterInfoWindow = { cluster ->
+                    clusteredWindows += "cluster of ${cluster.size}"
+                    Text("${cluster.size} items")
+                },
+                clusterItemInfoWindow = { shownItem ->
+                    clusteredWindows += shownItem.title
+                    Text(shownItem.title)
+                },
+                onClusterManager = { cm ->
+                    clusteredHolder[0] = cm
+                },
+            )
+            Clustering(
+                items = listOf(singleItem),
+                clusterInfoWindow = { cluster ->
+                    singleWindows += "cluster of ${cluster.size}"
+                    Text("${cluster.size} items")
+                },
+                clusterItemInfoWindow = { shownItem ->
+                    singleWindows += shownItem.title
+                    Text(shownItem.title)
+                },
+                onClusterManager = { cm ->
+                    singleHolder[0] = cm
+                },
+            )
+        }
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread {
+                clusteredHolder[0]?.clusterMarkerCollection?.getMarkers()?.isNotEmpty() == true
+            }
+        }
+        val clusterMarker = composeTestRule.runOnUiThread {
+            checkNotNull(clusteredHolder[0]).clusterMarkerCollection.getMarkers().first()
+        }
+
+        composeTestRule.runOnUiThread { clusterMarker.showInfoWindow() }
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread { clusteredWindows.isNotEmpty() || singleWindows.isNotEmpty() }
+        }
+        // An info window can render more than once, so compare the rendered windows as a set.
+        composeTestRule.runOnUiThread {
+            assertThat(clusteredWindows.toSet()).containsExactly("cluster of 5")
+            assertThat(singleWindows).isEmpty()
+            clusteredWindows.clear()
+            singleItemMarker.showInfoWindow()
+        }
+        composeTestRule.waitUntil(timeoutMillis = 5_000) {
+            composeTestRule.runOnUiThread { clusteredWindows.isNotEmpty() || singleWindows.isNotEmpty() }
+        }
+        composeTestRule.runOnUiThread {
+            assertThat(singleWindows.toSet()).containsExactly("Single")
+            assertThat(clusteredWindows).isEmpty()
+        }
+    }
 }
