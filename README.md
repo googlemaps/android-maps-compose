@@ -437,8 +437,13 @@ Clustering(
     clusterContent = null,
     // Optional: Custom rendering for non-clustered items
     clusterItemContent = null,
+    // Optional: Custom info windows for clusters and non-clustered items
+    clusterInfoWindow = null,
+    clusterItemInfoWindow = null,
 )
 ```
+
+`clusterInfoWindow` and `clusterItemInfoWindow` replace the entire info window, like `MarkerInfoWindow`. `clusterInfoWindowContent` and `clusterItemInfoWindowContent` customize only the content inside the default info window frame, like `MarkerInfoWindowContent`. To handle clicks and long clicks on a cluster's info window, use `onClusterInfoWindowClick` and `onClusterInfoWindowLongClick`.
 
 ### Street View metadata utility
 
