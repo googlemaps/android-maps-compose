@@ -148,6 +148,7 @@ public fun ClusteringMarkerProperties(anchor: Offset? = null, zIndex: Float? = n
  * are treated as updates when their values differ. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept. Without a key, items are identified by their
  * `equals` and `hashCode` implementations.
+ * @param clusterItemDecoration optional map content drawn for each item while it isn't part of a cluster
  */
 @Composable
 @GoogleMapComposable
@@ -252,6 +253,7 @@ public fun <T : ClusterItem> Clustering(
  * are treated as updates when their values differ. Without a key, items are identified by their
  * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept.
+ * @param clusterItemDecoration optional map content drawn for each item while it isn't part of a cluster
  */
 @Composable
 @GoogleMapComposable
@@ -323,6 +325,7 @@ public fun <T : ClusterItem> Clustering(
  * are treated as updates when their values differ. Without a key, items are identified by their
  * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept.
+ * @param clusterItemDecoration optional map content drawn for each item while it isn't part of a cluster
  * @param onClusterInfoWindowClick an optional lambda invoked when the user clicks the info window
  * of a cluster. If this value is null, Clustering keeps any listener that other code set on the
  * cluster manager.
@@ -461,6 +464,7 @@ internal fun <T : ClusterItem> ClusterInfoWindowClickListeners(
  * are treated as updates when their values differ. Without a key, items are identified by their
  * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept.
+ * @param clusterItemDecoration optional map content drawn for each item while it isn't part of a cluster
  */
 @Composable
 @GoogleMapComposable
