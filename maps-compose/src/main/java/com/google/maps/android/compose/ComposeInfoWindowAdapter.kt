@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionContext
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 
@@ -35,31 +36,53 @@ import com.google.android.gms.maps.model.Marker
  * rendered into a plain [android.graphics.Bitmap] up front (while briefly attached
  * to [mapView] to drive composition), and that bitmap is wrapped in a fresh,
  * parent-less [ImageView] for the Maps SDK to use.
+ *
+ * If a [MarkerNode] owns a marker, the adapter uses the content of that node. For any other
+ * marker, the adapter asks each [InfoWindowHandlerNode] from [infoWindowHandlers] in turn.
  */
 internal class ComposeInfoWindowAdapter(
     private val mapView: ViewGroup,
     private val markerNodeFinder: (Marker) -> MarkerNode?,
+    private val infoWindowHandlers: () -> Iterable<InfoWindowHandlerNode>,
+    private val renderToView: (CompositionContext, @Composable () -> Unit) -> View? =
+        { parentContext, content -> mapView.renderToImageView(parentContext, content) },
 ) : GoogleMap.InfoWindowAdapter {
 
-    override fun getInfoContents(marker: Marker): View? {
-        val markerNode = markerNodeFinder(marker) ?: return null
-        val content = markerNode.infoContent ?: return null
-        return renderToImageView(markerNode) { content(marker) }
-    }
+    override fun getInfoContents(marker: Marker): View? = render(
+        marker = marker,
+        markerNodeContent = { infoContent },
+        handlerContent = { infoContent },
+    )
 
-    override fun getInfoWindow(marker: Marker): View? {
-        val markerNode = markerNodeFinder(marker) ?: return null
-        val infoWindow = markerNode.infoWindow ?: return null
-        return renderToImageView(markerNode) { infoWindow(marker) }
-    }
+    override fun getInfoWindow(marker: Marker): View? = render(
+        marker = marker,
+        markerNodeContent = { infoWindow },
+        handlerContent = { infoWindow },
+    )
 
-    private fun renderToImageView(markerNode: MarkerNode, content: @Composable () -> Unit): View? {
-        val bitmap = mapView.renderComposableToBitmap(markerNode.compositionContext, content)
-            ?: return null
-        return ImageView(mapView.context).apply {
-            layoutParams = ViewGroup.LayoutParams(bitmap.width, bitmap.height)
-            scaleType = ImageView.ScaleType.FIT_XY
-            setImageBitmap(bitmap)
+    private fun render(
+        marker: Marker,
+        markerNodeContent: MarkerNode.() -> (@Composable (Marker) -> Unit)?,
+        handlerContent: InfoWindowHandlerNode.() -> ((Marker) -> (@Composable () -> Unit)?)?,
+    ): View? {
+        val markerNode = markerNodeFinder(marker)
+        if (markerNode != null) {
+            val content = markerNode.markerNodeContent() ?: return null
+            return renderToView(markerNode.compositionContext) { content(marker) }
         }
+        for (handler in infoWindowHandlers()) {
+            val content = handler.handlerContent()?.invoke(marker) ?: continue
+            return renderToView(handler.compositionContext, content)
+        }
+        return null
+    }
+}
+
+private fun ViewGroup.renderToImageView(parentContext: CompositionContext, content: @Composable () -> Unit): View? {
+    val bitmap = renderComposableToBitmap(parentContext, content) ?: return null
+    return ImageView(context).apply {
+        layoutParams = ViewGroup.LayoutParams(bitmap.width, bitmap.height)
+        scaleType = ImageView.ScaleType.FIT_XY
+        setImageBitmap(bitmap)
     }
 }
