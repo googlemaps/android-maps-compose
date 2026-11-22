@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -128,6 +129,7 @@ fun GoogleMapClustering(items: List<MyItem>) {
                     ClusteringType.CustomUi -> CustomUiClustering(items)
                     ClusteringType.CustomRenderer -> CustomRendererClustering(items)
                     ClusteringType.Decorations -> DecorationsClustering(items)
+                    ClusteringType.InfoWindows -> InfoWindowsClustering(items)
                     ClusteringType.KeyedDiff -> Unit
                 }
             }
@@ -385,6 +387,40 @@ private fun DecorationsClustering(items: List<MyItem>) {
     )
 }
 
+@OptIn(MapsComposeExperimentalApi::class)
+@Composable
+private fun InfoWindowsClustering(items: List<MyItem>) {
+    Clustering(
+        items = items,
+        // Optional: Handle clicks on the info windows of clusters and cluster items
+        onClusterInfoWindowClick = {
+            Log.d(TAG, "Cluster info window clicked! $it")
+        },
+        onClusterItemInfoWindowClick = {
+            Log.d(TAG, "Cluster item info window clicked! $it")
+        },
+        // Optional: Replace the entire info window of a cluster
+        clusterInfoWindow = { cluster ->
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            ) {
+                Text(
+                    text = "%,d markers".format(Locale.current.platformLocale, cluster.size),
+                    modifier = Modifier.padding(8.dp),
+                )
+            }
+        },
+        // Optional: Customize the content inside the default info window frame of a cluster item
+        clusterItemInfoWindowContent = { item ->
+            Column {
+                Text(item.title, fontWeight = FontWeight.Bold)
+                Text(item.snippet)
+            }
+        },
+    )
+}
+
 @Composable
 private fun CircleContent(color: Color, text: String, modifier: Modifier = Modifier) {
     Surface(
@@ -420,6 +456,7 @@ private fun ClusteringTypeControls(onClusteringTypeClick: (ClusteringType) -> Un
                     ClusteringType.CustomUi -> "Custom UI"
                     ClusteringType.CustomRenderer -> "Custom Renderer"
                     ClusteringType.Decorations -> "Decorations"
+                    ClusteringType.InfoWindows -> "Info windows"
                     ClusteringType.KeyedDiff -> "Keyed diff (5k)"
                 },
                 onClick = { onClusteringTypeClick(it) },
@@ -447,6 +484,7 @@ private enum class ClusteringType {
     CustomUi,
     CustomRenderer,
     Decorations,
+    InfoWindows,
     KeyedDiff,
 }
 
