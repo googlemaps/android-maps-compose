@@ -80,6 +80,7 @@ FILE_PATTERNS = [
     ("local agent settings", re.compile(r"(^|/)\.claude/settings\.local\.json$")),
     ("local agent memory", re.compile(r"(^|/)CLAUDE\.local\.md$")),
     ("merge leftover", re.compile(r"\.(orig|rej)$")),
+    ("Python bytecode cache", re.compile(r"(^|/)__pycache__/|\.py[cod]$")),
 ]
 
 
