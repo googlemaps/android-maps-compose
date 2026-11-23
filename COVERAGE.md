@@ -38,7 +38,7 @@ Measured at `73c5084` (#1090), recorded 2026-11-23T19:01:17Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `8a49231` (#1055), recorded 2026-11-17T22:45:38Z.
+Measured at `73c5084` (#1090), recorded 2026-11-23T19:01:20Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-23 | `73c5084` | #1090 | 17.38% | 0.00 | n/a | n/a | ci: isolate auto-fix patch generation, compilation, and publishing into separate jobs |
+| 2026-11-23 | `73c5084` | #1090 | 17.38% | 0.00 | 30.01% | 0.00 | ci: isolate auto-fix patch generation, compilation, and publishing into separate jobs |
 | 2026-11-17 | `8a49231` | #1055 | 17.38% | +0.03 | 30.01% | -18.79 | fix: ignore lifecycle events after a MapView is destroyed |
 | 2026-11-17 | `4fa8784` | #1088 | 17.35% | 0.00 | 48.80% | -0.21 | ci: harden auto-fix path validation, prompt isolation, and PR token scope |
 | 2026-11-17 | `126ea04` | #1085 | 17.35% | 0.00 | 49.01% | +0.14 | chore(deps): bump the github-actions-minor-and-patch group with 2 updates |
