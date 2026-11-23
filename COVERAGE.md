@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `73c5084` (#1090), recorded 2026-11-23T19:01:17Z.
+Measured at `d295c77` (#1086), recorded 2026-11-23T19:25:47Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-23 | `d295c77` | #1086 | 17.38% | 0.00 | n/a | n/a | chore(deps): bump the gradle-minor-and-patch group across 1 directory with 9 updates |
 | 2026-11-23 | `73c5084` | #1090 | 17.38% | 0.00 | 30.01% | 0.00 | ci: isolate auto-fix patch generation, compilation, and publishing into separate jobs |
 | 2026-11-17 | `8a49231` | #1055 | 17.38% | +0.03 | 30.01% | -18.79 | fix: ignore lifecycle events after a MapView is destroyed |
 | 2026-11-17 | `4fa8784` | #1088 | 17.35% | 0.00 | 48.80% | -0.21 | ci: harden auto-fix path validation, prompt isolation, and PR token scope |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-23 | `65a4d89` | #1051 | 12.41% | +0.27 | n/a | n/a | fix: check trim memory level in onTrimMemory() implementations |
 | 2026-10-23 | `366fe16` | #1052 | 12.14% | 0.00 | 47.19% | +18.00 | ci: add workflow to publish -SNAPSHOT builds to Maven Central |
 | 2026-10-23 | `61f8b5b` | #1037 | 12.14% | +0.65 | 29.19% | +14.52 | feat(clustering): add incremental item diffing |
-| 2026-10-23 | `b3fb4a3` | #1050 | 11.49% | 0.00 | 14.67% | -33.51 | chore(deps): bump the gradle-minor-and-patch group with 2 updates |
