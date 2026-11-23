@@ -38,15 +38,15 @@ Measured at `d295c77` (#1086), recorded 2026-11-23T19:25:47Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `73c5084` (#1090), recorded 2026-11-23T19:01:20Z.
+Measured at `d295c77` (#1086), recorded 2026-11-23T19:25:51Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 218/2,487 | 8.77% | `██░░░░░░░░░░░░░░░░░░` | 21/452 | 4.65% |
-| `maps-compose` | 1,121/2,184 | 51.33% | `██████████░░░░░░░░░░` | 400/1,402 | 28.53% |
-| `maps-compose-utils` | 259/866 | 29.91% | `██████░░░░░░░░░░░░░░` | 104/514 | 20.23% |
-| `maps-compose-widgets` | 123/198 | 62.12% | `████████████░░░░░░░░` | 21/92 | 22.83% |
-| **TOTAL** | 1,721/5,735 | 30.01% | `██████░░░░░░░░░░░░░░` | 546/2,460 | 22.20% |
+| `maps-app` | 657/2,487 | 26.42% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
+| `maps-compose` | 1,566/2,184 | 71.70% | `██████████████░░░░░░` | 577/1,402 | 41.16% |
+| `maps-compose-utils` | 430/866 | 49.65% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
+| `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
+| **TOTAL** | 2,809/5,735 | 48.98% | `██████████░░░░░░░░░░` | 886/2,460 | 36.02% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-23 | `d295c77` | #1086 | 17.38% | 0.00 | n/a | n/a | chore(deps): bump the gradle-minor-and-patch group across 1 directory with 9 updates |
+| 2026-11-23 | `d295c77` | #1086 | 17.38% | 0.00 | 48.98% | +18.97 | chore(deps): bump the gradle-minor-and-patch group across 1 directory with 9 updates |
 | 2026-11-23 | `73c5084` | #1090 | 17.38% | 0.00 | 30.01% | 0.00 | ci: isolate auto-fix patch generation, compilation, and publishing into separate jobs |
 | 2026-11-17 | `8a49231` | #1055 | 17.38% | +0.03 | 30.01% | -18.79 | fix: ignore lifecycle events after a MapView is destroyed |
 | 2026-11-17 | `4fa8784` | #1088 | 17.35% | 0.00 | 48.80% | -0.21 | ci: harden auto-fix path validation, prompt isolation, and PR token scope |
