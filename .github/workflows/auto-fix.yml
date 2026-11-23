@@ -14,6 +14,19 @@
 
 name: Auto-Fix and PR Creator
 
+# The patch is generated from untrusted issue content, so the work is split into
+# three jobs that never share a runner:
+#
+#   1. generate - holds GEMINI_API_KEY and a read-only token. Writes the
+#                 patch and PR metadata, uploads them as an artifact, and
+#                 never runs Gradle or any other generated code.
+#   2. compile  - runs Gradle on the patched tree with no secrets and a
+#                 read-only token. This is the only job that runs generated code.
+#   3. publish  - holds the write token. Checks the artifact digest, checks the
+#                 patch again with the trusted scripts from the base commit,
+#                 then pushes the branch and opens a draft PR. It never runs
+#                 Gradle or any other generated code.
+
 on:
   issues:
     types: [labeled]
@@ -33,24 +46,28 @@ concurrency:
   group: auto-fix-${{ github.event.issue.number || github.event.inputs.number || github.run_id }}
   cancel-in-progress: true
 
+# Deny everything by default; each job opts in to the minimum it needs.
+permissions: {}
+
 jobs:
-  auto-fix:
+  generate:
     if: >-
       github.event.label.name == 'agent: create-pr' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
       issues: write
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
+      patch-sha256: ${{ steps.package.outputs.patch-sha256 }}
+      metadata-sha256: ${{ steps.package.outputs.metadata-sha256 }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          # Keep credentials out of .git/config so the generated code compiled below cannot read them.
-          # Only the push step authenticates.
           persist-credentials: false
 
       - name: Check for Existing Auto-Fix Branch
@@ -70,12 +87,6 @@ jobs:
             exit 1
           fi
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
@@ -91,21 +102,136 @@ jobs:
         run: |
           python .github/scripts/create_pr.py
 
-      - name: Verify Compilation
-        id: compile_check
+      - name: Package Patch
+        id: package
+        env:
+          OUT_DIR: ${{ runner.temp }}/autofix
         run: |
-          # Try compiling to ensure the generated code is correct
-          ./gradlew compileDebugKotlin --no-daemon || echo "failed" > compile_status.txt
+          mkdir -p "$OUT_DIR"
+          mapfile -t CHANGED_FILES < <(jq -r '.files[]' pr_metadata.json)
+          if [ "${#CHANGED_FILES[@]}" -eq 0 ]; then
+            echo "::error::No changed files recorded in pr_metadata.json"
+            exit 1
+          fi
+          # Mark new files as intent-to-add so `git diff` includes them.
+          git add --intent-to-add -- "${CHANGED_FILES[@]}"
+          git diff --binary -- "${CHANGED_FILES[@]}" > "$OUT_DIR/autofix.patch"
+          cp pr_metadata.json "$OUT_DIR/pr_metadata.json"
+          echo "patch-sha256=$(sha256sum "$OUT_DIR/autofix.patch" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "metadata-sha256=$(sha256sum "$OUT_DIR/pr_metadata.json" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
+      - name: Upload Patch Artifact
+        id: upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: autofix-patch-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/autofix/
+          if-no-files-found: error
+          retention-days: 1
+
+  compile:
+    needs: generate
+    runs-on: ubuntu-latest
+    # Generated code runs here. No secrets and a read-only token.
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download Patch Artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.generate.outputs.artifact-id }}
+          path: ${{ runner.temp }}/autofix
+
+      - name: Apply Patch
+        env:
+          PATCH_DIR: ${{ runner.temp }}/autofix
+          EXPECTED_PATCH_SHA256: ${{ needs.generate.outputs.patch-sha256 }}
+        run: |
+          PATCH="$(find "$PATCH_DIR" -name autofix.patch -type f | head -n 1)"
+          echo "$EXPECTED_PATCH_SHA256  $PATCH" | sha256sum --check --strict
+          git apply --index -- "$PATCH"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Verify Compilation
+        run: ./gradlew compileDebugKotlin --no-daemon
+
+  publish:
+    needs: [generate, compile]
+    # Run even if compilation failed so the issue gets a comment, but only if a patch exists.
+    # Use !cancelled() rather than always() so a run superseded by a relabel (cancel-in-progress)
+    # does not post a failure comment or remove the label while the new run is in progress.
+    if: ${{ !cancelled() && needs.generate.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
       - name: Report Compilation Failure
-        if: hashFiles('compile_status.txt') != ''
+        if: needs.compile.result != 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number || github.event.inputs.number }}
         run: |
           gh issue comment "$ISSUE_NUMBER" --body "⚠️ The **Auto-Fix Agent** attempted to generate a patch for this issue, but the code failed to compile. Maintainers have been notified to inspect the changes manually."
           gh issue edit "$ISSUE_NUMBER" --remove-label "agent: create-pr" || true
           exit 1
+
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          # Keep credentials out of .git/config. Only the push step authenticates.
+          persist-credentials: false
+
+      - name: Download Patch Artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.generate.outputs.artifact-id }}
+          path: ${{ runner.temp }}/autofix
+
+      - name: Verify Artifact Integrity
+        # The digests come from the trusted generate job. A mismatch means the
+        # artifact changed after generate uploaded it, for example because the
+        # compile job uploaded a replacement.
+        env:
+          PATCH_DIR: ${{ runner.temp }}/autofix
+          EXPECTED_PATCH_SHA256: ${{ needs.generate.outputs.patch-sha256 }}
+          EXPECTED_METADATA_SHA256: ${{ needs.generate.outputs.metadata-sha256 }}
+        run: |
+          PATCH="$(find "$PATCH_DIR" -name autofix.patch -type f | head -n 1)"
+          METADATA="$(find "$PATCH_DIR" -name pr_metadata.json -type f | head -n 1)"
+          echo "$EXPECTED_PATCH_SHA256  $PATCH" | sha256sum --check --strict
+          echo "$EXPECTED_METADATA_SHA256  $METADATA" | sha256sum --check --strict
+          echo "PATCH=$PATCH" >> "$GITHUB_ENV"
+          echo "METADATA=$METADATA" >> "$GITHUB_ENV"
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.x'
+
+      - name: Apply and Validate Patch
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number || github.event.inputs.number }}
+        run: |
+          git apply -- "$PATCH"
+          # create_pr.py comes from the base commit, not from the patch, so it
+          # can check that the patch touches only allowed .kt files.
+          python .github/scripts/create_pr.py --verify-applied "$METADATA"
 
       - name: Push Changes and Create Pull Request
         # Use GITHUB_TOKEN (never SYNCED_GITHUB_TOKEN_REPO) and open as a draft PR so that
@@ -115,11 +241,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number || github.event.inputs.number }}
         run: |
-          # Read metadata generated by Python script
-          BRANCH_NAME=$(jq -r '.branch_name' pr_metadata.json)
-          COMMIT_MESSAGE=$(jq -r '.commit_message' pr_metadata.json)
-          PR_TITLE=$(jq -r '.pr_title' pr_metadata.json)
-          PR_BODY=$(jq -r '.pr_body' pr_metadata.json)
+          # Read metadata generated by the generate job (integrity-checked above)
+          BRANCH_NAME=$(jq -r '.branch_name' "$METADATA")
+          COMMIT_MESSAGE=$(jq -r '.commit_message' "$METADATA")
+          PR_TITLE=$(jq -r '.pr_title' "$METADATA")
+          PR_BODY=$(jq -r '.pr_body' "$METADATA")
 
           if [[ ! "$BRANCH_NAME" =~ ^auto-fix/issue-[0-9]+$ ]]; then
             echo "::error::Refusing unexpected branch name: $BRANCH_NAME"
@@ -127,7 +253,7 @@ jobs:
           fi
 
           # Create branch and commit only the files create_pr.py validated
-          mapfile -t CHANGED_FILES < <(jq -r '.files[]' pr_metadata.json)
+          mapfile -t CHANGED_FILES < <(jq -r '.files[]' "$METADATA")
           if [ "${#CHANGED_FILES[@]}" -eq 0 ]; then
             echo "::error::No changed files recorded in pr_metadata.json"
             exit 1
