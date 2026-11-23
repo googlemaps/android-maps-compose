@@ -54,7 +54,11 @@ class NavigationViewDelegateTest {
         val options = GoogleMapOptions().compassEnabled(true)
         val navigationView = NavigationView(activity, options)
         val shadowNavView = Shadow.extract(navigationView) as ShadowNavigationView
-        val delegate = NavigationViewDelegate(navigationView)
+        val uiStates = mutableListOf<Boolean>()
+        val delegate = NavigationViewDelegate(
+            mapView = navigationView,
+            onNavigationUiChanged = { uiStates.add(it) },
+        )
         val savedInstanceState = Bundle()
 
         assertThat(delegate.mapView).isSameInstanceAs(navigationView)
@@ -62,6 +66,10 @@ class NavigationViewDelegateTest {
 
         delegate.onCreate(savedInstanceState)
         assertThat(shadowNavView.isOnCreateCalled).isTrue()
+        assertThat(uiStates).containsExactly(true)
+
+        navigationView.isNavigationUiEnabled = false
+        assertThat(uiStates).containsExactly(true, false).inOrder()
 
         delegate.onStart()
         assertThat(shadowNavView.isOnStartCalled).isTrue()
@@ -72,6 +80,9 @@ class NavigationViewDelegateTest {
         val googleMap = delegate.awaitMap()
         assertThat(googleMap).isNotNull()
         assertThat(shadowNavView.googleMap).isSameInstanceAs(googleMap)
+
+        delegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND)
+        assertThat(shadowNavView.lastTrimMemoryLevel).isEqualTo(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND)
 
         delegate.onLowMemory()
         assertThat(shadowNavView.lastTrimMemoryLevel).isEqualTo(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
@@ -84,5 +95,9 @@ class NavigationViewDelegateTest {
 
         delegate.onDestroy()
         assertThat(shadowNavView.isOnDestroyCalled).isTrue()
+
+        // Listener is removed on destroy so subsequent updates are ignored
+        navigationView.isNavigationUiEnabled = true
+        assertThat(uiStates).containsExactly(true, false).inOrder()
     }
 }

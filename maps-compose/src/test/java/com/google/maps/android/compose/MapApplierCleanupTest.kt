@@ -57,6 +57,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Test
 
+@OptIn(MapsComposeExperimentalApi::class)
 public class MapApplierCleanupTest {
 
     @Test
@@ -467,17 +468,33 @@ public class MapApplierCleanupTest {
 
     @Suppress("DEPRECATION")
     @Test
-    public fun `MapViewDelegate componentCallbacks2 forwards onLowMemory and UI_HIDDEN trimMemory`() {
+    public fun `MapViewDelegate componentCallbacks2 forwards onLowMemory and onTrimMemory`() {
         val customDelegate = mockk<MapViewDelegate<ViewGroup>>(relaxed = true)
         val callbacks = customDelegate.componentCallbacks2()
 
         callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)
-        verify(exactly = 0) { customDelegate.onLowMemory() }
+        verify(exactly = 1) { customDelegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) }
 
         callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
-        verify(exactly = 1) { customDelegate.onLowMemory() }
+        verify(exactly = 1) { customDelegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) }
 
         callbacks.onLowMemory()
-        verify(exactly = 2) { customDelegate.onLowMemory() }
+        verify(exactly = 1) { customDelegate.onLowMemory() }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    public fun `MapViewDelegate default onTrimMemory delegates to onLowMemory at UI_HIDDEN or higher`() {
+        val mapView = mockk<MapView>(relaxed = true)
+        val delegate = DefaultMapViewDelegate(mapView)
+
+        delegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)
+        verify(exactly = 0) { mapView.onLowMemory() }
+
+        delegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
+        verify(exactly = 1) { mapView.onLowMemory() }
+
+        delegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND)
+        verify(exactly = 2) { mapView.onLowMemory() }
     }
 }

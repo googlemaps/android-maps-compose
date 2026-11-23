@@ -141,6 +141,7 @@ dependencies {
     testImplementation(libs.maps.testing.robolectric)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.test.compose.ui)
+    testImplementation(libs.androidx.test.compose.ui.manifest)
     testImplementation(libs.androidx.activity.compose)
     testImplementation(libs.androidx.test.core)
 

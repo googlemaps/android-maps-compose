@@ -20,12 +20,32 @@ import android.content.ComponentCallbacks2
 import android.os.Bundle
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.libraries.navigation.NavigationView
+import com.google.android.libraries.navigation.OnNavigationUiChangedListener
 import com.google.maps.android.compose.MapViewDelegate
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-class NavigationViewDelegate(override val mapView: NavigationView) : MapViewDelegate<NavigationView> {
-    override fun onCreate(savedInstanceState: Bundle?): Unit = mapView.onCreate(savedInstanceState)
+@OptIn(MapsComposeExperimentalApi::class)
+class NavigationViewDelegate(
+    override val mapView: NavigationView,
+    private val onNavigationUiChanged: ((Boolean) -> Unit)? = null,
+) : MapViewDelegate<NavigationView> {
+    private var navigationUiListener: OnNavigationUiChangedListener? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        mapView.onCreate(savedInstanceState)
+        navigationUiListener?.let { mapView.removeOnNavigationUiChangedListener(it) }
+        navigationUiListener = onNavigationUiChanged?.let { callback ->
+            callback(mapView.isNavigationUiEnabled)
+            OnNavigationUiChangedListener { enabled ->
+                callback(enabled)
+            }.also { listener ->
+                mapView.addOnNavigationUiChangedListener(listener)
+            }
+        }
+    }
+
     override fun onStart(): Unit = mapView.onStart()
     override fun onResume(): Unit = mapView.onResume()
     override fun onPause(): Unit = mapView.onPause()
@@ -35,7 +55,17 @@ class NavigationViewDelegate(override val mapView: NavigationView) : MapViewDele
         mapView.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
     }
 
-    override fun onDestroy(): Unit = mapView.onDestroy()
+    override fun onTrimMemory(level: Int) {
+        mapView.onTrimMemory(level)
+    }
+
+    override fun onDestroy() {
+        navigationUiListener?.let { listener ->
+            mapView.removeOnNavigationUiChangedListener(listener)
+        }
+        navigationUiListener = null
+        mapView.onDestroy()
+    }
 
     override suspend fun awaitMap(): GoogleMap = mapView.awaitMap()
 }

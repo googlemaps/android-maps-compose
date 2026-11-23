@@ -58,7 +58,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -75,10 +74,10 @@ import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.navigation.NavigationView
-import com.google.android.libraries.navigation.OnNavigationUiChangedListener
 import com.google.android.libraries.places.api.model.Place
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberUpdatedMarkerState
@@ -90,6 +89,7 @@ private val IDLE_CONTROLS_BOTTOM_PADDING = 24.dp
 private val SNACKBAR_VISIBLE_CONTROLS_BOTTOM_PADDING = 84.dp
 private val NAVIGATION_ACTIVE_CONTROLS_BOTTOM_PADDING = 168.dp
 
+@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 fun NavigationScreen(
     deviceLocation: LatLng?,
@@ -112,23 +112,7 @@ fun NavigationScreen(
     var isSearchExpanded by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var searchAlongRouteMode by rememberSaveable { mutableStateOf(false) }
-    var navigationViewInstance by remember { mutableStateOf<NavigationView?>(null) }
     var isNavigationUiEnabled by remember { mutableStateOf(true) }
-
-    DisposableEffect(navigationViewInstance) {
-        val navView = navigationViewInstance
-        if (navView == null) {
-            return@DisposableEffect onDispose {}
-        }
-        isNavigationUiEnabled = navView.isNavigationUiEnabled
-        val listener = OnNavigationUiChangedListener { enabled ->
-            isNavigationUiEnabled = enabled
-        }
-        navView.addOnNavigationUiChangedListener(listener)
-        onDispose {
-            navView.removeOnNavigationUiChangedListener(listener)
-        }
-    }
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
@@ -181,9 +165,12 @@ fun NavigationScreen(
             mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
             onMapLongClick = onMapDestinationSelected,
             mapViewDelegateFactory = { context, options ->
-                val navView = NavigationView(context, options)
-                navigationViewInstance = navView
-                NavigationViewDelegate(navView)
+                NavigationViewDelegate(
+                    mapView = NavigationView(context, options),
+                    onNavigationUiChanged = { enabled ->
+                        isNavigationUiEnabled = enabled
+                    },
+                )
             },
         ) {
             if (deviceLocation != null) {
