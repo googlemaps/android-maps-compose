@@ -465,3 +465,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-23T19:25:51Z,d295c77,1086,chore(deps): bump the gradle-minor-and-patch group across 1 directory with 9 updates,instrumentation,maps-compose-utils,430,866,49.65,167,514,32.49,3224,6536,49.33
 2026-11-23T19:25:51Z,d295c77,1086,chore(deps): bump the gradle-minor-and-patch group across 1 directory with 9 updates,instrumentation,maps-compose-widgets,156,198,78.79,46,92,50.0,973,1212,80.28
 2026-11-23T19:25:51Z,d295c77,1086,chore(deps): bump the gradle-minor-and-patch group across 1 directory with 9 updates,instrumentation,TOTAL,2809,5735,48.98,886,2460,36.02,20888,45453,45.96
+2026-11-23T19:42:55Z,bb6cbe5,1091,chore(deps): bump peter-evans/create-pull-request,unit,maps-compose,308,2011,15.32,73,1840,3.97,2264,25374,8.92
+2026-11-23T19:42:55Z,bb6cbe5,1091,chore(deps): bump peter-evans/create-pull-request,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
+2026-11-23T19:42:55Z,bb6cbe5,1091,chore(deps): bump peter-evans/create-pull-request,unit,maps-compose-widgets,6,155,3.87,0,84,0.0,36,1651,2.18
+2026-11-23T19:42:55Z,bb6cbe5,1091,chore(deps): bump peter-evans/create-pull-request,unit,TOTAL,498,2866,17.38,136,2420,5.62,3492,34875,10.01
