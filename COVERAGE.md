@@ -38,15 +38,15 @@ Measured at `536cec6` (#1061), recorded 2026-11-24T06:21:16Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `0293633` (#1093), recorded 2026-11-24T06:02:48Z.
+Measured at `536cec6` (#1061), recorded 2026-11-24T06:21:20Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 658/2,487 | 26.46% | `█████░░░░░░░░░░░░░░░` | 97/452 | 21.46% |
-| `maps-compose` | 1,566/2,184 | 71.70% | `██████████████░░░░░░` | 575/1,402 | 41.01% |
+| `maps-app` | 651/2,487 | 26.18% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
+| `maps-compose` | 1,621/2,245 | 72.20% | `██████████████░░░░░░` | 597/1,452 | 41.12% |
 | `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
 | `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
-| **TOTAL** | 2,812/5,735 | 49.03% | `██████████░░░░░░░░░░` | 885/2,460 | 35.98% |
+| **TOTAL** | 2,860/5,796 | 49.34% | `██████████░░░░░░░░░░` | 906/2,510 | 36.10% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-24 | `536cec6` | #1061 | 38.93% | +21.55 | n/a | n/a | feat: support custom MapView delegates and add Navigation SDK sample app |
+| 2026-11-24 | `536cec6` | #1061 | 38.93% | +21.55 | 49.34% | +0.31 | feat: support custom MapView delegates and add Navigation SDK sample app |
 | 2026-11-24 | `0293633` | #1093 | 17.38% | 0.00 | 49.03% | n/a | ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py |
 | 2026-11-24 | `f88706f` | #1092 | 17.38% | 0.00 | n/a | n/a | chore: add maintainer as code owner of .github |
 | 2026-11-23 | `5076c5a` | #1089 | 17.38% | 0.00 | 48.91% | -0.10 | ci: update the Baseline Profiles pull request without needing read:org |
