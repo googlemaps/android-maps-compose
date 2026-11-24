@@ -496,3 +496,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-24T06:02:48Z,0293633,1093,"ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py",instrumentation,maps-compose-utils,432,866,49.88,167,514,32.49,3227,6536,49.37
 2026-11-24T06:02:48Z,0293633,1093,"ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py",instrumentation,maps-compose-widgets,156,198,78.79,46,92,50.0,973,1212,80.28
 2026-11-24T06:02:48Z,0293633,1093,"ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py",instrumentation,TOTAL,2812,5735,49.03,885,2460,35.98,20884,45453,45.95
+2026-11-24T06:21:16Z,536cec6,1061,feat: support custom MapView delegates and add Navigation SDK sample app,unit,maps-compose,949,2071,45.82,294,1930,15.23,9560,26367,36.26
+2026-11-24T06:21:16Z,536cec6,1061,feat: support custom MapView delegates and add Navigation SDK sample app,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
+2026-11-24T06:21:16Z,536cec6,1061,feat: support custom MapView delegates and add Navigation SDK sample app,unit,maps-compose-widgets,6,155,3.87,0,84,0.0,36,1651,2.18
+2026-11-24T06:21:16Z,536cec6,1061,feat: support custom MapView delegates and add Navigation SDK sample app,unit,TOTAL,1139,2926,38.93,357,2510,14.22,10788,35868,30.08

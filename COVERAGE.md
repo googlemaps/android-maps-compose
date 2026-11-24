@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `0293633` (#1093), recorded 2026-11-24T06:02:43Z.
+Measured at `536cec6` (#1061), recorded 2026-11-24T06:21:16Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-compose` | 308/2,011 | 15.32% | `███░░░░░░░░░░░░░░░░░` | 73/1,840 | 3.97% |
+| `maps-compose` | 949/2,071 | 45.82% | `█████████░░░░░░░░░░░` | 294/1,930 | 15.23% |
 | `maps-compose-utils` | 184/700 | 26.29% | `█████░░░░░░░░░░░░░░░` | 63/496 | 12.70% |
 | `maps-compose-widgets` | 6/155 | 3.87% | `█░░░░░░░░░░░░░░░░░░░` | 0/84 | 0.00% |
-| **TOTAL** | 498/2,866 | 17.38% | `███░░░░░░░░░░░░░░░░░` | 136/2,420 | 5.62% |
+| **TOTAL** | 1,139/2,926 | 38.93% | `████████░░░░░░░░░░░░` | 357/2,510 | 14.22% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-24 | `536cec6` | #1061 | 38.93% | +21.55 | n/a | n/a | feat: support custom MapView delegates and add Navigation SDK sample app |
 | 2026-11-24 | `0293633` | #1093 | 17.38% | 0.00 | 49.03% | n/a | ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py |
 | 2026-11-24 | `f88706f` | #1092 | 17.38% | 0.00 | n/a | n/a | chore: add maintainer as code owner of .github |
 | 2026-11-23 | `5076c5a` | #1089 | 17.38% | 0.00 | 48.91% | -0.10 | ci: update the Baseline Profiles pull request without needing read:org |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-30 | `8c0e72c` | #1057 | 12.99% | 0.00 | 47.28% | +16.24 | fix(ci): read the Update Skill Gemini model from GEMINI_MODEL |
 | 2026-10-30 | `a53f06e` | #1045 | 12.99% | +0.58 | 31.04% | -16.06 | fix(widgets): preserve fractional scale bar distances |
 | 2026-10-29 | `db20d0d` | #1056 | 12.41% | 0.00 | 47.10% | +0.02 | chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check |
-| 2026-10-29 | `3f9353b` | #1043 | 12.41% | 0.00 | 47.08% | -0.11 | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |
