@@ -38,15 +38,15 @@ Measured at `b418c7b` (#1094), recorded 2026-11-24T15:08:03Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `536cec6` (#1061), recorded 2026-11-24T06:21:20Z.
+Measured at `b418c7b` (#1094), recorded 2026-11-24T15:08:08Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 651/2,487 | 26.18% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
-| `maps-compose` | 1,621/2,245 | 72.20% | `██████████████░░░░░░` | 597/1,452 | 41.12% |
+| `maps-app` | 652/2,487 | 26.22% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
+| `maps-compose` | 1,621/2,245 | 72.20% | `██████████████░░░░░░` | 598/1,452 | 41.18% |
 | `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
 | `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
-| **TOTAL** | 2,860/5,796 | 49.34% | `██████████░░░░░░░░░░` | 906/2,510 | 36.10% |
+| **TOTAL** | 2,861/5,796 | 49.36% | `██████████░░░░░░░░░░` | 907/2,510 | 36.14% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-24 | `b418c7b` | #1094 | 38.93% | 0.00 | n/a | n/a | chore(navigation-app): stop cancelling the pending route future when a new destination is picked |
+| 2026-11-24 | `b418c7b` | #1094 | 38.93% | 0.00 | 49.36% | +0.02 | chore(navigation-app): stop cancelling the pending route future when a new destination is picked |
 | 2026-11-24 | `536cec6` | #1061 | 38.93% | +21.55 | 49.34% | +0.31 | feat: support custom MapView delegates and add Navigation SDK sample app |
 | 2026-11-24 | `0293633` | #1093 | 17.38% | 0.00 | 49.03% | n/a | ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py |
 | 2026-11-24 | `f88706f` | #1092 | 17.38% | 0.00 | n/a | n/a | chore: add maintainer as code owner of .github |

@@ -509,3 +509,8 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-24T15:08:03Z,b418c7b,1094,chore(navigation-app): stop cancelling the pending route future when a new destination is picked,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
 2026-11-24T15:08:03Z,b418c7b,1094,chore(navigation-app): stop cancelling the pending route future when a new destination is picked,unit,maps-compose-widgets,6,155,3.87,0,84,0.0,36,1651,2.18
 2026-11-24T15:08:03Z,b418c7b,1094,chore(navigation-app): stop cancelling the pending route future when a new destination is picked,unit,TOTAL,1139,2926,38.93,357,2510,14.22,10788,35868,30.08
+2026-11-24T15:08:08Z,b418c7b,1094,chore(navigation-app): stop cancelling the pending route future when a new destination is picked,instrumentation,maps-app,652,2487,26.22,96,452,21.24,6014,21218,28.34
+2026-11-24T15:08:08Z,b418c7b,1094,chore(navigation-app): stop cancelling the pending route future when a new destination is picked,instrumentation,maps-compose,1621,2245,72.2,598,1452,41.18,10964,16954,64.67
+2026-11-24T15:08:08Z,b418c7b,1094,chore(navigation-app): stop cancelling the pending route future when a new destination is picked,instrumentation,maps-compose-utils,432,866,49.88,167,514,32.49,3227,6536,49.37
+2026-11-24T15:08:08Z,b418c7b,1094,chore(navigation-app): stop cancelling the pending route future when a new destination is picked,instrumentation,maps-compose-widgets,156,198,78.79,46,92,50.0,973,1212,80.28
+2026-11-24T15:08:08Z,b418c7b,1094,chore(navigation-app): stop cancelling the pending route future when a new destination is picked,instrumentation,TOTAL,2861,5796,49.36,907,2510,36.14,21178,45920,46.12
