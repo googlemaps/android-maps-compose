@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `f88706f` (#1092), recorded 2026-11-24T05:10:30Z.
+Measured at `0293633` (#1093), recorded 2026-11-24T06:02:43Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-24 | `0293633` | #1093 | 17.38% | 0.00 | n/a | n/a | ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py |
 | 2026-11-24 | `f88706f` | #1092 | 17.38% | 0.00 | n/a | n/a | chore: add maintainer as code owner of .github |
 | 2026-11-23 | `5076c5a` | #1089 | 17.38% | 0.00 | 48.91% | -0.10 | ci: update the Baseline Profiles pull request without needing read:org |
 | 2026-11-23 | `bb6cbe5` | #1091 | 17.38% | 0.00 | 49.01% | +0.03 | chore(deps): bump peter-evans/create-pull-request |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-10-30 | `a53f06e` | #1045 | 12.99% | +0.58 | 31.04% | -16.06 | fix(widgets): preserve fractional scale bar distances |
 | 2026-10-29 | `db20d0d` | #1056 | 12.41% | 0.00 | 47.10% | +0.02 | chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check |
 | 2026-10-29 | `3f9353b` | #1043 | 12.41% | 0.00 | 47.08% | -0.11 | chore(deps): bump the github-actions-minor-and-patch group across 1 directory with 3 updates |
-| 2026-10-26 | `dd7507b` | #1053 | 12.41% | 0.00 | 47.19% | n/a | ci: run instrumentation tests on Ubuntu with KVM and skip redundant runs |
