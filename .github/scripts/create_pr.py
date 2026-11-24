@@ -41,9 +41,10 @@ assumes the LLM may be operating under a prompt-injection payload:
 
 4. **Job Isolation (`--verify-applied`)**:
    The workflow runs this script in a `generate` job that has the Gemini key
-   but no write token, and never compiles the result. The patch is compiled
-   in a separate job that has no secrets. The `publish` job, which holds the
-   write token, applies the patch to the base commit and runs
+   with `contents:read` and `issues:write` (for early branch-exists notices),
+   and never compiles the result. The patch is compiled in a separate job that
+   has no secrets. The `publish` job, which holds the write token, applies the
+   patch to the base commit and runs
    `create_pr.py --verify-applied pr_metadata.json` from that commit. This
    checks again that only the listed `.kt` files changed and that the PR
    metadata is sanitized before anything is pushed.
@@ -474,6 +475,9 @@ Current content of `{filepath}`:
         updated_content = get_gemini_response(api_key, edit_system, edit_user)
         if updated_content:
             updated_content = strip_markdown_code_fence(updated_content)
+            if updated_content == original_content:
+                print(f"No changes generated for {filepath}, skipping.", file=sys.stderr)
+                continue
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(updated_content)
             changed_files.append(filepath)
@@ -504,6 +508,11 @@ Create a new Kotlin source file at `{filepath}` to help resolve this issue.
         new_content = get_gemini_response(api_key, create_system, create_user)
         if new_content:
             new_content = strip_markdown_code_fence(new_content)
+            if os.path.isfile(filepath):
+                with open(filepath, "r", encoding="utf-8") as f:
+                    if f.read() == new_content:
+                        print(f"No changes generated for {filepath}, skipping.", file=sys.stderr)
+                        continue
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, "w", encoding="utf-8") as f:
                 f.write(new_content)

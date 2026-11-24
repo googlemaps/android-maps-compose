@@ -17,9 +17,10 @@ name: Auto-Fix and PR Creator
 # The patch is generated from untrusted issue content, so the work is split into
 # three jobs that never share a runner:
 #
-#   1. generate - holds GEMINI_API_KEY and a read-only token. Writes the
-#                 patch and PR metadata, uploads them as an artifact, and
-#                 never runs Gradle or any other generated code.
+#   1. generate - holds GEMINI_API_KEY with contents:read and issues:write
+#                 (for early branch-exists notices). Writes the patch and PR
+#                 metadata, uploads them as an artifact, and never runs Gradle
+#                 or any other generated code.
 #   2. compile  - runs Gradle on the patched tree with no secrets and a
 #                 read-only token. This is the only job that runs generated code.
 #   3. publish  - holds the write token. Checks the artifact digest, checks the
@@ -55,6 +56,7 @@ jobs:
       github.event.label.name == 'agent: create-pr' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       issues: write
@@ -116,6 +118,10 @@ jobs:
           # Mark new files as intent-to-add so `git diff` includes them.
           git add --intent-to-add -- "${CHANGED_FILES[@]}"
           git diff --binary -- "${CHANGED_FILES[@]}" > "$OUT_DIR/autofix.patch"
+          if [ ! -s "$OUT_DIR/autofix.patch" ]; then
+            echo "::error::Generated patch is empty; aborting."
+            exit 1
+          fi
           cp pr_metadata.json "$OUT_DIR/pr_metadata.json"
           echo "patch-sha256=$(sha256sum "$OUT_DIR/autofix.patch" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
           echo "metadata-sha256=$(sha256sum "$OUT_DIR/pr_metadata.json" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
@@ -132,6 +138,7 @@ jobs:
   compile:
     needs: generate
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     # Generated code runs here. No secrets and a read-only token.
     permissions:
       contents: read
@@ -173,6 +180,7 @@ jobs:
     # does not post a failure comment or remove the label while the new run is in progress.
     if: ${{ !cancelled() && needs.generate.result == 'success' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
@@ -228,10 +236,12 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number || github.event.inputs.number }}
         run: |
+          # Copy create_pr.py out of the working tree before applying the patch and
+          # run Python in isolated mode (-I) so a tampered patch cannot overwrite
+          # the validator or shadow stdlib modules in .github/scripts/ or the repo root.
+          cp .github/scripts/create_pr.py "$RUNNER_TEMP/verify_create_pr.py"
           git apply -- "$PATCH"
-          # create_pr.py comes from the base commit, not from the patch, so it
-          # can check that the patch touches only allowed .kt files.
-          python .github/scripts/create_pr.py --verify-applied "$METADATA"
+          python -I "$RUNNER_TEMP/verify_create_pr.py" --verify-applied "$METADATA"
 
       - name: Push Changes and Create Pull Request
         # Use GITHUB_TOKEN (never SYNCED_GITHUB_TOKEN_REPO) and open as a draft PR so that
