@@ -102,14 +102,14 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     api(libs.maps.utils)
 
-    testImplementation(libs.test.junit)
-    testImplementation(libs.robolectric)
-    testImplementation(libs.truth)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.test.junit)
+    testImplementation(libs.truth)
     testImplementation(libs.androidx.test.compose.ui)
+    testImplementation(libs.androidx.test.compose.ui.manifest)
     testImplementation(libs.androidx.activity.compose)
     testImplementation(libs.androidx.test.core)
-    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.maps.testing.robolectric)
 }
-

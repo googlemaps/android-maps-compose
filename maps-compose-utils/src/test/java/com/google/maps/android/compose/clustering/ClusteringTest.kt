@@ -171,15 +171,16 @@ internal class ClusteringTest {
         assertThat(manager.algorithm.items).hasSize(1)
 
         // Update items list
-        itemsState = listOf(
+        val updatedItems = listOf(
             SampleClusterItem(LatLng(20.0, 20.0), "Updated 1"),
             SampleClusterItem(LatLng(20.1, 20.1), "Updated 2"),
         )
+        itemsState = updatedItems
         composeTestRule.waitForIdle()
         composeTestRule.waitUntil(timeoutMillis = 5000) {
             manager.algorithm.items.size == 2
         }
-        assertThat(manager.algorithm.items).hasSize(2)
+        assertThat(manager.algorithm.items).containsExactlyElementsIn(updatedItems)
     }
 
     @Test
