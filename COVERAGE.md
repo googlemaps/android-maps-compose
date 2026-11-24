@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `536cec6` (#1061), recorded 2026-11-24T06:21:16Z.
+Measured at `b418c7b` (#1094), recorded 2026-11-24T15:08:03Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-24 | `b418c7b` | #1094 | 38.93% | 0.00 | n/a | n/a | chore(navigation-app): stop cancelling the pending route future when a new destination is picked |
 | 2026-11-24 | `536cec6` | #1061 | 38.93% | +21.55 | 49.34% | +0.31 | feat: support custom MapView delegates and add Navigation SDK sample app |
 | 2026-11-24 | `0293633` | #1093 | 17.38% | 0.00 | 49.03% | n/a | ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py |
 | 2026-11-24 | `f88706f` | #1092 | 17.38% | 0.00 | n/a | n/a | chore: add maintainer as code owner of .github |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-11-02 | `174f0fd` | #1060 | 12.99% | 0.00 | n/a | n/a | chore: add maintainer as code owner of workflow files |
 | 2026-10-30 | `8c0e72c` | #1057 | 12.99% | 0.00 | 47.28% | +16.24 | fix(ci): read the Update Skill Gemini model from GEMINI_MODEL |
 | 2026-10-30 | `a53f06e` | #1045 | 12.99% | +0.58 | 31.04% | -16.06 | fix(widgets): preserve fractional scale bar distances |
-| 2026-10-29 | `db20d0d` | #1056 | 12.41% | 0.00 | 47.10% | +0.02 | chore: tool-neutral agent setup, AGENTS.md PR rules and agent leftovers check |
