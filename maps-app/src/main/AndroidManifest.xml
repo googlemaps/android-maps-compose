@@ -99,6 +99,9 @@
             android:name=".RecompositionActivity"
             android:exported="true" />
         <activity
+            android:name=".ComposeOverlaySyncActivity"
+            android:exported="true" />
+        <activity
             android:name=".FragmentDemoActivity"
             android:exported="true" />
         <activity

@@ -203,6 +203,11 @@ sealed class ActivityGroup(@StringRes val title: Int, val activities: List<Activ
                 R.string.recomposition_activity_description,
                 RecompositionActivity::class,
             ),
+            Activity(
+                R.string.compose_overlay_sync_activity,
+                R.string.compose_overlay_sync_activity_description,
+                ComposeOverlaySyncActivity::class,
+            ),
         ),
     )
 }
