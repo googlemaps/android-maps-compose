@@ -16,12 +16,15 @@
 
 package com.google.maps.android.compose.wms
 
+import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
+import kotlin.math.PI
 
+// [START maps_compose_utils_wms_url_tile_provider_test]
 public class WmsUrlTileProviderTest {
 
-    private val worldSize: Double = 6378137.0 * kotlin.math.PI
+    private val worldSize: Double = 6378137.0 * PI
 
     @Test
     public fun testGetBoundingBoxZoom0() {
@@ -62,4 +65,25 @@ public class WmsUrlTileProviderTest {
         val expected = doubleArrayOf(-worldSize / 2, 0.0, 0.0, worldSize / 2)
         assertArrayEquals(expected, bbox, 0.001)
     }
+
+    @Test
+    public fun testGetTileUrl_validUrl_returnsParsedUrl() {
+        val provider = WmsUrlTileProvider { xMin, yMin, xMax, yMax, zoom ->
+            "https://example.com/wms?bbox=$xMin,$yMin,$xMax,$yMax&zoom=$zoom"
+        }
+        val tileUrl = provider.getTileUrl(0, 0, 1)
+        assertThat(tileUrl?.toString()).isEqualTo(
+            "https://example.com/wms?bbox=-$worldSize,0.0,0.0,$worldSize&zoom=1",
+        )
+    }
+
+    @Test
+    public fun testGetTileUrl_malformedUrl_returnsNull() {
+        val provider = WmsUrlTileProvider { _, _, _, _, _ ->
+            "not a valid url ://"
+        }
+        val tileUrl = provider.getTileUrl(0, 0, 1)
+        assertThat(tileUrl).isNull()
+    }
 }
+// [END maps_compose_utils_wms_url_tile_provider_test]

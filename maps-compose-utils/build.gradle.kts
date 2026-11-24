@@ -50,6 +50,12 @@ android {
             enableAndroidTestCoverage = true
         }
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 kotlin {
@@ -100,4 +106,10 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.robolectric)
     testImplementation(libs.test.junit)
+    testImplementation(libs.truth)
+    testImplementation(libs.androidx.test.compose.ui)
+    testImplementation(libs.androidx.test.compose.ui.manifest)
+    testImplementation(libs.androidx.activity.compose)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.maps.testing.robolectric)
 }
