@@ -19,7 +19,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.compose.runtime.Composable
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.Marker
 
 /**
@@ -38,7 +37,7 @@ import com.google.android.gms.maps.model.Marker
  * parent-less [ImageView] for the Maps SDK to use.
  */
 internal class ComposeInfoWindowAdapter(
-    private val mapView: MapView,
+    private val mapView: ViewGroup,
     private val markerNodeFinder: (Marker) -> MarkerNode?,
 ) : GoogleMap.InfoWindowAdapter {
 

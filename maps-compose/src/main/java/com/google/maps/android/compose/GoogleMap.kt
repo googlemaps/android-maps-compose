@@ -48,6 +48,7 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.compose.LocalSavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.LocationSource
 import com.google.android.gms.maps.MapView
@@ -91,8 +92,10 @@ import kotlinx.coroutines.launch
  * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
  * @param mapColorScheme Defines the color scheme for the Map. Defaults to [ComposeMapColorScheme.FOLLOW_SYSTEM].
  * Not applied to Lite mode maps, which do not support color schemes.
+ * @param mapViewFactory factory for creating the [MapView]
  * @param content the content of the map
  */
+@OptIn(MapsComposeExperimentalApi::class)
 @Composable
 public fun GoogleMap(
     modifier: Modifier = Modifier,
@@ -114,6 +117,93 @@ public fun GoogleMap(
     contentPadding: PaddingValues = DefaultMapContentPadding,
     mapColorScheme: ComposeMapColorScheme? = ComposeMapColorScheme.FOLLOW_SYSTEM,
     mapViewFactory: (Context, GoogleMapOptions) -> MapView = ::MapView,
+    content:
+    @Composable @GoogleMapComposable
+    () -> Unit = {},
+) {
+    GoogleMap(
+        modifier = modifier,
+        mergeDescendants = mergeDescendants,
+        focusable = focusable,
+        cameraPositionState = cameraPositionState,
+        contentDescription = contentDescription,
+        googleMapOptionsFactory = googleMapOptionsFactory,
+        properties = properties,
+        locationSource = locationSource,
+        uiSettings = uiSettings,
+        indoorStateChangeListener = indoorStateChangeListener,
+        onMapClick = onMapClick,
+        onMapLongClick = onMapLongClick,
+        onMapLoaded = onMapLoaded,
+        onMyLocationButtonClick = onMyLocationButtonClick,
+        onMyLocationClick = onMyLocationClick,
+        onPOIClick = onPOIClick,
+        contentPadding = contentPadding,
+        mapColorScheme = mapColorScheme,
+        mapViewDelegateFactory = { context, options ->
+            DefaultMapViewDelegate(mapViewFactory(context, options))
+        },
+        content = content,
+    )
+}
+
+/**
+ * A compose container for a custom map view hosted via [MapViewDelegate] (for example, the
+ * Navigation SDK's `NavigationView`).
+ *
+ * @param mapViewDelegateFactory factory for creating the [MapViewDelegate] hosting the underlying
+ * map view. See [MapViewDelegate] for view-ownership requirements.
+ * @param modifier Modifier to be applied to the GoogleMap
+ * @param mergeDescendants deactivates the map for accessibility purposes
+ * @param focusable whether the map participates in keyboard focus traversal. When true (the
+ * default), the map acts as a single focus stop so keyboard users can reach and control it. Set
+ * to false to remove the map from focus traversal entirely, e.g. when the map is used as a
+ * decorative background behind other focusable content.
+ * @param cameraPositionState the [CameraPositionState] to be used to control or observe the map's
+ * camera state
+ * @param contentDescription the content description for the map used by accessibility services to
+ * describe the map. If none is specified, the default is "Google Map".
+ * @param googleMapOptionsFactory the block for creating the [GoogleMapOptions] provided when the
+ * map is created
+ * @param properties the properties for the map
+ * @param locationSource the [LocationSource] to be used to provide location data
+ * @param uiSettings the [MapUiSettings] to be used for UI-specific settings on the map
+ * @param indoorStateChangeListener listener for indoor building state changes
+ * @param onMapClick lambda invoked when the map is clicked
+ * @param onMapLongClick lambda invoked when the map is long-clicked
+ * @param onMapLoaded lambda invoked when the map is finished loading
+ * @param onMyLocationButtonClick lambda invoked when the my location button is clicked
+ * @param onMyLocationClick lambda invoked when the my location dot is clicked
+ * @param onPOIClick lambda invoked when a POI is clicked
+ * @param contentPadding the padding values used to signal that portions of the map around the edges
+ * may be obscured. The map will move the Google logo, etc. to avoid overlapping the padding.
+ * @param mapColorScheme Defines the color scheme for the Map. Defaults to [ComposeMapColorScheme.FOLLOW_SYSTEM].
+ * Not applied to Lite mode maps, which do not support color schemes.
+ * @param content the content of the map
+ */
+@MapsComposeExperimentalApi
+@Composable
+@JvmName("GoogleMapWithDelegate")
+public fun GoogleMap(
+    mapViewDelegateFactory: (Context, GoogleMapOptions) -> MapViewDelegate<*>,
+    modifier: Modifier = Modifier,
+    mergeDescendants: Boolean = false,
+    focusable: Boolean = true,
+    cameraPositionState: CameraPositionState = rememberCameraPositionState(),
+    contentDescription: String? = null,
+    googleMapOptionsFactory: () -> GoogleMapOptions = { GoogleMapOptions() },
+    properties: MapProperties = DefaultMapProperties,
+    locationSource: LocationSource? = null,
+    uiSettings: MapUiSettings = DefaultMapUiSettings,
+    indoorStateChangeListener: IndoorStateChangeListener = DefaultIndoorStateChangeListener,
+    onMapClick: ((LatLng) -> Unit)? = null,
+    onMapLongClick: ((LatLng) -> Unit)? = null,
+    onMapLoaded: (() -> Unit)? = null,
+    onMyLocationButtonClick: (() -> Boolean)? = null,
+    onMyLocationClick: ((Location) -> Unit)? = null,
+    onPOIClick: ((PointOfInterest) -> Unit)? = null,
+    contentPadding: PaddingValues = DefaultMapContentPadding,
+    mapColorScheme: ComposeMapColorScheme? = ComposeMapColorScheme.FOLLOW_SYSTEM,
     content:
     @Composable @GoogleMapComposable
     () -> Unit = {},
@@ -194,15 +284,16 @@ public fun GoogleMap(
                 baseOptions
             }
             cameraPositionState.isLiteMode = isLiteMode
-            mapViewFactory(context, options).also { mapView ->
+            val mapViewDelegate = mapViewDelegateFactory(context, options)
+            mapViewDelegate.mapView.also { mapView ->
                 mapView.applyFocusability(focusable)
                 mapView.setViewTreeLifecycleOwner(lifecycleOwner)
                 mapView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
 
-                val componentCallbacks = mapView.componentCallbacks2()
+                val componentCallbacks = mapViewDelegate.componentCallbacks2()
                 context.registerComponentCallbacks(componentCallbacks)
 
-                val lifecycleObserver = MapLifecycleEventObserver(mapView)
+                val lifecycleObserver = MapLifecycleEventObserver(mapViewDelegate)
 
                 // Only register for [lifecycleOwner]'s lifecycle events while MapView is attached
                 val onAttachStateListener = MapAttachStateChangeListener(lifecycleObserver)
@@ -233,7 +324,7 @@ public fun GoogleMap(
                 tagData.subcompositionJob = parentCompositionScope.launchSubcomposition(
                     mapUpdaterState,
                     parentComposition,
-                    mapView,
+                    tagData.lifecycleObserver.mapView,
                     tagData,
                     mapClickListeners,
                     currentContent,
@@ -244,14 +335,14 @@ public fun GoogleMap(
 }
 
 /**
- * When [focusable] is true, treat the MapView as a single focus stop.
+ * When [focusable] is true, treat the map view as a single focus stop.
  * FOCUS_BEFORE_DESCENDANTS ensures the map container gets focused first, and prevents the
  * keyboard focus from tabbing through all internal map elements (like zoom buttons or the
  * Google logo) by default.
  * When [focusable] is false, remove the map and all of its internal elements from keyboard
  * focus traversal altogether.
  */
-private fun MapView.applyFocusability(focusable: Boolean) {
+private fun ViewGroup.applyFocusability(focusable: Boolean) {
     isFocusable = focusable
     descendantFocusability = if (focusable) {
         ViewGroup.FOCUS_BEFORE_DESCENDANTS
@@ -264,10 +355,11 @@ private fun MapView.applyFocusability(focusable: Boolean) {
  * Create and apply the [content] compositions to the map +
  * dispose the [Composition] when the parent composable is disposed.
  * */
+@OptIn(MapsComposeExperimentalApi::class)
 internal fun CoroutineScope.launchSubcomposition(
     mapUpdaterState: MapUpdaterState,
     parentComposition: CompositionContext,
-    mapView: MapView,
+    mapViewDelegate: MapViewDelegate<*>,
     tagData: MapTagData,
     mapClickListeners: MapClickListeners,
     content:
@@ -279,7 +371,8 @@ internal fun CoroutineScope.launchSubcomposition(
         context = Dispatchers.Main.immediate,
         start = CoroutineStart.UNDISPATCHED,
     ) {
-        val map = mapView.awaitMap()
+        val map = mapViewDelegate.awaitMap()
+        val mapView = mapViewDelegate.mapView
         if (!isActive || mapView.tagDataOrNull !== tagData) {
             return@launch
         }
@@ -385,7 +478,8 @@ internal class MapAttachStateChangeListener(private val lifecycleObserver: MapLi
     }
 }
 
-internal fun MapView.componentCallbacks2(): ComponentCallbacks2 = object : ComponentCallbacks2 {
+@OptIn(MapsComposeExperimentalApi::class)
+internal fun MapViewDelegate<*>.componentCallbacks2(): ComponentCallbacks2 = object : ComponentCallbacks2 {
     override fun onConfigurationChanged(newConfig: Configuration) {}
 
     @Deprecated(
@@ -397,20 +491,18 @@ internal fun MapView.componentCallbacks2(): ComponentCallbacks2 = object : Compo
     }
 
     override fun onTrimMemory(level: Int) {
-        if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
-            this@componentCallbacks2.onLowMemory()
-        }
+        this@componentCallbacks2.onTrimMemory(level)
     }
 }
 
-internal val MapView.tagDataOrNull: MapTagData?
+internal val ViewGroup.tagDataOrNull: MapTagData?
     get() = tag as? MapTagData
 
-internal fun MapView.onReset() {
+internal fun ViewGroup.onReset() {
     tagDataOrNull?.disposeSubcomposition()
 }
 
-internal fun MapView.onRelease() {
+internal fun ViewGroup.onRelease() {
     val tagData = tagDataOrNull
     tagData?.disposeSubcomposition()
     if (tagData != null) {
@@ -462,7 +554,85 @@ public fun googleMapFactory(
     }
 }
 
-internal class MapLifecycleEventObserver(private val mapView: MapView) : LifecycleEventObserver {
+/**
+ * Delegate interface abstracting map view lifecycle and [GoogleMap] acquisition so that [GoogleMap]
+ * can host either a standard [MapView] (via [DefaultMapViewDelegate]) or a custom map view such as
+ * the Navigation SDK's `NavigationView`.
+ *
+ * ### View ownership
+ * [GoogleMap] takes ownership of [mapView] for the lifetime of the composable:
+ * - Overwrites [mapView]'s untagged [View.getTag] / [View.setTag] with internal state.
+ * - Attaches an internal child container to [mapView] for Compose info windows and custom markers.
+ * - Calls [ViewGroup.removeAllViews] and clears [View.setTag] (`tag = null`) when released.
+ *
+ * Custom implementations must not rely on [mapView]'s untagged `tag` property or assume [mapView]
+ * retains child views across release.
+ *
+ * @param T the underlying [ViewGroup] type hosted by this delegate
+ */
+@MapsComposeExperimentalApi
+public interface MapViewDelegate<out T : ViewGroup> {
+    /** The underlying [ViewGroup] hosted by this delegate. */
+    public val mapView: T
+
+    /** Forwards `onCreate` to the underlying map view. */
+    public fun onCreate(savedInstanceState: Bundle?)
+
+    /** Forwards `onStart` to the underlying map view. */
+    public fun onStart()
+
+    /** Forwards `onResume` to the underlying map view. */
+    public fun onResume()
+
+    /** Forwards `onPause` to the underlying map view. */
+    public fun onPause()
+
+    /** Forwards `onStop` to the underlying map view. */
+    public fun onStop()
+
+    /** Forwards `onLowMemory` to the underlying map view. */
+    public fun onLowMemory()
+
+    /**
+     * Forwards `onTrimMemory` to the underlying map view.
+     *
+     * The default implementation delegates to [onLowMemory] when [level] is at least
+     * [ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN], matching standard [MapView] handling.
+     */
+    public fun onTrimMemory(level: Int) {
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            onLowMemory()
+        }
+    }
+
+    /** Forwards `onDestroy` to the underlying map view. */
+    public fun onDestroy()
+
+    /** Suspends until the [GoogleMap] instance is available and returns it. */
+    public suspend fun awaitMap(): GoogleMap
+}
+
+/**
+ * Default [MapViewDelegate] implementation wrapping a standard [MapView].
+ *
+ * @property mapView the underlying [MapView] instance
+ */
+@MapsComposeExperimentalApi
+public class DefaultMapViewDelegate(override val mapView: MapView) : MapViewDelegate<MapView> {
+    override fun onCreate(savedInstanceState: Bundle?): Unit = mapView.onCreate(savedInstanceState)
+    override fun onStart(): Unit = mapView.onStart()
+    override fun onResume(): Unit = mapView.onResume()
+    override fun onPause(): Unit = mapView.onPause()
+    override fun onStop(): Unit = mapView.onStop()
+    override fun onLowMemory(): Unit = mapView.onLowMemory()
+    override fun onDestroy(): Unit = mapView.onDestroy()
+    override suspend fun awaitMap(): GoogleMap = mapView.awaitMap()
+}
+
+@OptIn(MapsComposeExperimentalApi::class)
+internal class MapLifecycleEventObserver(internal val mapView: MapViewDelegate<*>) : LifecycleEventObserver {
+    constructor(mapView: MapView) : this(DefaultMapViewDelegate(mapView))
+
     private var currentLifecycleState: Lifecycle.State = Lifecycle.State.INITIALIZED
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {

@@ -20,6 +20,7 @@ import android.content.ComponentCallbacks2
 import android.content.Context
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionContext
@@ -56,6 +57,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.Test
 
+@OptIn(MapsComposeExperimentalApi::class)
 public class MapApplierCleanupTest {
 
     @Test
@@ -175,7 +177,7 @@ public class MapApplierCleanupTest {
         val composition = mockk<Composition>(relaxed = true)
         val tagData = MapTagData(
             componentCallbacks = mockk<ComponentCallbacks2>(relaxed = true),
-            lifecycleObserver = MapLifecycleEventObserver(mapView),
+            lifecycleObserver = MapLifecycleEventObserver(DefaultMapViewDelegate(mapView)),
             detachLifecycleObserver = {},
             onAttachStateChangeListener = mockk<View.OnAttachStateChangeListener>(relaxed = true),
             isLiteMode = false,
@@ -196,7 +198,7 @@ public class MapApplierCleanupTest {
     @Test
     public fun `MapLifecycleEventObserver transitions MapView through lifecycle states in order`() {
         val mapView = mockk<MapView>(relaxed = true)
-        val observer = MapLifecycleEventObserver(mapView)
+        val observer = MapLifecycleEventObserver(DefaultMapViewDelegate(mapView))
         val owner = object : LifecycleOwner {
             val registry = LifecycleRegistry.createUnsafe(this)
             override val lifecycle: Lifecycle get() = registry
@@ -229,7 +231,7 @@ public class MapApplierCleanupTest {
         every { mapView.context } returns context
         val componentCallbacks = mockk<ComponentCallbacks2>(relaxed = true)
         val attachListener = mockk<View.OnAttachStateChangeListener>(relaxed = true)
-        val lifecycleObserver = MapLifecycleEventObserver(mapView)
+        val lifecycleObserver = MapLifecycleEventObserver(DefaultMapViewDelegate(mapView))
         val owner = object : LifecycleOwner {
             val registry = LifecycleRegistry.createUnsafe(this)
             override val lifecycle: Lifecycle get() = registry
@@ -275,7 +277,7 @@ public class MapApplierCleanupTest {
     @Test
     public fun `MapView onReset disposes subcomposition without destroying MapView`() {
         val mapView = mockk<MapView>(relaxed = true)
-        val lifecycleObserver = MapLifecycleEventObserver(mapView)
+        val lifecycleObserver = MapLifecycleEventObserver(DefaultMapViewDelegate(mapView))
         val owner = object : LifecycleOwner {
             val registry = LifecycleRegistry.createUnsafe(this)
             override val lifecycle: Lifecycle get() = registry
@@ -317,6 +319,7 @@ public class MapApplierCleanupTest {
             try {
                 val context = mockk<Context>(relaxed = true)
                 val mapView = mockk<MapView>(relaxed = true)
+                val mapViewDelegate = DefaultMapViewDelegate(mapView)
                 val map = mockk<GoogleMap>(relaxed = true)
                 val callbackSlot = slot<OnMapReadyCallback>()
                 every { mapView.context } returns context
@@ -324,7 +327,7 @@ public class MapApplierCleanupTest {
 
                 val tagData = MapTagData(
                     componentCallbacks = mockk<ComponentCallbacks2>(relaxed = true),
-                    lifecycleObserver = MapLifecycleEventObserver(mapView),
+                    lifecycleObserver = MapLifecycleEventObserver(mapViewDelegate),
                     detachLifecycleObserver = {},
                     onAttachStateChangeListener = mockk<View.OnAttachStateChangeListener>(relaxed = true),
                     isLiteMode = false,
@@ -344,11 +347,11 @@ public class MapApplierCleanupTest {
                     mapColorScheme = null,
                 )
 
-                // 1. Launch subcomposition (suspends at mapView.awaitMap())
+                // 1. Launch subcomposition (suspends at mapViewDelegate.awaitMap())
                 tagData.subcompositionJob = launchSubcomposition(
                     mapUpdaterState = mapUpdaterState,
                     parentComposition = mockk<CompositionContext>(relaxed = true),
-                    mapView = mapView,
+                    mapViewDelegate = mapViewDelegate,
                     tagData = tagData,
                     mapClickListeners = MapClickListeners(),
                     content = {},
@@ -379,7 +382,7 @@ public class MapApplierCleanupTest {
             val mapView = mockk<MapView>(relaxed = true)
             every { mapView.findViewTreeLifecycleOwner() } returns null
 
-            val listener = MapAttachStateChangeListener(MapLifecycleEventObserver(mapView))
+            val listener = MapAttachStateChangeListener(MapLifecycleEventObserver(DefaultMapViewDelegate(mapView)))
 
             var thrown: IllegalStateException? = null
             try {
@@ -404,9 +407,9 @@ public class MapApplierCleanupTest {
 
     @Suppress("DEPRECATION")
     @Test
-    public fun `MapView componentCallbacks2 only calls onLowMemory for UI_HIDDEN and higher`() {
+    public fun `DefaultMapViewDelegate componentCallbacks2 only calls onLowMemory for UI_HIDDEN and higher`() {
         val mapView = mockk<MapView>(relaxed = true)
-        val callbacks = mapView.componentCallbacks2()
+        val callbacks = DefaultMapViewDelegate(mapView).componentCallbacks2()
 
         callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE)
         callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)
@@ -436,5 +439,62 @@ public class MapApplierCleanupTest {
 
         callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND)
         verify(exactly = 2) { streetView.onLowMemory() }
+    }
+
+    @Test
+    public fun `MapLifecycleEventObserver forwards all lifecycle events to custom MapViewDelegate`() {
+        val customDelegate = mockk<MapViewDelegate<ViewGroup>>(relaxed = true)
+        val observer = MapLifecycleEventObserver(customDelegate)
+        val owner = object : LifecycleOwner {
+            val registry = LifecycleRegistry.createUnsafe(this)
+            override val lifecycle: Lifecycle get() = registry
+        }
+
+        observer.onStateChanged(owner, Lifecycle.Event.ON_CREATE)
+        observer.onStateChanged(owner, Lifecycle.Event.ON_START)
+        observer.onStateChanged(owner, Lifecycle.Event.ON_RESUME)
+        observer.moveToBaseState()
+        observer.moveToDestroyedState()
+
+        verifyOrder {
+            customDelegate.onCreate(any())
+            customDelegate.onStart()
+            customDelegate.onResume()
+            customDelegate.onPause()
+            customDelegate.onStop()
+            customDelegate.onDestroy()
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    public fun `MapViewDelegate componentCallbacks2 forwards onLowMemory and onTrimMemory`() {
+        val customDelegate = mockk<MapViewDelegate<ViewGroup>>(relaxed = true)
+        val callbacks = customDelegate.componentCallbacks2()
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)
+        verify(exactly = 1) { customDelegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) }
+
+        callbacks.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
+        verify(exactly = 1) { customDelegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) }
+
+        callbacks.onLowMemory()
+        verify(exactly = 1) { customDelegate.onLowMemory() }
+    }
+
+    @Suppress("DEPRECATION")
+    @Test
+    public fun `MapViewDelegate default onTrimMemory delegates to onLowMemory at UI_HIDDEN or higher`() {
+        val mapView = mockk<MapView>(relaxed = true)
+        val delegate = DefaultMapViewDelegate(mapView)
+
+        delegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW)
+        verify(exactly = 0) { mapView.onLowMemory() }
+
+        delegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
+        verify(exactly = 1) { mapView.onLowMemory() }
+
+        delegate.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND)
+        verify(exactly = 2) { mapView.onLowMemory() }
     }
 }
