@@ -197,11 +197,12 @@ internal class GoogleMapTest {
 
     @Test
     internal fun testGoogleMap_customMapViewFactory_preservesBackwardCompatibility() {
+        val expectedPosition = CameraPosition.fromLatLngZoom(sydney, 12f)
         var capturedOptions: GoogleMapOptions? = null
 
         composeTestRule.setContent {
             val cameraState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(sydney, 12f)
+                position = expectedPosition
             }
             GoogleMap(
                 cameraPositionState = cameraState,
@@ -215,22 +216,58 @@ internal class GoogleMapTest {
 
         composeTestRule.waitForIdle()
         assertThat(capturedOptions).isNotNull()
+        assertThat(capturedOptions?.camera).isEqualTo(expectedPosition)
+    }
+
+    @Test
+    internal fun testGoogleMap_initialCameraOverridesOptionsFactory() {
+        val expectedPosition = CameraPosition.fromLatLngZoom(sydney, 12f)
+        var capturedOptions: GoogleMapOptions? = null
+
+        composeTestRule.setContent {
+            val cameraState = rememberCameraPositionState {
+                position = expectedPosition
+            }
+            GoogleMap(
+                cameraPositionState = cameraState,
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().camera(
+                        CameraPosition.fromLatLngZoom(LatLng(35.6762, 139.6503), 5f),
+                    )
+                },
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                },
+            )
+        }
+
+        composeTestRule.waitForIdle()
+        assertThat(capturedOptions?.camera).isEqualTo(expectedPosition)
     }
 
     @Test
     internal fun testGoogleMap_customMapViewDelegateFactory_lifecycleAndMarkerComposable() {
+        val expectedPosition = CameraPosition.fromLatLngZoom(sydney, 13f)
         val lifecycleEvents = mutableListOf<String>()
         val fakeGoogleMap = ShadowMapView.createFakeGoogleMap()
+        var capturedOptions: GoogleMapOptions? = null
         var customDelegate: MapViewDelegate<FrameLayout>? = null
 
         composeTestRule.setContent {
             val cameraState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(sydney, 13f)
+                position = expectedPosition
             }
             GoogleMap(
                 cameraPositionState = cameraState,
                 modifier = Modifier.fillMaxSize(),
-                mapViewDelegateFactory = { context, _ ->
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().camera(
+                        CameraPosition.fromLatLngZoom(LatLng(35.6762, 139.6503), 5f),
+                    )
+                },
+                mapViewDelegateFactory = { context, options ->
+                    capturedOptions = options
                     object : MapViewDelegate<FrameLayout> {
                         override val mapView: FrameLayout = FrameLayout(context)
                         override fun onCreate(savedInstanceState: Bundle?) {
@@ -274,6 +311,7 @@ internal class GoogleMapTest {
         composeTestRule.waitForIdle()
 
         assertThat(customDelegate).isNotNull()
+        assertThat(capturedOptions?.camera).isEqualTo(expectedPosition)
         assertThat(lifecycleEvents).containsExactly("onCreate", "onStart", "onResume").inOrder()
 
         val shadowMap = Shadow.extract(fakeGoogleMap) as ShadowGoogleMap

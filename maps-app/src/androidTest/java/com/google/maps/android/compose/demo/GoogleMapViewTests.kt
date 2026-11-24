@@ -171,16 +171,19 @@ class GoogleMapViewTests {
         assertThat(mapLoaded.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
 
         val cameraChecked = CountDownLatch(1)
+        var loadedPosition: CameraPosition? = null
         composeTestRule.runOnIdle {
             checkNotNull(mapView).getMapAsync { map ->
-                assertThat(map.cameraPosition.target).isEqualTo(expectedPosition.target)
-                assertThat(map.cameraPosition.zoom).isWithin(0.001f).of(expectedPosition.zoom)
-                assertThat(map.cameraPosition.tilt).isWithin(0.001f).of(expectedPosition.tilt)
-                assertThat(map.cameraPosition.bearing).isWithin(0.001f).of(expectedPosition.bearing)
+                loadedPosition = map.cameraPosition
                 cameraChecked.countDown()
             }
         }
         assertThat(cameraChecked.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
+        val actualPosition = checkNotNull(loadedPosition)
+        assertThat(actualPosition.target).isEqualTo(expectedPosition.target)
+        assertThat(actualPosition.zoom).isWithin(0.001f).of(expectedPosition.zoom)
+        assertThat(actualPosition.tilt).isWithin(0.001f).of(expectedPosition.tilt)
+        assertThat(actualPosition.bearing).isWithin(0.001f).of(expectedPosition.bearing)
     }
 
     @Test

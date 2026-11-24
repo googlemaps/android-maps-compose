@@ -165,7 +165,8 @@ public fun GoogleMap(
  * @param contentDescription the content description for the map used by accessibility services to
  * describe the map. If none is specified, the default is "Google Map".
  * @param googleMapOptionsFactory the block for creating the [GoogleMapOptions] provided when the
- * map is created
+ * map is created. Its camera is overridden by [cameraPositionState]'s position; configure the
+ * initial camera through [cameraPositionState].
  * @param properties the properties for the map
  * @param locationSource the [LocationSource] to be used to provide location data
  * @param uiSettings the [MapUiSettings] to be used for UI-specific settings on the map
