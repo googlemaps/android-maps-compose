@@ -38,15 +38,15 @@ Measured at `0293633` (#1093), recorded 2026-11-24T06:02:43Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `5076c5a` (#1089), recorded 2026-11-23T22:45:50Z.
+Measured at `0293633` (#1093), recorded 2026-11-24T06:02:48Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 651/2,487 | 26.18% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
-| `maps-compose` | 1,566/2,184 | 71.70% | `██████████████░░░░░░` | 577/1,402 | 41.16% |
+| `maps-app` | 658/2,487 | 26.46% | `█████░░░░░░░░░░░░░░░` | 97/452 | 21.46% |
+| `maps-compose` | 1,566/2,184 | 71.70% | `██████████████░░░░░░` | 575/1,402 | 41.01% |
 | `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
 | `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
-| **TOTAL** | 2,805/5,735 | 48.91% | `██████████░░░░░░░░░░` | 886/2,460 | 36.02% |
+| **TOTAL** | 2,812/5,735 | 49.03% | `██████████░░░░░░░░░░` | 885/2,460 | 35.98% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-24 | `0293633` | #1093 | 17.38% | 0.00 | n/a | n/a | ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py |
+| 2026-11-24 | `0293633` | #1093 | 17.38% | 0.00 | 49.03% | n/a | ci: harden Gradle caches, handle no-op auto-fix edits, and test create_pr.py |
 | 2026-11-24 | `f88706f` | #1092 | 17.38% | 0.00 | n/a | n/a | chore: add maintainer as code owner of .github |
 | 2026-11-23 | `5076c5a` | #1089 | 17.38% | 0.00 | 48.91% | -0.10 | ci: update the Baseline Profiles pull request without needing read:org |
 | 2026-11-23 | `bb6cbe5` | #1091 | 17.38% | 0.00 | 49.01% | +0.03 | chore(deps): bump peter-evans/create-pull-request |
