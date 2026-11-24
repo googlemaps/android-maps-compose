@@ -455,7 +455,8 @@ class NavigationViewModelTest {
         viewModel.navigateToLatLng(LatLng(40.0150, -105.2705), label = "Second Destination")
         advanceUntilIdle()
 
-        verify { firstFuture.cancel(true) }
+        // Cancelling the SDK future makes it throw "Task was cancelled" on the main thread.
+        verify(exactly = 0) { firstFuture.cancel(any()) }
         // Even if the SDK invokes the canceled first callback with ROUTE_CANCELED, state stays RUNNING
         if (firstListenerSlot.isCaptured) {
             firstListenerSlot.captured.onResult(Navigator.RouteStatus.ROUTE_CANCELED)
