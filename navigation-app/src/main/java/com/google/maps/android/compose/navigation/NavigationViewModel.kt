@@ -300,10 +300,11 @@ class NavigationViewModel(
         try {
             val routeStatusFuture = localNavigator.setDestination(destination, routingOptions)
 
+            // Do not cancel routeStatusFuture when this coroutine is cancelled: the Navigation SDK
+            // rethrows "Task was cancelled" on the main thread when it delivers a cancelled future,
+            // which crashes the app. A newer setDestination() or clearDestinations() call already
+            // supersedes the pending route, and the listener below ignores late results.
             suspendCancellableCoroutine { continuation ->
-                continuation.invokeOnCancellation {
-                    routeStatusFuture.cancel(true)
-                }
                 val callback =
                     ListenableResultFuture.OnResultListener<Navigator.RouteStatus> { status ->
                         if (!continuation.isActive) return@OnResultListener
