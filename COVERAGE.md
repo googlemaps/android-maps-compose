@@ -38,15 +38,15 @@ Measured at `d657239` (#1027), recorded 2026-11-25T05:05:21Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `b418c7b` (#1094), recorded 2026-11-24T15:08:08Z.
+Measured at `d657239` (#1027), recorded 2026-11-25T05:05:24Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-app` | 652/2,487 | 26.22% | `█████░░░░░░░░░░░░░░░` | 96/452 | 21.24% |
-| `maps-compose` | 1,621/2,245 | 72.20% | `██████████████░░░░░░` | 598/1,452 | 41.18% |
-| `maps-compose-utils` | 432/866 | 49.88% | `██████████░░░░░░░░░░` | 167/514 | 32.49% |
-| `maps-compose-widgets` | 156/198 | 78.79% | `████████████████░░░░` | 46/92 | 50.00% |
-| **TOTAL** | 2,861/5,796 | 49.36% | `██████████░░░░░░░░░░` | 907/2,510 | 36.14% |
+| `maps-app` | 218/2,487 | 8.77% | `██░░░░░░░░░░░░░░░░░░` | 21/452 | 4.65% |
+| `maps-compose` | 1,177/2,246 | 52.40% | `██████████░░░░░░░░░░` | 421/1,452 | 28.99% |
+| `maps-compose-utils` | 259/866 | 29.91% | `██████░░░░░░░░░░░░░░` | 104/514 | 20.23% |
+| `maps-compose-widgets` | 123/198 | 62.12% | `████████████░░░░░░░░` | 21/92 | 22.83% |
+| **TOTAL** | 1,777/5,797 | 30.65% | `██████░░░░░░░░░░░░░░` | 567/2,510 | 22.59% |
 
 ## Trend (last 30 commits)
 
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-25 | `d657239` | #1027 | 38.95% | +0.02 | n/a | n/a | fix(maps-compose): apply initial camera during map creation |
+| 2026-11-25 | `d657239` | #1027 | 38.95% | +0.02 | 30.65% | n/a | fix(maps-compose): apply initial camera during map creation |
 | 2026-11-24 | `14f18d0` | #991 | 38.93% | 0.00 | n/a | n/a | fix(ci): harden update-skill workflow and script against prompt injection |
 | 2026-11-24 | `b418c7b` | #1094 | 38.93% | 0.00 | 49.36% | +0.02 | chore(navigation-app): stop cancelling the pending route future when a new destination is picked |
 | 2026-11-24 | `536cec6` | #1061 | 38.93% | +21.55 | 49.34% | +0.31 | feat: support custom MapView delegates and add Navigation SDK sample app |
