@@ -107,6 +107,86 @@ class GoogleMapViewTests {
     }
 
     @Test
+    fun testInitialCameraPositionIsAppliedToGoogleMapOptions() {
+        val expectedPosition = cameraPositionState.position
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                cameraPositionState = cameraPositionState,
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                },
+            )
+        }
+
+        assertThat(capturedOptions?.camera).isEqualTo(expectedPosition)
+    }
+
+    @Test
+    fun testInitialCameraPositionOverridesGoogleMapOptionsFactory() {
+        val configuredPosition = LatLng(7.89, 10.11)
+        val configuredZoom = 12f
+        val expectedPosition = cameraPositionState.position
+        var capturedOptions: GoogleMapOptions? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                cameraPositionState = cameraPositionState,
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().camera(
+                        CameraPosition.fromLatLngZoom(configuredPosition, configuredZoom),
+                    )
+                },
+                mapViewFactory = { context, options ->
+                    capturedOptions = options
+                    MapView(context, options)
+                },
+            )
+        }
+
+        assertThat(capturedOptions?.camera).isEqualTo(expectedPosition)
+    }
+
+    @Test
+    fun testLoadedCameraPositionOverridesGoogleMapOptionsFactory() {
+        assumeValidApiKey()
+        val expectedPosition = cameraPositionState.position
+        val mapLoaded = CountDownLatch(1)
+        var mapView: MapView? = null
+        composeTestRule.setContent {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                googleMapOptionsFactory = {
+                    GoogleMapOptions().camera(
+                        CameraPosition.fromLatLngZoom(LatLng(7.89, 10.11), 12f),
+                    )
+                },
+                mapViewFactory = { context, options ->
+                    MapView(context, options).also { mapView = it }
+                },
+                onMapLoaded = { mapLoaded.countDown() },
+            )
+        }
+        assertThat(mapLoaded.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
+
+        val cameraChecked = CountDownLatch(1)
+        var loadedPosition: CameraPosition? = null
+        composeTestRule.runOnIdle {
+            checkNotNull(mapView).getMapAsync { map ->
+                loadedPosition = map.cameraPosition
+                cameraChecked.countDown()
+            }
+        }
+        assertThat(cameraChecked.await(MAP_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)).isTrue()
+        val actualPosition = checkNotNull(loadedPosition)
+        assertThat(actualPosition.target).isEqualTo(expectedPosition.target)
+        assertThat(actualPosition.zoom).isWithin(0.001f).of(expectedPosition.zoom)
+        assertThat(actualPosition.tilt).isWithin(0.001f).of(expectedPosition.tilt)
+        assertThat(actualPosition.bearing).isWithin(0.001f).of(expectedPosition.bearing)
+    }
+
+    @Test
     fun testDefaultColorSchemeIsFollowSystem() {
         var capturedOptions: GoogleMapOptions? = null
         composeTestRule.setContent {
