@@ -25,14 +25,14 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `14f18d0` (#991), recorded 2026-11-24T19:24:10Z.
+Measured at `d657239` (#1027), recorded 2026-11-25T05:05:21Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
-| `maps-compose` | 949/2,071 | 45.82% | `█████████░░░░░░░░░░░` | 294/1,930 | 15.23% |
+| `maps-compose` | 950/2,072 | 45.85% | `█████████░░░░░░░░░░░` | 295/1,930 | 15.28% |
 | `maps-compose-utils` | 184/700 | 26.29% | `█████░░░░░░░░░░░░░░░` | 63/496 | 12.70% |
 | `maps-compose-widgets` | 6/155 | 3.87% | `█░░░░░░░░░░░░░░░░░░░` | 0/84 | 0.00% |
-| **TOTAL** | 1,139/2,926 | 38.93% | `████████░░░░░░░░░░░░` | 357/2,510 | 14.22% |
+| **TOTAL** | 1,140/2,927 | 38.95% | `████████░░░░░░░░░░░░` | 358/2,510 | 14.26% |
 
 ### Instrumentation tests
 
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-25 | `d657239` | #1027 | 38.95% | +0.02 | n/a | n/a | fix(maps-compose): apply initial camera during map creation |
 | 2026-11-24 | `14f18d0` | #991 | 38.93% | 0.00 | n/a | n/a | fix(ci): harden update-skill workflow and script against prompt injection |
 | 2026-11-24 | `b418c7b` | #1094 | 38.93% | 0.00 | 49.36% | +0.02 | chore(navigation-app): stop cancelling the pending route future when a new destination is picked |
 | 2026-11-24 | `536cec6` | #1061 | 38.93% | +21.55 | 49.34% | +0.31 | feat: support custom MapView delegates and add Navigation SDK sample app |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-11-04 | `5c44583` | #1073 | 12.98% | -0.01 | 47.20% | -0.08 | feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0 |
 | 2026-11-03 | `53c9725` | #1067 | 12.99% | 0.00 | 47.28% | n/a | build: check the public API of the library modules |
 | 2026-11-02 | `174f0fd` | #1060 | 12.99% | 0.00 | n/a | n/a | chore: add maintainer as code owner of workflow files |
-| 2026-10-30 | `8c0e72c` | #1057 | 12.99% | 0.00 | 47.28% | +16.24 | fix(ci): read the Update Skill Gemini model from GEMINI_MODEL |
