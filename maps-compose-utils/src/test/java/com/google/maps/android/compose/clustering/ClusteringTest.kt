@@ -16,6 +16,7 @@
 
 package com.google.maps.android.compose.clustering
 
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
 // [START maps_compose_utils_clustering_test]
@@ -141,7 +143,11 @@ internal class ClusteringTest {
         }
 
         composeTestRule.waitForIdle()
+        // ClusterManager computes clusters on a background dispatcher and hands them to the
+        // renderer through Dispatchers.Main. Under Robolectric's paused looper that hand-off only
+        // runs when the main looper is idled, which waitUntil does not do on its own.
         composeTestRule.waitUntil(timeoutMillis = 5000) {
+            shadowOf(Looper.getMainLooper()).idle()
             decoratedItem != null
         }
         assertThat(decoratedItem).isEqualTo(items.first())
