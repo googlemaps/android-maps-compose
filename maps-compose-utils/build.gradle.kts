@@ -29,7 +29,11 @@ android {
     }
 
     namespace = "com.google.maps.android.compose.utils"
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    compileSdk {
+        version = release(libs.versions.androidCompileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.androidCompileSdkMinor.get().toInt()
+        }
+    }
 
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()

@@ -4,6 +4,8 @@
 [versions]
 # Base
 androidCompileSdk = "37"
+# Compose 1.13 (BOM 2026.11.01) requires compiling against Android 37.1 or later.
+androidCompileSdkMinor = "1"
 androidMinSdk = "24"
 androidTargetSdk = "37"
 
@@ -21,7 +23,7 @@ versions = "0.67.0"
 activitycompose = "1.13.0"
 androidx-core = "1.19.1"
 androidx-startup = "1.2.0"
-compose-bom = "2026.09.00"
+compose-bom = "2026.11.01"
 constraintlayout = "2.2.2"
 desugarJdkLibs = "2.1.5"
 lifecycleRuntimeKtx = "2.11.0"
