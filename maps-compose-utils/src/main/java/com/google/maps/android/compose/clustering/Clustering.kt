@@ -36,12 +36,14 @@ import androidx.compose.ui.UiComposable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.ClusterRenderer
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.GoogleMapComposable
+import com.google.maps.android.compose.InfoWindowHandler
 import com.google.maps.android.compose.InputHandler
 import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapsComposeExperimentalApi
@@ -146,6 +148,7 @@ public fun ClusteringMarkerProperties(anchor: Offset? = null, zIndex: Float? = n
  * are treated as updates when their values differ. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept. Without a key, items are identified by their
  * `equals` and `hashCode` implementations.
+ * @param clusterItemDecoration optional map content drawn for each item while it isn't part of a cluster
  */
 @Composable
 @GoogleMapComposable
@@ -250,6 +253,7 @@ public fun <T : ClusterItem> Clustering(
  * are treated as updates when their values differ. Without a key, items are identified by their
  * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept.
+ * @param clusterItemDecoration optional map content drawn for each item while it isn't part of a cluster
  */
 @Composable
 @GoogleMapComposable
@@ -296,6 +300,12 @@ public fun <T : ClusterItem> Clustering(
 /**
  * Groups many items on a map based on zoom level.
  *
+ * If a cluster or item has an info window, the map shows it when the user clicks its marker and
+ * [onClusterClick] or [onClusterItemClick] returns false. The map also shows it when code calls
+ * [Marker.showInfoWindow] on the marker. What each info window parameter draws must have a
+ * non-zero width and height for every cluster and item that it gets. Otherwise, rendering the info
+ * window throws an [IllegalStateException].
+ *
  * @param items all items to show
  * @param onClusterClick a lambda invoked when the user clicks a cluster of items
  * @param onClusterItemClick a lambda invoked when the user clicks a non-clustered item
@@ -315,6 +325,24 @@ public fun <T : ClusterItem> Clustering(
  * are treated as updates when their values differ. Without a key, items are identified by their
  * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept.
+ * @param clusterItemDecoration optional map content drawn for each item while it isn't part of a cluster
+ * @param onClusterInfoWindowClick an optional lambda invoked when the user clicks the info window
+ * of a cluster. If this value is null, Clustering keeps any listener that other code set on the
+ * cluster manager.
+ * @param onClusterInfoWindowLongClick an optional lambda invoked when the user long-clicks the info
+ * window of a cluster. If this value is null, Clustering keeps any listener that other code set on
+ * the cluster manager.
+ * @param clusterInfoWindow optional composable lambda expression for customizing the entire info
+ * window of a cluster. If this value is not null, the map does not use [clusterInfoWindowContent].
+ * @param clusterInfoWindowContent optional composable lambda expression for customizing the
+ * content of a cluster's info window. The map shows this content inside the default info window
+ * frame.
+ * @param clusterItemInfoWindow optional composable lambda expression for customizing the entire
+ * info window of a non-clustered item. If this value is not null, the map does not use
+ * [clusterItemInfoWindowContent].
+ * @param clusterItemInfoWindowContent optional composable lambda expression for customizing the
+ * content of a non-clustered item's info window. The map shows this content inside the default
+ * info window frame.
  * @param onClusterManager an optional lambda invoked with the clusterManager as a param when both
  * the clusterManager and renderer are set up, allowing callers a customization hook.
  */
@@ -339,6 +367,12 @@ public fun <T : ClusterItem> Clustering(
     clusterItemDecoration:
     @Composable @GoogleMapComposable
     (T) -> Unit = {},
+    onClusterInfoWindowClick: ((Cluster<T>) -> Unit)? = null,
+    onClusterInfoWindowLongClick: ((Cluster<T>) -> Unit)? = null,
+    clusterInfoWindow: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterInfoWindowContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemInfoWindow: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterItemInfoWindowContent: @[UiComposable Composable] ((T) -> Unit)? = null,
     onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
 ) {
     val clusterManager = rememberClusterManager<T>()
@@ -370,6 +404,14 @@ public fun <T : ClusterItem> Clustering(
         onClusterManager?.invoke(clusterManager)
     }
 
+    if (clusterManager != null) {
+        ClusterInfoWindowClickListeners(
+            clusterManager = clusterManager,
+            onClick = onClusterInfoWindowClick,
+            onLongClick = onClusterInfoWindowLongClick,
+        )
+    }
+
     if (clusterManager != null && renderer != null) {
         Clustering(
             items = items,
@@ -377,7 +419,39 @@ public fun <T : ClusterItem> Clustering(
             clusterItemDecoration = clusterItemDecoration,
             renderer = renderer,
             key = key,
+            clusterInfoWindow = clusterInfoWindow,
+            clusterInfoWindowContent = clusterInfoWindowContent,
+            clusterItemInfoWindow = clusterItemInfoWindow,
+            clusterItemInfoWindowContent = clusterItemInfoWindowContent,
         )
+    }
+}
+
+/**
+ * Sets [onClick] and [onLongClick] as the cluster info window listeners of [clusterManager] while
+ * they are in the composition. When a callback leaves the composition, this function clears its
+ * listener. A null callback does not change its listener, so a listener that other code set stays
+ * in place.
+ */
+@Composable
+internal fun <T : ClusterItem> ClusterInfoWindowClickListeners(
+    clusterManager: ClusterManager<T>,
+    onClick: ((Cluster<T>) -> Unit)?,
+    onLongClick: ((Cluster<T>) -> Unit)?,
+) {
+    if (onClick != null) {
+        val currentOnClick by rememberUpdatedState(onClick)
+        DisposableEffect(clusterManager) {
+            clusterManager.setOnClusterInfoWindowClickListener { currentOnClick(it) }
+            onDispose { clusterManager.setOnClusterInfoWindowClickListener(null) }
+        }
+    }
+    if (onLongClick != null) {
+        val currentOnLongClick by rememberUpdatedState(onLongClick)
+        DisposableEffect(clusterManager) {
+            clusterManager.setOnClusterInfoWindowLongClickListener { currentOnLongClick(it) }
+            onDispose { clusterManager.setOnClusterInfoWindowLongClickListener(null) }
+        }
     }
 }
 
@@ -390,6 +464,7 @@ public fun <T : ClusterItem> Clustering(
  * are treated as updates when their values differ. Without a key, items are identified by their
  * `equals` and `hashCode` implementations. Duplicate keys in a collection produce a warning
  * and only the last item for each key is kept.
+ * @param clusterItemDecoration optional map content drawn for each item while it isn't part of a cluster
  */
 @Composable
 @GoogleMapComposable
@@ -554,6 +629,49 @@ public fun <T : ClusterItem> Clustering(
     clusterItemDecoration = clusterItemDecoration,
 )
 
+/** Retains the pre-cluster-info-window JVM signature for already compiled callers. */
+@Deprecated("Retained for binary compatibility", level = DeprecationLevel.HIDDEN)
+@Composable
+@GoogleMapComposable
+@MapsComposeExperimentalApi
+public fun <T : ClusterItem> Clustering(
+    items: Collection<T>,
+    onClusterClick: (Cluster<T>) -> Boolean = { false },
+    onClusterItemClick: (T) -> Boolean = { false },
+    onClusterItemInfoWindowClick: (T) -> Unit = { },
+    onClusterItemInfoWindowLongClick: (T) -> Unit = { },
+    clusterContent: @[UiComposable Composable] ((Cluster<T>) -> Unit)? = null,
+    clusterItemContent: @[UiComposable Composable] ((T) -> Unit)? = null,
+    clusterContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterItemContentAnchor: Offset = Offset(0.5f, 1.0f),
+    clusterContentZIndex: Float = 0.0f,
+    clusterItemContentZIndex: Float = 0.0f,
+    clusterContentRotation: Float = 0.0f,
+    clusterItemContentRotation: Float = 0.0f,
+    key: ((T) -> Any)? = null,
+    clusterItemDecoration:
+    @Composable @GoogleMapComposable
+    (T) -> Unit = {},
+    onClusterManager: ((ClusterManager<T>) -> Unit)? = null,
+): Unit = Clustering(
+    items = items,
+    onClusterClick = onClusterClick,
+    onClusterItemClick = onClusterItemClick,
+    onClusterItemInfoWindowClick = onClusterItemInfoWindowClick,
+    onClusterItemInfoWindowLongClick = onClusterItemInfoWindowLongClick,
+    clusterContent = clusterContent,
+    clusterItemContent = clusterItemContent,
+    clusterContentAnchor = clusterContentAnchor,
+    clusterItemContentAnchor = clusterItemContentAnchor,
+    clusterContentZIndex = clusterContentZIndex,
+    clusterItemContentZIndex = clusterItemContentZIndex,
+    clusterContentRotation = clusterContentRotation,
+    clusterItemContentRotation = clusterItemContentRotation,
+    key = key,
+    clusterItemDecoration = clusterItemDecoration,
+    onClusterManager = onClusterManager,
+)
+
 @Composable
 @GoogleMapComposable
 @MapsComposeExperimentalApi
@@ -565,6 +683,10 @@ internal fun <T : ClusterItem> Clustering(
     (T) -> Unit = {},
     renderer: ClusterRenderer<T>? = null,
     key: ((T) -> Any)? = null,
+    clusterInfoWindow: (@Composable (Cluster<T>) -> Unit)? = null,
+    clusterInfoWindowContent: (@Composable (Cluster<T>) -> Unit)? = null,
+    clusterItemInfoWindow: (@Composable (T) -> Unit)? = null,
+    clusterItemInfoWindowContent: (@Composable (T) -> Unit)? = null,
 ) {
     ResetMapListeners(clusterManager)
     InputHandler(
@@ -575,6 +697,14 @@ internal fun <T : ClusterItem> Clustering(
         onMarkerDragEnd = clusterManager.markerManager::onMarkerDragEnd,
         onMarkerDragStart = clusterManager.markerManager::onMarkerDragStart,
     )
+    clusterManager.infoWindowLookups(
+        clusterInfoWindow = clusterInfoWindow,
+        clusterInfoWindowContent = clusterInfoWindowContent,
+        clusterItemInfoWindow = clusterItemInfoWindow,
+        clusterItemInfoWindowContent = clusterItemInfoWindowContent,
+    )?.let { lookups ->
+        InfoWindowHandler(infoWindow = lookups.infoWindow, infoContent = lookups.infoContent)
+    }
     val cameraPositionState = currentCameraPositionState
     LaunchedEffect(cameraPositionState, clusterManager) {
         snapshotFlow { cameraPositionState.isMoving }
@@ -635,6 +765,70 @@ internal fun <T : ClusterItem> Clustering(
     for (item in unclusteredItems) {
         clusterItemDecoration(item)
     }
+}
+
+/** The lookups an [InfoWindowHandler] uses to find a marker's info window and info content. */
+internal class InfoWindowLookups(
+    val infoWindow: (Marker) -> (@Composable () -> Unit)?,
+    val infoContent: (Marker) -> (@Composable () -> Unit)?,
+)
+
+/**
+ * Returns lookups that give the markers of this cluster manager the given info windows. Returns
+ * null if all four content parameters are null. [InfoWindowLookups.infoWindow] uses the
+ * whole-window content, and [InfoWindowLookups.infoContent] uses the in-frame content. Each lookup
+ * uses the renderer that the cluster manager has at the time of the lookup.
+ */
+internal fun <T : ClusterItem> ClusterManager<T>.infoWindowLookups(
+    clusterInfoWindow: (@Composable (Cluster<T>) -> Unit)?,
+    clusterInfoWindowContent: (@Composable (Cluster<T>) -> Unit)?,
+    clusterItemInfoWindow: (@Composable (T) -> Unit)?,
+    clusterItemInfoWindowContent: (@Composable (T) -> Unit)?,
+): InfoWindowLookups? {
+    if (
+        clusterInfoWindow == null &&
+        clusterInfoWindowContent == null &&
+        clusterItemInfoWindow == null &&
+        clusterItemInfoWindowContent == null
+    ) {
+        return null
+    }
+    return InfoWindowLookups(
+        infoWindow = { marker ->
+            renderer.infoWindowContent(
+                marker = marker,
+                clusterContent = clusterInfoWindow,
+                clusterItemContent = clusterItemInfoWindow,
+            )
+        },
+        infoContent = { marker ->
+            renderer.infoWindowContent(
+                marker = marker,
+                clusterContent = clusterInfoWindowContent,
+                clusterItemContent = clusterItemInfoWindowContent,
+            )
+        },
+    )
+}
+
+/**
+ * Returns the info window content for [marker], bound to the cluster or item that this renderer
+ * drew the marker for. A cluster's marker gets [clusterContent], and an item's marker gets
+ * [clusterItemContent]. Returns null if this renderer did not draw [marker], if there is no content
+ * for that kind of marker, or if this renderer is not a [DefaultClusterRenderer].
+ */
+internal fun <T : ClusterItem> ClusterRenderer<T>.infoWindowContent(
+    marker: Marker,
+    clusterContent: (@Composable (Cluster<T>) -> Unit)?,
+    clusterItemContent: (@Composable (T) -> Unit)?,
+): (@Composable () -> Unit)? {
+    val renderer = this as? DefaultClusterRenderer<T> ?: return null
+    val cluster = renderer.getCluster(marker)
+    if (cluster != null) {
+        return clusterContent?.let { content -> { content(cluster) } }
+    }
+    val item = renderer.getClusterItem(marker) ?: return null
+    return clusterItemContent?.let { content -> { content(item) } }
 }
 
 /**

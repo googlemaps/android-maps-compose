@@ -221,6 +221,7 @@ internal class MapApplier(
                     decorations.firstOrNull { it is MarkerNode && it.marker == marker }
                         as MarkerNode?
                 },
+                infoWindowHandlers = { decorations.filterIsInstance<InfoWindowHandlerNode>() },
             ),
         )
     }

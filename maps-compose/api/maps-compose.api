@@ -157,6 +157,10 @@ public final class com/google/maps/android/compose/IndoorStateChangeListener$Def
 	public static fun onIndoorLevelActivated (Lcom/google/maps/android/compose/IndoorStateChangeListener;Lcom/google/android/gms/maps/model/IndoorBuilding;)V
 }
 
+public final class com/google/maps/android/compose/InfoWindowHandlerKt {
+	public static final fun InfoWindowHandler (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class com/google/maps/android/compose/InputHandlerKt {
 	public static final fun InputHandler (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;III)V
 }
