@@ -75,6 +75,9 @@
   <string name="recomposition_activity">Recomposition</string>
   <string name="recomposition_activity_description">Understanding how recomposition works with maps.</string>
 
+  <string name="compose_overlay_sync_activity">Compose Overlay Sync</string>
+  <string name="compose_overlay_sync_activity_description">Compares projected Compose overlays against native map anchors with live camera callback rate telemetry and a clean-map GPU baseline.</string>
+
   <string name="tile_overlay_activity">Tile Overlay</string>
   <string name="tile_overlay_activity_description">Adding a tile overlay to the map.</string>
 
