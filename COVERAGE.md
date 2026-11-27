@@ -25,7 +25,7 @@ require combining the raw execution data rather than the XML reports.
 
 JVM tests run by `./gradlew koverXmlReportDebug`, covering the three published library modules.
 
-Measured at `d657239` (#1027), recorded 2026-11-25T05:05:21Z.
+Measured at `5a05472` (#1099), recorded 2026-11-27T05:21:30Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,6 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
+| 2026-11-27 | `5a05472` | #1099 | 38.95% | 0.00 | n/a | n/a | chore(deps): bump the gradle-minor-and-patch group with 8 updates |
 | 2026-11-25 | `d657239` | #1027 | 38.95% | +0.02 | 30.65% | n/a | fix(maps-compose): apply initial camera during map creation |
 | 2026-11-24 | `14f18d0` | #991 | 38.93% | 0.00 | n/a | n/a | fix(ci): harden update-skill workflow and script against prompt injection |
 | 2026-11-24 | `b418c7b` | #1094 | 38.93% | 0.00 | 49.36% | +0.02 | chore(navigation-app): stop cancelling the pending route future when a new destination is picked |
@@ -83,4 +84,3 @@ Total line coverage per suite, newest first.
 | 2026-11-04 | `c5b827d` | #983 | 12.99% | +0.01 | 47.26% | +0.06 | perf(clustering): use a Set for cluster view key diffing and suppress rememberSaveable key deprecation |
 | 2026-11-04 | `5c44583` | #1073 | 12.98% | -0.01 | 47.20% | -0.08 | feat!: raise minSdk to 24 and update android-maps-utils to 7.0.0 |
 | 2026-11-03 | `53c9725` | #1067 | 12.99% | 0.00 | 47.28% | n/a | build: check the public API of the library modules |
-| 2026-11-02 | `174f0fd` | #1060 | 12.99% | 0.00 | n/a | n/a | chore: add maintainer as code owner of workflow files |

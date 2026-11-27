@@ -527,3 +527,7 @@ timestamp,commit,pr,subject,suite,module,lines_covered,lines_total,line_pct,bran
 2026-11-25T05:05:24Z,d657239,1027,fix(maps-compose): apply initial camera during map creation,instrumentation,maps-compose-utils,259,866,29.91,104,514,20.23,2113,6536,32.33
 2026-11-25T05:05:24Z,d657239,1027,fix(maps-compose): apply initial camera during map creation,instrumentation,maps-compose-widgets,123,198,62.12,21,92,22.83,743,1212,61.3
 2026-11-25T05:05:24Z,d657239,1027,fix(maps-compose): apply initial camera during map creation,instrumentation,TOTAL,1777,5797,30.65,567,2510,22.59,12937,45925,28.17
+2026-11-27T05:21:30Z,5a05472,1099,chore(deps): bump the gradle-minor-and-patch group with 8 updates,unit,maps-compose,950,2072,45.85,295,1930,15.28,9569,26372,36.28
+2026-11-27T05:21:30Z,5a05472,1099,chore(deps): bump the gradle-minor-and-patch group with 8 updates,unit,maps-compose-utils,184,700,26.29,63,496,12.7,1192,7850,15.18
+2026-11-27T05:21:30Z,5a05472,1099,chore(deps): bump the gradle-minor-and-patch group with 8 updates,unit,maps-compose-widgets,6,155,3.87,0,84,0.0,36,1651,2.18
+2026-11-27T05:21:30Z,5a05472,1099,chore(deps): bump the gradle-minor-and-patch group with 8 updates,unit,TOTAL,1140,2927,38.95,358,2510,14.26,10797,35873,30.1
