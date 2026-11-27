@@ -38,7 +38,7 @@ Measured at `5a05472` (#1099), recorded 2026-11-27T05:21:30Z.
 
 Emulator tests run by `./gradlew createDebugCoverageReport`. `maps-app` is the demo app rather than a published library, but it is where most of the test suite lives. The library rows come from `:maps-app:createLibraryCoverageReports`, which reports each library module from the coverage data of every emulator test run, so they include the library code exercised through `maps-app`.
 
-Measured at `d657239` (#1027), recorded 2026-11-25T05:05:24Z.
+Measured at `5a05472` (#1099), recorded 2026-11-27T05:21:34Z.
 
 | Module | Lines | Line % | | Branches | Branch % |
 | --- | ---: | ---: | --- | ---: | ---: |
@@ -54,7 +54,7 @@ Total line coverage per suite, newest first.
 
 | Date | Commit | PR | Unit % | Change | Instr. % | Change | Subject |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- |
-| 2026-11-27 | `5a05472` | #1099 | 38.95% | 0.00 | n/a | n/a | chore(deps): bump the gradle-minor-and-patch group with 8 updates |
+| 2026-11-27 | `5a05472` | #1099 | 38.95% | 0.00 | 30.65% | 0.00 | chore(deps): bump the gradle-minor-and-patch group with 8 updates |
 | 2026-11-25 | `d657239` | #1027 | 38.95% | +0.02 | 30.65% | n/a | fix(maps-compose): apply initial camera during map creation |
 | 2026-11-24 | `14f18d0` | #991 | 38.93% | 0.00 | n/a | n/a | fix(ci): harden update-skill workflow and script against prompt injection |
 | 2026-11-24 | `b418c7b` | #1094 | 38.93% | 0.00 | 49.36% | +0.02 | chore(navigation-app): stop cancelling the pending route future when a new destination is picked |
