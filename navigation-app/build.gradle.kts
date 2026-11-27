@@ -24,7 +24,11 @@ plugins {
 
 android {
     namespace = "com.google.maps.android.compose.navigation"
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    compileSdk {
+        version = release(libs.versions.androidCompileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.androidCompileSdkMinor.get().toInt()
+        }
+    }
 
     defaultConfig {
         applicationId = "com.google.maps.android.compose.navigation"

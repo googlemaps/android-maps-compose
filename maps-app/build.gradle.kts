@@ -58,7 +58,11 @@ android {
     }
 
     namespace = "com.google.maps.android.compose.demo"
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    compileSdk {
+        version = release(libs.versions.androidCompileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.androidCompileSdkMinor.get().toInt()
+        }
+    }
 
     // Needed by the legacy map renderer on devices with older Google Play services.
     // See the <uses-library> comment in AndroidManifest.xml.

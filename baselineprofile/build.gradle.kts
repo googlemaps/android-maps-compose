@@ -25,7 +25,11 @@ plugins {
 
 android {
     namespace = "com.google.maps.android.compose.baselineprofile"
-    compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    compileSdk {
+        version = release(libs.versions.androidCompileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.androidCompileSdkMinor.get().toInt()
+        }
+    }
 
     defaultConfig {
         // Macrobenchmark and the Baseline Profile rule need API 28.
